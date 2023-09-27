@@ -640,7 +640,7 @@ int font_create(PFile::Path path) {
 
 }
 
-int font_write_s(int font_index, const std::string& text, int x, int y) {
+int font_write(int font_index, const std::string& text, int x, int y) {
 
     if (font_index < 0)
         return 1;

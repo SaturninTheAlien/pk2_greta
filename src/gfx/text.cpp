@@ -168,7 +168,7 @@ int CreditsText_Draw(const char *text, int font, int x, int y, u32 start, u32 en
 			if (pros < 100)
 				PDraw::font_writealpha_s(font,text,x,y,pros);
 			else
-				PDraw::font_write_s(font,text,x,y);
+				PDraw::font_write(font,text,x,y);
 		}
 
 	}
@@ -186,8 +186,8 @@ int WavetextLap_Draw(const char *text, int fontti, int x, int y, float lap, char
 		int xs = (int)(cos_table((i+degree)*8))/(9.f/(lap*2.5));
 		kirjain[0] = text[i];
 		
-		PDraw::font_write_s(fontti4,kirjain,x+pos-xs+3,y+ys+3);
-		pos += PDraw::font_write_s(fontti,kirjain,x+pos-xs,y+ys);
+		PDraw::font_write(fontti4,kirjain,x+pos-xs+3,y+ys+3);
+		pos += PDraw::font_write(fontti,kirjain,x+pos-xs,y+ys);
 	
 	}
 
@@ -206,8 +206,8 @@ int Wavetext_Draw(const char *text, int fontti, int x, int y, char end) {
 		int xs = (int)(cos_table((i+degree)*8))/9;
 		kirjain[0] = text[i];
 		
-		PDraw::font_write_s(fontti4,kirjain,x+pos-xs+3,y+ys+3);
-		pos += PDraw::font_write_s(fontti,kirjain,x+pos-xs,y+ys);
+		PDraw::font_write(fontti4,kirjain,x+pos-xs+3,y+ys+3);
+		pos += PDraw::font_write(fontti,kirjain,x+pos-xs,y+ys);
 	
 	}
 
@@ -232,8 +232,8 @@ int WavetextSlow_Draw(const char *text, int fontti, int x, int y, char end) {
 		
 		} else {
 
-			PDraw::font_write_s(fontti4,kirjain,x+pos-xs+1,y+ys+1);
-			pos += PDraw::font_write_s(fontti,kirjain,x+pos-xs,y+ys);
+			PDraw::font_write(fontti4,kirjain,x+pos-xs+1,y+ys+1);
+			pos += PDraw::font_write(fontti,kirjain,x+pos-xs,y+ys);
 		
 		}
 	}
@@ -244,8 +244,8 @@ int WavetextSlow_Draw(const char *text, int fontti, int x, int y, char end) {
 
 int ShadowedText_Draw(const std::string& text, int x, int y) {
 
-	PDraw::font_write_s(fontti4, text, x + 2, y + 2);
-	return PDraw::font_write_s(fontti2, text, x, y);
+	PDraw::font_write(fontti4, text, x + 2, y + 2);
+	return PDraw::font_write(fontti2, text, x, y);
 
 }
 
@@ -285,7 +285,7 @@ int Fadetext_Draw(){
 			if (Settings.draw_transparent && pros < 100)
 				PDraw::font_writealpha_s(text.fontti, text.teksti, x, y, pros);
 			else
-				PDraw::font_write_s(text.fontti, text.teksti, x, y);
+				PDraw::font_write(text.fontti, text.teksti, x, y);
 
 		}
 	}
