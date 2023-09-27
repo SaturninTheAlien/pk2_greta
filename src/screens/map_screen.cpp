@@ -127,14 +127,14 @@ int PK_Draw_Map() {
 				assets = game_assets2;
 			}
 
-			//PDraw::image_clip(game_assets,x-4,y-4-30,1+(icon*27),452,27+(icon*27),478);
 			PDraw::image_cutclip(assets,x-9,y-14,1+(icon*28),452,28+(icon*28),479);
 
+			//draw circling rooster head
 			if ( type == 1 ) {
 				int sinx = (int)(sin_table(degree)/2);
 				int cosy = (int)(cos_table(degree)/2);
 				int pekkaframe = 28*((degree%360)/120);
-				PDraw::image_cutclip(game_assets,x+sinx-12,y-17+cosy,157+pekkaframe,46,181+pekkaframe,79);
+				PDraw::image_cutclip(game_assets,x+sinx-12,y-17+cosy,157+pekkaframe,46,182+pekkaframe,79);
 			}
 
 			int paluu = PK_Draw_Map_Button(x-5, y-10, type);
