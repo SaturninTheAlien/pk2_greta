@@ -3,6 +3,7 @@
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
 #pragma once
+#include <string>
 
 #include "engine/PFile.hpp"
 #include "engine/PFont.hpp"
@@ -52,8 +53,8 @@ int   create_shadow(int index, u32 width, u32 height);
 
 int   font_create(int image, int x, int y, int width, int height, int count);
 int   font_create(PFile::Path path);
-int   font_write(int font_index, const char* text, int x, int y);
-int   font_writealpha(int font_index, const char* text, int x, int y, int alpha);
+int   font_write_s(int font_index, const std::string& text, int x, int y);
+int   font_writealpha_s(int font_index, const std::string& text, int x, int y, int alpha);
 
 void  set_buffer_size(int w, int h);
 void  get_buffer_size(int* w, int* h);

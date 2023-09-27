@@ -104,7 +104,7 @@ void Settings_Init() {
 
 	Settings.gui = true;
 
-	Id_To_String(Settings.id, id_code);
+	Id_To_String(Settings.id, id_code, 7);
 
 }
 
@@ -173,7 +173,7 @@ int Settings_Open() {
 	
 	file->close();
 
-	Id_To_String(Settings.id, id_code);
+	Id_To_String(Settings.id, id_code, 7);
 
 	if (Settings.shader_type == SETTINGS_MODE_CRT) {
 		screen_width = 640;

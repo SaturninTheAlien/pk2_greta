@@ -640,18 +640,18 @@ int font_create(PFile::Path path) {
 
 }
 
-int font_write(int font_index, const char* text, int x, int y) {
+int font_write_s(int font_index, const std::string& text, int x, int y) {
 
     if (font_index < 0)
         return 1;
     
-    return fontList[font_index]->write(x, y, text);
+    return fontList[font_index]->write(x, y, text.c_str());
 
 }
 
-int font_writealpha(int font_index, const char* text, int x, int y, int alpha) {
+int font_writealpha_s(int font_index, const std::string& text, int x, int y, int alpha) {
 
-    return fontList[font_index]->write_trasparent(x + x_offset, y + y_offset, text, alpha);
+    return fontList[font_index]->write_trasparent(x + x_offset, y + y_offset, text.c_str(), alpha);
 
 }
 

@@ -24,8 +24,7 @@ Since then a lot of things changed, including an initial SDL port by Samuli Tuom
 code redesign by Danilo Lemos (2016-2020),
 code redesign, bug fixes and new features by SaturninTheAlien (2023 - present)
 
-The codename "Greta" refers to the stenograms in some levels from "Iv4n island 2"\
-(But obviously It does not refer to Greta Thunberg 😂).\
+The codename "Greta" refers to the stenograms in some levels from "Iv4n island 2".
 
 This game was tested on Windows, GNU/Linux, Mac OS (Apple Silicon).
 

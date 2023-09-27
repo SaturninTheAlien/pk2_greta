@@ -20,7 +20,7 @@ int CreditsText_Draw(const char *text, int font, int x, int y, u32 start, u32 en
 int Wavetext_Draw(const char *text, int fontti, int x, int y, char end = '\0');
 int WavetextLap_Draw(const char *text, int fontti, int x, int y, float lap, char end = '\0');
 int WavetextSlow_Draw(const char *text, int fontti, int x, int y, char end = '\0');
-int ShadowedText_Draw(const char* text, int x, int y);
+int ShadowedText_Draw(const std::string& text, int x, int y);
 
 bool Draw_Menu_Text(const char *teksti, int x, int y, char end = '\0');
 

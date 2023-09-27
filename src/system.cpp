@@ -134,11 +134,11 @@ int PK2_Error(const char* msg) {
 	return 0;
 }
 
-void Id_To_String(u32 id, char* string) {
+void Id_To_String(u32 id, char* string, std::size_t n) {
 
 	if (!string) return;
 
-	sprintf(string, "_%06x", id & 0xFFFFFF);
+	snprintf(string, n, "_%06x", id & 0xFFFFFF);
 
 }
 
@@ -195,7 +195,7 @@ void Move_DataPath(std::string new_path) {
 		int ret = Settings_GetId(old_settings, id);
 		if (ret == 0) {
             char ids[8];
-            Id_To_String(id, ids);
+            Id_To_String(id, ids, 7);
             std::string bkp_dir = data_path + "backups" + PE_SEP;
             PUtils::CreateDir(bkp_dir);
             PUtils::RenameDir(new_path, bkp_dir + ids + PE_SEP);

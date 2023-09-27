@@ -69,7 +69,7 @@ void Update_Colors();
 
 void Do_Thunder();
 
-void Id_To_String(u32 id, char* string);
+void Id_To_String(u32 id, char* string, std::size_t n);
 
 void Calculate_SinCos();
 int  PK2_Error(const char* msg);

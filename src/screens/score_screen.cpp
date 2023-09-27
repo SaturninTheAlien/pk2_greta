@@ -116,7 +116,7 @@ int EpisodeScore_Compare(u32 score){
 
 int Draw_ScoreCount() {
 
-	char luku[20];
+	//char luku[20];
 	int x, y;
 
 	PDraw::image_clip(bg_screen);
@@ -160,32 +160,32 @@ int Draw_ScoreCount() {
 
 	total_score = bonus_score + time_score + energy_score + gifts_score;
 	
-	sprintf(luku, "%i", total_score);
-	ShadowedText_Draw(luku, 400, my);
+	//sprintf(luku, "%i", total_score);
+	ShadowedText_Draw(std::to_string(total_score), 400, my);
 	my += 70;
 
 	ShadowedText_Draw(tekstit->Get_Text(PK_txt.score_screen_bonus_score), 100, my);
 	
-	sprintf(luku, "%i", bonus_score);
-	ShadowedText_Draw(luku, 400, my);
+	//sprintf(luku, "%i", bonus_score);
+	ShadowedText_Draw(std::to_string(bonus_score), 400, my);
 	my += 30;
 
 	ShadowedText_Draw(tekstit->Get_Text(PK_txt.score_screen_time_score), 100, my);
 	
-	sprintf(luku, "%i", time_score);
-	ShadowedText_Draw(luku, 400, my);
+	//sprintf(luku, "%i", time_score);
+	ShadowedText_Draw(std::to_string(time_score), 400, my);
 	my += 30;
 
 	ShadowedText_Draw(tekstit->Get_Text(PK_txt.score_screen_energy_score), 100, my);
 
-	sprintf(luku, "%i", energy_score);
-	ShadowedText_Draw(luku, 400, my);
+	//sprintf(luku, "%i", energy_score);
+	ShadowedText_Draw(std::to_string(energy_score), 400, my);
 	my += 30;
 
 	ShadowedText_Draw(tekstit->Get_Text(PK_txt.score_screen_item_score), 100, my);
 	
-	sprintf(luku, "%i", gifts_score);
-	ShadowedText_Draw(luku, 400, my);
+	//sprintf(luku, "%i", gifts_score);
+	ShadowedText_Draw(std::to_string(gifts_score), 400, my);
 	my += 40;
 
 	x = 110;
@@ -228,8 +228,8 @@ int Draw_ScoreCount() {
 		
 		ShadowedText_Draw(tekstit->Get_Text(PK_txt.score_screen_total_score), 100, my);
 		
-		sprintf(luku, "%i", Episode->player_score);
-		ShadowedText_Draw(luku, 400, my);
+		//sprintf(luku, "%i", Episode->player_score);
+		ShadowedText_Draw(std::to_string(Episode->player_score), 400, my);
 		my += 25;
 
 		//if (apples_counted >= Game->apples_count && apples_counted > 0) {
@@ -241,19 +241,19 @@ int Draw_ScoreCount() {
 
 		if (map_new_record) {
 
-			PDraw::font_write(fontti2,tekstit->Get_Text(PK_txt.score_screen_new_level_hiscore),100+rand()%2,my+rand()%2);
+			PDraw::font_write_s(fontti2,tekstit->Get_Text(PK_txt.score_screen_new_level_hiscore),100+rand()%2,my+rand()%2);
 			my += 25;
 
 		}
 		if (map_new_time_record) {
 
-			PDraw::font_write(fontti2,tekstit->Get_Text(PK_txt.score_screen_new_level_best_time),100+rand()%2,my+rand()%2);
+			PDraw::font_write_s(fontti2,tekstit->Get_Text(PK_txt.score_screen_new_level_best_time),100+rand()%2,my+rand()%2);
 			my += 25;
 
 		}
 		if (episode_new_record) {
 
-			PDraw::font_write(fontti2,tekstit->Get_Text(PK_txt.score_screen_new_episode_hiscore),100+rand()%2,my+rand()%2);
+			PDraw::font_write_s(fontti2,tekstit->Get_Text(PK_txt.score_screen_new_episode_hiscore),100+rand()%2,my+rand()%2);
 			my += 25;
 
 		}

@@ -64,38 +64,38 @@ int PK_Draw_Map_Button(int x, int y, int type){
 
 int PK_Draw_Map() {
 
-	char luku[20];
+	//char luku[20];
 
 	PDraw::image_clip(bg_screen, 0, 0);
 
-	ShadowedText_Draw(Episode->entry.name.c_str(), 100, 72);
+	ShadowedText_Draw(Episode->entry.name, 100, 72);
 
 	int ysize = ShadowedText_Draw(tekstit->Get_Text(PK_txt.map_total_score), 100, 92);
 	
-	sprintf(luku, "%i", Episode->player_score);
-	ShadowedText_Draw(luku, 100 + ysize + 15, 92);
+	//sprintf(luku, "%i", Episode->player_score);
+	ShadowedText_Draw(std::to_string(Episode->player_score), 100 + ysize + 15, 92);
 
 	if (Episode->scores.episode_top_score > 0) {
 
-		ysize = PDraw::font_write(fontti1,tekstit->Get_Text(PK_txt.map_episode_best_player),360,72);
-		PDraw::font_write(fontti1,Episode->scores.episode_top_player,360+ysize+10,72);
+		ysize = PDraw::font_write_s(fontti1,tekstit->Get_Text(PK_txt.map_episode_best_player),360,72);
+		PDraw::font_write_s(fontti1,Episode->scores.episode_top_player,360+ysize+10,72);
 		
-		ysize = PDraw::font_write(fontti1,tekstit->Get_Text(PK_txt.map_episode_hiscore),360,92);
-		sprintf(luku, "%i", Episode->scores.episode_top_score);
-		PDraw::font_write(fontti2,luku,360+ysize+15,92);
+		ysize = PDraw::font_write_s(fontti1,tekstit->Get_Text(PK_txt.map_episode_hiscore),360,92);
+		//sprintf(luku, "%i", Episode->scores.episode_top_score);
+		PDraw::font_write_s(fontti2,std::to_string(Episode->scores.episode_top_score), 360+ysize+15,92);
 
 	}
 
 	if (Episode->next_level < UINT32_MAX) {
-		ysize = PDraw::font_write(fontti1,tekstit->Get_Text(PK_txt.map_next_level),100,120);
-		sprintf(luku, "%i", Episode->next_level);
-		PDraw::font_write(fontti1,luku,100+ysize+15,120);
+		ysize = PDraw::font_write_s(fontti1,tekstit->Get_Text(PK_txt.map_next_level),100,120);
+		//sprintf(luku, "%i", Episode->next_level);
+		PDraw::font_write_s(fontti1,std::to_string(Episode->next_level),100+ysize+15,120);
 	}
 
 	//PK_Particles_Draw();
 
 	if (Episode->level_count == 0) {
-		PDraw::font_write(fontti2,tekstit->Get_Text(PK_txt.episodes_no_maps),180,290);
+		PDraw::font_write_s(fontti2,tekstit->Get_Text(PK_txt.episodes_no_maps),180,290);
 	}
 	
 	if (!going_to_game) {
@@ -182,8 +182,8 @@ int PK_Draw_Map() {
 			}
 
 			if (!Episode->hide_numbers) {
-				sprintf(luku, "%i", Episode->levels_list[i].order);
-				PDraw::font_write(fontti1,luku,x-12+2,y-29+2);
+				//sprintf(luku, "%i", Episode->levels_list[i].order);
+				PDraw::font_write_s(fontti1,std::to_string(Episode->levels_list[i].order),x-12+2,y-29+2);
 			}
 
 			// if mouse hoover
@@ -192,41 +192,44 @@ int PK_Draw_Map() {
 				int info_x = 489+3, info_y = 341-26;
 
 				PDraw::image_cutclip(game_assets,info_x-3,info_y+26,473,0,607,121);
-				PDraw::font_write(fontti1,Episode->levels_list[i].nimi,info_x,info_y+30);
+				PDraw::font_write_s(fontti1,Episode->levels_list[i].nimi,info_x,info_y+30);
 
 				if (Episode->scores.has_score[i]) { 
 					
-					PDraw::font_writealpha(fontti1,tekstit->Get_Text(PK_txt.map_level_best_player),info_x,info_y+50,75);
-					PDraw::font_write(fontti1,Episode->scores.top_player[i],info_x,info_y+62);
-					ysize = 8 + PDraw::font_writealpha(fontti1,tekstit->Get_Text(PK_txt.map_level_hiscore),info_x,info_y+74,75);
-					sprintf(luku, "%i", Episode->scores.best_score[i]);
-					PDraw::font_write(fontti1,luku,info_x+ysize,info_y+75);
+					PDraw::font_writealpha_s(fontti1,tekstit->Get_Text(PK_txt.map_level_best_player),info_x,info_y+50,75);
+					PDraw::font_write_s(fontti1,Episode->scores.top_player[i],info_x,info_y+62);
+					ysize = 8 + PDraw::font_writealpha_s(fontti1,tekstit->Get_Text(PK_txt.map_level_hiscore),info_x,info_y+74,75);
+					//sprintf(luku, "%i", Episode->scores.best_score[i]);
+					PDraw::font_write_s(fontti1,std::to_string(Episode->scores.best_score[i]),info_x+ysize,info_y+75);
 				
                 }
 
 				if (Episode->scores.has_time[i]) {
 
-					PDraw::font_writealpha(fontti1,tekstit->Get_Text(PK_txt.map_level_fastest_player),info_x,info_y+98,75);
-					PDraw::font_write(fontti1,Episode->scores.fastest_player[i],info_x,info_y+110);
+					PDraw::font_writealpha_s(fontti1,tekstit->Get_Text(PK_txt.map_level_fastest_player),info_x,info_y+98,75);
+					PDraw::font_write_s(fontti1,Episode->scores.fastest_player[i],info_x,info_y+110);
 
-					ysize = 8 + PDraw::font_writealpha(fontti1,tekstit->Get_Text(PK_txt.map_level_best_time),info_x,info_y+122,75);
+					ysize = 8 + PDraw::font_writealpha_s(fontti1,tekstit->Get_Text(PK_txt.map_level_best_time),info_x,info_y+122,75);
 
 					s32 time = Episode->scores.best_time[i] / 60;
 					if (time < 0) {
 						time = -time;
-						ysize += PDraw::font_write(fontti1,"-",info_x+ysize,info_y+122);
+						ysize += PDraw::font_write_s(fontti1,"-",info_x+ysize,info_y+122);
 					}
 
 					s32 min = time / 60;
 					s32 sek = time % 60;
+					
+					std::string min_s = std::to_string(min);
+					std::string sek_s = std::to_string(sek);
 
-					sprintf(luku, "%i", min);
-					ysize += PDraw::font_write(fontti1,luku,info_x+ysize,info_y+122);
-					ysize += PDraw::font_write(fontti1,":",info_x+ysize,info_y+122);
+					//sprintf(luku, "%i", min);
+					ysize += PDraw::font_write_s(fontti1,min_s,info_x+ysize,info_y+122);
+					ysize += PDraw::font_write_s(fontti1,":",info_x+ysize,info_y+122);
                     if (sek < 10)
-                        ysize += PDraw::font_write(fontti1,"0",info_x+ysize,info_y+122);
-					sprintf(luku, "%i", sek);
-					PDraw::font_write(fontti1,luku,info_x+ysize,info_y+122);
+                        ysize += PDraw::font_write_s(fontti1,"0",info_x+ysize,info_y+122);
+					//sprintf(luku, "%i", sek);
+					PDraw::font_write_s(fontti1,sek_s,info_x+ysize,info_y+122);
 
 				}
 			}
@@ -365,7 +368,7 @@ int Screen_Map() {
 		//Draw "loading" text
 		PDraw::set_offset(screen_width, screen_height);
 		PDraw::screen_fill(0);
-		PDraw::font_write(fontti2, tekstit->Get_Text(PK_txt.game_loading), screen_width / 2 - 82, screen_height / 2 - 9);
+		PDraw::font_write_s(fontti2, tekstit->Get_Text(PK_txt.game_loading), screen_width / 2 - 82, screen_height / 2 - 9);
 		Fade_out(0);
 
 	}
