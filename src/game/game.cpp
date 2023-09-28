@@ -121,7 +121,7 @@ int GameClass::Calculete_TileMasks() {
 			while (y<31 && (color = buffer[x+(mask%10)*32 + (y+(mask/10)*32)*width])==255)
 				y++;
 
-			palikkamaskit[mask].alas[x] = y;
+			block_masks[mask].alas[x] = y;
 		}
 
 		for (x=0; x<32; x++){
@@ -129,7 +129,7 @@ int GameClass::Calculete_TileMasks() {
 			while (y>=0 && (color = buffer[x+(mask%10)*32 + (y+(mask/10)*32)*width])==255)
 				y--;
 
-			palikkamaskit[mask].ylos[x] = 31-y;
+			block_masks[mask].ylos[x] = 31-y;
 		}
 	}
 	PDraw::drawimage_end(map.tiles_buffer);
@@ -173,11 +173,11 @@ int GameClass::Clean_TileBuffer() {
 // This moves the collisions of the blocks palette
 int GameClass::Move_Blocks() {
 
-	this->lasketut_palikat[BLOCK_LIFT_HORI].vasen = (int)cos_table(degree);
-	this->lasketut_palikat[BLOCK_LIFT_HORI].oikea = (int)cos_table(degree);
+	this->block_types[BLOCK_LIFT_HORI].vasen = (int)cos_table(degree);
+	this->block_types[BLOCK_LIFT_HORI].oikea = (int)cos_table(degree);
 
-	this->lasketut_palikat[BLOCK_LIFT_VERT].ala = (int)sin_table(degree);
-	this->lasketut_palikat[BLOCK_LIFT_VERT].yla = (int)sin_table(degree);
+	this->block_types[BLOCK_LIFT_VERT].ala = (int)sin_table(degree);
+	this->block_types[BLOCK_LIFT_VERT].yla = (int)sin_table(degree);
 
 	int kytkin1_y = 0,
 		kytkin2_y = 0,
@@ -217,28 +217,28 @@ int GameClass::Move_Blocks() {
 	kytkin2_y /= 2;
 	kytkin3_x /= 2;
 
-	this->lasketut_palikat[BLOCK_BUTTON1].ala = kytkin1_y;
-	this->lasketut_palikat[BLOCK_BUTTON1].yla = kytkin1_y;
+	this->block_types[BLOCK_BUTTON1].ala = kytkin1_y;
+	this->block_types[BLOCK_BUTTON1].yla = kytkin1_y;
 
-	this->lasketut_palikat[BLOCK_BUTTON2_UP].ala = -kytkin2_y;
-	this->lasketut_palikat[BLOCK_BUTTON2_UP].yla = -kytkin2_y;
+	this->block_types[BLOCK_BUTTON2_UP].ala = -kytkin2_y;
+	this->block_types[BLOCK_BUTTON2_UP].yla = -kytkin2_y;
 
-	this->lasketut_palikat[BLOCK_BUTTON2_DOWN].ala = kytkin2_y;
-	this->lasketut_palikat[BLOCK_BUTTON2_DOWN].yla = kytkin2_y;
+	this->block_types[BLOCK_BUTTON2_DOWN].ala = kytkin2_y;
+	this->block_types[BLOCK_BUTTON2_DOWN].yla = kytkin2_y;
 
-	this->lasketut_palikat[BLOCK_BUTTON2].ala = kytkin2_y;
-	this->lasketut_palikat[BLOCK_BUTTON2].yla = kytkin2_y;
+	this->block_types[BLOCK_BUTTON2].ala = kytkin2_y;
+	this->block_types[BLOCK_BUTTON2].yla = kytkin2_y;
 
-	this->lasketut_palikat[BLOCK_BUTTON3_RIGHT].oikea = kytkin3_x;
-	this->lasketut_palikat[BLOCK_BUTTON3_RIGHT].vasen = kytkin3_x;
-	this->lasketut_palikat[BLOCK_BUTTON3_RIGHT].koodi = BLOCK_LIFT_HORI;
+	this->block_types[BLOCK_BUTTON3_RIGHT].oikea = kytkin3_x;
+	this->block_types[BLOCK_BUTTON3_RIGHT].vasen = kytkin3_x;
+	this->block_types[BLOCK_BUTTON3_RIGHT].koodi = BLOCK_LIFT_HORI;
 
-	this->lasketut_palikat[BLOCK_BUTTON3_LEFT].oikea = -kytkin3_x;
-	this->lasketut_palikat[BLOCK_BUTTON3_LEFT].vasen = -kytkin3_x;
-	this->lasketut_palikat[BLOCK_BUTTON3_LEFT].koodi = BLOCK_LIFT_HORI;
+	this->block_types[BLOCK_BUTTON3_LEFT].oikea = -kytkin3_x;
+	this->block_types[BLOCK_BUTTON3_LEFT].vasen = -kytkin3_x;
+	this->block_types[BLOCK_BUTTON3_LEFT].koodi = BLOCK_LIFT_HORI;
 
-	this->lasketut_palikat[BLOCK_BUTTON3].ala = kytkin3_x;
-	this->lasketut_palikat[BLOCK_BUTTON3].yla = kytkin3_x;
+	this->block_types[BLOCK_BUTTON3].ala = kytkin3_x;
+	this->block_types[BLOCK_BUTTON3].yla = kytkin3_x;
 
 	return 0;
 
@@ -249,7 +249,7 @@ int GameClass::Calculate_Tiles() {
 	PK2BLOCK palikka;
 
 	for (int i=0;i<150;i++){
-		palikka = this->lasketut_palikat[i];
+		palikka = this->block_types[i];
 
 		palikka.vasen  = 0;
 		palikka.oikea  = 0;//32
@@ -318,7 +318,7 @@ int GameClass::Calculate_Tiles() {
 		else
 			palikka.water = false;
 
-		this->lasketut_palikat[i] = palikka;
+		this->block_types[i] = palikka;
 	}
 
 	Move_Blocks();
@@ -337,7 +337,7 @@ int GameClass::Open_Map() {
 	
 	}
 
-	timeout = map.aika * TIME_FPS;
+	timeout = map.map_time * TIME_FPS;
 
 	if (timeout > 0)
 		has_time = true;
@@ -350,7 +350,7 @@ int GameClass::Open_Map() {
 		map.button3_time = SWITCH_INITIAL_VALUE;
 	}
 
-	if (strcmp(map.versio,"1.2") == 0 || strcmp(map.versio,"1.3") == 0)
+	if (strcmp(map.version,"1.2") == 0 || strcmp(map.version,"1.3") == 0)
 		if (Prototypes_GetAll() == 1)
 			return 1;
 
@@ -373,9 +373,9 @@ int GameClass::Open_Map() {
 	Particles_Clear();
 	Particles_LoadBG(&map);
 
-	if ( strcmp(map.musiikki, "") != 0 ) {
+	if ( strcmp(map.music_filename, "") != 0 ) {
 
-		PFile::Path music_path = Episode->Get_Dir(map.musiikki);
+		PFile::Path music_path = Episode->Get_Dir(map.music_filename);
 
 		if (!FindAsset(&music_path, "music" PE_SEP)) {
 
@@ -394,12 +394,12 @@ int GameClass::Open_Map() {
 void GameClass::Place_Sprites() {
 
 	Sprites_clear();
-	Sprites_add(Level_Prototypes_List[map.pelaaja_sprite], 1, 0, 0, nullptr, false);
+	Sprites_add(Level_Prototypes_List[map.player_sprite_index], 1, 0, 0, nullptr, false);
 
 	for (u32 x = 0; x < PK2MAP_MAP_WIDTH; x++) {
 		for (u32 y = 0; y < PK2MAP_MAP_HEIGHT; y++) {
 
-			int sprite = map.spritet[x+y*PK2MAP_MAP_WIDTH];
+			int sprite = map.sprite_tiles[x+y*PK2MAP_MAP_WIDTH];
 			PrototypeClass* protot = Level_Prototypes_List[sprite];
 
 			if (sprite != 255) {
@@ -428,7 +428,7 @@ void GameClass::Select_Start() {
 	std::vector<u32> starts;
 
 	for (u32 i = 0; i < PK2MAP_MAP_SIZE; i++)
-		if (map.seinat[i] == BLOCK_START)
+		if (map.foreground_tiles[i] == BLOCK_START)
 			starts.push_back(i);
 
 	if (starts.size() > 0) {
@@ -457,7 +457,7 @@ int GameClass::Count_Keys() {
 	int keys = 0;
 
 	for (u32 x=0; x < PK2MAP_MAP_SIZE; x++){
-		u8 sprite = map.spritet[x];
+		u8 sprite = map.sprite_tiles[x];
 		if (sprite != 255)
 			if (Level_Prototypes_List[sprite]->can_open_locks && 
 				Level_Prototypes_List[sprite]->how_destroyed != FX_DESTRUCT_EI_TUHOUDU)
@@ -473,18 +473,18 @@ void GameClass::Change_SkullBlocks() {
 	for (u32 x = 0; x < PK2MAP_MAP_WIDTH; x++)
 		for (u32 y = 0; y < PK2MAP_MAP_HEIGHT; y++){
 			
-			u8 front = map.seinat[x+y*PK2MAP_MAP_WIDTH];
-			u8 back  = map.taustat[x+y*PK2MAP_MAP_WIDTH];
+			u8 front = map.foreground_tiles[x+y*PK2MAP_MAP_WIDTH];
+			u8 back  = map.background_tiles[x+y*PK2MAP_MAP_WIDTH];
 
 			if (front == BLOCK_SKULL_FOREGROUND){
-				map.seinat[x+y*PK2MAP_MAP_WIDTH] = 255;
+				map.foreground_tiles[x+y*PK2MAP_MAP_WIDTH] = 255;
 				if (back != BLOCK_SKULL_FOREGROUND)
 					Effect_SmokeClouds(x*32+24,y*32+6);
 
 			}
 
 			if (back == BLOCK_SKULL_BACKGROUND && front == 255)
-				map.seinat[x+y*PK2MAP_MAP_WIDTH] = BLOCK_SKULL_FOREGROUND;
+				map.foreground_tiles[x+y*PK2MAP_MAP_WIDTH] = BLOCK_SKULL_FOREGROUND;
 		}
 
 	//Put in game
@@ -499,10 +499,10 @@ void GameClass::Open_Locks() {
 	for (u32 x = 0; x < PK2MAP_MAP_WIDTH; x++)
 		for (u32 y = 0; y < PK2MAP_MAP_HEIGHT; y++){
 			
-			u8 palikka = map.seinat[x+y*PK2MAP_MAP_WIDTH];
+			u8 palikka = map.foreground_tiles[x+y*PK2MAP_MAP_WIDTH];
 			
 			if (palikka == BLOCK_LOCK){
-				map.seinat[x+y*PK2MAP_MAP_WIDTH] = 255;
+				map.foreground_tiles[x+y*PK2MAP_MAP_WIDTH] = 255;
 				Effect_SmokeClouds(x*32+6,y*32+6);
 			}
 		}

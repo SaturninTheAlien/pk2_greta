@@ -15,9 +15,9 @@
 #include <cstring>
 #include <cmath>
 
-struct PK2KARTTA{ // Vanha versio 0.1
-	char versio[8];
-	char nimi[40];
+struct PK2KARTTA{ // Vanha version 0.1
+	char version[8];
+	char name[40];
 	u8   taustakuva;
 	u8   musiikki;
 	u8   kartta [640*224];
@@ -25,10 +25,10 @@ struct PK2KARTTA{ // Vanha versio 0.1
 	u8   extrat [640*480];
 };
 
-void MapClass::Animoi(int degree, int anim, u32 aika1, u32 aika2, u32 aika3) {
+void MapClass::SetTilesAnimations(int degree, int anim, u32 aika1, u32 aika2, u32 aika3) {
 
-	aste = degree;
-	animaatio = anim;
+	arrows_block_degree = degree;
+	block_animation_frame = anim;
 	button1_timer = aika1;
 	button2_timer = aika2;
 	button3_timer = aika3;
@@ -47,45 +47,45 @@ MapClass::~MapClass(){
 
 int MapClass::Load(PFile::Path path){
 	
-	char versio[8];
+	char version[8];
 
 	PFile::RW* file = path.GetRW("r");
 	if (file == nullptr){
 		return 1;
 	}
 
-	file->read(versio, sizeof(versio));
+	file->read(version, sizeof(version));
 	file->close();
 
 	int ok = 2;
 
-	PLog::Write(PLog::DEBUG, "PK2", "Loading %s, version %s", path.c_str(), versio);
+	PLog::Write(PLog::DEBUG, "PK2", "Loading %s, version %s", path.c_str(), version);
 
-	if (strcmp(versio,"1.3")==0) {
+	if (strcmp(version,"1.3")==0) {
 		this->LoadVersion13(path);
 		ok = 0;
 	}
-	if (strcmp(versio,"1.2")==0) {
+	if (strcmp(version,"1.2")==0) {
 		this->LoadVersion12(path);
 		ok = 0;
 	}
-	if (strcmp(versio,"1.1")==0) {
+	if (strcmp(version,"1.1")==0) {
 		this->LoadVersion11(path);
 		ok = 0;
 	}
-	if (strcmp(versio,"1.0")==0) {
+	if (strcmp(version,"1.0")==0) {
 		this->LoadVersion10(path);
 		ok = 0;
 	}
-	if (strcmp(versio,"0.1")==0) {
+	if (strcmp(version,"0.1")==0) {
 		this->LoadVersion01(path);
 		ok = 0;
 	}
 	
-	path.SetFile(this->palikka_bmp);
+	path.SetFile(this->tileset_filename);
 	Load_TilesImage(path);
 
-	path.SetFile(this->taustakuva);
+	path.SetFile(this->background_filename);
 	Load_BG(path);
 
 	Calculate_Edges();
@@ -95,29 +95,29 @@ int MapClass::Load(PFile::Path path){
 
 int MapClass::Load_Plain_Data(PFile::Path path) {
 	
-	char versio[8];
+	char version[8];
 
 	PFile::RW* file = path.GetRW("r");
 	if (file == nullptr){
 		return 1;
 	}
 
-	file->read(versio, sizeof(versio));
+	file->read(version, sizeof(version));
 	file->close();
 
-	if (strcmp(versio,"1.3")==0)
+	if (strcmp(version,"1.3")==0)
 		this->LoadVersion13(path);
 
-	if (strcmp(versio,"1.2")==0)
+	if (strcmp(version,"1.2")==0)
 		this->LoadVersion12(path);
 
-	if (strcmp(versio,"1.1")==0)
+	if (strcmp(version,"1.1")==0)
 		this->LoadVersion11(path);
 
-	if (strcmp(versio,"1.0")==0)
+	if (strcmp(version,"1.0")==0)
 		this->LoadVersion10(path);
 
-	if (strcmp(versio,"0.1")==0)
+	if (strcmp(version,"0.1")==0)
 		this->LoadVersion01(path);
 
 	return(0);
@@ -135,24 +135,24 @@ int MapClass::LoadVersion01(PFile::Path path){
 	file->read(&kartta, sizeof(PK2KARTTA));
 	file->close();
 
-	strcpy(this->versio, PK2MAP_LAST_VERSION);
-	strcpy(this->palikka_bmp,"blox.bmp");
-	strcpy(this->taustakuva, "default.bmp");
-	strcpy(this->musiikki,   "default.xm");
+	strcpy(this->version, PK2MAP_LAST_VERSION);
+	strcpy(this->tileset_filename,"blox.bmp");
+	strcpy(this->background_filename, "default.bmp");
+	strcpy(this->music_filename,   "default.xm");
 
-	strcpy(this->nimi,  "v01");
-	strcpy(this->tekija,"unknown");
+	strcpy(this->name,  "v01");
+	strcpy(this->author,"unknown");
 
-	this->aika		= 0;
+	this->map_time		= 0;
 	this->extra		= 0;
-	this->tausta	= kartta.taustakuva;
+	this->background_scrolling	= kartta.taustakuva;
 
 	for (u32 i=0;i<PK2MAP_MAP_SIZE;i++)
-		this->seinat[i] = kartta.kartta[i%PK2MAP_MAP_WIDTH + (i/PK2MAP_MAP_WIDTH) * 640];
+		this->foreground_tiles[i] = kartta.kartta[i%PK2MAP_MAP_WIDTH + (i/PK2MAP_MAP_WIDTH) * 640];
 
-	memset(this->taustat,255, sizeof(taustat));
+	memset(this->background_tiles,255, sizeof(background_tiles));
 
-	memset(this->spritet,255, sizeof(spritet));
+	memset(this->sprite_tiles,255, sizeof(sprite_tiles));
 
 	return(0);
 }
@@ -168,26 +168,26 @@ int MapClass::LoadVersion10(PFile::Path path){
 	file->read(&kartta, sizeof(PK2KARTTA));
 	file->close();
 
-	strcpy(this->versio,		kartta.versio);
-	strcpy(this->palikka_bmp,	kartta.palikka_bmp);
-	strcpy(this->taustakuva,	kartta.taustakuva);
-	strcpy(this->musiikki,		kartta.musiikki);
+	strcpy(this->version,		kartta.version);
+	strcpy(this->tileset_filename,	kartta.tileset_filename);
+	strcpy(this->background_filename,	kartta.background_filename);
+	strcpy(this->music_filename,		kartta.music_filename);
 
-	strcpy(this->nimi,			kartta.nimi);
-	strcpy(this->tekija,		kartta.tekija);
+	strcpy(this->name,			kartta.name);
+	strcpy(this->author,		kartta.author);
 
-	this->aika			= kartta.aika;
+	this->map_time			= kartta.map_time;
 	this->extra			= kartta.extra;
-	this->tausta		= kartta.tausta;
+	this->background_scrolling		= kartta.background_scrolling;
 
 	for (u32 i=0; i<PK2MAP_MAP_SIZE; i++)
-		this->taustat[i] = kartta.taustat[i];
+		this->background_tiles[i] = kartta.background_tiles[i];
 
 	for (u32 i=0; i<PK2MAP_MAP_SIZE;i++)
-		this->seinat[i] = kartta.seinat[i];
+		this->foreground_tiles[i] = kartta.foreground_tiles[i];
 
 	for (u32 i=0; i<PK2MAP_MAP_SIZE; i++)
-		this->spritet[i] = kartta.spritet[i];
+		this->sprite_tiles[i] = kartta.sprite_tiles[i];
 
 	return 0;
 }
@@ -199,37 +199,37 @@ int MapClass::LoadVersion11(PFile::Path path){
 		return 1;
 	}
 
-	memset(this->taustat, 255, sizeof(this->taustat));
-	memset(this->seinat , 255, sizeof(this->seinat));
-	memset(this->spritet, 255, sizeof(this->spritet));
+	memset(this->background_tiles, 255, sizeof(this->background_tiles));
+	memset(this->foreground_tiles , 255, sizeof(this->foreground_tiles));
+	memset(this->sprite_tiles, 255, sizeof(this->sprite_tiles));
 
-	file->read(this->versio,      sizeof(char) * 5);
-	file->read(this->palikka_bmp, sizeof(char) * 13);
-	file->read(this->taustakuva,  sizeof(char) * 13);
-	file->read(this->musiikki,    sizeof(char) * 13);
-	file->read(this->nimi,        sizeof(char) * 40);
-	file->read(this->tekija,      sizeof(char) * 40);
-	file->read(&this->aika,       sizeof(int));
+	file->read(this->version,      sizeof(char) * 5);
+	file->read(this->tileset_filename, sizeof(char) * 13);
+	file->read(this->background_filename,  sizeof(char) * 13);
+	file->read(this->music_filename,    sizeof(char) * 13);
+	file->read(this->name,        sizeof(char) * 40);
+	file->read(this->author,      sizeof(char) * 40);
+	file->read(&this->map_time,       sizeof(int));
 	file->read(&this->extra,      sizeof(u8));
-	file->read(&this->tausta,     sizeof(u8));
-	file->read(this->taustat,     sizeof(taustat));
-	if (file->read(this->seinat,  sizeof(seinat)) != PK2MAP_MAP_SIZE)
+	file->read(&this->background_scrolling,     sizeof(u8));
+	file->read(this->background_tiles,     sizeof(background_tiles));
+	if (file->read(this->foreground_tiles,  sizeof(foreground_tiles)) != PK2MAP_MAP_SIZE)
 		virhe = 2;
-	file->read(this->spritet,     sizeof(spritet));
+	file->read(this->sprite_tiles,     sizeof(sprite_tiles));
 
 	file->close();
 
 	for (u32 i=0;i<PK2MAP_MAP_SIZE;i++)
-		if (seinat[i] != 255)
-			seinat[i] -= 50;
+		if (foreground_tiles[i] != 255)
+			foreground_tiles[i] -= 50;
 
 	for (u32 i=0;i<PK2MAP_MAP_SIZE;i++)
-		if (taustat[i] != 255)
-			taustat[i] -= 50;
+		if (background_tiles[i] != 255)
+			background_tiles[i] -= 50;
 
 	for (u32 i=0;i<PK2MAP_MAP_SIZE;i++)
-		if (spritet[i] != 255)
-			spritet[i] -= 50;
+		if (sprite_tiles[i] != 255)
+			sprite_tiles[i] -= 50;
 
 	return (virhe);
 }
@@ -242,26 +242,26 @@ int MapClass::LoadVersion12(PFile::Path path){
 		return 1;
 	}
 
-	memset(this->taustat, 255, sizeof(this->taustat));
-	memset(this->seinat , 255, sizeof(this->seinat));
-	memset(this->spritet, 255, sizeof(this->spritet));
+	memset(this->background_tiles, 255, sizeof(this->background_tiles));
+	memset(this->foreground_tiles , 255, sizeof(this->foreground_tiles));
+	memset(this->sprite_tiles, 255, sizeof(this->sprite_tiles));
 
 	for (u32 i=0; i<PK2MAP_MAP_MAX_PROTOTYPES; i++)
-		strcpy(this->protot[i],"");
+		strcpy(this->sprite_filenames[i],"");
 
 	//tiedosto->read ((char *)this, sizeof (*this));
-	file->read(versio,      sizeof(versio));
-	file->read(palikka_bmp, sizeof(palikka_bmp));
-	file->read(taustakuva,  sizeof(taustakuva));
-	file->read(musiikki,    sizeof(musiikki));
-	file->read(nimi,        sizeof(nimi));
-	file->read(tekija,      sizeof(tekija));
+	file->read(version,      sizeof(version));
+	file->read(tileset_filename, sizeof(tileset_filename));
+	file->read(background_filename,  sizeof(background_filename));
+	file->read(music_filename,    sizeof(music_filename));
+	file->read(name,        sizeof(name));
+	file->read(author,      sizeof(author));
 
 	file->read(luku, sizeof(luku));
-	this->jakso = atoi(luku);
+	this->level_number = atoi(luku);
 
 	file->read(luku, sizeof(luku));
-	this->ilma = atoi(luku);
+	this->weather = atoi(luku);
 
 	file->read(luku, sizeof(luku));
 	this->button1_time = atoi(luku);
@@ -273,22 +273,22 @@ int MapClass::LoadVersion12(PFile::Path path){
 	this->button3_time = atoi(luku);
 
 	file->read(luku, sizeof(luku));
-	this->aika = atoi(luku);
+	this->map_time = atoi(luku);
 
 	file->read(luku, sizeof(luku));
 	this->extra = atoi(luku);
 
 	file->read(luku, sizeof(luku));
-	this->tausta = atoi(luku);
+	this->background_scrolling = atoi(luku);
 
 	file->read(luku, sizeof(luku));
-	this->pelaaja_sprite = atoi(luku);
+	this->player_sprite_index = atoi(luku);
 
-	file->read(taustat, sizeof(taustat));
-	file->read(seinat,  sizeof(seinat));
-	file->read(spritet, sizeof(spritet));
+	file->read(background_tiles, sizeof(background_tiles));
+	file->read(foreground_tiles,  sizeof(foreground_tiles));
+	file->read(sprite_tiles, sizeof(sprite_tiles));
 
-	file->read(protot, sizeof(protot[0]) * PK2MAP_MAP_MAX_PROTOTYPES);
+	file->read(sprite_filenames, sizeof(sprite_filenames[0]) * PK2MAP_MAP_MAX_PROTOTYPES);
 
 	file->close();
 
@@ -304,30 +304,30 @@ int MapClass::LoadVersion13(PFile::Path path){
 		return 1;
 	}
 
-	memset(this->taustat, 255, sizeof(this->taustat));
-	memset(this->seinat , 255, sizeof(this->seinat));
-	memset(this->spritet, 255, sizeof(this->spritet));
+	memset(this->background_tiles, 255, sizeof(this->background_tiles));
+	memset(this->foreground_tiles , 255, sizeof(this->foreground_tiles));
+	memset(this->sprite_tiles, 255, sizeof(this->sprite_tiles));
 
 	for (i=0;i<PK2MAP_MAP_MAX_PROTOTYPES;i++)
-		strcpy(this->protot[i],"");
+		strcpy(this->sprite_filenames[i],"");
 
-	file->read(versio,      sizeof(versio));
-	file->read(palikka_bmp, sizeof(palikka_bmp));
-	file->read(taustakuva,  sizeof(taustakuva));
-	file->read(musiikki,    sizeof(musiikki));
-	file->read(nimi,        sizeof(nimi));
+	file->read(version,      sizeof(version));
+	file->read(tileset_filename, sizeof(tileset_filename));
+	file->read(background_filename,  sizeof(background_filename));
+	file->read(music_filename,    sizeof(music_filename));
+	file->read(name,        sizeof(name));
 
-	for (int i = 38; i > 0 && (nimi[i] == (char)0xCD); i--)
-		nimi[i] = 0;
+	for (int i = 38; i > 0 && (name[i] == (char)0xCD); i--)
+		name[i] = 0;
 	
-	file->read(tekija,      sizeof(tekija));
+	file->read(author,      sizeof(author));
 
 	file->read(luku, sizeof(luku));
-	this->jakso = atoi(luku);
+	this->level_number = atoi(luku);
 	memset(luku, 0, sizeof(luku));
 
 	file->read(luku, sizeof(luku));
-	this->ilma = atoi(luku);
+	this->weather = atoi(luku);
 	memset(luku, 0, sizeof(luku));
 
 	file->read(luku, sizeof(luku));
@@ -343,7 +343,7 @@ int MapClass::LoadVersion13(PFile::Path path){
 	memset(luku, 0, sizeof(luku));
 
 	file->read(luku, sizeof(luku));
-	this->aika = atoi(luku);
+	this->map_time = atoi(luku);
 	memset(luku, 0, sizeof(luku));
 
 	file->read(luku, sizeof(luku));
@@ -351,11 +351,11 @@ int MapClass::LoadVersion13(PFile::Path path){
 	memset(luku, 0, sizeof(luku));
 
 	file->read(luku, sizeof(luku));
-	this->tausta = atoi(luku);
+	this->background_scrolling = atoi(luku);
 	memset(luku, 0, sizeof(luku));
 
 	file->read(luku, sizeof(luku));
-	this->pelaaja_sprite = atoi(luku);
+	this->player_sprite_index = atoi(luku);
 	memset(luku, 0, sizeof(luku));
 
 	file->read(luku, sizeof(luku));
@@ -374,39 +374,39 @@ int MapClass::LoadVersion13(PFile::Path path){
 	file->read(luku, sizeof(luku));
 	lkm = (int)atoi(luku);
 
-	file->read(protot, sizeof(protot[0]) * lkm);
+	file->read(sprite_filenames, sizeof(sprite_filenames[0]) * lkm);
 
 	u32 width, height;
 	u32 offset_x, offset_y;
 
-	// taustat
+	// background_tiles
 	file->read(luku, sizeof(luku)); offset_x = atol(luku); memset(luku, 0, sizeof(luku));
 	file->read(luku, sizeof(luku)); offset_y = atol(luku); memset(luku, 0, sizeof(luku));
 	file->read(luku, sizeof(luku)); width   = atol(luku); memset(luku, 0, sizeof(luku));
 	file->read(luku, sizeof(luku)); height  = atol(luku); memset(luku, 0, sizeof(luku));
 	for (u32 y = offset_y; y <= offset_y + height; y++) {
 		u32 x_start = offset_x + y * PK2MAP_MAP_WIDTH;
-		file->read(&taustat[x_start], width + 1);
+		file->read(&background_tiles[x_start], width + 1);
 	}
 
-	// seinat
+	// foreground_tiles
 	file->read(luku, sizeof(luku)); offset_x = atol(luku); memset(luku, 0, sizeof(luku));
 	file->read(luku, sizeof(luku)); offset_y = atol(luku); memset(luku, 0, sizeof(luku));
 	file->read(luku, sizeof(luku)); width   = atol(luku); memset(luku, 0, sizeof(luku));
 	file->read(luku, sizeof(luku)); height  = atol(luku); memset(luku, 0, sizeof(luku));
 	for (u32 y = offset_y; y <= offset_y + height; y++) {
 		u32 x_start = offset_x + y * PK2MAP_MAP_WIDTH;
-		file->read(&seinat[x_start], width + 1);
+		file->read(&foreground_tiles[x_start], width + 1);
 	}
 
-	//spritet
+	//sprite_tiles
 	file->read(luku, sizeof(luku)); offset_x = atol(luku); memset(luku, 0, sizeof(luku));
 	file->read(luku, sizeof(luku)); offset_y = atol(luku); memset(luku, 0, sizeof(luku));
 	file->read(luku, sizeof(luku)); width   = atol(luku); memset(luku, 0, sizeof(luku));
 	file->read(luku, sizeof(luku)); height  = atol(luku); memset(luku, 0, sizeof(luku));
 	for (u32 y = offset_y; y <= offset_y + height; y++) {
 		u32 x_start = offset_x + y * PK2MAP_MAP_WIDTH;
-		file->read(&spritet[x_start], width + 1);
+		file->read(&sprite_tiles[x_start], width + 1);
 	}
 
 	file->close();
@@ -489,44 +489,44 @@ void MapClass::Calculate_Edges(){
 
 	u8 tile1, tile2, tile3;
 
-	memset(this->reunat, false, sizeof(this->reunat));
+	memset(this->edges, false, sizeof(this->edges));
 
 	for (u32 x = 1; x < PK2MAP_MAP_WIDTH - 1; x++)
 		for (u32 y = 0; y < PK2MAP_MAP_HEIGHT - 1; y++){
 			bool edge = false;
 
-			tile1 = this->seinat[x+y*PK2MAP_MAP_WIDTH];
+			tile1 = this->foreground_tiles[x+y*PK2MAP_MAP_WIDTH];
 
 			if (tile1 > BLOCK_EXIT)
-				this->seinat[x+y*PK2MAP_MAP_WIDTH] = 255;
+				this->foreground_tiles[x+y*PK2MAP_MAP_WIDTH] = 255;
 
-			tile2 = this->seinat[x+(y+1)*PK2MAP_MAP_WIDTH];
+			tile2 = this->foreground_tiles[x+(y+1)*PK2MAP_MAP_WIDTH];
 
 			if (tile1 > 79 || tile1 == BLOCK_BARRIER_DOWN) tile1 = 1; else tile1 = 0;
 			if (tile2 > 79) tile2 = 1; else tile2 = 0;
 
 			if (tile1 == 1 && tile2 == 1){
-				tile1 = this->seinat[x+1+(y+1)*PK2MAP_MAP_WIDTH];
-				tile2 = this->seinat[x-1+(y+1)*PK2MAP_MAP_WIDTH];
+				tile1 = this->foreground_tiles[x+1+(y+1)*PK2MAP_MAP_WIDTH];
+				tile2 = this->foreground_tiles[x-1+(y+1)*PK2MAP_MAP_WIDTH];
 
 				if (tile1 < 80  && !(tile1 < 60 && tile1 > 49)) tile1 = 1; else tile1 = 0;
 				if (tile2 < 80  && !(tile2 < 60 && tile2 > 49)) tile2 = 1; else tile2 = 0;
 
 				if (tile1 == 1){
-					tile3 = this->seinat[x+1+y*PK2MAP_MAP_WIDTH];
+					tile3 = this->foreground_tiles[x+1+y*PK2MAP_MAP_WIDTH];
 					if (tile3 > 79 || (tile3 < 60 && tile3 > 49) || tile3 == BLOCK_BARRIER_DOWN)
 						edge = true;
 				}
 
 				if (tile2 == 1){
-					tile3 = this->seinat[x-1+y*PK2MAP_MAP_WIDTH];
+					tile3 = this->foreground_tiles[x-1+y*PK2MAP_MAP_WIDTH];
 					if (tile3 > 79 || (tile3 < 60 && tile3 > 49) || tile3 == BLOCK_BARRIER_DOWN)
 						edge = true;
 				}
 
 				if (edge){
-					this->reunat[x+y*PK2MAP_MAP_WIDTH] = true;
-					//this->taustat[x+y*PK2MAP_MAP_WIDTH] = 49; //Debug
+					this->edges[x+y*PK2MAP_MAP_WIDTH] = true;
+					//this->background_tiles[x+y*PK2MAP_MAP_WIDTH] = 49; //Debug
 				}
 			}
 		}
@@ -650,7 +650,7 @@ void MapClass::Animate_Water(int tiles, int water_tiles){
 	u8 *buffer_lahde = NULL, *buffer_kohde = NULL;
 	u32 leveys_lahde, leveys_kohde;
 	int x, y, color1, color2;
-	int d1 = vesiaste / 2, d2;
+	int d1 = tiles_animation_timer / 2, d2;
 	int sini, cosi;
 	int vx,vy;
 	int i;
@@ -730,7 +730,7 @@ void MapClass::Animate_RollUp(int tiles){
 	PDraw::drawimage_end(tiles);
 }
 
-int MapClass::Piirra_Taustat(int kamera_x, int kamera_y){
+int MapClass::DrawBackgroundTiles(int kamera_x, int kamera_y){
 	
 	int kartta_x = kamera_x/32;
 	int kartta_y = kamera_y/32;
@@ -749,16 +749,16 @@ int MapClass::Piirra_Taustat(int kamera_x, int kamera_y){
 			if (y + kartta_y < 0 || uint(y + kartta_y) > PK2MAP_MAP_HEIGHT) continue;
 
 			int i = x + kartta_x + (y + kartta_y) * PK2MAP_MAP_WIDTH;
-			if( i < 0 || i >= int(sizeof(taustat)) ) continue; //Dont access a not allowed address
+			if( i < 0 || i >= int(sizeof(background_tiles)) ) continue; //Dont access a not allowed address
 
-			int palikka = taustat[i];
+			int palikka = background_tiles[i];
 
 			if (palikka != 255){
 				int px = ((palikka%10)*32);
 				int py = ((palikka/10)*32);
 
 				if (palikka == BLOCK_ANIM1 || palikka == BLOCK_ANIM2 || palikka == BLOCK_ANIM3 || palikka == BLOCK_ANIM4)
-					px += animaatio * 32;
+					px += block_animation_frame * 32;
 
 				PDraw::image_cutclip(buffer, x*32-(kamera_x%32), y*32-(kamera_y%32), px, py, px+32, py+32);
 			}
@@ -768,7 +768,7 @@ int MapClass::Piirra_Taustat(int kamera_x, int kamera_y){
 	return 0;
 }
 
-int MapClass::Piirra_Seinat(int kamera_x, int kamera_y){
+int MapClass::DrawForegroundTiles(int kamera_x, int kamera_y){
 
 	int kartta_x = kamera_x / 32;
 	int kartta_y = kamera_y / 32;
@@ -818,9 +818,9 @@ int MapClass::Piirra_Seinat(int kamera_x, int kamera_y){
 			if (y + kartta_y < 0 || uint(y + kartta_y) > PK2MAP_MAP_HEIGHT) continue;
 
 			int i = x + kartta_x + (y + kartta_y) * PK2MAP_MAP_WIDTH;
-			if( i < 0 || i >= int(sizeof(seinat)) ) continue; //Dont access a not allowed address
+			if( i < 0 || i >= int(sizeof(foreground_tiles)) ) continue; //Dont access a not allowed address
 
-			u8 palikka = seinat[i];
+			u8 palikka = foreground_tiles[i];
 
 			if (palikka != 255 && palikka != BLOCK_BARRIER_DOWN){
 				
@@ -831,10 +831,10 @@ int MapClass::Piirra_Seinat(int kamera_x, int kamera_y){
 				int ax = 0;
 
 				if (palikka == BLOCK_LIFT_VERT)
-					ay = floor(sin_table(aste));
+					ay = floor(sin_table(arrows_block_degree));
 
 				if (palikka == BLOCK_LIFT_HORI)
-					ax = floor(cos_table(aste));
+					ax = floor(cos_table(arrows_block_degree));
 
 				if (palikka == BLOCK_BUTTON1)
 					ay = button1_timer_y/2;
@@ -858,14 +858,14 @@ int MapClass::Piirra_Seinat(int kamera_x, int kamera_y){
 					ay = button3_timer_y/2;
 
 				if (palikka == BLOCK_ANIM1 || palikka == BLOCK_ANIM2 || palikka == BLOCK_ANIM3 || palikka == BLOCK_ANIM4)
-					px += animaatio * 32;
+					px += block_animation_frame * 32;
 
 				PDraw::image_cutclip(tiles_buffer, x*32-(kamera_x%32)+ax, y*32-(kamera_y%32)+ay, px, py, px+32, py+32);
 			}
 		}
 	}
 
-	if (vesiaste%2 == 0)
+	if (tiles_animation_timer%2 == 0)
 	{
 		Animate_Fire(this->tiles_buffer);
 		Animate_Waterfall(this->tiles_buffer);
@@ -880,7 +880,7 @@ int MapClass::Piirra_Seinat(int kamera_x, int kamera_y){
 		}
 	}
 
-	if (vesiaste%4 == 0)
+	if (tiles_animation_timer%4 == 0)
 	{
 		Animate_Water(this->tiles_buffer, this->water_buffer);
 		if (this->bg_tiles_buffer >= 0)
@@ -889,7 +889,7 @@ int MapClass::Piirra_Seinat(int kamera_x, int kamera_y){
 		PDraw::rotate_palette(224,239);
 	}
 
-	vesiaste = 1 + vesiaste % 320;
+	tiles_animation_timer = 1 + tiles_animation_timer % 320;
 
 	return 0;
 }

@@ -19,8 +19,8 @@ class GameClass {
 		MapClass map;
 		std::string map_file;
 
-		PK2BLOCK     lasketut_palikat[150];//150
-		PK2BLOCKMASK palikkamaskit[BLOCK_MAX_MASKS];
+		PK2BLOCK     block_types[150];//150
+		PK2BLOCKMASK block_masks[BLOCK_MAX_MASKS];
 
 		bool game_over = false;
 		bool level_clear = false;

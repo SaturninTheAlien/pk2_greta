@@ -104,9 +104,9 @@ struct PK2BLOCKMASK {
 class MapClass {
 	private:
 
-	int aste      = 0;  // degree of movable blocks
-	int vesiaste  = 0;  // timer for water animation
-	int animaatio = 0;  // block animations frame
+	int arrows_block_degree = 0;  // degree of movable blocks
+	int tiles_animation_timer  = 0;  // timer for water, fire and waterfall animation
+	int block_animation_frame = 0;  // block animations frame
 	u32 button1_timer  = 0;  // button 1 timer
 	u32 button2_timer  = 0;  // button 2 timer
 	u32 button3_timer  = 0;  // button 3 timer
@@ -115,29 +115,29 @@ class MapClass {
 
     /* Atributs ------------------------*/
 
-    char     versio[5]       = PK2MAP_LAST_VERSION;         // map version. eg "1.3"
-    char     palikka_bmp[13] = "blox.bmp";                  // path of block palette .bmp
-    char     taustakuva[13]  = "default.bmp";               // path of map bg .bmp
-    char     musiikki[13]    = "default.xm";                // path of map music
+    char     version[5]       = PK2MAP_LAST_VERSION;         // map version. eg "1.3"
+    char     tileset_filename[13] = "blox.bmp";                  // path of block palette .bmp
+    char     background_filename[13]  = "default.bmp";               // path of map bg .bmp
+    char     music_filename[13]    = "default.xm";                // path of map music
 
-    char     nimi[40]   = "untitled";                       // map name
-    char     tekija[40] = "unknown";                        // map author
+    char     name[40]   = "untitled";                       // map name
+    char     author[40] = "unknown";                        // map author
 
-    int      jakso          = 0;                            // level of the episode
-    int      ilma           = WEATHER_NORMAL;                // map climate
-    int      aika           = 0;                            // map time (in (dec)conds)
+    int      level_number          = 0;                            // level of the episode
+    int      weather           = WEATHER_NORMAL;                // map climate
+    int      map_time           = 0;                            // map time (in (dec)conds)
     u8       extra          = 0;                            // extra config - not used
-    u8       tausta         = BACKGROUND_STATIC;            // bg movemant type
+    u8       background_scrolling = BACKGROUND_STATIC;            // bg movemant type
     u32      button1_time   = SWITCH_INITIAL_VALUE;         // button 1 time
     u32      button2_time   = SWITCH_INITIAL_VALUE;         // button 2 time
     u32      button3_time   = SWITCH_INITIAL_VALUE;         // button 3 time
-    int      pelaaja_sprite = 0;                            // player prototype
+    int      player_sprite_index = 0;                            // player prototype
 
-    u8       taustat[PK2MAP_MAP_SIZE] = {255};              // map bg tiles 256*224
-    u8       seinat [PK2MAP_MAP_SIZE] = {255};              // map fg tiles 256*224
-    u8       spritet[PK2MAP_MAP_SIZE] = {255};              // map sprites 256*224
-    char     protot [PK2MAP_MAP_MAX_PROTOTYPES][13] = {""}; // map prototype list .spr
-    bool     reunat [PK2MAP_MAP_SIZE] = {false};            // map edges - calculated during game
+    u8       background_tiles[PK2MAP_MAP_SIZE] = {255};              // map bg tiles 256*224
+    u8       foreground_tiles[PK2MAP_MAP_SIZE] = {255};              // map fg tiles 256*224
+    u8       sprite_tiles[PK2MAP_MAP_SIZE] = {255};              // map sprites 256*224
+    char     sprite_filenames[PK2MAP_MAP_MAX_PROTOTYPES][13] = {""}; // map prototype list .spr
+    bool     edges [PK2MAP_MAP_SIZE] = {false};            // map edges - calculated during game
 
     int      tiles_buffer      = -1;                        // index of block palette
     int      bg_tiles_buffer   = -1;
@@ -157,10 +157,10 @@ class MapClass {
     int Load(PFile::Path path);                             // Load kartta
     int Load_Plain_Data(PFile::Path path);                  // Load kartta ilman grafiikoita
 
-    int Piirra_Taustat(int kamera_x, int kamera_y);
-    int Piirra_Seinat (int kamera_x, int kamera_y);
+    int DrawBackgroundTiles(int kamera_x, int kamera_y);
+    int DrawForegroundTiles(int kamera_x, int kamera_y);
 
-    void Animoi(int degree, int anim, u32 aika1, u32 aika2, u32 aika3);
+    void SetTilesAnimations(int degree, int anim, u32 aika1, u32 aika2, u32 aika3);
 
     void Calculate_Edges();
 

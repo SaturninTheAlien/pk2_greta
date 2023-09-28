@@ -317,7 +317,7 @@ int Screen_ScoreCount_Init() {
 	/* Check if broken level score and time record */
 	int episode_result = EpisodeScore_Compare(Episode->player_score);
 	int level_result = 
-		LevelScore_Compare(Game->level_id, temp_score, Game->apples_got, Game->map.aika * TIME_FPS - Game->timeout);
+		LevelScore_Compare(Game->level_id, temp_score, Game->apples_got, Game->map.map_time * TIME_FPS - Game->timeout);
 	
 	if (episode_result > 0 || level_result > 0) {
 

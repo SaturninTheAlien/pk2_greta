@@ -72,15 +72,15 @@ static PK2BLOCK Block_Get(u32 x, u32 y) {
 
 	}
 
-	u8 i = Game->map.seinat[x+y*PK2MAP_MAP_WIDTH];
+	u8 i = Game->map.foreground_tiles[x+y*PK2MAP_MAP_WIDTH];
 
 	if (i<150) { //If it is ground
 
-		block        = Game->lasketut_palikat[i];
-		block.vasen  = x*32+Game->lasketut_palikat[i].vasen;
-		block.oikea  = x*32+32+Game->lasketut_palikat[i].oikea;
-		block.yla    = y*32+Game->lasketut_palikat[i].yla;
-		block.ala    = y*32+32+Game->lasketut_palikat[i].ala;
+		block        = Game->block_types[i];
+		block.vasen  = x*32+Game->block_types[i].vasen;
+		block.oikea  = x*32+32+Game->block_types[i].oikea;
+		block.yla    = y*32+Game->block_types[i].yla;
+		block.ala    = y*32+32+Game->block_types[i].ala;
 
 	} else { //If it is sky - Need to reset
 	
@@ -99,37 +99,37 @@ static PK2BLOCK Block_Get(u32 x, u32 y) {
 	
 	}
 
-	i = Game->map.taustat[x+y*PK2MAP_MAP_WIDTH];
+	i = Game->map.background_tiles[x+y*PK2MAP_MAP_WIDTH];
 
 	if (i > 131 && i < 140)
 		block.water = true;
 
-	block.border = Game->map.reunat[x+y*PK2MAP_MAP_WIDTH];
+	block.border = Game->map.edges[x+y*PK2MAP_MAP_WIDTH];
 
 	return block;
 }
 
-static void Check_SpriteBlock(SpriteClass* sprite, const PK2BLOCK &palikka) {
+static void Check_SpriteBlock(SpriteClass* sprite, const PK2BLOCK &block) {
 
 	//left and right
-	if (sprite_yla < palikka.ala && sprite_ala-1 > palikka.yla){
-		if (sprite_oikea+sprite_a-1 > palikka.vasen && sprite_vasen+sprite_a < palikka.oikea){
+	if (sprite_yla < block.ala && sprite_ala-1 > block.yla){
+		if (sprite_oikea+sprite_a-1 > block.vasen && sprite_vasen+sprite_a < block.oikea){
 			// Tutkitaan onko sprite menossa oikeanpuoleisen palikan sis��n.
-			if (sprite_oikea+sprite_a < palikka.oikea){
-				// Onko palikka sein�?
-				if (palikka.oikealle == BLOCK_WALL){
+			if (sprite_oikea+sprite_a < block.oikea){
+				// Onko block sein�?
+				if (block.oikealle == BLOCK_WALL){
 					oikealle = false;
-					if (palikka.koodi == BLOCK_LIFT_HORI)
-						sprite_x = palikka.vasen - sprite_leveys/2;
+					if (block.koodi == BLOCK_LIFT_HORI)
+						sprite_x = block.vasen - sprite_leveys/2;
 				}
 			}
 
-			if (sprite_vasen+sprite_a > palikka.vasen){
-				if (palikka.vasemmalle == BLOCK_WALL){
+			if (sprite_vasen+sprite_a > block.vasen){
+				if (block.vasemmalle == BLOCK_WALL){
 					vasemmalle = false;
 
-					if (palikka.koodi == BLOCK_LIFT_HORI)
-						sprite_x = palikka.oikea + sprite_leveys/2;
+					if (block.koodi == BLOCK_LIFT_HORI)
+						sprite_x = block.oikea + sprite_leveys/2;
 
 				}
 			}
@@ -141,27 +141,27 @@ static void Check_SpriteBlock(SpriteClass* sprite, const PK2BLOCK &palikka) {
 
 	//ceil and floor
 
-	if (sprite_vasen < palikka.oikea && sprite_oikea-1 > palikka.vasen){
-		if (sprite_ala+sprite_b-1 >= palikka.yla && sprite_yla+sprite_b <= palikka.ala){
-			if (sprite_ala+sprite_b-1 <= palikka.ala){
-				if (palikka.alas == BLOCK_WALL){
+	if (sprite_vasen < block.oikea && sprite_oikea-1 > block.vasen){
+		if (sprite_ala+sprite_b-1 >= block.yla && sprite_yla+sprite_b <= block.ala){
+			if (sprite_ala+sprite_b-1 <= block.ala){
+				if (block.alas == BLOCK_WALL){
 					alas = false;
 
-					if (palikka.koodi == BLOCK_LIFT_VERT)
-						sprite_y = palikka.yla - sprite_korkeus /2;
+					if (block.koodi == BLOCK_LIFT_VERT)
+						sprite_y = block.yla - sprite_korkeus /2;
 
-					if (sprite_ala-1 >= palikka.yla && sprite_b >= 0)
-						if (palikka.koodi != BLOCK_LIFT_HORI)
-							sprite_y = palikka.yla - sprite_korkeus /2;
+					if (sprite_ala-1 >= block.yla && sprite_b >= 0)
+						if (block.koodi != BLOCK_LIFT_HORI)
+							sprite_y = block.yla - sprite_korkeus /2;
 				}
 			}
 
-			if (sprite_yla+sprite_b > palikka.yla){
-				if (palikka.ylos == BLOCK_WALL){
+			if (sprite_yla+sprite_b > block.yla){
+				if (block.ylos == BLOCK_WALL){
 					ylos = false;
 
-					if (sprite_yla < palikka.ala)
-						if (palikka.koodi != BLOCK_LIFT_HORI)
+					if (sprite_yla < block.ala)
+						if (block.koodi != BLOCK_LIFT_HORI)
 							sprite->crouched = true;
 				}
 			}
@@ -169,15 +169,15 @@ static void Check_SpriteBlock(SpriteClass* sprite, const PK2BLOCK &palikka) {
 	}
 }
 
-void Check_MapBlock(SpriteClass* sprite, PK2BLOCK palikka) {
+void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 
 	//If sprite is in the block
-	if (sprite_x <= palikka.oikea && sprite_x >= palikka.vasen && sprite_y <= palikka.ala && sprite_y >= palikka.yla){
+	if (sprite_x <= block.oikea && sprite_x >= block.vasen && sprite_y <= block.ala && sprite_y >= block.yla){
 
 		/**********************************************************************/
 		/* Examine if block is water background                               */
 		/**********************************************************************/
-		if (palikka.water)
+		if (block.water)
 			sprite->in_water = true;
 		else
 			sprite->in_water = false;
@@ -185,7 +185,7 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK palikka) {
 		/**********************************************************************/
 		/* Examine if it touches the fire                                     */
 		/**********************************************************************/
-		if (palikka.koodi == BLOCK_FIRE && Game->button1 == 0 && sprite->damage_timer == 0){
+		if (block.koodi == BLOCK_FIRE && Game->button1 == 0 && sprite->damage_timer == 0){
 			sprite->saatu_vahinko = 2;
 			sprite->saatu_vahinko_tyyppi = DAMAGE_FIRE;
 		}
@@ -193,7 +193,7 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK palikka) {
 		/**********************************************************************/
 		/* Examine if block is hideway (unused)                               */
 		/**********************************************************************/
-		if (palikka.koodi == BLOCK_HIDEOUT)
+		if (block.koodi == BLOCK_HIDEOUT)
 			sprite->hidden = true;
 		else
 			sprite->hidden = false;
@@ -202,26 +202,26 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK palikka) {
 		/**********************************************************************/
 		/* Examine if block is the exit                                       */
 		/**********************************************************************/
-		if (palikka.koodi == BLOCK_EXIT) {
+		if (block.koodi == BLOCK_EXIT) {
 			if ((!Game->chick_mode && sprite->player != 0) || sprite->HasAI(AI_CHICK))
 				Game->Finnish();
 		}
 	}
 
 	//If sprite is thouching the block
-	if (sprite_vasen <= palikka.oikea-4 && sprite_oikea >= palikka.vasen+4 && sprite_yla <= palikka.ala && sprite_ala >= palikka.yla+16){
+	if (sprite_vasen <= block.oikea-4 && sprite_oikea >= block.vasen+4 && sprite_yla <= block.ala && sprite_ala >= block.yla+16){
 		/**********************************************************************/
 		/* Examine if it touches the fire                                     */
 		/**********************************************************************/
-		if (palikka.koodi == BLOCK_FIRE && Game->button1 == 0 && sprite->damage_timer == 0){
+		if (block.koodi == BLOCK_FIRE && Game->button1 == 0 && sprite->damage_timer == 0){
 			sprite->saatu_vahinko = 2;
 			sprite->saatu_vahinko_tyyppi = DAMAGE_FIRE;
 		}
 	}
 
 	//Examine if there is a block on bottom
-	if ((palikka.koodi<80 || palikka.koodi>139) && palikka.koodi != BLOCK_BARRIER_DOWN && palikka.koodi < 150){
-		int mask_index = (int)(sprite_x+sprite_a) - palikka.vasen;
+	if ((block.koodi<80 || block.koodi>139) && block.koodi != BLOCK_BARRIER_DOWN && block.koodi < 150){
+		int mask_index = (int)(sprite_x+sprite_a) - block.vasen;
 
 		if (mask_index < 0)
 			mask_index = 0;
@@ -229,21 +229,21 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK palikka) {
 		if (mask_index > 31)
 			mask_index = 31;
 
-		palikka.yla += Game->palikkamaskit[palikka.koodi].alas[mask_index];
+		block.yla += Game->block_masks[block.koodi].alas[mask_index];
 
-		if (palikka.yla >= palikka.ala-2)
-			palikka.alas = BLOCK_BACKGROUND;
+		if (block.yla >= block.ala-2)
+			block.alas = BLOCK_BACKGROUND;
 
-		palikka.ala -= Game->palikkamaskit[palikka.koodi].ylos[mask_index];
+		block.ala -= Game->block_masks[block.koodi].ylos[mask_index];
 	}
 
 	//If sprite is thouching the block (again?)
-	if (sprite_vasen <= palikka.oikea+2 && sprite_oikea >= palikka.vasen-2 && sprite_yla <= palikka.ala && sprite_ala >= palikka.yla){
+	if (sprite_vasen <= block.oikea+2 && sprite_oikea >= block.vasen-2 && sprite_yla <= block.ala && sprite_ala >= block.yla){
 		/**********************************************************************/
 		/* Examine if it is a key and touches lock wall                       */
 		/**********************************************************************/
-		if (palikka.koodi == BLOCK_LOCK && sprite->prototype->can_open_locks){
-			Game->map.seinat[palikka.vasen/32+(palikka.yla/32)*PK2MAP_MAP_WIDTH] = 255;
+		if (block.koodi == BLOCK_LOCK && sprite->prototype->can_open_locks){
+			Game->map.foreground_tiles[block.vasen/32+(block.yla/32)*PK2MAP_MAP_WIDTH] = 255;
 			Game->map.Calculate_Edges();
 
 			sprite->removed = true;
@@ -254,53 +254,53 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK palikka) {
 					Game->Open_Locks();
 			}
 
-			Effect_Explosion(palikka.vasen+16, palikka.yla+10, 0);
+			Effect_Explosion(block.vasen+16, block.yla+10, 0);
 			Play_GameSFX(open_locks_sound,100, (int)sprite_x, (int)sprite_y, SOUND_SAMPLERATE, false);
 		}
 
 		/**********************************************************************/
 		/* Make wind effects                                                  */
 		/**********************************************************************/
-		if (palikka.koodi == BLOCK_DRIFT_LEFT && vasemmalle)
+		if (block.koodi == BLOCK_DRIFT_LEFT && vasemmalle)
 			sprite_a -= 0.02;
 
-		if (palikka.koodi == BLOCK_DRIFT_RIGHT && oikealle)
+		if (block.koodi == BLOCK_DRIFT_RIGHT && oikealle)
 			sprite_a += 0.02;	//0.05
 
 		/*********************************************************************/
 		/* Examine if sprite is on the border to fall                        */
 		/*********************************************************************/
-		if (palikka.border && sprite->jump_timer <= 0 && sprite_y < palikka.ala && sprite_y > palikka.yla){
-			/* && sprite_ala <= palikka.ala+2)*/ // onko sprite tullut borderlle
-			if (sprite_vasen > palikka.vasen)
+		if (block.border && sprite->jump_timer <= 0 && sprite_y < block.ala && sprite_y > block.yla){
+			/* && sprite_ala <= block.ala+2)*/ // onko sprite tullut borderlle
+			if (sprite_vasen > block.vasen)
 				sprite->reuna_vasemmalla = true;
 
-			if (sprite_oikea < palikka.oikea)
+			if (sprite_oikea < block.oikea)
 				sprite->reuna_oikealla = true;
 		}
 	}
 
 	//Examine walls on left and right
 
-	if (sprite_yla < palikka.ala && sprite_ala-1 > palikka.yla) {
-		if (sprite_oikea+sprite_a-1 > palikka.vasen && sprite_vasen+sprite_a < palikka.oikea) {
+	if (sprite_yla < block.ala && sprite_ala-1 > block.yla) {
+		if (sprite_oikea+sprite_a-1 > block.vasen && sprite_vasen+sprite_a < block.oikea) {
 			// Examine whether the sprite going in the right side of the block.
-			if (sprite_oikea+sprite_a < palikka.oikea) {
-				// Onko palikka sein�?
-				if (palikka.oikealle == BLOCK_WALL) {
+			if (sprite_oikea+sprite_a < block.oikea) {
+				// Onko block sein�?
+				if (block.oikealle == BLOCK_WALL) {
 					oikealle = false;
 
-					if (palikka.koodi == BLOCK_LIFT_HORI)
-						sprite_x = palikka.vasen - sprite_leveys/2;
+					if (block.koodi == BLOCK_LIFT_HORI)
+						sprite_x = block.vasen - sprite_leveys/2;
 				}
 			}
 			// Examine whether the sprite going in the left side of the block.
-			if (sprite_vasen+sprite_a > palikka.vasen) {
-				if (palikka.vasemmalle == BLOCK_WALL) {
+			if (sprite_vasen+sprite_a > block.vasen) {
+				if (block.vasemmalle == BLOCK_WALL) {
 					vasemmalle = false;
 
-					if (palikka.koodi == BLOCK_LIFT_HORI)
-						sprite_x = palikka.oikea + sprite_leveys/2;
+					if (block.koodi == BLOCK_LIFT_HORI)
+						sprite_x = block.oikea + sprite_leveys/2;
 
 				}
 			}
@@ -312,37 +312,37 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK palikka) {
 
 	//Examine walls on up and down
 
-	if (sprite_vasen < palikka.oikea && sprite_oikea-1 > palikka.vasen) { //Remove the left and right blocks
-		if (sprite_ala+sprite_b-1 >= palikka.yla && sprite_yla+sprite_b <= palikka.ala) { //Get the up and down blocks
-			if (sprite_ala+sprite_b-1 <= palikka.ala) { //Just in the sprite's foot
-				if (palikka.alas == BLOCK_WALL) { //If it is a wall
+	if (sprite_vasen < block.oikea && sprite_oikea-1 > block.vasen) { //Remove the left and right blocks
+		if (sprite_ala+sprite_b-1 >= block.yla && sprite_yla+sprite_b <= block.ala) { //Get the up and down blocks
+			if (sprite_ala+sprite_b-1 <= block.ala) { //Just in the sprite's foot
+				if (block.alas == BLOCK_WALL) { //If it is a wall
 					alas = false;
-					if (palikka.koodi == BLOCK_LIFT_VERT)
-						sprite_y = palikka.yla - sprite_korkeus /2;
+					if (block.koodi == BLOCK_LIFT_VERT)
+						sprite_y = block.yla - sprite_korkeus /2;
 
-					if (sprite_ala-1 >= palikka.yla && sprite_b >= 0) {
-						//sprite_y -= sprite_ala - palikka.yla;
-						if (palikka.koodi != BLOCK_LIFT_HORI) {
-							sprite_y = palikka.yla - sprite_korkeus /2;
+					if (sprite_ala-1 >= block.yla && sprite_b >= 0) {
+						//sprite_y -= sprite_ala - block.yla;
+						if (block.koodi != BLOCK_LIFT_HORI) {
+							sprite_y = block.yla - sprite_korkeus /2;
 						}
 					}
 
 					if (sprite->kytkinpaino >= 1) { // Sprite can press the buttons
-						if (palikka.koodi == BLOCK_BUTTON1 && Game->button1 == 0) {
+						if (block.koodi == BLOCK_BUTTON1 && Game->button1 == 0) {
 							Game->button1 = Game->map.button1_time;
 							Game->button_vibration = 64;
 							Play_GameSFX(switch_sound, 100, (int)sprite_x, (int)sprite_y, SOUND_SAMPLERATE, false);
 							PInput::Vibrate(1000);
 						}
 
-						if (palikka.koodi == BLOCK_BUTTON2 && Game->button2 == 0) {
+						if (block.koodi == BLOCK_BUTTON2 && Game->button2 == 0) {
 							Game->button2 = Game->map.button2_time;
 							Game->button_vibration = 64;
 							Play_GameSFX(switch_sound, 100, (int)sprite_x, (int)sprite_y, SOUND_SAMPLERATE, false);
 							PInput::Vibrate(1000);
 						}
 
-						if (palikka.koodi == BLOCK_BUTTON3 && Game->button3 == 0) {
+						if (block.koodi == BLOCK_BUTTON3 && Game->button3 == 0) {
 							Game->button3 = Game->map.button3_time;
 							Game->button_vibration = 64;
 							Play_GameSFX(switch_sound, 100, (int)sprite_x, (int)sprite_y, SOUND_SAMPLERATE, false);
@@ -353,19 +353,19 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK palikka) {
 				}
 			}
 
-			if (sprite_yla+sprite_b > palikka.yla) {
-				if (palikka.ylos == BLOCK_WALL) {
+			if (sprite_yla+sprite_b > block.yla) {
+				if (block.ylos == BLOCK_WALL) {
 					ylos = false;
 
-					if (sprite_yla < palikka.ala) {
-						if (palikka.koodi == BLOCK_LIFT_VERT && sprite->crouched) {
+					if (sprite_yla < block.ala) {
+						if (block.koodi == BLOCK_LIFT_VERT && sprite->crouched) {
 							sprite->saatu_vahinko = 2;
 							sprite->saatu_vahinko_tyyppi = DAMAGE_IMPACT;
 						}
 
-						if (palikka.koodi != BLOCK_LIFT_HORI) {
+						if (block.koodi != BLOCK_LIFT_HORI) {
 							//if (sprite->crouched)
-							//	sprite_y = palikka.ala + sprite_korkeus /2;
+							//	sprite_y = block.ala + sprite_korkeus /2;
 
 							sprite->crouched = true;
 						}
@@ -1109,10 +1109,10 @@ int UpdateSprite(SpriteClass* sprite){
 	if (sprite == Player_Sprite || sprite->energy < 1) {
 		double kitka = 1.04;
 
-		if (Game->map.ilma == WEATHER_RAIN || Game->map.ilma == WEATHER_RAIN_LEAVES)
+		if (Game->map.weather == WEATHER_RAIN || Game->map.weather == WEATHER_RAIN_LEAVES)
 			kitka = 1.03; // Slippery ground in the rain
 
-		if (Game->map.ilma == WEATHER_SNOW)
+		if (Game->map.weather == WEATHER_SNOW)
 			kitka = 1.01; // And even more on snow
 
 		if (!alas)
@@ -1611,11 +1611,6 @@ int UpdateBonusSprite(SpriteClass* sprite){
 							sprite2->a += sprite->a / 3.0;
 							vasemmalle = false;
 						}
-						/*
-						if (sprite->y < spritet[sprite_index].y)
-							alas = false;
-						if (sprite->y > spritet[sprite_index].y)
-							ylos = false;*/
 					}
 
 				}

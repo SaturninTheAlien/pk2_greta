@@ -212,10 +212,10 @@ void EpisodeClass::Load() {
 
 		if (temp.Load_Plain_Data(PFile::Path(path, mapname)) == 0) {
 
-			strcpy(this->levels_list[i].nimi, temp.nimi);
+			strcpy(this->levels_list[i].nimi, temp.name);
 			this->levels_list[i].x = temp.x;// 142 + i*35;
 			this->levels_list[i].y = temp.y;// 270;
-			this->levels_list[i].order = temp.jakso;
+			this->levels_list[i].order = temp.level_number;
 			this->levels_list[i].icon = temp.icon;
 
 		}

@@ -30,10 +30,6 @@ LDFLAGS += $(shell pkg-config sdl2 --libs) -lSDL2_mixer -lSDL2_image
 CXXFLAGS += -DPK2_USE_ZIP $(shell pkg-config libzip --cflags)
 LDFLAGS += $(shell pkg-config libzip --libs)
 
-# Lua:
-CXXFLAGS += $(shell pkg-config lua5.4 --cflags)
-LDFLAGS += $(shell pkg-config lua5.4 --libs)
-
 # Portable (data is stored with resorces):
 CXXFLAGS += -DPK2_PORTABLE
 

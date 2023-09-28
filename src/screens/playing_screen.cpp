@@ -303,12 +303,12 @@ int Draw_InGame_BG() {
 	int pallarx = ( Game->camera_x % (640*3) ) / 3;
 	int pallary = ( Game->camera_y % (480*3) ) / 3;
 
-	if (Game->map.tausta == BACKGROUND_STATIC){
+	if (Game->map.background_scrolling == BACKGROUND_STATIC){
 	
 		PDraw::image_clip(Game->map.background_buffer,0,0);
 		PDraw::image_clip(Game->map.background_buffer,640,0);
 	
-	} else if (Game->map.tausta == BACKGROUND_PARALLAX_HORI){
+	} else if (Game->map.background_scrolling == BACKGROUND_PARALLAX_HORI){
 	
 		PDraw::image_clip(Game->map.background_buffer,0   - pallarx,0);
 		PDraw::image_clip(Game->map.background_buffer,640 - pallarx,0);
@@ -316,7 +316,7 @@ int Draw_InGame_BG() {
 		if (screen_width > 640)
 			PDraw::image_clip(Game->map.background_buffer,640*2 - pallarx,0);
 	
-	} else if (Game->map.tausta == BACKGROUND_PARALLAX_VERT){
+	} else if (Game->map.background_scrolling == BACKGROUND_PARALLAX_VERT){
 	
 		PDraw::image_clip(Game->map.background_buffer,0,0   - pallary);
 		PDraw::image_clip(Game->map.background_buffer,0,480 - pallary);
@@ -326,7 +326,7 @@ int Draw_InGame_BG() {
 			PDraw::image_clip(Game->map.background_buffer,640,480 - pallary);
 		}
 	
-	} else if (Game->map.tausta == BACKGROUND_PARALLAX_VERT_AND_HORI){
+	} else if (Game->map.background_scrolling == BACKGROUND_PARALLAX_VERT_AND_HORI){
 	
 		PDraw::image_clip(Game->map.background_buffer,0   - pallarx, 0-pallary);
 		PDraw::image_clip(Game->map.background_buffer,640 - pallarx, 0-pallary);
@@ -522,13 +522,13 @@ int Draw_InGame() {
 
 	Particles_DrawBG(Game->camera_x, Game->camera_y);
 
-	Game->map.Piirra_Taustat(Game->camera_x,Game->camera_y);
+	Game->map.DrawBackgroundTiles(Game->camera_x,Game->camera_y);
 
 	Draw_InGame_Sprites();
 
 	Particles_DrawFront(Game->camera_x, Game->camera_y);
 
-	Game->map.Piirra_Seinat(Game->camera_x,Game->camera_y);
+	Game->map.DrawForegroundTiles(Game->camera_x,Game->camera_y);
 
 	if (Settings.draw_itembar)
 		Draw_InGame_Lower_Menu();
@@ -686,7 +686,7 @@ int Update_Camera(){
 int Screen_InGame(){
 
 	if (!Game->level_clear && (!Game->has_time || Game->timeout > 0)) {
-		Game->map.Animoi(degree, Game->palikka_animaatio/7, Game->button1, Game->button2, Game->button3);
+		Game->map.SetTilesAnimations(degree, Game->palikka_animaatio/7, Game->button1, Game->button2, Game->button3);
 		Game->palikka_animaatio = 1 + Game->palikka_animaatio % 34;
 	}
 

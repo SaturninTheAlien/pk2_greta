@@ -46,11 +46,11 @@ PrototypeClass* Level_Prototypes_get(const std::string& name, int id) {
 int Prototypes_GetAll() {
 
 	for (u32 i = 0; i < PK2MAP_MAP_MAX_PROTOTYPES; i++) {
-		if (strcmp(Game->map.protot[i], "") != 0) {
+		if (strcmp(Game->map.sprite_filenames[i], "") != 0) {
 
-			PFile::Path path = Episode->Get_Dir(Game->map.protot[i]);
-			if (Level_Prototypes_get(Game->map.protot[i], i) == nullptr) {
-				PLog::Write(PLog::WARN, "PK2", "Can't load sprite %s. It will not appear", Game->map.protot[i]);
+			PFile::Path path = Episode->Get_Dir(Game->map.sprite_filenames[i]);
+			if (Level_Prototypes_get(Game->map.sprite_filenames[i], i) == nullptr) {
+				PLog::Write(PLog::WARN, "PK2", "Can't load sprite %s. It will not appear", Game->map.sprite_filenames[i]);
 			}
 		}
 	}
