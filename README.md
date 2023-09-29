@@ -70,11 +70,8 @@ Now just clone the code and run `make` on pk2 directory and run `/bin/pekka-kana
 * Pistegamez site: https://www.pistegamez.net/
 
 # User made episodes:
-New episodes:\
-https://pk2lib.github.io/ \
-Old episodes (before the era of SDL2):\
-http://mapstore.the.cz/ \
-To add a new episode, just download the zip and put it inside "mapstore/" on local data.
+https://sites.google.com/view/makyuni/makyu-home/pekka-kana/makyunis-mapstore?authuser=0
+To add a new episode, just download the zip, etract and put it inside "res/" on local data.
 
 The game can be started with the "--dev" argument to enable the
 cheats and "--test" following by the episode and level to
@@ -88,7 +85,8 @@ This example starts the level13.map (the robot boss fight) on dev mode:
 * A new sprite format based on JSON, still supporting legacy .spr format for the compatibility reason.
 * Translate all the Finnish variable names and comments to English.
 * Phase out obsolete c-style arrays and replace them respectively with std::string, std::vector and std::array. c-style arrays are intended to remain only where they are necessary like supporting the legacy .spr / .map format.
-* Rewrite PDraw to use SDL_Texture (hardware optimised) instead of SDL_Surface, maybe adding PNG support
+* Rewrite PDraw to use SDL_Texture (hardware optimised) instead of SDL_Surface, maybe adding PNG support.
+* New map format, bigger maps and more tiles.
 
 # Known bugs
 * Killing the evil one results music fading after reaching the exit tile.

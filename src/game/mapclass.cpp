@@ -751,13 +751,13 @@ int MapClass::DrawBackgroundTiles(int kamera_x, int kamera_y){
 			int i = x + kartta_x + (y + kartta_y) * PK2MAP_MAP_WIDTH;
 			if( i < 0 || i >= int(sizeof(background_tiles)) ) continue; //Dont access a not allowed address
 
-			int palikka = background_tiles[i];
+			int block = background_tiles[i];
 
-			if (palikka != 255){
-				int px = ((palikka%10)*32);
-				int py = ((palikka/10)*32);
+			if (block != 255){
+				int px = ((block%10)*32);
+				int py = ((block/10)*32);
 
-				if (palikka == BLOCK_ANIM1 || palikka == BLOCK_ANIM2 || palikka == BLOCK_ANIM3 || palikka == BLOCK_ANIM4)
+				if (block == BLOCK_ANIM1 || block == BLOCK_ANIM2 || block == BLOCK_ANIM3 || block == BLOCK_ANIM4)
 					px += block_animation_frame * 32;
 
 				PDraw::image_cutclip(buffer, x*32-(kamera_x%32), y*32-(kamera_y%32), px, py, px+32, py+32);
@@ -820,45 +820,49 @@ int MapClass::DrawForegroundTiles(int kamera_x, int kamera_y){
 			int i = x + kartta_x + (y + kartta_y) * PK2MAP_MAP_WIDTH;
 			if( i < 0 || i >= int(sizeof(foreground_tiles)) ) continue; //Dont access a not allowed address
 
-			u8 palikka = foreground_tiles[i];
+			u8 block = foreground_tiles[i];
 
-			if (palikka != 255 && palikka != BLOCK_BARRIER_DOWN){
+			if (block != 255 && block != BLOCK_BARRIER_DOWN){
 				
-				int px = (palikka % 10) * 32;
-				int py = (palikka / 10) * 32;
+				int px = (block % 10) * 32;
+				int py = (block / 10) * 32;
 				
 				int ay = 0;
 				int ax = 0;
 
-				if (palikka == BLOCK_LIFT_VERT)
+				if (block == BLOCK_LIFT_VERT)
 					ay = floor(sin_table(arrows_block_degree));
 
-				if (palikka == BLOCK_LIFT_HORI)
+				else if (block == BLOCK_LIFT_HORI)
 					ax = floor(cos_table(arrows_block_degree));
 
-				if (palikka == BLOCK_BUTTON1)
+				else if (block == BLOCK_BUTTON1)
 					ay = button1_timer_y/2;
 
-				if (palikka == BLOCK_BUTTON2_UP)
+				else if (block == BLOCK_BUTTON2_UP)
 					ay = -button2_timer_y/2;
 
-				if (palikka == BLOCK_BUTTON2_DOWN)
+				else if (block == BLOCK_BUTTON2_DOWN)
 					ay = button2_timer_y/2;
 
-				if (palikka == BLOCK_BUTTON2)
+				else if (block == BLOCK_BUTTON2)
 					ay = button2_timer_y/2;
 
-				if (palikka == BLOCK_BUTTON3_RIGHT)
+				else if (block == BLOCK_BUTTON3_RIGHT)
 					ax = button3_timer_y/2;
 
-				if (palikka == BLOCK_BUTTON3_LEFT)
+				else if (block == BLOCK_BUTTON3_LEFT)
 					ax = -button3_timer_y/2;
 
-				if (palikka == BLOCK_BUTTON3)
+				else if (block == BLOCK_BUTTON3)
 					ay = button3_timer_y/2;
 
-				if (palikka == BLOCK_ANIM1 || palikka == BLOCK_ANIM2 || palikka == BLOCK_ANIM3 || palikka == BLOCK_ANIM4)
+				else if (block == BLOCK_ANIM1 || block == BLOCK_ANIM2 || block == BLOCK_ANIM3 || block == BLOCK_ANIM4)
 					px += block_animation_frame * 32;
+
+				//hide drift tiles
+				else if(block == BLOCK_DRIFT_LEFT || block == BLOCK_DRIFT_RIGHT)
+					continue;
 
 				PDraw::image_cutclip(tiles_buffer, x*32-(kamera_x%32)+ax, y*32-(kamera_y%32)+ay, px, py, px+32, py+32);
 			}
