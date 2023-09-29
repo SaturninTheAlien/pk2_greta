@@ -122,8 +122,8 @@ int Alphabetical_Compare(const char *a, const char *b) {
 #ifdef _WIN32
 
 int CreateDir(std::string path){
-	
-	return CreateDirectory(path.c_str(), NULL);
+	std::wstring temp = std::wstring(path.begin(), path.end());
+	return CreateDirectory(temp.c_str(), NULL);
 	
 }
 
