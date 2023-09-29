@@ -16,6 +16,7 @@
 *.zip
 *.out
 
+*.pdb
 *.exe
 *.dll
 
