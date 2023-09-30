@@ -70,7 +70,7 @@ Now just clone the code and run `make` on pk2 directory and run `/bin/pekka-kana
 * Pistegamez site: https://www.pistegamez.net/
 
 # User made episodes:
-https://sites.google.com/view/makyuni/makyu-home/pekka-kana/makyunis-mapstore?authuser=0
+https://sites.google.com/view/makyuni/makyu-home/pekka-kana/makyunis-mapstore?authuser=0\
 To add a new episode, just download the zip, etract and put it inside "res/" on local data.
 
 The game can be started with the "--dev" argument to enable the
@@ -90,9 +90,13 @@ This example starts the level13.map (the robot boss fight) on dev mode:
 * Sprite inheritance / "parent" field.
 
 # Fixed bugs
-* Fixed the "visible wind" bug.
-* Fixed the "frog corpse" bug.
 * Fixed incorrectly cropped Pekka's head on the map screen.
+* Fixed the "frog corpse" bug.
+* Fixed the visible wind bug.
+* Friendly sprites from gift no longer kill the enemy player ("Iv4n island 2/spyrooster"),
+but not vice versa (the hedgehog gift trap still works).
+* Enemy player transformed into friendly prototype by potion is no longer enemy ("Iv4n island 2/spyrooster", robohead transformed into rooster is no longer immune to the enemies),
+but not vice versa (for example, rooster player is still friendly after using a pig potion).
 
 # Plans:
 * Translate all the Finnish variable names and comments to English.

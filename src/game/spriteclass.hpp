@@ -183,7 +183,7 @@ class SpriteClass{
     bool    reuna_vasemmalla = false;           // is there a pit on the left side of the sprite?
     bool    reuna_oikealla   = false;           // is there a pit on the right side of the sprite?
     int     energy          = 0;               // the sprite energy
-    SpriteClass *emosprite   = nullptr;         // the sprite's parent
+    SpriteClass *parent_sprite   = nullptr;         // the sprite's parent
     double  weight           = 0;               // sprite weight
     double  kytkinpaino      = 0;               // sprite weight + weight above him (why it doesn't work?)
     bool    crouched         = false;           // if the sprite is crouched

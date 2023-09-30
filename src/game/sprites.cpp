@@ -140,10 +140,13 @@ void Sprites_add(PrototypeClass* protot, int is_Player_Sprite, double x, double 
 	if (protot->type == TYPE_BACKGROUND)
 		Sprites_add_bg(sprite);
 
-	if (emo != nullptr)
-		sprite->emosprite = emo;
+
+	sprite->parent_sprite = emo;
+
+	/*if (emo != nullptr)
+		sprite->parent_sprite = emo;
 	else
-		sprite->emosprite = sprite;
+		sprite->parent_sprite = sprite;*/
 	
 }
 
@@ -197,11 +200,11 @@ void Sprites_add_ammo(PrototypeClass* protot, double x, double y, SpriteClass* e
 	}
 
 	if (emo != nullptr){
-		sprite->emosprite = emo;
+		sprite->parent_sprite = emo;
 		sprite->enemy = emo->enemy;
 	}
 	else{
-		sprite->emosprite = sprite;
+		sprite->parent_sprite = nullptr;
 	}
 
 	if (protot->type == TYPE_BACKGROUND)

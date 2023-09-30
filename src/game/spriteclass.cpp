@@ -1407,9 +1407,9 @@ int SpriteClass::AI_Muutos_Jos_Osuttu(PrototypeClass *transformation){
 	return 0;
 }
 int SpriteClass::AI_Tuhoutuu_Jos_Emo_Tuhoutuu(){
-	if (emosprite != nullptr)
+	if (parent_sprite != nullptr)
 	{
-		if (emosprite->energy < 1 && energy > 0)
+		if (parent_sprite->energy < 1 && energy > 0)
 		{
 			saatu_vahinko = energy;
 			saatu_vahinko_tyyppi = DAMAGE_ALL;

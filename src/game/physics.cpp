@@ -877,7 +877,7 @@ int UpdateSprite(SpriteClass* sprite){
 				} */
 
 				// If two sprites from different teams touch each other
-				if (sprite->enemy != sprite2->enemy && sprite->emosprite != sprite2) {
+				if (sprite->enemy != sprite2->enemy && sprite->parent_sprite != sprite2) {
 					if (sprite2->prototype->type != TYPE_BACKGROUND &&
 						sprite->prototype->type   != TYPE_BACKGROUND &&
 						sprite2->prototype->type != TYPE_TELEPORT &&
@@ -1828,10 +1828,19 @@ int UpdateBonusSprite(SpriteClass* sprite){
 					if (Gifts_Add(sprite->prototype->bonus))
 						Game->Show_Info(tekstit->Get_Text(PK_txt.game_newitem));
 
+				//potion transformation
 				if (sprite->prototype->transformation != nullptr)
 				{
 					if (sprite->prototype->transformation->first_ai() != AI_BONUS)
 					{
+						/**
+						 * @brief 
+						 * Robohead turning into rooster is no longer considered enemy.
+						 */
+						if(Player_Sprite->enemy && !sprite->prototype->transformation->enemy){
+							Player_Sprite->enemy = false;
+						}
+
 						Player_Sprite->prototype = sprite->prototype->transformation;
 						Player_Sprite->ammo1 = Player_Sprite->prototype->ammo1;
 						Player_Sprite->ammo2 = Player_Sprite->prototype->ammo2;
