@@ -29,13 +29,13 @@ void Prototype_ClearAll(){
 
 PrototypeClass* Prototype_Load(const std::string& filename_in){
 
-	bool legacy_spr = true;
+	bool legacy_spr = true; //try to load legacy .spr file
 	std::string filename_clean; //filename without .spr
 
 	if(filename_in.size()>4 && filename_in.substr(filename_in.size()-4,4)==".spr"){
 		filename_clean = filename_in.substr(0, filename_in.size() -4);
 	}
-	else if(filename_in.size()>5 && filename_in.substr(filename_in.size()-5,5)==".json"){
+	else if(filename_in.size()>5 && filename_in.substr(filename_in.size()-5,5)==".spr2"){
 		legacy_spr = false;
 		filename_clean = filename_in.substr(0, filename_in.size() -5);
 	}
@@ -47,15 +47,17 @@ PrototypeClass* Prototype_Load(const std::string& filename_in){
 		return nullptr;
 	}
 
-	// verify if the sprite is already loaded
+	/**
+	 * @brief Verify if the sprite is already loaded.
+	 * It's completely necessary because it prevents infinite recursive loop in some cases.
+	 */
 	for(PrototypeClass* prot:mPrototypes){
 		if(prot->filename==filename_clean){
 			return prot;
 		}
 	}
 
-	std::string filename_j = filename_clean + ".json";
-
+	std::string filename_j = filename_clean + ".spr2";
 	PFile::Path path_j = Episode->Get_Dir(filename_j);
 	if(FindAsset(&path_j,"sprites" PE_SEP)){
 		legacy_spr = false;
@@ -67,15 +69,26 @@ PrototypeClass* Prototype_Load(const std::string& filename_in){
 	if(legacy_spr){
 		PFile::Path path = Episode->Get_Dir(filename_in);
 		if (!FindAsset(&path, "sprites" PE_SEP)) {
-			PLog::Write(PLog::ERR, "PK2", "Couldn't find %s", filename_in.c_str());
+			PLog::Write(PLog::ERR, "PK2 sprites", "Couldn't find %s", filename_in.c_str());
 			return nullptr;
 		}
+		path_j = path;
 		protot = new PrototypeClass();
-		success = protot->Load(path, true) == 0;
+		success = protot->LoadPrototype(path, true) == 0;
 	}
 	else{
 		protot = new PrototypeClass();
-		success = protot->Load(path_j, false) == 0;
+		try{
+			success = protot->LoadPrototype(path_j, false) == 0;
+		}
+		catch(const std::exception& e){
+			PLog::Write(PLog::ERR, "PK2 sprites", "Exception: %s", e.what());
+		}
+		
+	}
+
+	if(success){
+		success = protot->LoadAssets(path_j) == 0;
 	}
 
 	if (!success) {
@@ -427,7 +440,7 @@ const std::map<std::string, int> jsonAnimationsMap = {
 };
 
 const std::map<std::string, int> jsonSoundsMap ={
-    {"demage", SOUND_DAMAGE},
+    {"damage", SOUND_DAMAGE},
     {"destruction", SOUND_DESTRUCTION},
     {"attack1", SOUND_ATTACK1},
     {"attack2", SOUND_ATTACK2},
@@ -436,38 +449,9 @@ const std::map<std::string, int> jsonSoundsMap ={
     {"special2", SOUND_SPECIAL2}
 };
 
-void jsonReadString(const nlohmann::json& j, const std::string name, std::string& target){
-	if(j.contains(name)){
-		target = j[name].get<std::string>();
-	}
-}
-
-void jsonReadInt(const nlohmann::json& j, const std::string name, int& target){
-	if(j.contains(name)){
-		target = j[name].get<int>();
-	}
-}
-
-void jsonReadDouble(const nlohmann::json& j, const std::string name, double& target ){
-	if(j.contains(name)){
-		target = j[name].get<double>();
-	}
-}
-
-void jsonReadBool(const nlohmann::json& j, const std::string name, bool& target){
-	if(j.contains(name)){
-		target = j[name].get<bool>();
-	}
-}
-
-void jsonReadEnumU8(const nlohmann::json& j, const std::string name, u8& target){
-	if(j.contains(name)){
-		int res = j[name].get<int>();
-		target= (u8) res;
-	}
-}
-
 void PrototypeClass::SetProto20(const nlohmann::json& j){
+	using namespace PJson;
+
 	if(j.contains("ai")){
 		this->AI_v.clear();
 		this->AI_v = j["ai"].get<std::vector<int>>();
@@ -592,7 +576,7 @@ void PrototypeClass::SetProto20(const nlohmann::json& j){
 	jsonReadDouble(j, "weight", this->weight);
 }
 
-int PrototypeClass::Load(PFile::Path path, bool legacy_spr){
+int PrototypeClass::LoadPrototype(PFile::Path path, bool legacy_spr){
 
 	if(legacy_spr){
 		PFile::RW* file = path.GetRW("r");
@@ -638,7 +622,20 @@ int PrototypeClass::Load(PFile::Path path, bool legacy_spr){
 			return -1;
 		}
 		std::string version = proto["version"].get<std::string>();
-		if(version=="2.0_test"){
+		if(version=="2.0_test2"){
+			/*std::string parent_prototype;
+			jsonReadString(proto, "parent", parent_prototype);
+			if(!parent_prototype.empty()){
+				PrototypeClass* parentPrototype = Prototype_Load(parent_prototype);
+				if(parentPrototype)
+			}*/
+			if(proto.contains("parent")&&proto["parent"].is_string()){
+				PrototypeClass* parentPrototype = Prototype_Load(proto["parent"]);
+				if(parentPrototype!=nullptr){
+					*this = *parentPrototype;
+				}
+			}
+
 			this->SetProto20(proto);
 		}
 		else{
@@ -646,15 +643,16 @@ int PrototypeClass::Load(PFile::Path path, bool legacy_spr){
 			return -1;
 		}
 	}
+	return 0;
+}
 
+
+int PrototypeClass::LoadAssets(PFile::Path path){
 	if(this->frames_number>0){
 		this->frames.resize(this->frames_number);
 		this->frames_mirror.resize(this->frames_number);
 	}
 
-	
-	//this->filename = path.GetFileName();
-	// Get sprite bmp
 	PFile::Path image = path;
 	image.SetFile(this->picture_filename);
 	
@@ -735,7 +733,6 @@ int PrototypeClass::Load(PFile::Path path, bool legacy_spr){
 			}
 		}
 	}
-
 	return 0;
 }
 

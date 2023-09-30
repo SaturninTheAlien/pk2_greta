@@ -81,8 +81,20 @@ This example starts the level13.map (the robot boss fight) on dev mode:
 ```
 ./pekka-kana-2 --dev --test "rooster island 2/level13.map"
 ```
+
+# New features
+* A new sprite format .spr2 based on JSON. The legacy .spr format is still supported for compatibility reasons. All the obsolete c-style arrays in PrototypeClass have been replaced by std::vector, std::string and so there are no limits like max number of AIs and so on. There is still 12 character length limit of the sprite filename length due to the map format. Currently sprite filenames are stored as "name.spr". During the level loading, firstly "name.spr2" is searched for, then "name.spr". If the sprite name is stored as "name", only "name.spr2" is searched for.
+* "always_active" field in the new sprite format. If true, the sprite won't deactivate when off-screen.
+
+# Experimental features
+* Sprite inheritance / "parent" field.
+
+# Fixed bugs
+* Fixed the "visible wind" bug.
+* Fixed the "frog corpse" bug.
+* Fixed incorrectly cropped Pekka's head on the map screen.
+
 # Plans:
-* A new sprite format based on JSON, still supporting legacy .spr format for the compatibility reason.
 * Translate all the Finnish variable names and comments to English.
 * Phase out obsolete c-style arrays and replace them respectively with std::string, std::vector and std::array. c-style arrays are intended to remain only where they are necessary like supporting the legacy .spr / .map format.
 * Rewrite PDraw to use SDL_Texture (hardware optimised) instead of SDL_Surface, maybe adding PNG support.
@@ -90,10 +102,7 @@ This example starts the level13.map (the robot boss fight) on dev mode:
 
 # Known bugs
 * Killing the evil one results music fading after reaching the exit tile.
-* (Only the last Windows Snapshot) It seems that there are too many sprites sounds and some of them perhaps should be skipped intentionally.
-It doesn't depend on the used sprite format.
-Maybe because of my temporary solution. I'm putting -1 as the channel number in "Mix_PlayChannel".
-I do this because the channels don't work on Windows properly. If I don't do this, there are only a few sprites sounds at the beginning of the game and then the utter silence.
+
 
 # Used libraries
 * JSON for modern c++\

@@ -12,7 +12,7 @@
 #include <string>
 #include <array>
 
-#include "3rd_party/json.hpp"
+#include "engine/PJson.hpp"
 #include "spriteclass_spr.hpp"
 
 class PrototypeClass;
@@ -20,6 +20,7 @@ class PrototypeClass;
 void Prototype_ClearAll();
 PrototypeClass* Prototype_Load(const std::string& filename);
 
+//Classes used in game
 class SpriteAnimation{
 public:
     SpriteAnimation(){};
@@ -34,7 +35,6 @@ public:
     friend void from_json(const nlohmann::json&j, SpriteAnimation& a);
 };
 
-//Classes used in game
 class PrototypeClass{
     public:
 
@@ -138,7 +138,18 @@ class PrototypeClass{
     PrototypeClass();
     ~PrototypeClass();
 
-    int     Load(PFile::Path path, bool legacy_spr);
+    /**
+     * @brief 
+     * Load sprite prototype
+     */
+    int     LoadPrototype(PFile::Path path, bool legacy_spr);
+    /**
+     * @brief 
+     * Load sprite assets like texture, sounds, etc.
+     */
+    int     LoadAssets(PFile::Path path);
+
+    
     int     Draw(int x, int y, int frame);
     bool    HasAI(int AI)const;
 
