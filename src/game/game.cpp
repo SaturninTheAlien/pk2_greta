@@ -400,19 +400,18 @@ void GameClass::Place_Sprites() {
 		for (u32 y = 0; y < PK2MAP_MAP_HEIGHT; y++) {
 
 			int sprite = map.sprite_tiles[x+y*PK2MAP_MAP_WIDTH];
+			if(sprite<0||sprite>=255) continue;
+
 			PrototypeClass* protot = Level_Prototypes_List[sprite];
+			if(protot==nullptr) continue;
 
-			if (sprite != 255) {
+			if (protot->big_apple)
+				this->apples_count++;
 
-				if (protot->big_apple)
-					this->apples_count++;
+			if (protot->HasAI(AI_CHICK) || protot->HasAI(AI_CHICKBOX))
+				this->chick_mode = true;
 
-				if (protot->HasAI(AI_CHICK) || protot->HasAI(AI_CHICKBOX))
-					this->chick_mode = true;
-
-				Sprites_add(protot, 0, x*32, y*32 - protot->height+32, nullptr, false);
-				
-			}
+			Sprites_add(protot, 0, x*32, y*32 - protot->height+32, nullptr, false);
 		}
 	}
 
