@@ -8,14 +8,16 @@
 
 #include <list>
 
-extern PrototypeClass* Level_Prototypes_List[MAX_PROTOTYYPPEJA];
+//extern PrototypeClass* Level_Prototypes_List[MAX_PROTOTYYPPEJA];
 
 extern std::list<SpriteClass*> Sprites_List;
 extern std::list<SpriteClass*> bgSprites_List;
 extern SpriteClass* Player_Sprite;
 
 void Level_Prototypes_ClearAll();
-int  Prototypes_GetAll();
+PrototypeClass* Level_Prototypes_Get(int index);
+
+int  Level_Prototypes_LoadAll();
 
 //void Sprites_add_bg(int index);
 void Sprites_sort_bg();

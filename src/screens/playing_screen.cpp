@@ -190,19 +190,21 @@ int Draw_InGame_DebugInfo() {
 	for (int i = 0; i < 40; i++) {
 		//sprintf(lukua, "%i", i);
 		PDraw::font_write(fontti1,std::to_string(i),410,10+i*10);
-		if (Level_Prototypes_List[i] == nullptr) {
+		PrototypeClass*proto = Level_Prototypes_Get(i);
+
+		if (proto == nullptr) {
 			PDraw::font_write(fontti1,"-",430,10+i*10);
 		} else {
-			PDraw::font_write(fontti1,Level_Prototypes_List[i]->filename,430,10+i*10);
+			PDraw::font_write(fontti1,proto->filename,430,10+i*10);
 
 			if (degree < 90)
-				PDraw::font_write(fontti1,Level_Prototypes_List[i]->transformation_sprite,545,10+i*10);
+				PDraw::font_write(fontti1,proto->transformation_sprite,545,10+i*10);
 			else if (degree < 180)
-				PDraw::font_write(fontti1,Level_Prototypes_List[i]->bonus_sprite,545,10+i*10);
+				PDraw::font_write(fontti1,proto->bonus_sprite,545,10+i*10);
 			else if (degree < 270)
-				PDraw::font_write(fontti1,Level_Prototypes_List[i]->ammo1_sprite,545,10+i*10);
+				PDraw::font_write(fontti1,proto->ammo1_sprite,545,10+i*10);
 			else
-				PDraw::font_write(fontti1,Level_Prototypes_List[i]->ammo2_sprite,545,10+i*10);
+				PDraw::font_write(fontti1,proto->ammo2_sprite,545,10+i*10);
 		}
 	}
 
@@ -877,8 +879,11 @@ int Screen_InGame(){
 			}
 			if (PInput::Keydown(PInput::A)/* && key_delay == 0*/) {
 				//key_delay = 20;
-				*Player_Sprite = SpriteClass(Level_Prototypes_List[0], 1, Player_Sprite->x, Player_Sprite->y);
-				Effect_Stars(Player_Sprite->x, Player_Sprite->y, COLOR_VIOLET);
+				PrototypeClass*proto = Level_Prototypes_Get(0);
+				if(proto!=nullptr){
+					*Player_Sprite = SpriteClass(proto, 1, Player_Sprite->x, Player_Sprite->y);
+					Effect_Stars(Player_Sprite->x, Player_Sprite->y, COLOR_VIOLET);
+				}
 			}
 		}
 		if (PInput::Keydown(PInput::U))

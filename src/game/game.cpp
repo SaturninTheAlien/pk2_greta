@@ -351,7 +351,7 @@ int GameClass::Open_Map() {
 	}
 
 	if (strcmp(map.version,"1.2") == 0 || strcmp(map.version,"1.3") == 0)
-		if (Prototypes_GetAll() == 1)
+		if (Level_Prototypes_LoadAll() == 1)
 			return 1;
 
 	Calculete_TileMasks();
@@ -394,7 +394,14 @@ int GameClass::Open_Map() {
 void GameClass::Place_Sprites() {
 
 	Sprites_clear();
-	Sprites_add(Level_Prototypes_List[map.player_sprite_index], 1, 0, 0, nullptr, false);
+
+	PrototypeClass * proto = Level_Prototypes_Get(map.player_sprite_index);
+
+	if(proto==nullptr){
+		throw std::runtime_error("Null player prototype is quite serious error!");
+	}
+
+	Sprites_add(proto, 1, 0, 0, nullptr, false);
 
 	for (u32 x = 0; x < PK2MAP_MAP_WIDTH; x++) {
 		for (u32 y = 0; y < PK2MAP_MAP_HEIGHT; y++) {
@@ -402,16 +409,19 @@ void GameClass::Place_Sprites() {
 			int sprite = map.sprite_tiles[x+y*PK2MAP_MAP_WIDTH];
 			if(sprite<0||sprite>=255) continue;
 
-			PrototypeClass* protot = Level_Prototypes_List[sprite];
+			PrototypeClass* protot = Level_Prototypes_Get(sprite);
 			if(protot==nullptr) continue;
 
-			if (protot->big_apple)
+			if(sprite!=255){ // Why is this index skipped ????
+				
+				if (protot->big_apple)
 				this->apples_count++;
 
-			if (protot->HasAI(AI_CHICK) || protot->HasAI(AI_CHICKBOX))
-				this->chick_mode = true;
+				if (protot->HasAI(AI_CHICK) || protot->HasAI(AI_CHICKBOX))
+					this->chick_mode = true;
 
-			Sprites_add(protot, 0, x*32, y*32 - protot->height+32, nullptr, false);
+				Sprites_add(protot, 0, x*32, y*32 - protot->height+32, nullptr, false);
+			}
 		}
 	}
 
@@ -457,9 +467,13 @@ int GameClass::Count_Keys() {
 
 	for (u32 x=0; x < PK2MAP_MAP_SIZE; x++){
 		u8 sprite = map.sprite_tiles[x];
-		if (sprite != 255)
-			if (Level_Prototypes_List[sprite]->can_open_locks && 
-				Level_Prototypes_List[sprite]->how_destroyed != FX_DESTRUCT_EI_TUHOUDU)
+
+		PrototypeClass*proto = Level_Prototypes_Get(sprite);
+		if(proto==nullptr) continue;
+
+		if (sprite != 255) // Why is this index skipped ????
+			if (proto->can_open_locks && 
+				proto->how_destroyed != FX_DESTRUCT_EI_TUHOUDU)
 
 				keys++;
 	}

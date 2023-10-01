@@ -28,8 +28,13 @@ void Level_Prototypes_ClearAll() {
 	for (int i = 0; i < MAX_PROTOTYYPPEJA; i++) {
 		Level_Prototypes_List[i] = nullptr;
 	}
-
 }
+
+PrototypeClass* Level_Prototypes_Get(int index){
+	if(index<0 || index>= MAX_PROTOTYYPPEJA) return nullptr;
+	else return Level_Prototypes_List[index];
+}
+
 
 PrototypeClass* Level_Prototypes_get(const std::string& name, int id) {
 
@@ -43,7 +48,7 @@ PrototypeClass* Level_Prototypes_get(const std::string& name, int id) {
 	return protot;
 }
 
-int Prototypes_GetAll() {
+int Level_Prototypes_LoadAll() {
 
 	for (u32 i = 0; i < PK2MAP_MAP_MAX_PROTOTYPES; i++) {
 		if (strcmp(Game->map.sprite_filenames[i], "") != 0) {
