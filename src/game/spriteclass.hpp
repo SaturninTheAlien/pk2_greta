@@ -235,15 +235,15 @@ class SpriteClass{
 
 
     //AI_Functions
-    int AI_Kana();
-    int AI_Bonus();
-    int AI_Egg();
-    int AI_Egg2();
-    int AI_Ammus();
-    int AI_Jumper();
-    int AI_Sammakko1();
-    int AI_Sammakko2();
-    int AI_Basic();
+    void AI_Rooster();
+    void AI_Bonus();
+    void AI_Egg();
+    void AI_Egg2();
+    void AI_Projectile();
+    void AI_Jumper();
+    void AI_BlueFrog();
+    void AI_RedFrog();
+    void AI_Basic();
     int AI_Kaantyy_Esteesta_Hori();
     int AI_Kaantyy_Esteesta_Vert();
     int AI_Varoo_Kuoppaa();
@@ -262,12 +262,12 @@ class SpriteClass{
     int AI_Muutos_Ajastin(PrototypeClass *transformation);
     int AI_Muutos_Jos_Osuttu(PrototypeClass *transformation);
     int AI_Attack_1_Jos_Osuttu();
-    int AI_Attack_2_Jos_Osuttu();
-    int AI_Attack_1_Nonstop();
-    int AI_Attack_2_Nonstop();
-    int AI_Attack_1_if_Player_in_Front(SpriteClass &player);
-    int AI_Attack_2_if_Player_in_Front(SpriteClass &player);
-    int AI_Attack_1_if_Player_Bellow(SpriteClass &player);
+    void AI_Attack_2_When_Hit();
+    void AI_Attack_1_Nonstop();
+    void AI_Attack_2_Nonstop();
+    void AI_Attack_1_if_Player_in_Front(SpriteClass &player);
+    void AI_Attack_2_if_Player_in_Front(SpriteClass &player);
+    void AI_Attack_1_if_Player_Bellow(SpriteClass &player);
     int AI_NonStop();
     int AI_Hyppy_Jos_Pelaaja_Ylapuolella(SpriteClass &player);
     int AI_Pommi();
@@ -277,7 +277,7 @@ class SpriteClass{
     int AI_Piiloutuu();
     int AI_Palaa_Alkuun_X();
     int AI_Palaa_Alkuun_Y();
-    int AI_Kaantyy_Jos_Osuttu();
+    void AI_Turn_Back_When_Hit();
     int AI_Tippuu_Tarinasta(int tarina);
     int AI_Liikkuu_X(double liike);
     int AI_Liikkuu_Y(double liike);
@@ -289,11 +289,12 @@ class SpriteClass{
     bool AI_Info(SpriteClass &player);
     int AI_Tuhoutuu_Jos_Emo_Tuhoutuu();
 
-    int AI_Destructed_Next_To_Player(SpriteClass &player);
+    void AI_Destructed_Next_To_Player(SpriteClass &player);
 
-    int Animation_Perus();
-    int Animation_Kana();
-    int Animation_Bonus();
-    int Animation_Egg();
-    int Animation_Ammus();
+private:
+    void Animation_Basic();
+    void Animation_Rooster();
+    void Animation_Bonus();
+    void Animation_Egg();
+    void Animation_Projectile();
 };

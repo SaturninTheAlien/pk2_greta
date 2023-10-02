@@ -794,15 +794,15 @@ int SpriteClass::Animaatio(int anim_i, bool reset){
 int SpriteClass::Animoi(){
 
 	switch (prototype->first_ai()) {
-		case AI_KANA:           Animation_Kana();  break;
-		case AI_LITTLE_CHICKEN: Animation_Kana();  break;
+		case AI_ROOSTER:           Animation_Rooster();  break;
+		case AI_LITTLE_CHICKEN: Animation_Rooster();  break;
 		case AI_BONUS:          Animation_Bonus(); break;
 		case AI_EGG:            Animation_Egg();   break;
 		case AI_EGG2:           Animation_Egg();   break;
-		case AI_AMMUS:          Animation_Ammus(); break;
-		case AI_JUMPER:         Animation_Kana();  break;
-		case AI_BASIC:          Animation_Perus(); break;
-		case AI_TELEPORT:       Animation_Perus(); break;
+		case AI_PROJECTILE:          Animation_Projectile(); break;
+		case AI_JUMPER:         Animation_Rooster();  break;
+		case AI_BASIC:          Animation_Basic(); break;
+		case AI_TELEPORT:       Animation_Basic(); break;
 		default:                break;
 	}
 
@@ -888,7 +888,7 @@ void SpriteClass::HandleEffects() {
 
 }
 
-int SpriteClass::AI_Basic(){
+void SpriteClass::AI_Basic(){
 	if (x < 10)
 	{
 		x = 10;
@@ -922,7 +922,6 @@ int SpriteClass::AI_Basic(){
 	if (action_timer > 31320) // divisible by 360
 		action_timer = 0;
 
-	return 0;
 }
 int SpriteClass::AI_Kaantyy_Esteesta_Hori(){
 	if (energy > 0)
@@ -1060,7 +1059,7 @@ int SpriteClass::AI_Random_Hyppy(){
 	}
 	return 0;
 }
-int SpriteClass::AI_Sammakko1(){
+void SpriteClass::AI_BlueFrog(){
 	if (energy > 0)
 	{
 		if (action_timer%100 == 0 && jump_timer == 0 && ylos)
@@ -1068,9 +1067,8 @@ int SpriteClass::AI_Sammakko1(){
 			jump_timer = 1;
 		}
 	}
-	return 0;
 }
-int SpriteClass::AI_Sammakko2(){
+void SpriteClass::AI_RedFrog(){
 	if (energy > 0)
 	{
 		if (action_timer%100 == 0 && ylos)
@@ -1087,7 +1085,6 @@ int SpriteClass::AI_Sammakko2(){
 				a = this->prototype->max_speed / -3.5;
 		}
 	}
-	return 0;
 }
 int SpriteClass::AI_Random_Suunnanvaihto_Hori(){
 	if (energy > 0)
@@ -1112,7 +1109,7 @@ int SpriteClass::AI_Random_Kaantyminen(){
 	}
 	return 0;
 }
-int SpriteClass::AI_Kaantyy_Jos_Osuttu() {
+void SpriteClass::AI_Turn_Back_When_Hit() {
 
 	if (damage_timer == 1 && energy > 0) {
 		
@@ -1121,9 +1118,6 @@ int SpriteClass::AI_Kaantyy_Jos_Osuttu() {
 		flip_x = !flip_x;
 	
 	}
-
-	return 0;
-
 }
 int SpriteClass::AI_Random_Liikahdus_Vert_Hori(){
 	if (energy > 0)
@@ -1437,35 +1431,26 @@ int SpriteClass::AI_Attack_1_Jos_Osuttu(){
 
 	return 0;
 }
-int SpriteClass::AI_Attack_2_Jos_Osuttu(){
+void SpriteClass::AI_Attack_2_When_Hit(){
 	if (saatu_vahinko > 0 && energy > 0)
 	{
 		this->attack2_timer = this->prototype->attack2_time;
 		this->charging_timer = 0;
-		return 1;
 	}
-
-	return 0;
 }
-int SpriteClass::AI_Attack_1_Nonstop(){
+void SpriteClass::AI_Attack_1_Nonstop(){
 	if (this->charging_timer == 0 && energy > 0)
 	{
 		this->attack1_timer = this->prototype->attack1_time;
-		return 1;
 	}
-
-	return 0;
 }
-int SpriteClass::AI_Attack_2_Nonstop(){
+void SpriteClass::AI_Attack_2_Nonstop(){
 	if (this->charging_timer == 0 && energy > 0)
 	{
 		this->attack2_timer = this->prototype->attack2_time;
-		return 1;
 	}
-
-	return 0;
 }
-int SpriteClass::AI_Attack_1_if_Player_in_Front(SpriteClass &player){
+void SpriteClass::AI_Attack_1_if_Player_in_Front(SpriteClass &player){
 	if (energy > 0 && damage_timer == 0 && player.energy > 0)
 	{
 		if ((player.x - x < 200 && player.x - x > -200) &&
@@ -1474,13 +1459,11 @@ int SpriteClass::AI_Attack_1_if_Player_in_Front(SpriteClass &player){
 			if ((player.x < x && flip_x) || (player.x > x && !flip_x))
 			{
 				this->attack1_timer = this->prototype->attack1_time;
-				return 1;
 			}
 		}
 	}
-	return 0;
 }
-int SpriteClass::AI_Attack_2_if_Player_in_Front(SpriteClass &player){
+void SpriteClass::AI_Attack_2_if_Player_in_Front(SpriteClass &player){
 	if (energy > 0 && damage_timer == 0 && player.energy > 0)
 	{
 		if ((player.x - x < 200 && player.x - x > -200) &&
@@ -1489,23 +1472,19 @@ int SpriteClass::AI_Attack_2_if_Player_in_Front(SpriteClass &player){
 			if ((player.x < x && flip_x) || (player.x > x && !flip_x))
 			{
 				this->attack2_timer = this->prototype->attack2_time;
-				return 1;
 			}
 		}
 	}
-	return 0;
 }
-int SpriteClass::AI_Attack_1_if_Player_Bellow(SpriteClass &player){
+void SpriteClass::AI_Attack_1_if_Player_Bellow(SpriteClass &player){
 	if (energy > 0 && damage_timer == 0 && player.energy > 0)
 	{
 		if ((player.x - x < prototype->width && player.x - x > -prototype->width) &&
 			(player.y > y && player.y - y < 350))
 		{
 			this->attack1_timer = this->prototype->attack2_time;
-			return 1;
 		}
 	}
-	return 0;
 }
 int SpriteClass::AI_Hyppy_Jos_Pelaaja_Ylapuolella(SpriteClass &player){
 	if (energy > 0 && jump_timer == 0 && player.energy > 0)
@@ -1613,7 +1592,7 @@ int SpriteClass::AI_Kill_Everyone(){
 
 	return 0;
 }
-int SpriteClass::AI_Jumper(){
+void SpriteClass::AI_Jumper(){
 	if (x < 10)
 	{
 		x = 10;
@@ -1638,7 +1617,6 @@ int SpriteClass::AI_Jumper(){
 	if (a > 0)
 		flip_x = false;
 
-	return 0;
 }
 int SpriteClass::AI_Liikkuu_X(double liike){
 	if (energy > 0)
@@ -1685,7 +1663,7 @@ bool SpriteClass::AI_Info(SpriteClass &player){
 
 	return false;
 }
-int SpriteClass::AI_Kana(){
+void SpriteClass::AI_Rooster(){
 	if (x < 10)
 	{
 		x = 10;
@@ -1748,10 +1726,8 @@ int SpriteClass::AI_Kana(){
 			flip_x = false;
 
 	}
-
-	return 0;
 }
-int SpriteClass::AI_Bonus(){
+void SpriteClass::AI_Bonus(){
 	if (x < 10)
 	{
 		x = 10;
@@ -1761,10 +1737,8 @@ int SpriteClass::AI_Bonus(){
 	{
 		y = 9920;
 	}
-
-	return 0;
 }
-int SpriteClass::AI_Egg(){
+void SpriteClass::AI_Egg(){
 	if (x < 10)
 	{
 		x = 10;
@@ -1786,9 +1760,8 @@ int SpriteClass::AI_Egg(){
 	if (this->charging_timer == 1)
 		this->removed = true;
 
-	return 0;
 }
-int SpriteClass::AI_Egg2(){
+void SpriteClass::AI_Egg2(){
 	if (x < 10)
 	{
 		x = 10;
@@ -1810,9 +1783,8 @@ int SpriteClass::AI_Egg2(){
 	if (charging_timer == 1)
 		removed = true;
 
-	return 0;
 }
-int SpriteClass::AI_Ammus(){
+void SpriteClass::AI_Projectile(){
 	if (x < 10)
 	{
 		x = 10;
@@ -1841,7 +1813,7 @@ int SpriteClass::AI_Ammus(){
 	if (energy < 1)
 		removed = true;
 
-	return 0;
+
 }
 int SpriteClass::AI_Pommi(){
 	if (this->charging_timer == 0)
@@ -1901,7 +1873,7 @@ int SpriteClass::AI_Teleportti(std::list<SpriteClass*> spritet, SpriteClass &pla
 	return siirto;
 }
 
-int SpriteClass::AI_Destructed_Next_To_Player(SpriteClass &player) {
+void SpriteClass::AI_Destructed_Next_To_Player(SpriteClass &player) {
 
 	double dx = this->x - player.x;
 	double dy = this->y - player.y;
@@ -1914,12 +1886,9 @@ int SpriteClass::AI_Destructed_Next_To_Player(SpriteClass &player) {
 		this->saatu_vahinko_tyyppi = DAMAGE_ALL;
 		
 	}
-	
-	return 0;
-
 }
 
-int SpriteClass::Animation_Perus(){
+void SpriteClass::Animation_Basic(){
 
 	int uusi_animaatio = -1;
 	bool alusta = false;
@@ -1985,9 +1954,8 @@ int SpriteClass::Animation_Perus(){
 	if (uusi_animaatio != -1)
 		Animaatio(uusi_animaatio,alusta);
 
-	return 0;
 }
-int SpriteClass::Animation_Kana(){
+void SpriteClass::Animation_Rooster(){
 
 	int uusi_animaatio = -1;
 	bool alusta = false;
@@ -2059,23 +2027,16 @@ int SpriteClass::Animation_Kana(){
 
 	if (uusi_animaatio != -1)
 		Animaatio(uusi_animaatio,alusta);
-
-	return 0;
 }
-int SpriteClass::Animation_Bonus() {
 
+void SpriteClass::Animation_Bonus() {
 	Animaatio(ANIMATION_IDLE, true);
-	return 0;
-
 }
-int SpriteClass::Animation_Ammus() {
-
+void SpriteClass::Animation_Projectile() {
 	Animaatio(ANIMATION_IDLE, true);
-	return 0;
-
 }
 
-int SpriteClass::Animation_Egg() {
+void SpriteClass::Animation_Egg() {
 
 	int uusi_animaatio = ANIMATION_IDLE;
 	bool alusta = true;
@@ -2084,7 +2045,4 @@ int SpriteClass::Animation_Egg() {
 		uusi_animaatio = ANIMATION_DEATH;
 	
 	Animaatio(uusi_animaatio, alusta);
-
-	return 0;
-
 }

@@ -990,7 +990,7 @@ int UpdateSprite(SpriteClass* sprite){
 				sprite->charging_timer = 0;
 			}
 
-			if (sprite->HasAI(AI_ATTACK_2_JOS_OSUTTU)){
+			if (sprite->HasAI(AI_ATTACK_2_WHEN_HIT)){
 				sprite->attack2_timer = sprite->prototype->attack2_time;
 				sprite->charging_timer = 0;
 			}
@@ -1156,13 +1156,13 @@ int UpdateSprite(SpriteClass* sprite){
 
 		for(const int& sprite_ai: sprite->prototype->AI_v){
 			switch (sprite_ai) {
-				case AI_KANA:						sprite->AI_Kana();
+				case AI_ROOSTER:						sprite->AI_Rooster();
 													break;
-				case AI_LITTLE_CHICKEN:					sprite->AI_Kana();
+				case AI_LITTLE_CHICKEN:					sprite->AI_Rooster();
 													break;
-				case AI_SAMMAKKO1:					sprite->AI_Sammakko1();
+				case AI_BLUE_FROG:					sprite->AI_BlueFrog();
 													break;
-				case AI_SAMMAKKO2:					sprite->AI_Sammakko2();
+				case AI_RED_FROG:					sprite->AI_RedFrog();
 													break;
 				case AI_BONUS:						sprite->AI_Bonus();
 													break;
@@ -1170,9 +1170,9 @@ int UpdateSprite(SpriteClass* sprite){
 													break;
 				case AI_EGG2:						sprite->AI_Egg2();
 													break;
-				case AI_AMMUS:						sprite->AI_Ammus();
+				case AI_PROJECTILE:					sprite->AI_Projectile();
 													break;
-				case AI_JUMPER:					sprite->AI_Jumper();
+				case AI_JUMPER:						sprite->AI_Jumper();
 													break;
 				case AI_BASIC:						sprite->AI_Basic();
 													break;
@@ -1210,7 +1210,7 @@ int UpdateSprite(SpriteClass* sprite){
 													break;
 				case AI_ATTACK_1_JOS_OSUTTU:		sprite->AI_Attack_1_Jos_Osuttu();
 													break;
-				case AI_ATTACK_2_JOS_OSUTTU:		sprite->AI_Attack_2_Jos_Osuttu();
+				case AI_ATTACK_2_WHEN_HIT:		sprite->AI_Attack_2_When_Hit();
 													break;
 				case AI_ATTACK_1_NONSTOP:			sprite->AI_Attack_1_Nonstop();
 													break;
@@ -1333,7 +1333,7 @@ int UpdateSprite(SpriteClass* sprite){
 													break;
 				case AI_RANDOM_LIIKAHDUS_VERT_HORI:	sprite->AI_Random_Liikahdus_Vert_Hori();
 													break;
-				case AI_KAANTYY_JOS_OSUTTU:			sprite->AI_Kaantyy_Jos_Osuttu();
+				case AI_TURN_BACK_WHEN_HIT:			sprite->AI_Turn_Back_When_Hit();
 													break;
 				case AI_EVIL_ONE:					if (sprite->energy < 1) 
 													{
