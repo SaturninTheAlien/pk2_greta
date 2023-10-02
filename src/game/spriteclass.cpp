@@ -9,12 +9,31 @@
 
 #include "engine/PDraw.hpp"
 #include "engine/PSound.hpp"
+#include "engine/PExcept.hpp"
 #include "engine/PLog.hpp"
 #include "engine/platform.hpp"
 #include "episode/episodeclass.hpp"
 
+
 #include <cstring>
 #include <algorithm>
+#include <sstream>
+
+class UnsupportedSpriteVersionException: public std::exception{
+public:
+	UnsupportedSpriteVersionException(const std::string& version);
+	const char* what() const noexcept{
+        return message.c_str();
+    }
+private:
+	std::string message;
+};
+
+UnsupportedSpriteVersionException::UnsupportedSpriteVersionException(const std::string& version){
+	std::ostringstream os;
+	os<<"Unsupported sprite version: "<<version;
+	this->message = os.str();
+}
 
 std::vector<PrototypeClass*>mPrototypes;
 void Prototype_ClearAll(){
@@ -57,80 +76,77 @@ PrototypeClass* Prototype_Load(const std::string& filename_in){
 		}
 	}
 
-	std::string filename_j = filename_clean + ".spr2";
-	PFile::Path path_j = Episode->Get_Dir(filename_j);
-	if(FindAsset(&path_j,"sprites" PE_SEP)){
-		legacy_spr = false;
-	}
-
 	PrototypeClass* protot = nullptr;
-	bool success = false;
 
-	if(legacy_spr){
-		PFile::Path path = Episode->Get_Dir(filename_in);
-		if (!FindAsset(&path, "sprites" PE_SEP)) {
-			PLog::Write(PLog::ERR, "PK2 sprites", "Couldn't find %s", filename_in.c_str());
-			return nullptr;
+	try{
+		std::string filename_j = filename_clean + ".spr2";
+		PFile::Path path_j = Episode->Get_Dir(filename_j);
+		if(FindAsset(&path_j,"sprites" PE_SEP)){
+			protot = new PrototypeClass();
+			protot->LoadPrototypeJSON(path_j);
 		}
-		path_j = path;
-		protot = new PrototypeClass();
-		success = protot->LoadPrototype(path, true) == 0;
-	}
-	else{
-		protot = new PrototypeClass();
-		try{
-			success = protot->LoadPrototype(path_j, false) == 0;
+		else if(legacy_spr){
+			PFile::Path path = Episode->Get_Dir(filename_in);
+			if (!FindAsset(&path, "sprites" PE_SEP)) {
+				throw PExcept::FileNotFoundException(filename_clean, PExcept::MISSING_SPRITE_PROTOTYPE);
+				/*PLog::Write(PLog::ERR, "PK2 sprites", "Couldn't find %s", filename_in.c_str());
+				return nullptr;*/
+			}
+			path_j = path;
+			protot = new PrototypeClass();
+			protot->LoadPrototypeLegacy(path);
 		}
-		catch(const std::exception& e){
-			PLog::Write(PLog::ERR, "PK2 sprites", "Exception: %s", e.what());
+		else{
+			throw PExcept::FileNotFoundException(filename_j, PExcept::MISSING_SPRITE_PROTOTYPE);
 		}
-		
-	}
 
-	if(success){
-		success = protot->LoadAssets(path_j) == 0;
-	}
 
-	if (!success) {
-		PLog::Write(PLog::ERR, "PK2", "Couldn't load %s", filename_in.c_str());
+		protot->LoadAssets(path_j);
+		protot->filename = filename_clean;
+
+		mPrototypes.push_back(protot);
+
+		if(!Episode->ignore_collectable){
+			const std::string& collectable_name = Episode->collectable_name;
+			if(protot->name.compare(0, collectable_name.size(), collectable_name)==0){
+				protot->big_apple = true;
+			}
+		}
+
+		//Load transformation
+		if(!protot->transformation_sprite.empty()){
+			protot->transformation = Prototype_Load(protot->transformation_sprite);
+		}
+
+		//Load bunus
+		if(!protot->bonus_sprite.empty()){
+			protot->bonus = Prototype_Load(protot->bonus_sprite);
+		}
+
+		//Load ammo1
+		if(!protot->ammo1_sprite.empty()){
+			protot->ammo1 = Prototype_Load(protot->ammo1_sprite);
+		}
+
+		//Load ammo2
+		if(!protot->ammo2_sprite.empty()){
+			protot->ammo2 = Prototype_Load(protot->ammo2_sprite);
+		}
+
+		return protot;
+
+	}
+	catch(const std::exception& e){
+		PLog::Write(PLog::ERR, "PK2 sprites", e.what());
 		if(protot!=nullptr){
 			delete protot;
-			return nullptr;
+			protot = nullptr;
 		}
+
+		PLog::Write(PLog::ERR, "PK2 sprites", "Couldn't find %s", filename_in.c_str());
 	}
 
-	protot->filename = filename_clean;
-
-	mPrototypes.push_back(protot);
-
-	if(!Episode->ignore_collectable){
-		const std::string& collectable_name = Episode->collectable_name;
-		if(protot->name.compare(0, collectable_name.size(), collectable_name)==0){
-			protot->big_apple = true;
-		}
-	}
-
-	//Load transformation
-	if(!protot->transformation_sprite.empty()){
-		protot->transformation = Prototype_Load(protot->transformation_sprite);
-	}
-
-	//Load bunus
-	if(!protot->bonus_sprite.empty()){
-		protot->bonus = Prototype_Load(protot->bonus_sprite);
-	}
-
-	//Load ammo1
-	if(!protot->ammo1_sprite.empty()){
-		protot->ammo1 = Prototype_Load(protot->ammo1_sprite);
-	}
-
-	//Load ammo2
-	if(!protot->ammo2_sprite.empty()){
-		protot->ammo2 = Prototype_Load(protot->ammo2_sprite);
-	}
-
-	return protot;
+	return nullptr;
 }
 
 
@@ -576,78 +592,67 @@ void PrototypeClass::SetProto20(const nlohmann::json& j){
 	jsonReadDouble(j, "weight", this->weight);
 }
 
-int PrototypeClass::LoadPrototype(PFile::Path path, bool legacy_spr){
+void PrototypeClass::LoadPrototypeJSON(PFile::Path path){
+	const nlohmann::json proto = path.GetJSON();
+	if(!proto.contains("version") || !proto["version"].is_string()){
+		throw PExcept::PException("Incorrect JSON, no string field \"version\"");
+	}
+	std::string version = proto["version"].get<std::string>();
+	if(version=="2.0_test2"){
 
-	if(legacy_spr){
-		PFile::RW* file = path.GetRW("r");
-		if (file == nullptr) {
-			PLog::Write(PLog::ERR, "PK2", "Failed to open %s", path.c_str());
-			return -1;
+		if(proto.contains("parent")&&proto["parent"].is_string()){
+			PrototypeClass* parentPrototype = Prototype_Load(proto["parent"]);
+			if(parentPrototype!=nullptr){
+				*this = *parentPrototype;
+			}
 		}
 
-		char versio[4];
-		file->read(versio, 4);
-
-		if (strcmp(versio,"1.0") == 0){
-			PrototypeClass10 proto;
-			file->read(&proto, sizeof(proto));
-			this->SetProto10(proto);
-		}
-		else if (strcmp(versio,"1.1") == 0){
-			PrototypeClass11 proto;
-			file->read(&proto, sizeof(proto));
-			this->SetProto11(proto);
-		}
-		else if (strcmp(versio,"1.2") == 0){
-			PrototypeClass12 proto;
-			file->read(&proto, sizeof(proto));
-			this->SetProto12(proto);
-		}
-		else if (strcmp(versio,"1.3") == 0){
-			PrototypeClass13 proto;
-			file->read(&proto, sizeof(proto));
-			this->SetProto13(proto);
-		}
-		else {
-			PLog::Write(PLog::ERR, "PK2", "Can't support sprite version %s", versio);
-			return -1;
-		}
-		this->version = versio;
-		file->close();
+		this->SetProto20(proto);
 	}
 	else{
-		const nlohmann::json proto = path.GetJSON();
-		if(!proto.contains("version") || !proto["version"].is_string()){
-			PLog::Write(PLog::ERR, "PK2", "Incorrect JSON, no string \"version\" field");
-			return -1;
-		}
-		std::string version = proto["version"].get<std::string>();
-		if(version=="2.0_test2"){
-			/*std::string parent_prototype;
-			jsonReadString(proto, "parent", parent_prototype);
-			if(!parent_prototype.empty()){
-				PrototypeClass* parentPrototype = Prototype_Load(parent_prototype);
-				if(parentPrototype)
-			}*/
-			if(proto.contains("parent")&&proto["parent"].is_string()){
-				PrototypeClass* parentPrototype = Prototype_Load(proto["parent"]);
-				if(parentPrototype!=nullptr){
-					*this = *parentPrototype;
-				}
-			}
-
-			this->SetProto20(proto);
-		}
-		else{
-			PLog::Write(PLog::ERR, "PK2", "Can't support sprite version %s", version.c_str());
-			return -1;
-		}
+		throw UnsupportedSpriteVersionException(version);
 	}
-	return 0;
+}
+
+void PrototypeClass::LoadPrototypeLegacy(PFile::Path path){
+	PFile::RW* file = path.GetRW("r");
+	if (file == nullptr) {	
+		throw PExcept::FileNotFoundException(path.c_str(), PExcept::MISSING_SPRITE_PROTOTYPE);
+	}
+
+	char versio[4];
+	file->read(versio, 4);
+
+	if (strcmp(versio,"1.0") == 0){
+		PrototypeClass10 proto;
+		file->read(&proto, sizeof(proto));
+		this->SetProto10(proto);
+	}
+	else if (strcmp(versio,"1.1") == 0){
+		PrototypeClass11 proto;
+		file->read(&proto, sizeof(proto));
+		this->SetProto11(proto);
+	}
+	else if (strcmp(versio,"1.2") == 0){
+		PrototypeClass12 proto;
+		file->read(&proto, sizeof(proto));
+		this->SetProto12(proto);
+	}
+	else if (strcmp(versio,"1.3") == 0){
+		PrototypeClass13 proto;
+		file->read(&proto, sizeof(proto));
+		this->SetProto13(proto);
+	}
+	else {
+		file->close();
+		throw UnsupportedSpriteVersionException(versio);
+	}
+	this->version = versio;
+	file->close();
 }
 
 
-int PrototypeClass::LoadAssets(PFile::Path path){
+void PrototypeClass::LoadAssets(PFile::Path path){
 	if(this->frames_number>0){
 		this->frames.resize(this->frames_number);
 		this->frames_mirror.resize(this->frames_number);
@@ -658,16 +663,18 @@ int PrototypeClass::LoadAssets(PFile::Path path){
 	
 	if (!FindAsset(&image, "sprites" PE_SEP)) {
 
-		PLog::Write(PLog::ERR, "PK2", "Couldn't find sprite image %s", this->picture_filename.c_str());
-		return -1;
+		throw PExcept::FileNotFoundException(this->picture_filename, PExcept::MISSING_SPRITE_TEXTURE);
+
+		/*PLog::Write(PLog::ERR, "PK2", "Couldn't find sprite image %s", this->picture_filename.c_str());
+		return -1;*/
 
 	}
 
 	int bufferi = PDraw::image_load(image, false);
 	if (bufferi == -1) {
-
-		PLog::Write(PLog::ERR, "PK2", "Couldn't load sprite image %s", this->picture_filename.c_str());
-		return -1;
+		throw PExcept::FileNotFoundException(this->picture_filename, PExcept::MISSING_SPRITE_TEXTURE);
+		/*PLog::Write(PLog::ERR, "PK2", "Couldn't load sprite image %s", this->picture_filename.c_str());
+		return -1;*/
 
 	}
 
@@ -733,7 +740,7 @@ int PrototypeClass::LoadAssets(PFile::Path path){
 			}
 		}
 	}
-	return 0;
+	//return 0;
 }
 
 int PrototypeClass::Draw(int x, int y, int frame){

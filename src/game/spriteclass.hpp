@@ -13,7 +13,8 @@
 #include <array>
 
 #include "engine/PJson.hpp"
-#include "spriteclass_spr.hpp"
+#include "spriteclass_legacy.hpp"
+#include "spriteclass_constants.hpp"
 
 class PrototypeClass;
 
@@ -140,19 +141,26 @@ class PrototypeClass{
 
     /**
      * @brief 
-     * Load sprite prototype
+     * Load JSON sprite prototype
      */
-    int     LoadPrototype(PFile::Path path, bool legacy_spr);
+    void     LoadPrototypeJSON(PFile::Path path);
+    /**
+     * @brief 
+     * Load legacy sprite prototype
+     */
+    void     LoadPrototypeLegacy(PFile::Path path);
+    
     /**
      * @brief 
      * Load sprite assets like texture, sounds, etc.
      */
-    int     LoadAssets(PFile::Path path);
+    void     LoadAssets(PFile::Path path);
 
     
     int     Draw(int x, int y, int frame);
     bool    HasAI(int AI)const;
 
+private:
     void    SetProto10(PrototypeClass10 &proto);
     void    SetProto11(PrototypeClass11 &proto);
     void    SetProto12(PrototypeClass12 &proto);
