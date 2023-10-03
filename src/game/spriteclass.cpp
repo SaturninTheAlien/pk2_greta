@@ -1363,8 +1363,9 @@ int SpriteClass::AI_Change_When_Energy_Over_1(PrototypeClass *transformation){
 
 	return 0;
 }
-int SpriteClass::AI_Muutos_Ajastin(PrototypeClass *transformation){
-	if (energy > 0 && transformation != prototype)
+void SpriteClass::AI_Self_Transformation(){
+	PrototypeClass* transformation = this->prototype->transformation;
+	if (transformation!=nullptr && energy > 0 && transformation != prototype)
 	{
 		if (mutation_timer/*charging_timer*/ == 0)
 			mutation_timer/*charging_timer*/ = prototype->charge_time;
@@ -1381,10 +1382,7 @@ int SpriteClass::AI_Muutos_Ajastin(PrototypeClass *transformation){
 
 			Animaatio(ANIMATION_IDLE,true);
 		}
-		return 1;
 	}
-
-	return 0;
 }
 int SpriteClass::AI_Muutos_Jos_Osuttu(PrototypeClass *transformation){
 	if (energy > 0 && transformation != prototype)
@@ -1498,7 +1496,7 @@ int SpriteClass::AI_Hyppy_Jos_Pelaaja_Ylapuolella(SpriteClass &player){
 	}
 	return 0;
 }
-int SpriteClass::AI_NonStop(){
+void SpriteClass::AI_NonStop(){
 	if (energy > 0)
 	{
 
@@ -1515,8 +1513,6 @@ int SpriteClass::AI_NonStop(){
 				a += 0.1;
 		}
 	}
-
-	return 0;
 }
 int SpriteClass::AI_Kitka_Vaikuttaa(){
 
@@ -1530,20 +1526,18 @@ int SpriteClass::AI_Kitka_Vaikuttaa(){
 
 	return 0;
 }
-int SpriteClass::AI_Piiloutuu(){
+void SpriteClass::AI_Hiding(){
 
 	if (energy > 0 && hidden)
 	{
 		a /= 1.02;
 		crouched = true;
 	}
-
-	return 0;
 }
-int SpriteClass::AI_Palaa_Alkuun_X(){
+void SpriteClass::AI_Return_To_Orig_X(){
 
 	if (energy < 1 || seen_player_x !=  -1)
-		return 0;
+		return;
 
 	double max = prototype->max_speed / 3.5;
 
@@ -1552,10 +1546,8 @@ int SpriteClass::AI_Palaa_Alkuun_X(){
 
 	if (x > orig_x+16 && a > -max)
 		a -= 0.05;
-
-	return 0;
 }
-int SpriteClass::AI_Palaa_Alkuun_Y(){
+void SpriteClass::AI_Return_To_Orig_Y(){
 
 	if (energy > 0 && seen_player_x == -1)
 	{
@@ -1567,17 +1559,13 @@ int SpriteClass::AI_Palaa_Alkuun_Y(){
 		if (y > orig_y+16 && b > -max)
 			b -= 0.04;
 	}
-
-	return 0;
 }
-int SpriteClass::AI_Tippuu_Tarinasta(int tarina){
+void SpriteClass::AI_Fall_When_Quake(int tarina){
 
 	if (energy > 0 && tarina > 0)
 	{
 		initial_weight = 0.5;
 	}
-
-	return 0;
 }
 int SpriteClass::AI_Damaged_by_Water(){
 	if (energy > 0)
@@ -1618,27 +1606,21 @@ void SpriteClass::AI_Jumper(){
 		flip_x = false;
 
 }
-int SpriteClass::AI_Liikkuu_X(double liike){
+void SpriteClass::AI_Move_X(double liike){
 	if (energy > 0)
 		this->x = this->orig_x + liike;
-
-	return 0;
 }
-int SpriteClass::AI_Liikkuu_Y(double liike){
+void SpriteClass::AI_Move_Y(double liike){
 	if (energy > 0)
 		this->y = this->orig_y + liike;
-
-	return 0;
 }
-int SpriteClass::AI_Tippuu_Jos_Kytkin_Painettu(int kytkin){
+void SpriteClass::AI_Tippuu_If_Switch_Pressed(int kytkin){
 	if (kytkin > 0)
 	{
 		initial_weight = 1.5;
 	}
-
-	return 0;
 }
-int SpriteClass::AI_Liikkuu_Jos_Kytkin_Painettu(int kytkin, int ak, int bk){
+void SpriteClass::AI_Move_If_Switch_Pressed(int kytkin, int ak, int bk){
 	if (kytkin > 0)
 	{
 		if (a == 0 && ak != 0)
@@ -1651,8 +1633,6 @@ int SpriteClass::AI_Liikkuu_Jos_Kytkin_Painettu(int kytkin, int ak, int bk){
 	}
 
 	flip_x = false;
-
-	return 0;
 }
 bool SpriteClass::AI_Info(SpriteClass &player){
 	if ((player.x - x < 10 && player.x - x > -10) &&
@@ -1815,7 +1795,7 @@ void SpriteClass::AI_Projectile(){
 
 
 }
-int SpriteClass::AI_Pommi(){
+void SpriteClass::AI_SelfDestruction(){
 	if (this->charging_timer == 0)
 		charging_timer = this->prototype->charge_time;
 
@@ -1824,8 +1804,6 @@ int SpriteClass::AI_Pommi(){
 		this->saatu_vahinko = this->energy;
 		this->saatu_vahinko_tyyppi = DAMAGE_ALL;
 	}
-
-	return 0;
 }
 int SpriteClass::AI_Teleportti(std::list<SpriteClass*> spritet, SpriteClass &player){
 	int siirto = 0;

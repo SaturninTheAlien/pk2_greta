@@ -76,22 +76,29 @@ int Draw_InGame_BGSprites() {
 														sprite->a = rand()%3;
 												}
 												break;*/
-		case AI_LIIKKUU_X_COS:			sprite->AI_Liikkuu_X(cos_table(degree));
+		case AI_MOVE_X_COS:			sprite->AI_Move_X(cos_table(degree));
 										orig_x = sprite->x;
 										orig_y = sprite->y;
 										break;
-		case AI_LIIKKUU_Y_COS:			sprite->AI_Liikkuu_Y(cos_table(degree));
+		case AI_MOVE_Y_COS:			sprite->AI_Move_Y(cos_table(degree));
 										orig_x = sprite->x;
 										orig_y = sprite->y;
 										break;
-		case AI_LIIKKUU_X_SIN:			sprite->AI_Liikkuu_X(sin_table(degree));
+		case AI_MOVE_X_SIN:			sprite->AI_Move_X(sin_table(degree));
 										orig_x = sprite->x;
 										orig_y = sprite->y;
 										break;
-		case AI_LIIKKUU_Y_SIN:			sprite->AI_Liikkuu_Y(sin_table(degree));
+		case AI_MOVE_Y_SIN:			sprite->AI_Move_Y(sin_table(degree));
 										orig_x = sprite->x;
 										orig_y = sprite->y;
 										break;
+		case AI_SELF_DESTRUCTION:	sprite->AI_SelfDestruction();
+										break;
+		
+		case AI_SELF_TRANSFORMATION:
+									sprite->AI_Self_Transformation();
+									break;
+								
 		default: break;
 		}
 
