@@ -66,7 +66,7 @@ int Draw_InGame_BGSprites() {
 		}
 
 		switch(sprite->prototype->first_ai()) {
-		case AI_TAUSTA_KUU					:	yl += screen_height/3+50; break;
+		case AI_BACKGROUND_MOON					:	yl += screen_height/3+50; break;
 		/*case AI_TAUSTA_LIIKKUU_LEFT	:	if (sprite->a == 0)
 													sprite->a = rand()%3;
 												sprite->orig_x -= sprite->a;

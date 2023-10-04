@@ -90,7 +90,7 @@ void Sprites_start_directions() {
 			}
 		}
 
-		if (sprite->HasAI(AI_RANDOM_ALOITUSSUUNTA_VERT)){
+		if (sprite->HasAI(AI_RANDOM_START_DIRECTION_VERT)){
 			while (sprite->b == 0) {
 				sprite->b = ((rand()%2 - rand()%2) * sprite->prototype->max_speed) / 3.5;//2;
 			}
@@ -164,7 +164,7 @@ void Sprites_add_ammo(PrototypeClass* protot, double x, double y, SpriteClass* e
 	//sprite->x += sprite->prototype->width;
 	//sprite->y += sprite->prototype->height/2;
 
-	if (protot->HasAI(AI_HEITTOASE)){
+	if (protot->HasAI(AI_THROWABLE_WEAPON)){
 		if ((int)emo->a == 0){
 			// If the "shooter" is a player or the speed of the projectile is zero
 			if (emo->player == 1 || sprite->prototype->max_speed == 0){

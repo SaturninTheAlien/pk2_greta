@@ -388,7 +388,7 @@ void SpriteOnDeath(SpriteClass* sprite){
 				Sprites_add(sprite->prototype->bonus,0,sprite_x-11+(10-rand()%20),
 									sprite_ala-16-(10+rand()%20), sprite, true);
 
-	if (sprite->HasAI(AI_VAIHDA_KALLOT_JOS_TYRMATTY) && !sprite->HasAI(AI_VAIHDA_KALLOT_JOS_OSUTTU))
+	if (sprite->HasAI(AI_CHANGE_SKULL_BLOCKS_WHEN_DEAD) && !sprite->HasAI(AI_CHANGE_SKULL_BLOCKS_WHEN_HIT))
 		Game->Change_SkullBlocks();
 
 	if (how_destroyed >= FX_DESTRUCT_ANIMAATIO)
@@ -400,7 +400,7 @@ void SpriteOnDeath(SpriteClass* sprite){
 	Play_GameSFX(sprite->prototype->sounds[SOUND_DESTRUCTION],100, (int)sprite->x, (int)sprite->y,
 					sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 
-	if (sprite->HasAI(AI_UUSI_JOS_TUHOUTUU)) {
+	if (sprite->HasAI(AI_REBORN)) {
 		Sprites_add(sprite->prototype, 0, 
 			sprite->orig_x - sprite->prototype->width,
 			sprite->orig_y - sprite->prototype->height,
@@ -588,15 +588,19 @@ int UpdateSprite(SpriteClass* sprite){
 		for(const int& sprite_ai:sprite->prototype->AI_v)
 			switch (sprite_ai){
 			
-			case AI_CHANGE_WHEN_ENERGY_UNDER_2:
-				if (sprite->prototype->transformation != nullptr)
-					sprite->AI_Change_When_Energy_Under_2(sprite->prototype->transformation);
+			case AI_TRANSFORM_WHEN_ENERGY_UNDER_2:
+			sprite->AI_Transform_When_Energy_Under_2();
+
+				/*if (sprite->prototype->transformation != nullptr)
+					sprite->AI_Transform_When_Energy_Under_2(sprite->prototype->transformation);*/
 			break;
 			
-			case AI_CHANGE_WHEN_ENERGY_OVER_1:
-			if (sprite->prototype->transformation != nullptr)
-				if (sprite->AI_Change_When_Energy_Over_1(sprite->prototype->transformation)==1)
-					Effect_Destruction(FX_DESTRUCT_SAVU_HARMAA, (u32)sprite->x, (u32)sprite->y);
+			case AI_TRANSFORM_WHEN_ENERGY_OVER_1:
+			sprite->AI_Transform_When_Energy_Over_1();
+
+			/*if (sprite->prototype->transformation != nullptr)
+				if (sprite->AI_Transform_When_Energy_Over_1(sprite->prototype->transformation)==1)
+					Effect_Destruction(FX_DESTRUCT_SAVU_HARMAA, (u32)sprite->x, (u32)sprite->y);*/
 			break;
 			
 			case AI_SELF_TRANSFORMATION:
@@ -607,9 +611,8 @@ int UpdateSprite(SpriteClass* sprite){
 				sprite->AI_Damaged_by_Water();
 			break;
 			
-			case AI_MUUTOS_JOS_OSUTTU:
-				if (sprite->prototype->transformation != nullptr)
-					sprite->AI_Muutos_Jos_Osuttu(sprite->prototype->transformation);
+			case AI_TRANSFORM_WHEN_HIT:
+				sprite->AI_Transform_When_Hit();
 			break;
 
 			default: break;
@@ -847,22 +850,22 @@ int UpdateSprite(SpriteClass* sprite){
 						ylos = false;
 				}
 
-				if (sprite->HasAI(AI_NUOLET_VAIKUTTAVAT)) {
+				if (sprite->HasAI(AI_ARROW_BARRIER)) {
 
-					if (sprite2->HasAI(AI_NUOLI_RIGHT)) {
+					if (sprite2->HasAI(AI_ARROW_RIGHT)) {
 						sprite_a = sprite->prototype->max_speed / 3.5;
 						sprite_b = 0;
 					}
-					else if (sprite2->HasAI(AI_NUOLI_LEFT)) {
+					else if (sprite2->HasAI(AI_ARROW_LEFT)) {
 						sprite_a = sprite->prototype->max_speed / -3.5;
 						sprite_b = 0;
 					}
 
-					if (sprite2->HasAI(AI_NUOLI_UP)) {
+					if (sprite2->HasAI(AI_ARROW_UP)) {
 						sprite_b = sprite->prototype->max_speed / -3.5;
 						sprite_a = 0;
 					}
-					else if (sprite2->HasAI(AI_NUOLI_DOWN)) {
+					else if (sprite2->HasAI(AI_ARROW_DOWN)) {
 						sprite_b = sprite->prototype->max_speed / 3.5;
 						sprite_a = 0;
 					}
@@ -981,10 +984,10 @@ int UpdateSprite(SpriteClass* sprite){
 				Particles_New(PARTICLE_STAR,sprite_x,sprite_y, 1,-1,60,0.01,128);
 			}
 
-			if (sprite->HasAI(AI_VAIHDA_KALLOT_JOS_OSUTTU))
+			if (sprite->HasAI(AI_CHANGE_SKULL_BLOCKS_WHEN_HIT))
 				Game->Change_SkullBlocks();
 
-			if (sprite->HasAI(AI_ATTACK_1_JOS_OSUTTU)){
+			if (sprite->HasAI(AI_ATTACK_1_WHEN_HIT)){
 				sprite->attack1_timer = sprite->prototype->attack1_time;
 				sprite->charging_timer = 0;
 			}
@@ -1177,37 +1180,37 @@ int UpdateSprite(SpriteClass* sprite){
 													break;
 				case AI_NONSTOP:					sprite->AI_NonStop();
 													break;
-				case AI_TURNING_HORIZONTALLY:		sprite->AI_Kaantyy_Esteesta_Hori();
+				case AI_TURNING_HORIZONTALLY:		sprite->AI_Turning_Horizontally();
 													break;
-				case AI_KAANTYY_ESTEESTA_VERT:		sprite->AI_Kaantyy_Esteesta_Vert();
+				case AI_TURNING_VERTICALLY:			sprite->AI_Turning_Vertically();
 													break;
-				case AI_LOOK_FOR_CLIFFS:				sprite->AI_Varoo_Kuoppaa();
+				case AI_LOOK_FOR_CLIFFS:				sprite->AI_Look_For_Cliffs();
 													break;
-				case AI_RANDOM_CHANGE_DIRECTION_H:	sprite->AI_Random_Suunnanvaihto_Hori();
+				case AI_RANDOM_CHANGE_DIRECTION_H:	sprite->AI_Random_Change_Dir_H();
 													break;
-				case AI_RANDOM_KAANTYMINEN:			sprite->AI_Random_Kaantyminen();
+				case AI_RANDOM_TURNING:			sprite->AI_Random_Turning();
 													break;
-				case AI_RANDOM_JUMP:				sprite->AI_Random_Hyppy();
+				case AI_RANDOM_JUMP:				sprite->AI_Random_Jump();
 													break;
 				case AI_FOLLOW_PLAYER:			if (Player_Sprite->invisible_timer == 0)
-														sprite->AI_Seuraa_Pelaajaa(*Player_Sprite);
+														sprite->AI_Follow_Player(*Player_Sprite);
 													break;
 				case AI_FOLLOW_PLAYER_IF_IN_FRONT:	if (Player_Sprite->invisible_timer == 0)
-														sprite->AI_Seuraa_Pelaajaa_Jos_Nakee(*Player_Sprite);
+														sprite->AI_Follow_Player_If_Seen(*Player_Sprite);
 													break;
 				case AI_FOLLOW_PLAYER_VERT_HORI:	if (Player_Sprite->invisible_timer == 0)
-														sprite->AI_Seuraa_Pelaajaa_Vert_Hori(*Player_Sprite);
+														sprite->AI_Follow_Player_Vert_Hori(*Player_Sprite);
 													break;
 				case AI_FOLLOW_PLAYER_IF_IN_FRONT_VERT_HORI:
 													if (Player_Sprite->invisible_timer == 0)
-														sprite->AI_Seuraa_Pelaajaa_Jos_Nakee_Vert_Hori(*Player_Sprite);
+														sprite->AI_Follow_Player_If_Seen_Vert_Hori(*Player_Sprite);
 													break;
-				case AI_PAKENEE_PELAAJAA_JOS_NAKEE:	if (Player_Sprite->invisible_timer == 0)
-														sprite->AI_Pakenee_Pelaajaa_Jos_Nakee(*Player_Sprite);
+				case AI_RUN_AWAY_FROM_PLAYER:	if (Player_Sprite->invisible_timer == 0)
+														sprite->AI_Run_Away_From_Player(*Player_Sprite);
 													break;
 				case AI_SELF_DESTRUCTION:			sprite->AI_SelfDestruction();
 													break;
-				case AI_ATTACK_1_JOS_OSUTTU:		sprite->AI_Attack_1_Jos_Osuttu();
+				case AI_ATTACK_1_WHEN_HIT:		sprite->AI_Attack_1_When_Hit();
 													break;
 				case AI_ATTACK_2_WHEN_HIT:		sprite->AI_Attack_2_When_Hit();
 													break;
@@ -1227,15 +1230,15 @@ int UpdateSprite(SpriteClass* sprite){
 													if (Player_Sprite->invisible_timer == 0)
 														sprite->AI_Attack_1_if_Player_Bellow(*Player_Sprite);
 													break;
-				case AI_HYPPY_JOS_PELAAJA_YLAPUOLELLA:
+				case AI_JUMP_IF_PLAYER_ABOVE:
 													if (Player_Sprite->invisible_timer == 0)
-														sprite->AI_Hyppy_Jos_Pelaaja_Ylapuolella(*Player_Sprite);
+														sprite->AI_Jump_If_Player_Above(*Player_Sprite);
 													break;
 				case AI_DAMAGED_BY_WATER:		sprite->AI_Damaged_by_Water();
 													break;
 				case AI_KILL_EVERYONE:				sprite->AI_Kill_Everyone();
 													break;
-				case AI_KITKA_VAIKUTTAA:			sprite->AI_Kitka_Vaikuttaa();
+				case AI_FRICTION_EFFECT:			sprite->AI_Friction_Effect();
 													break;
 				case AI_HIDING:						sprite->AI_Hiding();
 													break;
@@ -1251,31 +1254,29 @@ int UpdateSprite(SpriteClass* sprite){
 													break;
 				case AI_MOVE_Y_SIN:				sprite->AI_Move_Y(sin_table(degree));
 													break;
-				case AI_MOVE_X_COS_NOPEA:		sprite->AI_Move_X(cos_table(degree*2));
+				case AI_MOVE_X_COS_FAST:		sprite->AI_Move_X(cos_table(degree*2));
 													break;
-				case AI_MOVE_Y_SIN_NOPEA:		sprite->AI_Move_Y(sin_table(degree*2));
+				case AI_MOVE_Y_SIN_FAST:		sprite->AI_Move_Y(sin_table(degree*2));
 													break;
-				case AI_MOVE_X_COS_HIDAS:		sprite->AI_Move_X(cos_table(degree/2));
+				case AI_MOVE_X_COS_SLOW:		sprite->AI_Move_X(cos_table(degree/2));
 													break;
-				case AI_MOVE_Y_SIN_HIDAS:		sprite->AI_Move_Y(sin_table(degree/2));
+				case AI_MOVE_Y_SIN_SLOW:		sprite->AI_Move_Y(sin_table(degree/2));
 													break;
-				case AI_MOVE_Y_SIN_VAPAA:		sprite->AI_Move_Y(sin_table(sprite->action_timer/2));
+				case AI_MOVE_Y_SIN_FREE:		sprite->AI_Move_Y(sin_table(sprite->action_timer/2));
 													break;
-				case AI_CHANGE_WHEN_ENERGY_UNDER_2:	if (sprite->prototype->transformation != nullptr)
-														sprite->AI_Change_When_Energy_Under_2(sprite->prototype->transformation);
+				case AI_TRANSFORM_WHEN_ENERGY_UNDER_2:
+												sprite->AI_Transform_When_Energy_Under_2();
 													break;
-				case AI_CHANGE_WHEN_ENERGY_OVER_1:	if (sprite->prototype->transformation != nullptr)
-														if (sprite->AI_Change_When_Energy_Over_1(sprite->prototype->transformation)==1)
-															Effect_Destruction(FX_DESTRUCT_SAVU_HARMAA, (u32)sprite->x, (u32)sprite->y);
+				case AI_TRANSFORM_WHEN_ENERGY_OVER_1:
+												sprite->AI_Transform_When_Energy_Over_1();
 													break;
 				case AI_SELF_TRANSFORMATION:		
 													sprite->AI_Self_Transformation();
 													break;
-				case AI_MUUTOS_JOS_OSUTTU:			if (sprite->prototype->transformation != nullptr) {
-														sprite->AI_Muutos_Jos_Osuttu(sprite->prototype->transformation);
-													}
+				case AI_TRANSFORM_WHEN_HIT:	
+													sprite->AI_Transform_When_Hit();
 													break;
-				case AI_TELEPORT:					if (sprite->AI_Teleportti(Sprites_List, *Player_Sprite)==1)
+				case AI_TELEPORT:					if (sprite->AI_Teleport(Sprites_List, *Player_Sprite))
 													{
 
 														Game->camera_x = (int)Player_Sprite->x;
@@ -1290,46 +1291,46 @@ int UpdateSprite(SpriteClass* sprite){
 
 													}
 													break;
-				case AI_KIIPEILIJA:					sprite->AI_Kiipeilija();
+				case AI_CLIMBER:					sprite->AI_Climber();
 													break;
-				case AI_KIIPEILIJA2:				sprite->AI_Kiipeilija2();
+				case AI_CLIMBER2:					sprite->AI_Climber2();
 													break;
-				case AI_TUHOUTUU_JOS_EMO_TUHOUTUU:	sprite->AI_Tuhoutuu_Jos_Emo_Tuhoutuu();
+				case AI_DIE_IF_PARENT_NULL:	sprite->AI_Die_If_Parent_Nullptr();
 													break;
 
-				case AI_FALL_WHEN_QUAKE:			sprite->AI_Fall_When_Quake(Game->vibration + Game->button_vibration);
+				case AI_FALLS_WHEN_SHAKEN:			sprite->AI_Fall_When_Shaken(Game->vibration + Game->button_vibration);
 													break;
-				case AI_MOVE_DOWN_JOS_KYTKIN1_PAINETTU: sprite->AI_Move_If_Switch_Pressed(Game->button1,0,1);
+				case AI_MOVE_DOWN_IF_SWITCH_1_PRESSED: sprite->AI_Move_If_Switch_Pressed(Game->button1,0,1);
 													break;
-				case AI_MOVE_UP_JOS_KYTKIN1_PAINETTU: sprite->AI_Move_If_Switch_Pressed(Game->button1,0,-1);
+				case AI_MOVE_UP_IF_SWITCH_1_PRESSED: sprite->AI_Move_If_Switch_Pressed(Game->button1,0,-1);
 													break;
-				case AI_MOVE_LEFT_JOS_KYTKIN1_PAINETTU: sprite->AI_Move_If_Switch_Pressed(Game->button1,-1,0);
+				case AI_MOVE_LEFT_IF_SWITCH_1_PRESSED: sprite->AI_Move_If_Switch_Pressed(Game->button1,-1,0);
 													break;
-				case AI_MOVE_RIGHT_JOS_KYTKIN1_PAINETTU: sprite->AI_Move_If_Switch_Pressed(Game->button1,1,0);
+				case AI_MOVE_RIGHT_IF_SWITCH_1_PRESSED: sprite->AI_Move_If_Switch_Pressed(Game->button1,1,0);
 													break;
-				case AI_MOVE_DOWN_JOS_KYTKIN2_PAINETTU: sprite->AI_Move_If_Switch_Pressed(Game->button2,0,1);
+				case AI_MOVE_DOWN_IF_SWITCH_2_PRESSED: sprite->AI_Move_If_Switch_Pressed(Game->button2,0,1);
 													break;
-				case AI_MOVE_UP_JOS_KYTKIN2_PAINETTU: sprite->AI_Move_If_Switch_Pressed(Game->button2,0,-1);
+				case AI_MOVE_UP_IF_SWITCH_2_PRESSED: sprite->AI_Move_If_Switch_Pressed(Game->button2,0,-1);
 													break;
-				case AI_MOVE_LEFT_JOS_KYTKIN2_PAINETTU: sprite->AI_Move_If_Switch_Pressed(Game->button2,-1,0);
+				case AI_MOVE_LEFT_IF_SWITCH_2_PRESSED: sprite->AI_Move_If_Switch_Pressed(Game->button2,-1,0);
 													break;
-				case AI_MOVE_RIGHT_JOS_KYTKIN2_PAINETTU: sprite->AI_Move_If_Switch_Pressed(Game->button2,1,0);
+				case AI_MOVE_RIGHT_IF_SWITCH_2_PRESSED: sprite->AI_Move_If_Switch_Pressed(Game->button2,1,0);
 													break;
-				case AI_MOVE_DOWN_JOS_KYTKIN3_PAINETTU: sprite->AI_Move_If_Switch_Pressed(Game->button3,0,1);
+				case AI_MOVE_DOWN_IF_SWITCH_3_PRESSED: sprite->AI_Move_If_Switch_Pressed(Game->button3,0,1);
 													break;
-				case AI_MOVE_UP_JOS_KYTKIN3_PAINETTU: sprite->AI_Move_If_Switch_Pressed(Game->button3,0,-1);
+				case AI_MOVE_UP_IF_SWITCH_3_PRESSED: sprite->AI_Move_If_Switch_Pressed(Game->button3,0,-1);
 													break;
-				case AI_MOVE_LEFT_JOS_KYTKIN3_PAINETTU: sprite->AI_Move_If_Switch_Pressed(Game->button3,-1,0);
+				case AI_MOVE_LEFT_IF_SWITCH_3_PRESSED: sprite->AI_Move_If_Switch_Pressed(Game->button3,-1,0);
 													break;
-				case AI_MOVE_RIGHT_JOS_KYTKIN3_PAINETTU: sprite->AI_Move_If_Switch_Pressed(Game->button3,1,0);
+				case AI_MOVE_RIGHT_IF_SWITCH_3_PRESSED: sprite->AI_Move_If_Switch_Pressed(Game->button3,1,0);
 													break;
-				case AI_TIPPUU_JOS_KYTKIN1_PAINETTU: sprite->AI_Tippuu_If_Switch_Pressed(Game->button1);
+				case AI_FALL_IF_SWITCH_1_PRESSED: sprite->AI_Tippuu_If_Switch_Pressed(Game->button1);
 													break;
-				case AI_TIPPUU_JOS_KYTKIN2_PAINETTU: sprite->AI_Tippuu_If_Switch_Pressed(Game->button2);
+				case AI_FALL_IF_SWITCH_2_PRESSED: sprite->AI_Tippuu_If_Switch_Pressed(Game->button2);
 													break;
-				case AI_TIPPUU_JOS_KYTKIN3_PAINETTU: sprite->AI_Tippuu_If_Switch_Pressed(Game->button3);
+				case AI_FALL_IF_SWITCH_3_PRESSED: sprite->AI_Tippuu_If_Switch_Pressed(Game->button3);
 													break;
-				case AI_RANDOM_LIIKAHDUS_VERT_HORI:	sprite->AI_Random_Liikahdus_Vert_Hori();
+				case AI_RANDOM_MOVE_VERT_HORI:	sprite->AI_Random_Move_Vert_Hori();
 													break;
 				case AI_TURN_BACK_WHEN_HIT:			sprite->AI_Turn_Back_When_Hit();
 													break;
@@ -1754,14 +1755,14 @@ int UpdateBonusSprite(SpriteClass* sprite){
 
 				Game->score_increment += sprite->prototype->score;
 				
-				if (!sprite->HasAI(AI_BONUS_AIKA)) {
+				if (!sprite->HasAI(AI_BONUS_CLOCK)) {
 					int font = sprite->prototype->score >= 50? fontti2 : fontti1;
 					Fadetext_New(font, std::to_string(sprite->prototype->score), (int)sprite->x-8,(int)sprite->y-8,100);
 				}
 
 			}
 
-			if (sprite->HasAI(AI_BONUS_AIKA)) {
+			if (sprite->HasAI(AI_BONUS_CLOCK)) {
 				
 				int increase_time = sprite->prototype->charge_time * TIME_FPS;
 				Game->timeout += increase_time;
@@ -1780,7 +1781,7 @@ int UpdateBonusSprite(SpriteClass* sprite){
 				Fadetext_New(fontti1,os.str(),(int)sprite->x-15,(int)sprite->y-8,100);
 			}
 
-			if (sprite->HasAI(AI_BONUS_NAKYMATTOMYYS))
+			if (sprite->HasAI(AI_BONUS_INVISIBILITY))
 				Player_Sprite->invisible_timer = sprite->prototype->charge_time;
 
 			if (sprite->HasAI(AI_BONUS_SUPERMODE)) {
@@ -1812,7 +1813,7 @@ int UpdateBonusSprite(SpriteClass* sprite){
 					sprite->removed = true;
 				}
 
-				if (sprite->HasAI(AI_UUSI_JOS_TUHOUTUU)) {
+				if (sprite->HasAI(AI_REBORN)) {
 					double ax, ay;
 					ax = sprite->orig_x;//-sprite->prototype->width;
 					ay = sprite->orig_y-sprite->prototype->height/2.0;
@@ -1896,7 +1897,7 @@ int UpdateBonusSprite(SpriteClass* sprite){
 										sprite->AI_Self_Transformation(sprite->prototype->transformation);*/
 									break;
 
-		case AI_FALL_WHEN_QUAKE:	sprite->AI_Fall_When_Quake(Game->vibration + Game->button_vibration);
+		case AI_FALLS_WHEN_SHAKEN:	sprite->AI_Fall_When_Shaken(Game->vibration + Game->button_vibration);
 									break;
 
 		default:					break;

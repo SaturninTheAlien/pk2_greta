@@ -420,7 +420,7 @@ void PrototypeClass::SetProto13(PrototypeClass13 &proto){
 	is_transparent				= proto.is_transparent;
 	projectile_charge_time			= proto.projectile_charge_time;
 	can_glide			= proto.can_glide;
-	boss				= proto.boss;
+	//boss				= proto.boss;
 	bonus_always			= proto.bonus_always;
 	can_swim			= proto.can_swim;
 
@@ -499,7 +499,7 @@ void PrototypeClass::SetProto20(const nlohmann::json& j){
 
 	jsonReadInt(j, "bonuses_number", this->bonuses_number);
 
-	jsonReadBool(j, "boss", this->boss);
+	//jsonReadBool(j, "boss", this->boss);
 
 	jsonReadBool(j, "can_glide", this->can_glide);
 
@@ -923,41 +923,35 @@ void SpriteClass::AI_Basic(){
 		action_timer = 0;
 
 }
-int SpriteClass::AI_Kaantyy_Esteesta_Hori(){
+void SpriteClass::AI_Turning_Horizontally(){
 	if (energy > 0)
 	{
 		if (!oikealle)
 		{
 			a = this->prototype->max_speed / -3.5;
-			return 1;
 		}
 
 		if (!vasemmalle)
 		{
 			a = this->prototype->max_speed / 3.5;
-			return 1;
 		}
 	}
-	return 0;
 }
-int SpriteClass::AI_Kaantyy_Esteesta_Vert(){
+void SpriteClass::AI_Turning_Vertically(){
 	if (energy > 0)
 	{
 		if (!alas)
 		{
 			b = this->prototype->max_speed / -3.5;
-			return 1;
 		}
 
 		if (!ylos)
 		{
 			b = this->prototype->max_speed / 3.5;
-			return 1;
 		}
 	}
-	return 0;
 }
-int SpriteClass::AI_Kiipeilija(){
+void SpriteClass::AI_Climber(){
 	if (energy > 0)
 	{
 		if (!alas && vasemmalle)
@@ -989,9 +983,8 @@ int SpriteClass::AI_Kiipeilija(){
 			//return 1;
 		}
 	}
-	return 0;
 }
-int SpriteClass::AI_Kiipeilija2(){
+void SpriteClass::AI_Climber2(){
 	if (energy > 0){
 		if (vasemmalle && oikealle && ylos && alas) {
 
@@ -1015,9 +1008,8 @@ int SpriteClass::AI_Kiipeilija2(){
 				a = 0;
 		}
 	}
-	return 0;
 }
-int SpriteClass::AI_Varoo_Kuoppaa(){
+void SpriteClass::AI_Look_For_Cliffs(){
 	double max = prototype->max_speed / 3.5;
 
 	if (energy > 0)
@@ -1047,9 +1039,8 @@ int SpriteClass::AI_Varoo_Kuoppaa(){
 		}
 	*/
 	}
-	return 0;
 }
-int SpriteClass::AI_Random_Hyppy(){
+void SpriteClass::AI_Random_Jump(){
 	if (energy > 0)
 	{
 		if (rand()%150 == 10 && b == 0 && jump_timer == 0 && ylos)
@@ -1057,7 +1048,6 @@ int SpriteClass::AI_Random_Hyppy(){
 			jump_timer = 1;
 		}
 	}
-	return 0;
 }
 void SpriteClass::AI_BlueFrog(){
 	if (energy > 0)
@@ -1086,7 +1076,7 @@ void SpriteClass::AI_RedFrog(){
 		}
 	}
 }
-int SpriteClass::AI_Random_Suunnanvaihto_Hori(){
+void SpriteClass::AI_Random_Change_Dir_H(){
 	if (energy > 0)
 	{
 		if (rand()%150 == 1)
@@ -1097,9 +1087,8 @@ int SpriteClass::AI_Random_Suunnanvaihto_Hori(){
 				a = rand()%max+1 - rand()%max+1;
 		}
 	}
-	return 0;
 }
-int SpriteClass::AI_Random_Kaantyminen(){
+void SpriteClass::AI_Random_Turning(){
 	if (energy > 0)
 	{
 		if (action_timer%400 == 1 && a == 0)
@@ -1107,7 +1096,6 @@ int SpriteClass::AI_Random_Kaantyminen(){
 			flip_x = !flip_x;
 		}
 	}
-	return 0;
 }
 void SpriteClass::AI_Turn_Back_When_Hit() {
 
@@ -1119,7 +1107,7 @@ void SpriteClass::AI_Turn_Back_When_Hit() {
 	
 	}
 }
-int SpriteClass::AI_Random_Liikahdus_Vert_Hori(){
+void SpriteClass::AI_Random_Move_Vert_Hori(){
 	if (energy > 0)
 	{
 		if (rand()%150 == 1 || action_timer == 1)
@@ -1141,9 +1129,8 @@ int SpriteClass::AI_Random_Liikahdus_Vert_Hori(){
 
 		}
 	}
-	return 0;
 }
-int SpriteClass::AI_Seuraa_Pelaajaa(SpriteClass &player){
+void SpriteClass::AI_Follow_Player(SpriteClass &player){
 	if (energy > 0 && player.energy > 0)
 	{
 		double max = prototype->max_speed / 3.5;
@@ -1169,9 +1156,8 @@ int SpriteClass::AI_Seuraa_Pelaajaa(SpriteClass &player){
 				flip_x = false;
 		}
 	}
-	return 0;
 }
-int SpriteClass::AI_Pakenee_Pelaajaa_Jos_Nakee(SpriteClass &player){
+void SpriteClass::AI_Run_Away_From_Player(SpriteClass &player){
 	if (energy > 0 && player.energy > 0)
 	{
 		if ((player.x < x && flip_x && !player.flip_x) || (player.x > x && !flip_x && player.flip_x))
@@ -1191,11 +1177,10 @@ int SpriteClass::AI_Pakenee_Pelaajaa_Jos_Nakee(SpriteClass &player){
 				}
 			}
 	}
-
-
-	return 0;
 }
-int SpriteClass::AI_Seuraa_Pelaajaa_Jos_Nakee(SpriteClass &player){
+
+
+void SpriteClass::AI_Follow_Player_If_Seen(SpriteClass &player){
 	if (energy > 0  && player.energy > 0){
 		double max = prototype->max_speed / 3.5;
 
@@ -1219,10 +1204,8 @@ int SpriteClass::AI_Seuraa_Pelaajaa_Jos_Nakee(SpriteClass &player){
 			}
 		}
 	}
-
-
-	return 0;
 }
+/*
 int SpriteClass::AI_Jahtaa_Pelaajaa(SpriteClass &player){
 	if (energy > 0 && player.energy > 0)
 	{
@@ -1266,8 +1249,8 @@ int SpriteClass::AI_Jahtaa_Pelaajaa(SpriteClass &player){
 
 
 	return 0;
-}
-int SpriteClass::AI_Seuraa_Pelaajaa_Vert_Hori(SpriteClass &player){
+}*/
+void SpriteClass::AI_Follow_Player_Vert_Hori(SpriteClass &player){
 	if (energy > 0 && player.energy > 0)
 	{
 		double max = prototype->max_speed / 3.5;
@@ -1303,9 +1286,8 @@ int SpriteClass::AI_Seuraa_Pelaajaa_Vert_Hori(SpriteClass &player){
 				flip_x = false;
 		}
 	}
-	return 0;
 }
-int SpriteClass::AI_Seuraa_Pelaajaa_Jos_Nakee_Vert_Hori(SpriteClass &player){
+void SpriteClass::AI_Follow_Player_If_Seen_Vert_Hori(SpriteClass &player){
 	if (energy > 0  && player.energy > 0){
 		double max = prototype->max_speed / 3.5;
 
@@ -1335,33 +1317,27 @@ int SpriteClass::AI_Seuraa_Pelaajaa_Jos_Nakee_Vert_Hori(SpriteClass &player){
 			}
 		}
 	}
-
-
-	return 0;
 }
-int SpriteClass::AI_Change_When_Energy_Under_2(PrototypeClass *transformation){
-	
-	if (energy < 2 && transformation != prototype) {
+void SpriteClass::AI_Transform_When_Energy_Under_2(){
+
+	PrototypeClass* transformation = this->prototype->transformation;
+
+	if (transformation!=nullptr&& energy < 2 && transformation != prototype) {
 		prototype = transformation;
 		initial_weight = prototype->weight;
-		//ammo1 = prototype->ammo1;
-		//ammo2 = prototype->ammo2;
-		return 1;
 	}
-
-	return 0;
 }
-int SpriteClass::AI_Change_When_Energy_Over_1(PrototypeClass *transformation){
+void SpriteClass::AI_Transform_When_Energy_Over_1(){
 
-	if (energy > 1 && transformation != prototype) {
+	PrototypeClass* transformation = this->prototype->transformation;
+	if (transformation!=nullptr && energy > 1 && transformation != prototype) {
 		prototype = transformation;
 		initial_weight = prototype->weight;
-		//ammo1 = prototype->ammo1;
-		//ammo2 = prototype->ammo2;
-		return 1;
+		Effect_Destruction(FX_DESTRUCT_SAVU_HARMAA, (u32)this->x, (u32)this->y);
+		//return true;
 	}
 
-	return 0;
+	//return false;
 }
 void SpriteClass::AI_Self_Transformation(){
 	PrototypeClass* transformation = this->prototype->transformation;
@@ -1384,8 +1360,9 @@ void SpriteClass::AI_Self_Transformation(){
 		}
 	}
 }
-int SpriteClass::AI_Muutos_Jos_Osuttu(PrototypeClass *transformation){
-	if (energy > 0 && transformation != prototype)
+void SpriteClass::AI_Transform_When_Hit(){
+	PrototypeClass* transformation = this->prototype->transformation;
+	if (transformation!=nullptr && energy > 0 && transformation != prototype)
 	{
 		if (saatu_vahinko > 0)
 		{
@@ -1398,36 +1375,25 @@ int SpriteClass::AI_Muutos_Jos_Osuttu(PrototypeClass *transformation){
 			animation_index = -1;
 
 			Animaatio(ANIMATION_IDLE,true);
-
-			return 1;
 		}
 	}
-
-	return 0;
 }
-int SpriteClass::AI_Tuhoutuu_Jos_Emo_Tuhoutuu(){
+void SpriteClass::AI_Die_If_Parent_Nullptr(){
 	if (parent_sprite != nullptr)
 	{
 		if (parent_sprite->energy < 1 && energy > 0)
 		{
 			saatu_vahinko = energy;
 			saatu_vahinko_tyyppi = DAMAGE_ALL;
-
-			return 1;
 		}
 	}
-
-	return 0;
 }
-int SpriteClass::AI_Attack_1_Jos_Osuttu(){
+void SpriteClass::AI_Attack_1_When_Hit(){
 	if (saatu_vahinko > 0 && energy > 0)
 	{
 		this->attack1_timer = this->prototype->attack1_time;
 		this->charging_timer = 0;
-		return 1;
 	}
-
-	return 0;
 }
 void SpriteClass::AI_Attack_2_When_Hit(){
 	if (saatu_vahinko > 0 && energy > 0)
@@ -1484,17 +1450,15 @@ void SpriteClass::AI_Attack_1_if_Player_Bellow(SpriteClass &player){
 		}
 	}
 }
-int SpriteClass::AI_Hyppy_Jos_Pelaaja_Ylapuolella(SpriteClass &player){
+void SpriteClass::AI_Jump_If_Player_Above(SpriteClass &player){
 	if (energy > 0 && jump_timer == 0 && player.energy > 0)
 	{
 		if ((player.x - x < prototype->width && player.x - x > -prototype->width) &&
 			(player.y < y && y - player.y < 350))
 		{
 			jump_timer = 1;
-			return 1;
 		}
 	}
-	return 0;
 }
 void SpriteClass::AI_NonStop(){
 	if (energy > 0)
@@ -1514,7 +1478,7 @@ void SpriteClass::AI_NonStop(){
 		}
 	}
 }
-int SpriteClass::AI_Kitka_Vaikuttaa(){
+void SpriteClass::AI_Friction_Effect(){
 
 	if (energy > 0)
 	{
@@ -1523,8 +1487,6 @@ int SpriteClass::AI_Kitka_Vaikuttaa(){
 		else
 			a /= 1.02;
 	}
-
-	return 0;
 }
 void SpriteClass::AI_Hiding(){
 
@@ -1560,25 +1522,21 @@ void SpriteClass::AI_Return_To_Orig_Y(){
 			b -= 0.04;
 	}
 }
-void SpriteClass::AI_Fall_When_Quake(int tarina){
+void SpriteClass::AI_Fall_When_Shaken(int tarina){
 
 	if (energy > 0 && tarina > 0)
 	{
 		initial_weight = 0.5;
 	}
 }
-int SpriteClass::AI_Damaged_by_Water(){
+void SpriteClass::AI_Damaged_by_Water(){
 	if (energy > 0)
 		if (this->in_water)
 			saatu_vahinko++;
-
-	return 0;
 }
-int SpriteClass::AI_Kill_Everyone(){
+void SpriteClass::AI_Kill_Everyone(){
 	if (energy > 0)
 		this->enemy = !this->enemy;
-
-	return 0;
 }
 void SpriteClass::AI_Jumper(){
 	if (x < 10)
@@ -1805,8 +1763,8 @@ void SpriteClass::AI_SelfDestruction(){
 		this->saatu_vahinko_tyyppi = DAMAGE_ALL;
 	}
 }
-int SpriteClass::AI_Teleportti(std::list<SpriteClass*> spritet, SpriteClass &player){
-	int siirto = 0;
+bool SpriteClass::AI_Teleport(const std::list<SpriteClass*>& spritet, SpriteClass &player){
+	bool siirto = false;
 
 	if (energy > 0 && charging_timer == 0 && attack1_timer == 0)
 	{
@@ -1830,7 +1788,7 @@ int SpriteClass::AI_Teleportti(std::list<SpriteClass*> spritet, SpriteClass &pla
 
 			// if you don't have any teleports (excluding the teleport itself), return
 			if (portit.size() == 0)
-				return 0;
+				return false;
 
 			// arvotaan kohdeportti
 			SpriteClass* dst = portit[rand()%portit.size()];
@@ -1844,7 +1802,7 @@ int SpriteClass::AI_Teleportti(std::list<SpriteClass*> spritet, SpriteClass &pla
 			dst->charging_timer = 0;
 			this->charging_timer = 0;
 
-			siirto = 1;
+			siirto = true;
 		}
 	}
 

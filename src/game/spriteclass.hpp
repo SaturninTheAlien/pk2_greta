@@ -119,7 +119,7 @@ class PrototypeClass{
     bool    is_transparent       = false;
     int     projectile_charge_time    = 0;
     bool    can_glide    = false;
-    bool    boss         = false;
+    //bool    boss         = false; //unused
     bool    bonus_always = false;
     bool    can_swim     = false;
 
@@ -244,24 +244,24 @@ class SpriteClass{
     void AI_BlueFrog();
     void AI_RedFrog();
     void AI_Basic();
-    int AI_Kaantyy_Esteesta_Hori();
-    int AI_Kaantyy_Esteesta_Vert();
-    int AI_Varoo_Kuoppaa();
-    int AI_Random_Kaantyminen();
-    int AI_Random_Suunnanvaihto_Hori();
-    int AI_Random_Hyppy();
-    int AI_Random_Liikahdus_Vert_Hori();
-    int AI_Seuraa_Pelaajaa(SpriteClass &player);
-    int AI_Seuraa_Pelaajaa_Jos_Nakee(SpriteClass &player);
-    int AI_Seuraa_Pelaajaa_Jos_Nakee_Vert_Hori(SpriteClass &player);
-    int AI_Seuraa_Pelaajaa_Vert_Hori(SpriteClass &player);
-    int AI_Jahtaa_Pelaajaa(SpriteClass &player);
-    int AI_Pakenee_Pelaajaa_Jos_Nakee(SpriteClass &player);
-    int AI_Change_When_Energy_Under_2(PrototypeClass *transformation);
-    int AI_Change_When_Energy_Over_1(PrototypeClass *transformation);
+    void AI_Turning_Horizontally();
+    void AI_Turning_Vertically();
+    void AI_Look_For_Cliffs();
+    void AI_Random_Turning();
+    void AI_Random_Change_Dir_H();
+    void AI_Random_Jump();
+    void AI_Random_Move_Vert_Hori();
+    void AI_Follow_Player(SpriteClass &player);
+    void AI_Follow_Player_If_Seen(SpriteClass &player);
+    void AI_Follow_Player_If_Seen_Vert_Hori(SpriteClass &player);
+    void AI_Follow_Player_Vert_Hori(SpriteClass &player);
+    //int AI_Jahtaa_Pelaajaa(SpriteClass &player); //unused
+    void AI_Run_Away_From_Player(SpriteClass &player);
+    void AI_Transform_When_Energy_Under_2();
+    void AI_Transform_When_Energy_Over_1();
     void AI_Self_Transformation();
-    int AI_Muutos_Jos_Osuttu(PrototypeClass *transformation);
-    int AI_Attack_1_Jos_Osuttu();
+    void AI_Transform_When_Hit();
+    void AI_Attack_1_When_Hit();
     void AI_Attack_2_When_Hit();
     void AI_Attack_1_Nonstop();
     void AI_Attack_2_Nonstop();
@@ -269,25 +269,25 @@ class SpriteClass{
     void AI_Attack_2_if_Player_in_Front(SpriteClass &player);
     void AI_Attack_1_if_Player_Bellow(SpriteClass &player);
     void AI_NonStop();
-    int AI_Hyppy_Jos_Pelaaja_Ylapuolella(SpriteClass &player);
+    void AI_Jump_If_Player_Above(SpriteClass &player);
     void AI_SelfDestruction();
-    int AI_Damaged_by_Water();
-    int AI_Kill_Everyone();
-    int AI_Kitka_Vaikuttaa();
+    void AI_Damaged_by_Water();
+    void AI_Kill_Everyone();
+    void AI_Friction_Effect();
     void AI_Hiding();
     void AI_Return_To_Orig_X();
     void AI_Return_To_Orig_Y();
     void AI_Turn_Back_When_Hit();
-    void AI_Fall_When_Quake(int tarina);
+    void AI_Fall_When_Shaken(int tarina);
     void AI_Move_X(double liike);
     void AI_Move_Y(double liike);
     void AI_Tippuu_If_Switch_Pressed(int kytkin);
     void AI_Move_If_Switch_Pressed(int kytkin, int ak, int bk);
-    int AI_Teleportti(std::list<SpriteClass*> spritet, SpriteClass &player);
-    int AI_Kiipeilija();
-    int AI_Kiipeilija2();
+    bool AI_Teleport(const std::list<SpriteClass*>& spritet, SpriteClass &player);
+    void AI_Climber();
+    void AI_Climber2();
     bool AI_Info(SpriteClass &player);
-    int AI_Tuhoutuu_Jos_Emo_Tuhoutuu();
+    void AI_Die_If_Parent_Nullptr();
 
     void AI_Destructed_Next_To_Player(SpriteClass &player);
 
