@@ -1097,7 +1097,7 @@ void SpriteClass::AI_Random_Turning(){
 		}
 	}
 }
-void SpriteClass::AI_Turn_Back_When_Hit() {
+void SpriteClass::AI_Turn_Back_If_Demaged() {
 
 	if (damage_timer == 1 && energy > 0) {
 		
@@ -1360,7 +1360,7 @@ void SpriteClass::AI_Self_Transformation(){
 		}
 	}
 }
-void SpriteClass::AI_Transform_When_Hit(){
+void SpriteClass::AI_Transform_If_Demaged(){
 	PrototypeClass* transformation = this->prototype->transformation;
 	if (transformation!=nullptr && energy > 0 && transformation != prototype)
 	{
@@ -1388,14 +1388,14 @@ void SpriteClass::AI_Die_If_Parent_Nullptr(){
 		}
 	}
 }
-void SpriteClass::AI_Attack_1_When_Hit(){
+void SpriteClass::AI_Attack_1_If_Demaged(){
 	if (saatu_vahinko > 0 && energy > 0)
 	{
 		this->attack1_timer = this->prototype->attack1_time;
 		this->charging_timer = 0;
 	}
 }
-void SpriteClass::AI_Attack_2_When_Hit(){
+void SpriteClass::AI_Attack_2_If_Demaged(){
 	if (saatu_vahinko > 0 && energy > 0)
 	{
 		this->attack2_timer = this->prototype->attack2_time;
@@ -1450,6 +1450,70 @@ void SpriteClass::AI_Attack_1_if_Player_Bellow(SpriteClass &player){
 		}
 	}
 }
+/**
+ * @brief 
+ * 
+ * "Greta Engine", new AI
+ */
+void SpriteClass::AI_Attack_1_If_Player_Above(SpriteClass& player){
+	if (energy > 0 && damage_timer == 0 && player.energy > 0)
+	{
+		if ((player.x - x < prototype->width && player.x - x > -prototype->width) &&
+			(player.y < y && y - player.y < 350))
+		{
+			this->attack1_timer = this->prototype->attack1_time;
+		}
+	}
+}
+
+/**
+ * @brief 
+ * 
+ * "Greta Engine", new AI
+ */
+void SpriteClass::AI_Attack_2_If_Player_Above(SpriteClass& player){
+	if (energy > 0 && damage_timer == 0 && player.energy > 0)
+	{
+		if ((player.x - x < prototype->width && player.x - x > -prototype->width) &&
+			(player.y < y && y - player.y < 350))
+		{
+			this->attack2_timer = this->prototype->attack2_time;
+		}
+	}
+}
+
+/**
+ * @brief 
+ * 
+ * "Greta Engine", new AI
+ */
+void SpriteClass::AI_Transform_If_Player_Above(SpriteClass& player){
+	if(energy > 0 && player.energy>0){
+		if ((player.x - x < prototype->width && player.x - x > -prototype->width) &&
+			(player.y < y && y - player.y < 350))
+		{
+			this->AI_Self_Transformation();
+		}
+	}
+}
+
+/**
+ * @brief 
+ * 
+ * "Greta Engine", new AI
+ */
+void SpriteClass::AI_Transform_If_Player_Bellow(SpriteClass& player){
+	if(energy > 0 && player.energy>0){
+		if ((player.x - x < prototype->width && player.x - x > -prototype->width) &&
+			(player.y > y && player.y - y < 350))
+		{
+			this->AI_Self_Transformation();
+		}
+	}
+}
+///////
+
+
 void SpriteClass::AI_Jump_If_Player_Above(SpriteClass &player){
 	if (energy > 0 && jump_timer == 0 && player.energy > 0)
 	{

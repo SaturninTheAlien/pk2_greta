@@ -388,7 +388,7 @@ void SpriteOnDeath(SpriteClass* sprite){
 				Sprites_add(sprite->prototype->bonus,0,sprite_x-11+(10-rand()%20),
 									sprite_ala-16-(10+rand()%20), sprite, true);
 
-	if (sprite->HasAI(AI_CHANGE_SKULL_BLOCKS_WHEN_DEAD) && !sprite->HasAI(AI_CHANGE_SKULL_BLOCKS_WHEN_HIT))
+	if (sprite->HasAI(AI_CHANGE_SKULL_BLOCKS_WHEN_DEAD) && !sprite->HasAI(AI_CHANGE_SKULL_BLOCKS_IF_DAMAGED))
 		Game->Change_SkullBlocks();
 
 	if (how_destroyed >= FX_DESTRUCT_ANIMAATIO)
@@ -611,8 +611,8 @@ int UpdateSprite(SpriteClass* sprite){
 				sprite->AI_Damaged_by_Water();
 			break;
 			
-			case AI_TRANSFORM_WHEN_HIT:
-				sprite->AI_Transform_When_Hit();
+			case AI_TRANSFORM_IF_DAMAGED:
+				sprite->AI_Transform_If_Demaged();
 			break;
 
 			default: break;
@@ -984,15 +984,15 @@ int UpdateSprite(SpriteClass* sprite){
 				Particles_New(PARTICLE_STAR,sprite_x,sprite_y, 1,-1,60,0.01,128);
 			}
 
-			if (sprite->HasAI(AI_CHANGE_SKULL_BLOCKS_WHEN_HIT))
+			if (sprite->HasAI(AI_CHANGE_SKULL_BLOCKS_IF_DAMAGED))
 				Game->Change_SkullBlocks();
 
-			if (sprite->HasAI(AI_ATTACK_1_WHEN_HIT)){
+			if (sprite->HasAI(AI_ATTACK_1_IF_DAMAGED)){
 				sprite->attack1_timer = sprite->prototype->attack1_time;
 				sprite->charging_timer = 0;
 			}
 
-			if (sprite->HasAI(AI_ATTACK_2_WHEN_HIT)){
+			if (sprite->HasAI(AI_ATTACK_2_IF_DAMAGED)){
 				sprite->attack2_timer = sprite->prototype->attack2_time;
 				sprite->charging_timer = 0;
 			}
@@ -1210,9 +1210,9 @@ int UpdateSprite(SpriteClass* sprite){
 													break;
 				case AI_SELF_DESTRUCTION:			sprite->AI_SelfDestruction();
 													break;
-				case AI_ATTACK_1_WHEN_HIT:		sprite->AI_Attack_1_When_Hit();
+				case AI_ATTACK_1_IF_DAMAGED:		sprite->AI_Attack_1_If_Demaged();
 													break;
-				case AI_ATTACK_2_WHEN_HIT:		sprite->AI_Attack_2_When_Hit();
+				case AI_ATTACK_2_IF_DAMAGED:		sprite->AI_Attack_2_If_Demaged();
 													break;
 				case AI_ATTACK_1_NONSTOP:			sprite->AI_Attack_1_Nonstop();
 													break;
@@ -1230,6 +1230,30 @@ int UpdateSprite(SpriteClass* sprite){
 													if (Player_Sprite->invisible_timer == 0)
 														sprite->AI_Attack_1_if_Player_Bellow(*Player_Sprite);
 													break;
+
+				/**
+				 * @brief 
+				 * "Greta Engine" new AIs
+				 */
+				case AI_ATTACK_1_IF_PLAYER_ABOVE:
+													if(Player_Sprite->invisible_timer == 0)
+														sprite->AI_Attack_1_If_Player_Above(*Player_Sprite);
+													break;
+				case AI_ATTACK_2_IF_PLAYER_ABOVE:
+													if(Player_Sprite->invisible_timer == 0)
+														sprite->AI_Attack_2_If_Player_Above(*Player_Sprite);
+													break;
+				case AI_TRANSFORM_IF_PLAYER_BELLOW:
+													if(Player_Sprite->invisible_timer == 0)
+														sprite->AI_Transform_If_Player_Bellow(*Player_Sprite);
+													break;
+				case AI_TRANSFORM_IF_PLAYER_ABOVE:
+													if(Player_Sprite->invisible_timer == 0)
+														sprite->AI_Transform_If_Player_Above(*Player_Sprite);
+													break;
+
+
+
 				case AI_JUMP_IF_PLAYER_ABOVE:
 													if (Player_Sprite->invisible_timer == 0)
 														sprite->AI_Jump_If_Player_Above(*Player_Sprite);
@@ -1273,8 +1297,8 @@ int UpdateSprite(SpriteClass* sprite){
 				case AI_SELF_TRANSFORMATION:		
 													sprite->AI_Self_Transformation();
 													break;
-				case AI_TRANSFORM_WHEN_HIT:	
-													sprite->AI_Transform_When_Hit();
+				case AI_TRANSFORM_IF_DAMAGED:	
+													sprite->AI_Transform_If_Demaged();
 													break;
 				case AI_TELEPORT:					if (sprite->AI_Teleport(Sprites_List, *Player_Sprite))
 													{
@@ -1332,7 +1356,7 @@ int UpdateSprite(SpriteClass* sprite){
 													break;
 				case AI_RANDOM_MOVE_VERT_HORI:	sprite->AI_Random_Move_Vert_Hori();
 													break;
-				case AI_TURN_BACK_WHEN_HIT:			sprite->AI_Turn_Back_When_Hit();
+				case AI_TURN_BACK_IF_DAMAGED:			sprite->AI_Turn_Back_If_Demaged();
 													break;
 				case AI_EVIL_ONE:					if (sprite->energy < 1) 
 													{

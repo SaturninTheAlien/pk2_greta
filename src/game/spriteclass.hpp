@@ -260,14 +260,21 @@ class SpriteClass{
     void AI_Transform_When_Energy_Under_2();
     void AI_Transform_When_Energy_Over_1();
     void AI_Self_Transformation();
-    void AI_Transform_When_Hit();
-    void AI_Attack_1_When_Hit();
-    void AI_Attack_2_When_Hit();
+    void AI_Transform_If_Demaged();
+    void AI_Attack_1_If_Demaged();
+    void AI_Attack_2_If_Demaged();
     void AI_Attack_1_Nonstop();
     void AI_Attack_2_Nonstop();
     void AI_Attack_1_if_Player_in_Front(SpriteClass &player);
     void AI_Attack_2_if_Player_in_Front(SpriteClass &player);
     void AI_Attack_1_if_Player_Bellow(SpriteClass &player);
+
+    void AI_Attack_1_If_Player_Above(SpriteClass& player);
+    void AI_Attack_2_If_Player_Above(SpriteClass& player);
+    void AI_Transform_If_Player_Above(SpriteClass& player);
+    void AI_Transform_If_Player_Bellow(SpriteClass& player);
+
+
     void AI_NonStop();
     void AI_Jump_If_Player_Above(SpriteClass &player);
     void AI_SelfDestruction();
@@ -277,7 +284,7 @@ class SpriteClass{
     void AI_Hiding();
     void AI_Return_To_Orig_X();
     void AI_Return_To_Orig_Y();
-    void AI_Turn_Back_When_Hit();
+    void AI_Turn_Back_If_Demaged();
     void AI_Fall_When_Shaken(int tarina);
     void AI_Move_X(double liike);
     void AI_Move_Y(double liike);
