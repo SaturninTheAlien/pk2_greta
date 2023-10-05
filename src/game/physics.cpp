@@ -1817,7 +1817,9 @@ int UpdateBonusSprite(SpriteClass* sprite){
 					double ax, ay;
 					ax = sprite->orig_x;//-sprite->prototype->width;
 					ay = sprite->orig_y-sprite->prototype->height/2.0;
-					Sprites_add(sprite->prototype, 0, ax-17, ay, sprite, false);
+					/*Sprites_add(sprite->prototype, 0, ax-17, ay, sprite, false);*/
+					sprite->removed = false;
+					sprite->energy = sprite->prototype->energy;
 					for (int r=1;r<6;r++)
 						Particles_New(PARTICLE_SPARK,ax+rand()%10-rand()%10, ay+rand()%10-rand()%10,0,0,rand()%100,0.1,32);
 
