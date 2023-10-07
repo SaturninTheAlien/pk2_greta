@@ -86,6 +86,12 @@ This example starts the level13.map (the robot boss fight) on dev mode:
 * A new sprite format .spr2 based on JSON. The legacy .spr format is still supported for compatibility reasons. All the obsolete c-style arrays in PrototypeClass have been replaced by std::vector, std::string and so there are no limits like max number of AIs and so on. There is still 12 character length limit of the sprite filename length due to the map format. Currently sprite filenames are stored as "name.spr". During the level loading, firstly "name.spr2" is searched for, then "name.spr". If the sprite name is stored as "name", only "name.spr2" is searched for.
 * "always_active" field in the new sprite format. If true, the sprite won't deactivate when off-screen.
 
+* New AIs:
+    * AI_ATTACK_1_IF_PLAYER_ABOVE (31)
+    * AI_ATTACK_2_IF_PLAYER_ABOVE (32)
+    * AI_TRANSFORM_IF_PLAYER_BELLOW (33)
+    * AI_TRANSFORM_IF_PLAYER_ABOVE (34)
+
 # Experimental features
 * Sprite inheritance / "parent" field.
 
@@ -97,6 +103,8 @@ This example starts the level13.map (the robot boss fight) on dev mode:
 but not vice versa (the hedgehog gift trap still works).
 * Enemy player transformed into friendly prototype by potion is no longer enemy ("Iv4n island 2/spyrooster", robohead transformed into rooster is no longer immune to the enemies),
 but not vice versa (for example, rooster player is still friendly after using a pig potion).
+
+* If there is a missing tileset or sprite prototype there will be a dialog window and the game will quit without “Segmentation fault”.
 
 # Plans:
 * Translate all the Finnish variable names and comments to English.
