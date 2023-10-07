@@ -102,8 +102,8 @@ bool Waypoint::execute(SpriteClass*sprite){
     }
     else{
         double z = sqrt(eps2);
-        sprite->a = velocity * dx / z;
-        sprite->b = velocity * dy / z;
+        sprite->a = -velocity * dx / z;
+        sprite->b = -velocity * dy / z;
         sprite->flip_x = dx>0;
     }
 
@@ -175,13 +175,13 @@ void Parse_Commands(const nlohmann::json& j_in, std::vector<Command*>& commands_
                 else if(command_name=="waypoint_y"){
                     state = 2;
                 }
-                else if(command_name=="waypoint"){
+                else if(command_name=="waypoint_xy"){
                     state = 3;
                 }
                 else if(command_name=="self_destruction"){
                     commands_v.push_back(new SelfDestructionCommand());
                 }
-                else if(command_name=="transformation"){
+                else if(command_name=="transform"){
                     commands_v.push_back(new TransformationCommand());
                 }
             }
@@ -215,6 +215,7 @@ void Parse_Commands(const nlohmann::json& j_in, std::vector<Command*>& commands_
                 target_y = getCommandYPos(j, prototypeHeight);
                 commands_v.push_back(new Waypoint(target_x, target_y));
             }
+            state=0;
             break;
         
         default:
