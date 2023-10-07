@@ -13,6 +13,7 @@
 #include <vector>
 #include <string>
 #include <array>
+#include <map>
 #include "3rd_party/json.hpp"
 
 #pragma once
@@ -23,4 +24,7 @@ namespace PJson{
     void jsonReadDouble(const nlohmann::json& j, const std::string& name, double& target );
     void jsonReadBool(const nlohmann::json& j, const std::string& name, bool& target);
     void jsonReadEnumU8(const nlohmann::json& j, const std::string& name, u8& target);
+    
+    void jsonReadEnumU8(const nlohmann::json& j, const std::string& name, u8& target,
+        const std::map<std::string, u8>& namedValues);
 }

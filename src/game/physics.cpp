@@ -388,7 +388,7 @@ void SpriteOnDeath(SpriteClass* sprite){
 				Sprites_add(sprite->prototype->bonus,0,sprite_x-11+(10-rand()%20),
 									sprite_ala-16-(10+rand()%20), sprite, true);
 
-	if (sprite->HasAI(AI_CHANGE_SKULL_BLOCKS_WHEN_DEAD) && !sprite->HasAI(AI_CHANGE_SKULL_BLOCKS_IF_DAMAGED))
+	if (sprite->HasAI(AI_CHANGE_SKULL_BLOCKS_IF_DEAD) && !sprite->HasAI(AI_CHANGE_SKULL_BLOCKS_IF_DAMAGED))
 		Game->Change_SkullBlocks();
 
 	if (how_destroyed >= FX_DESTRUCT_ANIMAATIO)
@@ -1322,7 +1322,7 @@ int UpdateSprite(SpriteClass* sprite){
 				case AI_DIE_IF_PARENT_NULL:	sprite->AI_Die_If_Parent_Nullptr();
 													break;
 
-				case AI_FALLS_WHEN_SHAKEN:			sprite->AI_Fall_When_Shaken(Game->vibration + Game->button_vibration);
+				case AI_FALL_WHEN_SHAKEN:			sprite->AI_Fall_When_Shaken(Game->vibration + Game->button_vibration);
 													break;
 				case AI_MOVE_DOWN_IF_SWITCH_1_PRESSED: sprite->AI_Move_If_Switch_Pressed(Game->button1,0,1);
 													break;
@@ -1367,6 +1367,10 @@ int UpdateSprite(SpriteClass* sprite){
 				
 				case AI_DESTRUCTED_NEXT_TO_PLAYER:	sprite->AI_Destructed_Next_To_Player(*Player_Sprite);
 													break;
+				
+				case AI_FOLLOW_COMMANS:
+					sprite->AI_Follow_Commands();
+					break;
 
 				default:
 
@@ -1923,7 +1927,7 @@ int UpdateBonusSprite(SpriteClass* sprite){
 										sprite->AI_Self_Transformation(sprite->prototype->transformation);*/
 									break;
 
-		case AI_FALLS_WHEN_SHAKEN:	sprite->AI_Fall_When_Shaken(Game->vibration + Game->button_vibration);
+		case AI_FALL_WHEN_SHAKEN:	sprite->AI_Fall_When_Shaken(Game->vibration + Game->button_vibration);
 									break;
 
 		default:					break;

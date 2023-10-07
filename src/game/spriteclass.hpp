@@ -15,6 +15,7 @@
 #include "engine/PJson.hpp"
 #include "spriteclass_legacy.hpp"
 #include "spriteclass_constants.hpp"
+#include "spriteclass_commands.hpp"
 
 class PrototypeClass;
 
@@ -160,6 +161,7 @@ class PrototypeClass{
     int     Draw(int x, int y, int frame);
     bool    HasAI(int AI)const;
 
+    std::vector<SpriteCommands::Command*>commands;
 private:
     void    SetProto10(PrototypeClass10 &proto);
     void    SetProto11(PrototypeClass11 &proto);
@@ -297,7 +299,8 @@ class SpriteClass{
     void AI_Die_If_Parent_Nullptr();
 
     void AI_Destructed_Next_To_Player(SpriteClass &player);
-
+    void AI_Follow_Commands();
+    int current_command = 0;
 private:
     void Animation_Basic();
     void Animation_Rooster();

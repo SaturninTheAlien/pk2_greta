@@ -10,7 +10,7 @@
 
 #pragma once
 
-#define PK2SPRITE_CURRENT_VERSION "1.3"
+#define PK2SPRITE_CURRENT_VERSION "2.0"
 #define MAX_PROTOTYYPPEJA  256
 
 #define SPRITE_SOUNDS_NUMBER     7
@@ -184,12 +184,16 @@ RANDOM_MOVE_VERTIC._AND_HORIZ.*/
 
 
     AI_THROWABLE_WEAPON = 35,
-    AI_FALLS_WHEN_SHAKEN, //36
-    AI_CHANGE_SKULL_BLOCKS_WHEN_DEAD, //37
+    AI_FALL_WHEN_SHAKEN, //36
+    AI_CHANGE_SKULL_BLOCKS_IF_DEAD, //37
     AI_CHANGE_SKULL_BLOCKS_IF_DAMAGED, //38
     AI_DIE_IF_PARENT_NULL, //39
 
-    // AI_40
+    /**
+     * @brief 
+     * "Greta Engine" commands/waypoints AI
+     */
+    AI_FOLLOW_COMMANS = 40,
 
     AI_MOVE_X_COS = 41,
     AI_MOVE_Y_COS, //42

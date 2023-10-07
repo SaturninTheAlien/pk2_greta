@@ -186,6 +186,12 @@ PrototypeClass::~PrototypeClass(){
 			PSound::free_sfx(sound_index);
 		}
 	}
+	for(SpriteCommands::Command* & command: this->commands){
+		if(command!=nullptr){
+			delete command;
+			command = nullptr;
+		}
+	}
 }
 
 void PrototypeClass::SetProto10(PrototypeClass10 &proto){
@@ -469,6 +475,17 @@ const std::map<std::string, int> jsonSoundsMap ={
     {"special2", SOUND_SPECIAL2}
 };
 
+const std::map<std::string ,u8> jsonColorsMap={
+	{"gray", COLOR_GRAY},
+	{"blue", COLOR_BLUE},
+	{"red", COLOR_RED},
+	{"green", COLOR_GREEN},
+	{"orange", COLOR_ORANGE},
+	{"violet", COLOR_VIOLET},
+	{"turquoise", COLOR_TURQUOISE},
+	{"normal", COLOR_NORMAL}
+};
+
 void PrototypeClass::SetProto20(const nlohmann::json& j){
 	using namespace PJson;
 
@@ -499,7 +516,7 @@ void PrototypeClass::SetProto20(const nlohmann::json& j){
 
 	jsonReadBool(j, "bonus_always", this->bonus_always);
 
-	jsonReadString(j, "bonus_sprite", this->bonus_sprite);
+	jsonReadString(j, "bonus", this->bonus_sprite);
 
 	jsonReadInt(j, "bonuses_number", this->bonuses_number);
 
@@ -513,7 +530,7 @@ void PrototypeClass::SetProto20(const nlohmann::json& j){
 
 	jsonReadInt(j, "charge_time", this->charge_time);
 
-	jsonReadEnumU8(j, "color", this->color);
+	jsonReadEnumU8(j, "color", this->color, jsonColorsMap);
 
 	jsonReadInt(j, "damage", this->damage);
 
@@ -587,13 +604,17 @@ void PrototypeClass::SetProto20(const nlohmann::json& j){
 		}
 	}
 
-	jsonReadString(j, "transformation_sprite", this->transformation_sprite);
+	jsonReadString(j, "transformation", this->transformation_sprite);
 
 	jsonReadInt(j, "type", this->type);
 
 	jsonReadBool(j, "vibrates", this->vibrates);
 
 	jsonReadDouble(j, "weight", this->weight);
+
+	if(j.contains("commands")){
+		SpriteCommands::Parse_Commands(j["commands"], this->commands, this->width, this->height);
+	}
 }
 
 void PrototypeClass::LoadPrototypeJSON(PFile::Path path){
@@ -602,7 +623,7 @@ void PrototypeClass::LoadPrototypeJSON(PFile::Path path){
 		throw PExcept::PException("Incorrect JSON, no string field \"version\"");
 	}
 	std::string version = proto["version"].get<std::string>();
-	if(version=="2.0_test2"){
+	if(version=="2.0"){
 
 		if(proto.contains("parent")&&proto["parent"].is_string()){
 			PrototypeClass* parentPrototype = Prototype_Load(proto["parent"]);
@@ -2049,4 +2070,18 @@ void SpriteClass::Animation_Egg() {
 		uusi_animaatio = ANIMATION_DEATH;
 	
 	Animaatio(uusi_animaatio, alusta);
+}
+
+void SpriteClass::AI_Follow_Commands() {
+	if(this->energy<=0 || this->prototype->commands.size()==0)return;
+
+	if(this->current_command >= this->prototype->commands.size()){
+		this->current_command = 0;
+	}
+
+	SpriteCommands::Command* c = this->prototype->commands[this->current_command];
+	if(c->execute(this)){
+		// next command
+		this->current_command++;
+	}
 }
