@@ -341,11 +341,11 @@ static void log_data() {
 	PLog::Write(PLog::DEBUG, "PK2", "Game version: %s", PK2_VERSION_STR);
 	PLog::Write(PLog::DEBUG, "PK2", "Number: 0x%x", PK2_VERNUM);
 
-	#ifdef COMMIT_HASH
+	/*#ifdef COMMIT_HASH
 	PLog::Write(PLog::DEBUG, "PK2", "Cammit hash: " COMMIT_HASH);
 	#else
 	PLog::Write(PLog::DEBUG, "PK2", "Cammit hash unknown");
-	#endif
+	#endif*/
 
 	PLog::Write(PLog::DEBUG, "PK2", "Data path - %s", data_path.c_str());
 
@@ -378,17 +378,23 @@ int main(int argc, char *argv[]) {
 
 	}
 
-	Screen_First_Start();
+	try{
+		Screen_First_Start();
 
-	next_screen = SCREEN_INTRO;
-	if (dev_mode)
-		next_screen = SCREEN_MENU;
-	if (test_level) {
-		start_test(test_path.c_str());
-		next_screen = SCREEN_GAME;
+		next_screen = SCREEN_INTRO;
+		if (dev_mode)
+			next_screen = SCREEN_MENU;
+		if (test_level) {
+			start_test(test_path.c_str());
+			next_screen = SCREEN_GAME;
+		}
+
+		Piste::loop(Screen_Loop); //The game loop
 	}
-
-	Piste::loop(Screen_Loop); //The game loop
+	catch(const std::exception& e){
+		PLog::Write(PLog::FATAL, "PK2", e.what());
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Fatal error!", e.what(), nullptr);
+	}
 
 	quit();
 	return 0;

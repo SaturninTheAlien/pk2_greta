@@ -8,7 +8,9 @@
  * Exception utils by SaturninTheAlien.
  */
 #pragma once
+
 #include <stdexcept>
+#include <string>
 
 namespace PExcept{
 

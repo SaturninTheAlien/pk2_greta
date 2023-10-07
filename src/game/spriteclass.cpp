@@ -9,11 +9,10 @@
 
 #include "engine/PDraw.hpp"
 #include "engine/PSound.hpp"
-#include "engine/PExcept.hpp"
 #include "engine/PLog.hpp"
 #include "engine/platform.hpp"
 #include "episode/episodeclass.hpp"
-
+#include "exceptions.hpp"
 
 #include <cstring>
 #include <algorithm>
@@ -143,7 +142,12 @@ PrototypeClass* Prototype_Load(const std::string& filename_in){
 			protot = nullptr;
 		}
 
-		PLog::Write(PLog::ERR, "PK2 sprites", "Couldn't find %s", filename_in.c_str());
+		std::string s1 = "SpritePrototypes: ";
+		s1 += e.what();
+
+		throw PExcept::PException(s1);
+
+		//PLog::Write(PLog::ERR, "PK2 sprites", "Couldn't find %s", filename_in.c_str());
 	}
 
 	return nullptr;

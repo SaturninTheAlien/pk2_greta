@@ -7,7 +7,7 @@
  * @brief 
  * Exception utils by SaturninTheAlien.
  */
-#include "PExcept.hpp"
+#include "exceptions.hpp"
 #include <sstream>
 
 namespace PExcept{
@@ -15,7 +15,7 @@ namespace PExcept{
 FileNotFoundException::FileNotFoundException(const std::string& filename, int type){
     std::ostringstream os;
 
-    os<<"Missing file: \""<<filename<<"\" ( ";
+    os<<"Missing file: \""<<filename<<"\" (";
     switch (type)
     {
     case MISSING_SPRITE_PROTOTYPE:{
@@ -49,7 +49,8 @@ FileNotFoundException::FileNotFoundException(const std::string& filename, int ty
         break;
     }
 
+    os<<")";
+
     this->message = os.str();
 }
-
 }

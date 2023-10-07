@@ -3,6 +3,8 @@
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
 #include "game/mapclass.hpp"
+#include "exceptions.hpp"
+#include <sstream>
 
 #include "system.hpp"
 
@@ -449,12 +451,14 @@ int MapClass::Load_TilesImage(PFile::Path path){
 	
 	PFile::Path bkp = path;
 
-	if (!FindAsset(&path, "gfx" PE_SEP "tiles" PE_SEP))
-		return 1;
+	if (!FindAsset(&path, "gfx" PE_SEP "tiles" PE_SEP)){
+		throw PExcept::FileNotFoundException(path.c_str(), PExcept::MISSING_TILESET);
+	}
 
 	PDraw::image_load(this->tiles_buffer, path, false);
-	if (this->tiles_buffer == -1)
-		return 2;
+	if (this->tiles_buffer == -1){
+		throw PExcept::FileNotFoundException(path.c_str(), PExcept::MISSING_TILESET);
+	}
 
 	PDraw::image_delete(this->water_buffer); //Delete last water buffer
 	this->water_buffer = PDraw::image_cut(this->tiles_buffer,0,416,320,32);
