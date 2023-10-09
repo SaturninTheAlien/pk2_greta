@@ -628,6 +628,10 @@ void PrototypeClass::LoadPrototypeJSON(PFile::Path path){
 		if(proto.contains("parent")&&proto["parent"].is_string()){
 			PrototypeClass* parentPrototype = Prototype_Load(proto["parent"]);
 			if(parentPrototype!=nullptr){
+				if(!parentPrototype->commands.empty()){
+					throw PExcept::PException("The parent prototype cannot contain commands!");
+				}
+
 				*this = *parentPrototype;
 			}
 		}

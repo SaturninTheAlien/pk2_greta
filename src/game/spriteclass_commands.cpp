@@ -160,7 +160,6 @@ void Parse_Commands(const nlohmann::json& j_in, std::vector<Command*>& commands_
         throw PExcept::PException("Commands field has to be an array!");
     }
 
-    commands_v.clear();
     int state = 0;
     double target_x = 0., target_y = 0.;
     for(const nlohmann::json& j: j_in){

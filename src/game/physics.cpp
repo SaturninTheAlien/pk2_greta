@@ -902,7 +902,12 @@ int UpdateSprite(SpriteClass* sprite){
 						//Bounce on the sprite head
 						if (sprite2->b > 2 && sprite2->weight >= 0.5 &&
 							sprite2->y < sprite_y && !sprite->prototype->is_wall &&
-							sprite->prototype->how_destroyed != FX_DESTRUCT_EI_TUHOUDU)
+							sprite->prototype->how_destroyed != FX_DESTRUCT_EI_TUHOUDU &&
+							/**
+							 * @brief 
+							 * Fix the bug involving enemies accidentally dealing damage to invisible player.
+							 */
+							(sprite->invisible_timer==0 || sprite2->prototype->is_wall))
 						{
 							if (sprite2->super_mode_timer)
 								sprite->damage_taken = 500;
