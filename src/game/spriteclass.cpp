@@ -917,13 +917,13 @@ void SpriteClass::AI_Basic(){
 	if (x < 10)
 	{
 		x = 10;
-		vasemmalle = false;
+		can_move_left = false;
 	}
 
 	if (x > 8192)
 	{
 		x = 8192;
-		oikealle = false;
+		can_move_right = false;
 	}
 
 	if (y > 9920)
@@ -951,12 +951,12 @@ void SpriteClass::AI_Basic(){
 void SpriteClass::AI_Turning_Horizontally(){
 	if (energy > 0)
 	{
-		if (!oikealle)
+		if (!can_move_right)
 		{
 			a = this->prototype->max_speed / -3.5;
 		}
 
-		if (!vasemmalle)
+		if (!can_move_left)
 		{
 			a = this->prototype->max_speed / 3.5;
 		}
@@ -965,12 +965,12 @@ void SpriteClass::AI_Turning_Horizontally(){
 void SpriteClass::AI_Turning_Vertically(){
 	if (energy > 0)
 	{
-		if (!alas)
+		if (!can_move_down)
 		{
 			b = this->prototype->max_speed / -3.5;
 		}
 
-		if (!ylos)
+		if (!can_move_up)
 		{
 			b = this->prototype->max_speed / 3.5;
 		}
@@ -979,14 +979,14 @@ void SpriteClass::AI_Turning_Vertically(){
 void SpriteClass::AI_Climber(){
 	if (energy > 0)
 	{
-		if (!alas && vasemmalle)
+		if (!can_move_down && can_move_left)
 		{
 			b = 0;
 			a = this->prototype->max_speed / -3.5;
 			//return 1;
 		}
 
-		if (!ylos && oikealle)
+		if (!can_move_up && can_move_right)
 		{
 			b = 0;
 			a = this->prototype->max_speed / 3.5;
@@ -994,14 +994,14 @@ void SpriteClass::AI_Climber(){
 			//return 1;
 		}
 
-		if (!oikealle && alas)
+		if (!can_move_right && can_move_down)
 		{
 			a = 0;
 			b = this->prototype->max_speed / 3.5;
 			//return 1;
 		}
 
-		if (!vasemmalle && ylos)
+		if (!can_move_left && can_move_up)
 		{
 			a = 0;
 			b = this->prototype->max_speed / -3.5;
@@ -1011,7 +1011,7 @@ void SpriteClass::AI_Climber(){
 }
 void SpriteClass::AI_Climber2(){
 	if (energy > 0){
-		if (vasemmalle && oikealle && ylos && alas) {
+		if (can_move_left && can_move_right && can_move_up && can_move_down) {
 
 			if (a < 0) {
 				b = this->prototype->max_speed / 3.5;
@@ -1045,7 +1045,7 @@ void SpriteClass::AI_Look_For_Cliffs(){
 			this->a -= 0.13;
 		}
 
-		if (this->reuna_vasemmalla && this->a < max)
+		if (this->edge_on_the_left && this->a < max)
 		{
 			this->a += 0.13;
 		}
@@ -1057,7 +1057,7 @@ void SpriteClass::AI_Look_For_Cliffs(){
 			flip_x = true;
 		}
 
-		if (this->reuna_vasemmalla && this->a < 0)
+		if (this->edge_on_the_left && this->a < 0)
 		{
 			this->a = this->a * -1;
 			flip_x = false;
@@ -1068,7 +1068,7 @@ void SpriteClass::AI_Look_For_Cliffs(){
 void SpriteClass::AI_Random_Jump(){
 	if (energy > 0)
 	{
-		if (rand()%150 == 10 && b == 0 && jump_timer == 0 && ylos)
+		if (rand()%150 == 10 && b == 0 && jump_timer == 0 && can_move_up)
 		{
 			jump_timer = 1;
 		}
@@ -1077,7 +1077,7 @@ void SpriteClass::AI_Random_Jump(){
 void SpriteClass::AI_BlueFrog(){
 	if (energy > 0)
 	{
-		if (action_timer%100 == 0 && jump_timer == 0 && ylos)
+		if (action_timer%100 == 0 && jump_timer == 0 && can_move_up)
 		{
 			jump_timer = 1;
 		}
@@ -1086,7 +1086,7 @@ void SpriteClass::AI_BlueFrog(){
 void SpriteClass::AI_RedFrog(){
 	if (energy > 0)
 	{
-		if (action_timer%100 == 0 && ylos)
+		if (action_timer%100 == 0 && can_move_up)
 		{
 			jump_timer = 1;
 
@@ -1389,7 +1389,7 @@ void SpriteClass::AI_Transform_If_Demaged(){
 	PrototypeClass* transformation = this->prototype->transformation;
 	if (transformation!=nullptr && energy > 0 && transformation != prototype)
 	{
-		if (saatu_vahinko > 0)
+		if (damage_taken > 0)
 		{
 			prototype = transformation;
 			initial_weight = prototype->weight;
@@ -1408,20 +1408,20 @@ void SpriteClass::AI_Die_If_Parent_Nullptr(){
 	{
 		if (parent_sprite->energy < 1 && energy > 0)
 		{
-			saatu_vahinko = energy;
-			saatu_vahinko_tyyppi = DAMAGE_ALL;
+			damage_taken = energy;
+			damage_taken_type = DAMAGE_ALL;
 		}
 	}
 }
 void SpriteClass::AI_Attack_1_If_Demaged(){
-	if (saatu_vahinko > 0 && energy > 0)
+	if (damage_taken > 0 && energy > 0)
 	{
 		this->attack1_timer = this->prototype->attack1_time;
 		this->charging_timer = 0;
 	}
 }
 void SpriteClass::AI_Attack_2_If_Demaged(){
-	if (saatu_vahinko > 0 && energy > 0)
+	if (damage_taken > 0 && energy > 0)
 	{
 		this->attack2_timer = this->prototype->attack2_time;
 		this->charging_timer = 0;
@@ -1571,7 +1571,7 @@ void SpriteClass::AI_Friction_Effect(){
 
 	if (energy > 0)
 	{
-		if (!alas)
+		if (!can_move_down)
 			a /= 1.07;
 		else
 			a /= 1.02;
@@ -1621,7 +1621,7 @@ void SpriteClass::AI_Fall_When_Shaken(int tarina){
 void SpriteClass::AI_Damaged_by_Water(){
 	if (energy > 0)
 		if (this->in_water)
-			saatu_vahinko++;
+			damage_taken++;
 }
 void SpriteClass::AI_Kill_Everyone(){
 	if (energy > 0)
@@ -1640,7 +1640,7 @@ void SpriteClass::AI_Jumper(){
 
 	if (energy > 0)
 	{
-		if (!alas && b==0 && jump_timer == 0)
+		if (!can_move_down && b==0 && jump_timer == 0)
 		{
 			jump_timer = 1;
 		}
@@ -1707,21 +1707,21 @@ void SpriteClass::AI_Rooster(){
 		if (rand()%50 == 10 && a != 0)
 			a /= 1.1;
 
-		if (rand()%150 == 10 && b == 0 && jump_timer == 0 && ylos)
+		if (rand()%150 == 10 && b == 0 && jump_timer == 0 && can_move_up)
 		{
 			jump_timer = 1;
 			while (a == 0)
 				a = rand()%2 - rand()%2;
 		}
 
-		if (rand()%20 == 1 && b == 0 && jump_timer == 0 && !oikealle && !flip_x)
+		if (rand()%20 == 1 && b == 0 && jump_timer == 0 && !can_move_right && !flip_x)
 		{
 			jump_timer = 1;
 			while (a == 0)
 				a = rand()%2;
 		}
 
-		if (rand()%20 == 1 && b == 0 && jump_timer == 0 && !vasemmalle && flip_x)
+		if (rand()%20 == 1 && b == 0 && jump_timer == 0 && !can_move_left && flip_x)
 		{
 			jump_timer = 1;
 			while (a == 0)
@@ -1740,7 +1740,7 @@ void SpriteClass::AI_Rooster(){
 		if (rand()%100 == 2)
 			a = rand()%2-rand()%2;
 
-		if (reuna_vasemmalla && a < 0)
+		if (edge_on_the_left && a < 0)
 			a = 0;
 
 		if (reuna_oikealla && a > 0)
@@ -1776,7 +1776,7 @@ void SpriteClass::AI_Egg(){
 		y = 9920;
 	}
 
-	if (!alas)
+	if (!can_move_down)
 		energy = 0;
 
 	//a /= 1.01;
@@ -1799,8 +1799,8 @@ void SpriteClass::AI_Egg2(){
 		y = 9920;
 	}
 
-	if (!alas)
-		saatu_vahinko = prototype->energy;
+	if (!can_move_down)
+		damage_taken = prototype->energy;
 
 	//a /= 1.01;
 
@@ -1833,8 +1833,8 @@ void SpriteClass::AI_Projectile(){
 
 	if (this->charging_timer == 1)
 	{
-		this->saatu_vahinko = this->prototype->energy;
-		this->saatu_vahinko_tyyppi = DAMAGE_ALL;
+		this->damage_taken = this->prototype->energy;
+		this->damage_taken_type = DAMAGE_ALL;
 	}
 
 	if (energy < 1)
@@ -1848,8 +1848,8 @@ void SpriteClass::AI_SelfDestruction(){
 
 	if (this->charging_timer == 1)
 	{
-		this->saatu_vahinko = this->energy;
-		this->saatu_vahinko_tyyppi = DAMAGE_ALL;
+		this->damage_taken = this->energy;
+		this->damage_taken_type = DAMAGE_ALL;
 	}
 }
 bool SpriteClass::AI_Teleport(const std::list<SpriteClass*>& spritet, SpriteClass &player){
@@ -1907,8 +1907,8 @@ void SpriteClass::AI_Destructed_Next_To_Player(SpriteClass &player) {
 
 	if (this->energy > 0 && dx*dx + dy*dy < dist*dist) {
 
-		this->saatu_vahinko = this->prototype->energy;
-		this->saatu_vahinko_tyyppi = DAMAGE_ALL;
+		this->damage_taken = this->prototype->energy;
+		this->damage_taken_type = DAMAGE_ALL;
 		
 	}
 }
@@ -1918,7 +1918,7 @@ void SpriteClass::Animation_Basic(){
 	int uusi_animaatio = -1;
 	bool alusta = false;
 
-	if (energy < 1 && !alas)
+	if (energy < 1 && !can_move_down)
 	{
 		uusi_animaatio = ANIMATION_DEATH;
 		alusta = true;
@@ -1944,7 +1944,7 @@ void SpriteClass::Animation_Basic(){
 			alusta = false;
 		}
 
-		if ((jump_timer > prototype->max_jump || b > 1.5) && alas)
+		if ((jump_timer > prototype->max_jump || b > 1.5) && can_move_down)
 		{
 			uusi_animaatio = ANIMATION_JUMP_DOWN;
 			alusta = false;
@@ -1985,7 +1985,7 @@ void SpriteClass::Animation_Rooster(){
 	int uusi_animaatio = -1;
 	bool alusta = false;
 
-	if (energy < 1 && !alas) {
+	if (energy < 1 && !can_move_down) {
 	
 		uusi_animaatio = ANIMATION_DEATH;
 		alusta = true;
@@ -2013,7 +2013,7 @@ void SpriteClass::Animation_Rooster(){
 
 		}
 
-		if ((jump_timer > 90+10/*prototype->max_jump || b > 1.5*/) && alas) {
+		if ((jump_timer > 90+10/*prototype->max_jump || b > 1.5*/) && can_move_down) {
 		
 			uusi_animaatio = ANIMATION_JUMP_DOWN;
 			alusta = false;

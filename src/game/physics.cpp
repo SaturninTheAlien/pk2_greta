@@ -186,8 +186,8 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 		/* Examine if it touches the fire                                     */
 		/**********************************************************************/
 		if (block.koodi == BLOCK_FIRE && Game->button1 == 0 && sprite->damage_timer == 0){
-			sprite->saatu_vahinko = 2;
-			sprite->saatu_vahinko_tyyppi = DAMAGE_FIRE;
+			sprite->damage_taken = 2;
+			sprite->damage_taken_type = DAMAGE_FIRE;
 		}
 
 		/**********************************************************************/
@@ -214,8 +214,8 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 		/* Examine if it touches the fire                                     */
 		/**********************************************************************/
 		if (block.koodi == BLOCK_FIRE && Game->button1 == 0 && sprite->damage_timer == 0){
-			sprite->saatu_vahinko = 2;
-			sprite->saatu_vahinko_tyyppi = DAMAGE_FIRE;
+			sprite->damage_taken = 2;
+			sprite->damage_taken_type = DAMAGE_FIRE;
 		}
 	}
 
@@ -273,7 +273,7 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 		if (block.border && sprite->jump_timer <= 0 && sprite_y < block.ala && sprite_y > block.yla){
 			/* && sprite_ala <= block.ala+2)*/ // onko sprite tullut borderlle
 			if (sprite_vasen > block.vasen)
-				sprite->reuna_vasemmalla = true;
+				sprite->edge_on_the_left = true;
 
 			if (sprite_oikea < block.oikea)
 				sprite->reuna_oikealla = true;
@@ -327,7 +327,7 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 						}
 					}
 
-					if (sprite->kytkinpaino >= 1) { // Sprite can press the buttons
+					if (sprite->weight_button >= 1) { // Sprite can press the buttons
 						if (block.koodi == BLOCK_BUTTON1 && Game->button1 == 0) {
 							Game->button1 = Game->map.button1_time;
 							Game->button_vibration = 64;
@@ -359,8 +359,8 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 
 					if (sprite_yla < block.ala) {
 						if (block.koodi == BLOCK_LIFT_VERT && sprite->crouched) {
-							sprite->saatu_vahinko = 2;
-							sprite->saatu_vahinko_tyyppi = DAMAGE_IMPACT;
+							sprite->damage_taken = 2;
+							sprite->damage_taken_type = DAMAGE_IMPACT;
 						}
 
 						if (block.koodi != BLOCK_LIFT_HORI) {
@@ -443,7 +443,7 @@ int UpdateSprite(SpriteClass* sprite){
 
 	sprite->crouched = false;
 
-	sprite->reuna_vasemmalla = false;
+	sprite->edge_on_the_left = false;
 	sprite->reuna_oikealla = false;
 
 
@@ -497,7 +497,7 @@ int UpdateSprite(SpriteClass* sprite){
 		/* CROUCH */
 		sprite->crouched = false;
 		bool axis_couch = (Input == &Settings.joystick) && (PInput::GetAxis(1) > 0.5);
-		if ((PInput::Keydown(Input->down) || Gui_down || axis_couch) && !sprite->alas) {
+		if ((PInput::Keydown(Input->down) || Gui_down || axis_couch) && !sprite->can_move_down) {
 			sprite->crouched = true;
 			sprite_yla += sprite_korkeus/1.5;
 		}
@@ -528,7 +528,7 @@ int UpdateSprite(SpriteClass* sprite){
 			a_lisays += 0.09;//0.05
 		}
 
-		if (sprite->alas)
+		if (sprite->can_move_down)
 			a_lisays /= 1.5;//2.0
 
 		a_lisays *= double(navigation) / 100;
@@ -766,7 +766,7 @@ int UpdateSprite(SpriteClass* sprite){
 	/*****************************************************************************************/
 
 	sprite->weight = sprite->initial_weight;
-	sprite->kytkinpaino = sprite->weight;
+	sprite->weight_button = sprite->weight;
 
 	if (sprite->energy < 1 && sprite->weight == 0) // Fall when is death
 		sprite->weight = 1;
@@ -887,16 +887,16 @@ int UpdateSprite(SpriteClass* sprite){
 						sprite->damage_timer == 0 &&
 						sprite2->energy > 0 &&
 						sprite->energy > 0 &&
-						sprite2->saatu_vahinko < 1)
+						sprite2->damage_taken < 1)
 					{
 
 						if (sprite->super_mode_timer > 0 && sprite2->super_mode_timer == 0) {
-							sprite2->saatu_vahinko = 500;
-							sprite2->saatu_vahinko_tyyppi = DAMAGE_ALL;
+							sprite2->damage_taken = 500;
+							sprite2->damage_taken_type = DAMAGE_ALL;
 						}
 						if (sprite2->super_mode_timer > 0 && sprite->super_mode_timer == 0) {
-							sprite->saatu_vahinko = 500;
-							sprite->saatu_vahinko_tyyppi = DAMAGE_ALL;
+							sprite->damage_taken = 500;
+							sprite->damage_taken_type = DAMAGE_ALL;
 						}
 						
 						//Bounce on the sprite head
@@ -905,33 +905,33 @@ int UpdateSprite(SpriteClass* sprite){
 							sprite->prototype->how_destroyed != FX_DESTRUCT_EI_TUHOUDU)
 						{
 							if (sprite2->super_mode_timer)
-								sprite->saatu_vahinko = 500;
+								sprite->damage_taken = 500;
 							else
-								sprite->saatu_vahinko = (int)(sprite2->weight+sprite2->b/4);
-							sprite->saatu_vahinko_tyyppi = DAMAGE_DROP;
+								sprite->damage_taken = (int)(sprite2->weight+sprite2->b/4);
+							sprite->damage_taken_type = DAMAGE_DROP;
 							sprite2->jump_timer = 1;
 							if (sprite2->HasAI(AI_EGG2)) // Egg bounced, then crack
-								sprite2->saatu_vahinko = sprite2->prototype->energy;
+								sprite2->damage_taken = sprite2->prototype->energy;
 						}
 
 						// If there is another sprite damaging
 						if (sprite->prototype->damage > 0 && sprite2->prototype->type != TYPE_BONUS) {
 							
-							sprite2->saatu_vahinko        = sprite->prototype->damage;
-							sprite2->saatu_vahinko_tyyppi = sprite->prototype->damage_type;
+							sprite2->damage_taken        = sprite->prototype->damage;
+							sprite2->damage_taken_type = sprite->prototype->damage_type;
 							
 							if ( !(sprite2->player && sprite2->invisible_timer) ) //If sprite2 isn't a invisible player
 								sprite->attack1_timer = sprite->prototype->attack1_time; //Then sprite attack??
 
 							// The projectiles are shattered by shock
 							if (sprite2->prototype->type == TYPE_PROJECTILE) {
-								sprite->saatu_vahinko = 1;//sprite2->prototype->damage;
-								sprite->saatu_vahinko_tyyppi = sprite2->prototype->damage_type;
+								sprite->damage_taken = 1;//sprite2->prototype->damage;
+								sprite->damage_taken_type = sprite2->prototype->damage_type;
 							}
 
 							if (sprite->prototype->type == TYPE_PROJECTILE) {
-								sprite->saatu_vahinko = 1;//sprite2->prototype->damage;
-								sprite->saatu_vahinko_tyyppi = sprite2->prototype->damage_type;
+								sprite->damage_taken = 1;//sprite2->prototype->damage;
+								sprite->damage_taken_type = sprite2->prototype->damage_type;
 							}
 						}
 					}
@@ -939,7 +939,7 @@ int UpdateSprite(SpriteClass* sprite){
 
 				// lis�t��n spriten painoon sit� koskettavan toisen spriten weight
 				if (sprite->weight > 0)
-					sprite->kytkinpaino += sprite2->prototype->weight;
+					sprite->weight_button += sprite2->prototype->weight;
 
 			}
 		}
@@ -948,28 +948,28 @@ int UpdateSprite(SpriteClass* sprite){
 	/*****************************************************************************************/
 	/* If the sprite has suffered damage                                                     */
 	/*****************************************************************************************/
-	if (sprite->saatu_vahinko != 0 && sprite->super_mode_timer != 0) {
-		sprite->saatu_vahinko = 0;
-		sprite->saatu_vahinko_tyyppi = DAMAGE_NONE;
+	if (sprite->damage_taken != 0 && sprite->super_mode_timer != 0) {
+		sprite->damage_taken = 0;
+		sprite->damage_taken_type = DAMAGE_NONE;
 	}
 
 	// If it is invisible, just these damages can injury it
-	if (sprite->saatu_vahinko != 0 && sprite->invisible_timer != 0 && 
-		sprite->saatu_vahinko_tyyppi != DAMAGE_FIRE &&
-		sprite->saatu_vahinko_tyyppi != DAMAGE_COMPRESSION &&
-		sprite->saatu_vahinko_tyyppi != DAMAGE_DROP &&
-		sprite->saatu_vahinko_tyyppi != DAMAGE_ALL) {
+	if (sprite->damage_taken != 0 && sprite->invisible_timer != 0 && 
+		sprite->damage_taken_type != DAMAGE_FIRE &&
+		sprite->damage_taken_type != DAMAGE_COMPRESSION &&
+		sprite->damage_taken_type != DAMAGE_DROP &&
+		sprite->damage_taken_type != DAMAGE_ALL) {
 		
-		sprite->saatu_vahinko = 0;
-		sprite->saatu_vahinko_tyyppi = DAMAGE_NONE;
+		sprite->damage_taken = 0;
+		sprite->damage_taken_type = DAMAGE_NONE;
 	}
 
-	if (sprite->saatu_vahinko != 0 && sprite->energy > 0 && sprite->prototype->how_destroyed != FX_DESTRUCT_EI_TUHOUDU){
-		if (sprite->prototype->immunity_type != sprite->saatu_vahinko_tyyppi || sprite->prototype->immunity_type == DAMAGE_NONE){
-			sprite->energy -= sprite->saatu_vahinko;
+	if (sprite->damage_taken != 0 && sprite->energy > 0 && sprite->prototype->how_destroyed != FX_DESTRUCT_EI_TUHOUDU){
+		if (sprite->prototype->immunity_type != sprite->damage_taken_type || sprite->prototype->immunity_type == DAMAGE_NONE){
+			sprite->energy -= sprite->damage_taken;
 			sprite->damage_timer = DAMAGE_TIME;
 
-			if (sprite->saatu_vahinko_tyyppi == DAMAGE_ELECTRIC)
+			if (sprite->damage_taken_type == DAMAGE_ELECTRIC)
 				sprite->damage_timer *= 6;
 
 			Play_GameSFX(sprite->prototype->sounds[SOUND_DAMAGE], 100, (int)sprite->x, (int)sprite->y,
@@ -999,8 +999,8 @@ int UpdateSprite(SpriteClass* sprite){
 
 		}
 
-		sprite->saatu_vahinko = 0;
-		sprite->saatu_vahinko_tyyppi = DAMAGE_NONE;
+		sprite->damage_taken = 0;
+		sprite->damage_taken_type = DAMAGE_NONE;
 
 
 		/*****************************************************************************************/
@@ -1018,7 +1018,7 @@ int UpdateSprite(SpriteClass* sprite){
 	}
 
 	if (sprite->damage_timer == 0)
-		sprite->saatu_vahinko_tyyppi = DAMAGE_NONE;
+		sprite->damage_taken_type = DAMAGE_NONE;
 
 
 	/*****************************************************************************************/
@@ -1130,10 +1130,10 @@ int UpdateSprite(SpriteClass* sprite){
 	sprite->a = sprite_a;
 	sprite->b = sprite_b;
 
-	sprite->oikealle = oikealle;
-	sprite->vasemmalle = vasemmalle;
-	sprite->alas = alas;
-	sprite->ylos = ylos;
+	sprite->can_move_right = oikealle;
+	sprite->can_move_left = vasemmalle;
+	sprite->can_move_down = alas;
+	sprite->can_move_up = ylos;
 
 	/*
 	sprite->weight = sprite->prototype->weight;
@@ -1142,17 +1142,13 @@ int UpdateSprite(SpriteClass* sprite){
 		sprite->weight = 1;*/
 
 	if (sprite->jump_timer < 0)
-		sprite->alas = false;
+		sprite->can_move_down = false;
 
 	//sprite->crouched   = false;
 
 	/*****************************************************************************************/
 	/* AI                                                                                    */
 	/*****************************************************************************************/
-
-	//TODO run sprite lua script
-	// or maybe Python, JS or something different?
-	// Forgive me, but personally I don't like lua.
 	
 	if (sprite->player == 0) {
 
@@ -1423,7 +1419,7 @@ int UpdateSprite(SpriteClass* sprite){
 		sprite->energy = 0;
 		sprite->removed = true;
 
-		if (sprite->kytkinpaino >= 1)
+		if (sprite->weight_button >= 1)
 			Game->vibration = 50;
 	}
 
@@ -1564,7 +1560,7 @@ int UpdateBonusSprite(SpriteClass* sprite){
 
 		sprite->in_water = false;
 
-		sprite->kytkinpaino = sprite->weight;
+		sprite->weight_button = sprite->weight;
 
 		/* TOISET SPRITET */
 
@@ -1624,7 +1620,7 @@ int UpdateBonusSprite(SpriteClass* sprite){
 						sprite_a += sprite2->a*(rand()%4);
 
 					// lis�t��n spriten painoon sit� koskettavan toisen spriten weight
-					sprite->kytkinpaino += sprite2->prototype->weight;
+					sprite->weight_button += sprite2->prototype->weight;
 
 					// samanmerkkiset spritet vaihtavat suuntaa t�rm�tess��n
 					if (sprite->prototype == sprite2->prototype &&
@@ -1752,10 +1748,10 @@ int UpdateBonusSprite(SpriteClass* sprite){
 		sprite->a = sprite_a;
 		sprite->b = sprite_b;
 
-		sprite->oikealle = oikealle;
-		sprite->vasemmalle = vasemmalle;
-		sprite->alas = alas;
-		sprite->ylos = ylos;
+		sprite->can_move_right = oikealle;
+		sprite->can_move_left = vasemmalle;
+		sprite->can_move_down = alas;
+		sprite->can_move_up = ylos;
 	}
 	else	// jos spriten weight on nolla, tehd��n spritest� "kelluva"
 	{

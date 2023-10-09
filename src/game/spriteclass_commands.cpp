@@ -142,8 +142,8 @@ public:
 };
 
 bool SelfDestructionCommand::execute(SpriteClass*sprite){
-    sprite->saatu_vahinko = sprite->energy;
-	sprite->saatu_vahinko_tyyppi = DAMAGE_ALL;
+    sprite->damage_taken = sprite->energy;
+	sprite->damage_taken_type = DAMAGE_ALL;
     return false;
 }
 

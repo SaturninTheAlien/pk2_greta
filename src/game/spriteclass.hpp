@@ -186,16 +186,16 @@ class SpriteClass{
     bool    flip_x           = false;           // if it is flipped horizontally
     bool    flip_y           = false;           // if it is flipped vertically
     int     jump_timer       = 0;               // jump times: = 0 not jumping; > 0 jumping; < 0 falling
-    bool    ylos             = true;            // can sprite move up now?
-    bool    alas             = true;            // can sprite move down now?
-    bool    oikealle         = true;            // can sprite move right now?
-    bool    vasemmalle       = true;            // can sprite move left now?
-    bool    reuna_vasemmalla = false;           // is there a pit on the left side of the sprite?
+    bool    can_move_up             = true;            // can sprite move up now?
+    bool    can_move_down             = true;            // can sprite move down now?
+    bool    can_move_right         = true;            // can sprite move right now?
+    bool    can_move_left       = true;            // can sprite move left now?
+    bool    edge_on_the_left = false;           // is there a pit on the left side of the sprite?
     bool    reuna_oikealla   = false;           // is there a pit on the right side of the sprite?
     int     energy          = 0;               // the sprite energy
     SpriteClass *parent_sprite   = nullptr;         // the sprite's parent
     double  weight           = 0;               // sprite weight
-    double  kytkinpaino      = 0;               // sprite weight + weight above him (why it doesn't work?)
+    double  weight_button      = 0;               // sprite weight + weight above him (why it doesn't work?)
     bool    crouched         = false;           // if the sprite is crouched
     int     damage_timer     = 0;               // damage timer
     int     invisible_timer  = 0;               // invisibility timer
@@ -206,8 +206,8 @@ class SpriteClass{
     bool    in_water          = false;           // if the sprite is inside water
     bool    hidden         = false;           // if the sprite is hidden
     double  initial_weight   = 0;               // sprite's original weight - the same as that of the prototype
-    int     saatu_vahinko    = 0;               // damage taken
-    u8      saatu_vahinko_tyyppi = DAMAGE_NONE; // damage taken type (e.g. snow).
+    int     damage_taken    = 0;               // damage taken
+    u8      damage_taken_type = DAMAGE_NONE; // damage taken type (e.g. snow).
     bool    enemy       = false;           // if it is a enemy
     PrototypeClass* ammo1   = nullptr;         // projectile 1
     PrototypeClass* ammo2   = nullptr;         // projectile 2
@@ -300,7 +300,7 @@ class SpriteClass{
 
     void AI_Destructed_Next_To_Player(SpriteClass &player);
     void AI_Follow_Commands();
-    int current_command = 0;
+    std::size_t current_command = 0;
 private:
     void Animation_Basic();
     void Animation_Rooster();
