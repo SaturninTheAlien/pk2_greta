@@ -111,13 +111,15 @@ int image_new(int w, int h){
 
     imageList[index] = SDL_CreateRGBSurface(0, w, h, 8, 0, 0, 0, 0);
     SDL_SetSurfacePalette(imageList[index], game_palette);
-    SDL_SetColorKey(imageList[index], SDL_TRUE, 255);
+    //SDL_SetColorKey(imageList[index], SDL_TRUE, 255);
 
     SDL_FillRect(imageList[index], NULL, 255);
     
     return index;
 }
-int image_load(PFile::Path path, bool getPalette) {
+int image_load(PFile::Path path, bool getPalette,
+    bool changeColorToAlpha,
+    unsigned int colorToAlpha) {
 
     int index = findfreeimage();
 
@@ -163,16 +165,19 @@ int image_load(PFile::Path path, bool getPalette) {
     }
 
     SDL_SetSurfacePalette(imageList[index], game_palette);
-    SDL_SetColorKey(imageList[index], SDL_TRUE, 255);
+
+    if(changeColorToAlpha){
+        SDL_SetColorKey(imageList[index], SDL_TRUE, 255);
+    }
 
     return index;
 
 }
 
-int image_load(int& index, PFile::Path path, bool getPalette) {
+int image_load(int& index, PFile::Path path, bool getPalette, bool changeColorToAlpha, unsigned int colorToAlpha) {
     
     image_delete(index);
-    index = image_load(path, getPalette);
+    index = image_load(path, getPalette, changeColorToAlpha, colorToAlpha);
 
     return index;
 
@@ -194,17 +199,19 @@ int image_copy(int image) {
 
 }
 
-int image_cut(int ImgIndex, int x, int y, int w, int h) {
+int image_cut(int ImgIndex, int x, int y, int w, int h, bool changeColorToAlpha,
+        unsigned int colorToAlpha) {
 
     RECT area;
     area.x = x; area.y = y;
     area.w = (w <= 0) ? imageList[ImgIndex]->w : w; //If 0 get the entire image
     area.h = (h <= 0) ? imageList[ImgIndex]->h : h;
 
-    return image_cut(ImgIndex, area);
+    return image_cut(ImgIndex, area, changeColorToAlpha, colorToAlpha);
 
 }
-int image_cut(int ImgIndex, RECT area) {
+int image_cut(int ImgIndex, RECT area, bool changeColorToAlpha,
+        unsigned int colorToAlpha) {
 
     int index = findfreeimage();
 
@@ -218,9 +225,15 @@ int image_cut(int ImgIndex, RECT area) {
     imageList[index] = SDL_CreateRGBSurface(0, area.w, area.h, 8, 0, 0, 0, 0);
 
     SDL_SetSurfacePalette(imageList[index], game_palette);
-    SDL_SetColorKey(imageList[index], SDL_TRUE, 255);
 
-    SDL_FillRect(imageList[index], NULL, 255);
+    if(changeColorToAlpha){
+        SDL_SetColorKey(imageList[index], SDL_TRUE, colorToAlpha);
+        SDL_FillRect(imageList[index], NULL, colorToAlpha);
+    }
+    else{
+        // TO DO - test this.
+        SDL_FillRect(imageList[index], NULL, SDL_MapRGBA(imageList[ImgIndex]->format, 0,0,0,0));
+    }
 
     // TODO - BlitScaled?
     SDL_BlitScaled(imageList[ImgIndex], (SDL_Rect*)&area, imageList[index], NULL);
@@ -664,7 +677,7 @@ void set_buffer_size(int w, int h) {
     
     frameBuffer8 = SDL_CreateRGBSurface(0, w, h, 8, 0, 0, 0, 0);
     SDL_SetSurfacePalette(frameBuffer8, game_palette);
-    SDL_SetColorKey(frameBuffer8, SDL_TRUE, 255);
+    //SDL_SetColorKey(frameBuffer8, SDL_TRUE, 255);
 
     set_offset(offset_width, offset_height);
     
@@ -737,7 +750,7 @@ int init(int width, int height) {
 
     frameBuffer8 = SDL_CreateRGBSurface(0, width, height, 8, 0, 0, 0, 0);
     SDL_SetSurfacePalette(frameBuffer8, game_palette);
-    SDL_SetColorKey(frameBuffer8, SDL_TRUE, 255);
+    //SDL_SetColorKey(frameBuffer8, SDL_TRUE, 255);
 
     SDL_SetClipRect(frameBuffer8, NULL);
     SDL_FillRect(frameBuffer8, NULL, 255);

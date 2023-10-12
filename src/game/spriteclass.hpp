@@ -137,6 +137,10 @@ class PrototypeClass{
      */
     bool    always_active = false;   // 
 
+
+    bool change_color_to_alpha = true;
+    unsigned int color_to_alpha = 255;
+
     PrototypeClass();
     ~PrototypeClass();
 

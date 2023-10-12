@@ -615,6 +615,17 @@ void PrototypeClass::SetProto20(const nlohmann::json& j){
 	if(j.contains("commands")){
 		SpriteCommands::Parse_Commands(j["commands"], this->commands, this->width, this->height);
 	}
+
+	if(j.contains("color_to_alpha")){
+		const nlohmann::json& j2 = j["color_to_alpha"];
+		if(j2.is_null()){
+			this->change_color_to_alpha = false;
+		}
+		else if(j2.is_number_integer()){
+			this->change_color_to_alpha = true;
+			this->color_to_alpha = j2.get<unsigned int>();
+		}
+	}
 }
 
 void PrototypeClass::LoadPrototypeJSON(PFile::Path path){
@@ -699,7 +710,7 @@ void PrototypeClass::LoadAssets(PFile::Path path){
 
 	}
 
-	int bufferi = PDraw::image_load(image, false);
+	int bufferi = PDraw::image_load(image, false, this->change_color_to_alpha, this->color_to_alpha);
 	if (bufferi == -1) {
 		throw PExcept::FileNotFoundException(this->picture_filename, PExcept::MISSING_SPRITE_TEXTURE);
 		/*PLog::Write(PLog::ERR, "PK2", "Couldn't load sprite image %s", this->picture_filename.c_str());
@@ -740,8 +751,8 @@ void PrototypeClass::LoadAssets(PFile::Path path){
 			frame_x = picture_frame_x;
 		}
 
-		this->frames[frame_i] = PDraw::image_cut(bufferi,frame_x,frame_y,picture_frame_width,picture_frame_height); //frames
-		this->frames_mirror[frame_i] = PDraw::image_cut(bufferi,frame_x,frame_y,picture_frame_width,picture_frame_height); //flipped frames
+		this->frames[frame_i] = PDraw::image_cut(bufferi,frame_x,frame_y,picture_frame_width,picture_frame_height, this->change_color_to_alpha, this->color_to_alpha); //frames
+		this->frames_mirror[frame_i] = PDraw::image_cut(bufferi,frame_x,frame_y,picture_frame_width,picture_frame_height, this->change_color_to_alpha, this->color_to_alpha); //flipped frames
 		PDraw::image_fliphori(this->frames_mirror[frame_i]);
 
 		frame_x += this->picture_frame_width + 3;

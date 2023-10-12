@@ -421,7 +421,7 @@ int MapClass::Load_BG(PFile::Path path){
 	if (!FindAsset(&path, "gfx" PE_SEP "scenery" PE_SEP))
 		return 1;
 
-	PDraw::image_load(this->background_buffer, path, true);
+	PDraw::image_load(this->background_buffer, path, true, false);
 	if (this->background_buffer == -1)
 		return -2;
 

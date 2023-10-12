@@ -4,6 +4,7 @@
 
 Copyright (c) 2003 Janne Kivilahti
 https://github.com/poppijanne
+https://github.com/pistegamez
 
 Ported to SDL by Samuli Tuomola (2010)
 https://github.com/stt/pk2
@@ -21,10 +22,8 @@ The source code was released by the original author on a forum
 [thread](http://pistegamez.proboards.com/thread/543/level-editor-source-codes-available).
 
 Since then a lot of things changed, including an initial SDL port by Samuli Tuomola in 2010 and then the SDL2 port, bug fixes,
-code redesign by Danilo Lemos (2016-2020),
+code redesign by Danilo Lemos (2016-2023),
 code redesign, bug fixes and new features by SaturninTheAlien (2023 - present)
-
-The codename "Greta" refers to the stenograms in some levels from "Iv4n island 2".
 
 This game was tested on Windows, GNU/Linux, Mac OS (Apple Silicon).
 
@@ -94,8 +93,21 @@ This example starts the level13.map (the robot boss fight) on dev mode:
 
 # Experimental features
 * Sprite inheritance / "parent" field.
+* AI_FOLLOW_COMMANDS and "commands" field in the new sprite format.
+
+Currently available commands:
+> waypoint_x, <tile_x>\
+> waypoint_y, <tile_y>\
+> waypoint_xy, <tile_x>, <tile_y>\
+> self_destruction\
+> transform
+
+Commands / waypoints are executed by the sprite in a loop unless there is "self_destruction" or "transform" command.
 
 # Fixed bugs
+* Fixed broken pixels in some backgrounds caused by converting the color 255 to alpha (for example backround in "Iv4n island 2/level13.map"). Currently the color-to-alpha feature is disabled while loading the background image.
+
+
 * Fixed incorrectly cropped Pekka's head on the map screen.
 * Fixed the "frog corpse" bug.
 * Fixed the visible wind bug.

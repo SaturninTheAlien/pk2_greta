@@ -20,11 +20,24 @@ struct RECT {
 void  rotate_palette(u8 start, u8 end);
 
 int   image_new(int w, int h);
-int   image_load(PFile::Path path, bool getPalette);
-int   image_load(int& index, PFile::Path path, bool getPalette);
+int   image_load(PFile::Path path, bool getPalette,
+        bool changeColorToAlpha=true,
+        unsigned int colorToAlpha = 255);
+
+int   image_load(int& index, PFile::Path path, bool getPalette,
+        bool changeColorToAlpha=true,
+        unsigned int colorToAlpha = 255);
+
+
 int   image_copy(int image);
-int   image_cut(int ImgIndex, int x, int y, int w, int h);
-int   image_cut(int ImgIndex, RECT area);
+int   image_cut(int ImgIndex, int x, int y, int w, int h,
+        bool changeColorToAlpha=true,
+        unsigned int colorToAlpha = 255);
+
+int   image_cut(int ImgIndex, RECT area,
+        bool changeColorToAlpha=true,
+        unsigned int colorToAlpha = 255);
+
 int   image_clip(int index);
 int   image_clip(int index, int x, int y);
 int   image_cliptransparent(int index, int x, int y, int alpha, u8 colorsum);
