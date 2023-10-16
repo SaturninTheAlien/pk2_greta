@@ -1289,6 +1289,14 @@ int UpdateSprite(SpriteClass* sprite){
 													break;
 				case AI_MOVE_Y_SIN_FREE:		sprite->AI_Move_Y(sin_table(sprite->action_timer/2));
 													break;
+				
+				case AI_MOVE_X_COS_FREE:		sprite->AI_Move_X(cos_table(sprite->action_timer/2));
+													break;
+				
+				case AI_MOVE_Y_COS_FREE:		sprite->AI_Move_Y(cos_table(sprite->action_timer/2));
+													break;
+
+													
 				case AI_TRANSFORM_WHEN_ENERGY_UNDER_2:
 												sprite->AI_Transform_When_Energy_Under_2();
 													break;

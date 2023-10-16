@@ -329,13 +329,13 @@ int GameClass::Calculate_Tiles() {
 int GameClass::Open_Map() {
 	
 	PFile::Path path = Episode->Get_Dir(map_file);
-	
-	if (map.Load(path) == 1) {
+	map.Load(path);
+	/*if (map.Load(path) == 1) {
 
 		PLog::Write(PLog::ERR, "PK2", "Can't load map \"%s\" at \"%s\"", map_file.c_str(), path.c_str());
 		return 1;
 	
-	}
+	}*/
 
 	timeout = map.map_time * TIME_FPS;
 

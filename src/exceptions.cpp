@@ -43,6 +43,9 @@ FileNotFoundException::FileNotFoundException(const std::string& filename, int ty
     case MISSING_MUSIC:{
         os<<"Music";
     }
+    case MISSING_LEVEL:{
+        os<<"Level";
+    }
     break;
     default:
         os<<"Unknown";

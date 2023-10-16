@@ -209,8 +209,9 @@ void EpisodeClass::Load() {
 		MapClass temp;
 		char* mapname = this->levels_list[i].tiedosto;
 		strcpy(mapname, list[i].c_str());
+		temp.Load_Plain_Data(PFile::Path(path, mapname));
 
-		if (temp.Load_Plain_Data(PFile::Path(path, mapname)) == 0) {
+		//if (temp.Load_Plain_Data(PFile::Path(path, mapname)) == 0) {
 
 			strcpy(this->levels_list[i].nimi, temp.name);
 			this->levels_list[i].x = temp.x;// 142 + i*35;
@@ -218,7 +219,7 @@ void EpisodeClass::Load() {
 			this->levels_list[i].order = temp.level_number;
 			this->levels_list[i].icon = temp.icon;
 
-		}
+		//}
 
 	}
 

@@ -154,8 +154,8 @@ class MapClass {
     MapClass();                                             // Oletusmuodostin
     ~MapClass();                                            // Hajoitin
 
-    int Load(PFile::Path path);                             // Load kartta
-    int Load_Plain_Data(PFile::Path path);                  // Load kartta ilman grafiikoita
+    void Load(PFile::Path path);                             // Load kartta
+    void Load_Plain_Data(PFile::Path path);                  // Load kartta ilman grafiikoita
 
     int DrawBackgroundTiles(int kamera_x, int kamera_y);
     int DrawForegroundTiles(int kamera_x, int kamera_y);
@@ -173,8 +173,8 @@ class MapClass {
     int LoadVersion13(PFile::Path path);
     
     int Load_BG(PFile::Path path);
-    int Load_TilesImage(PFile::Path path);
-    int Load_BGSfx(PFile::Path path);
+    void Load_TilesImage(PFile::Path path);
+    //int Load_BGSfx(PFile::Path path);
 
     void Animate_Fire(int tiles);
     void Animate_Waterfall(int tiles);

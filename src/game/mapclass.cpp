@@ -47,42 +47,45 @@ MapClass::~MapClass(){
 	PDraw::image_delete(this->bg_water_buffer);
 }
 
-int MapClass::Load(PFile::Path path){
+void MapClass::Load(PFile::Path path){
 	
-	char version[8];
+	/*char version[8];
 
 	PFile::RW* file = path.GetRW("r");
 	if (file == nullptr){
-		return 1;
+		throw PExcept::FileNotFoundException(path.c_str(), PExcept::MISSING_LEVEL);
 	}
 
 	file->read(version, sizeof(version));
 	file->close();
 
-	int ok = 2;
+	//int ok = 2;
 
 	PLog::Write(PLog::DEBUG, "PK2", "Loading %s, version %s", path.c_str(), version);
 
 	if (strcmp(version,"1.3")==0) {
 		this->LoadVersion13(path);
-		ok = 0;
 	}
-	if (strcmp(version,"1.2")==0) {
+	else if (strcmp(version,"1.2")==0) {
 		this->LoadVersion12(path);
-		ok = 0;
 	}
-	if (strcmp(version,"1.1")==0) {
+	else if (strcmp(version,"1.1")==0) {
 		this->LoadVersion11(path);
-		ok = 0;
 	}
-	if (strcmp(version,"1.0")==0) {
+	else if (strcmp(version,"1.0")==0) {
 		this->LoadVersion10(path);
-		ok = 0;
 	}
-	if (strcmp(version,"0.1")==0) {
+	else if (strcmp(version,"0.1")==0) {
 		this->LoadVersion01(path);
-		ok = 0;
 	}
+	else{
+		version[7] = '\0';
+		std::ostringstream os;
+		os<<"Unsupported level format: \""<<version<<"\"";
+		throw PExcept::PException(os.str());
+	}*/
+
+	this->Load_Plain_Data(path);
 	
 	path.SetFile(this->tileset_filename);
 	Load_TilesImage(path);
@@ -91,38 +94,44 @@ int MapClass::Load(PFile::Path path){
 	Load_BG(path);
 
 	Calculate_Edges();
-
-	return ok;
 }
 
-int MapClass::Load_Plain_Data(PFile::Path path) {
-	
+void MapClass::Load_Plain_Data(PFile::Path path) {
 	char version[8];
 
 	PFile::RW* file = path.GetRW("r");
 	if (file == nullptr){
-		return 1;
+		throw PExcept::FileNotFoundException(path.c_str(), PExcept::MISSING_LEVEL);
 	}
 
 	file->read(version, sizeof(version));
 	file->close();
 
-	if (strcmp(version,"1.3")==0)
+	//int ok = 2;
+
+	PLog::Write(PLog::DEBUG, "PK2", "Loading %s, version %s", path.c_str(), version);
+
+	if (strcmp(version,"1.3")==0) {
 		this->LoadVersion13(path);
-
-	if (strcmp(version,"1.2")==0)
+	}
+	else if (strcmp(version,"1.2")==0) {
 		this->LoadVersion12(path);
-
-	if (strcmp(version,"1.1")==0)
+	}
+	else if (strcmp(version,"1.1")==0) {
 		this->LoadVersion11(path);
-
-	if (strcmp(version,"1.0")==0)
+	}
+	else if (strcmp(version,"1.0")==0) {
 		this->LoadVersion10(path);
-
-	if (strcmp(version,"0.1")==0)
+	}
+	else if (strcmp(version,"0.1")==0) {
 		this->LoadVersion01(path);
-
-	return(0);
+	}
+	else{
+		version[7] = '\0';
+		std::ostringstream os;
+		os<<"Unsupported level format: \""<<version<<"\"";
+		throw PExcept::PException(os.str());
+	}
 }
 
 int MapClass::LoadVersion01(PFile::Path path){
@@ -447,7 +456,7 @@ int MapClass::Load_BG(PFile::Path path){
 	return 0;
 }
 
-int MapClass::Load_TilesImage(PFile::Path path){
+void MapClass::Load_TilesImage(PFile::Path path){
 	
 	PFile::Path bkp = path;
 
@@ -479,15 +488,12 @@ int MapClass::Load_TilesImage(PFile::Path path){
 			}
 		}
 	}
-
-	return 0;
-
 }
-
+/*
 int MapClass::Load_BGSfx(PFile::Path path){
 
 	return 0;
-}
+}*/
 
 void MapClass::Calculate_Edges(){
 
