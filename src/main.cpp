@@ -384,7 +384,7 @@ int main(int argc, char *argv[]) {
 	
 	read_config();
 
-	Piste::init(screen_width, screen_height, PK2_NAME, "gfx" PE_SEP "icon.bmp", render_method, audio_buffer_size, audio_multi_thread);
+	Piste::init(screen_width, screen_height, PK2_NAME, "gfx" PE_SEP "icon_new.png", render_method, audio_buffer_size, audio_multi_thread);
 	if (!Piste::is_ready()) {
 
 		PLog::Write(PLog::FATAL, "PK2", "Failed to init PisteEngine");

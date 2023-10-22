@@ -289,7 +289,7 @@ int init(int width, int height, const char* name, const char* icon, int render_m
 
 	}
 
-	SDL_Surface* window_icon = SDL_LoadBMP(icon);
+	SDL_Surface* window_icon = IMG_Load(icon);
 	if (window_icon) {
 		SDL_SetWindowIcon(window, window_icon);
 		SDL_FreeSurface(window_icon);
