@@ -935,6 +935,24 @@ void SpriteClass::HandleEffects() {
 
 }
 
+bool SpriteClass::CanDamageOnCollision(const SpriteClass* target)const{
+	if(target->invisible_timer>0){
+		int damage_type = this->prototype->damage_type;
+		if(damage_type==DAMAGE_ALL || damage_type==DAMAGE_FIRE){
+			return true;
+		}
+		else if(this->prototype->is_wall && (damage_type==DAMAGE_COMPRESSION||damage_type==DAMAGE_DROP)){
+			return true;
+		}		
+		else{
+
+			return false;
+		}
+	}
+
+	return true;
+}
+
 void SpriteClass::AI_Basic(){
 	if (x < 10)
 	{
@@ -1144,7 +1162,7 @@ void SpriteClass::AI_Random_Turning(){
 		}
 	}
 }
-void SpriteClass::AI_Turn_Back_If_Demaged() {
+void SpriteClass::AI_Turn_Back_If_Damaged() {
 
 	if (damage_timer == 1 && energy > 0) {
 		
@@ -1407,7 +1425,7 @@ void SpriteClass::AI_Self_Transformation(){
 		}
 	}
 }
-void SpriteClass::AI_Transform_If_Demaged(){
+void SpriteClass::AI_Transform_If_Damaged(){
 	PrototypeClass* transformation = this->prototype->transformation;
 	if (transformation!=nullptr && energy > 0 && transformation != prototype)
 	{
@@ -1435,14 +1453,14 @@ void SpriteClass::AI_Die_If_Parent_Nullptr(){
 		}
 	}
 }
-void SpriteClass::AI_Attack_1_If_Demaged(){
+void SpriteClass::AI_Attack_1_If_Damaged(){
 	if (damage_taken > 0 && energy > 0)
 	{
 		this->attack1_timer = this->prototype->attack1_time;
 		this->charging_timer = 0;
 	}
 }
-void SpriteClass::AI_Attack_2_If_Demaged(){
+void SpriteClass::AI_Attack_2_If_Damaged(){
 	if (damage_taken > 0 && energy > 0)
 	{
 		this->attack2_timer = this->prototype->attack2_time;
@@ -1877,7 +1895,7 @@ void SpriteClass::AI_SelfDestruction(){
 bool SpriteClass::AI_Teleport(const std::list<SpriteClass*>& spritet, SpriteClass &player){
 	bool siirto = false;
 
-	if (energy > 0 && charging_timer == 0 && attack1_timer == 0)
+	if (energy > 0 &&player.energy>0 && charging_timer == 0 && attack1_timer == 0)
 	{
 		if (player.x <= x + prototype->width /2 && player.x >= x - prototype->width /2 &&
 			player.y <= y + prototype->height/2 && player.y >= y - prototype->height/2 )

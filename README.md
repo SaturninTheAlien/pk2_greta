@@ -105,8 +105,9 @@ Currently available commands:
 Commands / waypoints are executed by the sprite in a loop unless there is "self_destruction" or "transform" command.
 
 # Fixed bugs
-* Fixed broken pixels in some backgrounds caused by converting the color 255 to alpha (for example backround in "Iv4n island 2/level13.map"). Currently the color-to-alpha feature is disabled while loading the background image.
+* Fixed the dead player teleporter bug. Player corpse are no longer teleported by the teleporters.
 
+* Fixed broken pixels in some backgrounds caused by converting the color 255 to alpha (for example backround in "Iv4n island 2/level13.map"). Currently the color-to-alpha feature is disabled while loading the background image.
 
 * Fixed incorrectly cropped Pekka's head on the map screen.
 * Fixed the "frog corpse" bug.

@@ -612,7 +612,7 @@ int UpdateSprite(SpriteClass* sprite){
 			break;
 			
 			case AI_TRANSFORM_IF_DAMAGED:
-				sprite->AI_Transform_If_Demaged();
+				sprite->AI_Transform_If_Damaged();
 			break;
 
 			default: break;
@@ -903,11 +903,7 @@ int UpdateSprite(SpriteClass* sprite){
 						if (sprite2->b > 2 && sprite2->weight >= 0.5 &&
 							sprite2->y < sprite_y && !sprite->prototype->is_wall &&
 							sprite->prototype->how_destroyed != FX_DESTRUCT_EI_TUHOUDU &&
-							/**
-							 * @brief 
-							 * Fix the bug involving enemies accidentally dealing damage to invisible player.
-							 */
-							(sprite->invisible_timer==0 || sprite2->prototype->is_wall))
+							sprite2->CanDamageOnCollision(sprite))
 						{
 							if (sprite2->super_mode_timer)
 								sprite->damage_taken = 500;
@@ -920,7 +916,8 @@ int UpdateSprite(SpriteClass* sprite){
 						}
 
 						// If there is another sprite damaging
-						if (sprite->prototype->damage > 0 && sprite2->prototype->type != TYPE_BONUS) {
+						if (sprite->prototype->damage > 0 && sprite2->prototype->type != TYPE_BONUS &&
+						sprite->CanDamageOnCollision(sprite2)) {
 							
 							sprite2->damage_taken        = sprite->prototype->damage;
 							sprite2->damage_taken_type = sprite->prototype->damage_type;
@@ -942,7 +939,7 @@ int UpdateSprite(SpriteClass* sprite){
 					}
 				}
 
-				// lis�t��n spriten painoon sit� koskettavan toisen spriten weight
+				// Calculate cumulative weight to determine if the sprite can push buttons.
 				if (sprite->weight > 0)
 					sprite->weight_button += sprite2->prototype->weight;
 
@@ -954,17 +951,6 @@ int UpdateSprite(SpriteClass* sprite){
 	/* If the sprite has suffered damage                                                     */
 	/*****************************************************************************************/
 	if (sprite->damage_taken != 0 && sprite->super_mode_timer != 0) {
-		sprite->damage_taken = 0;
-		sprite->damage_taken_type = DAMAGE_NONE;
-	}
-
-	// If it is invisible, just these damages can injury it
-	if (sprite->damage_taken != 0 && sprite->invisible_timer != 0 && 
-		sprite->damage_taken_type != DAMAGE_FIRE &&
-		sprite->damage_taken_type != DAMAGE_COMPRESSION &&
-		sprite->damage_taken_type != DAMAGE_DROP &&
-		sprite->damage_taken_type != DAMAGE_ALL) {
-		
 		sprite->damage_taken = 0;
 		sprite->damage_taken_type = DAMAGE_NONE;
 	}
@@ -1211,9 +1197,9 @@ int UpdateSprite(SpriteClass* sprite){
 													break;
 				case AI_SELF_DESTRUCTION:			sprite->AI_SelfDestruction();
 													break;
-				case AI_ATTACK_1_IF_DAMAGED:		sprite->AI_Attack_1_If_Demaged();
+				case AI_ATTACK_1_IF_DAMAGED:		sprite->AI_Attack_1_If_Damaged();
 													break;
-				case AI_ATTACK_2_IF_DAMAGED:		sprite->AI_Attack_2_If_Demaged();
+				case AI_ATTACK_2_IF_DAMAGED:		sprite->AI_Attack_2_If_Damaged();
 													break;
 				case AI_ATTACK_1_NONSTOP:			sprite->AI_Attack_1_Nonstop();
 													break;
@@ -1307,7 +1293,7 @@ int UpdateSprite(SpriteClass* sprite){
 													sprite->AI_Self_Transformation();
 													break;
 				case AI_TRANSFORM_IF_DAMAGED:	
-													sprite->AI_Transform_If_Demaged();
+													sprite->AI_Transform_If_Damaged();
 													break;
 				case AI_TELEPORT:					if (sprite->AI_Teleport(Sprites_List, *Player_Sprite))
 													{
@@ -1365,7 +1351,7 @@ int UpdateSprite(SpriteClass* sprite){
 													break;
 				case AI_RANDOM_MOVE_VERT_HORI:	sprite->AI_Random_Move_Vert_Hori();
 													break;
-				case AI_TURN_BACK_IF_DAMAGED:			sprite->AI_Turn_Back_If_Demaged();
+				case AI_TURN_BACK_IF_DAMAGED:			sprite->AI_Turn_Back_If_Damaged();
 													break;
 				case AI_EVIL_ONE:					if (sprite->energy < 1) 
 													{
