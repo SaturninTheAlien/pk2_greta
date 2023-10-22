@@ -194,10 +194,10 @@ int Draw_InGame_DebugInfo() {
 	PDraw::font_write(fontti1,std::to_string(debug_drawn_sprites),10+vali,fy);
 	fy += 10;
 
-	for (int i = 0; i < 40; i++) {
+	for (std::size_t i = 0; i < 40; i++) {
 		//sprintf(lukua, "%i", i);
 		PDraw::font_write(fontti1,std::to_string(i),410,10+i*10);
-		PrototypeClass*proto = Level_Prototypes_Get(i);
+		PrototypeClass*proto = Get_Prototype_Debug(i);
 
 		if (proto == nullptr) {
 			PDraw::font_write(fontti1,"-",430,10+i*10);
@@ -886,7 +886,7 @@ int Screen_InGame(){
 			}
 			if (PInput::Keydown(PInput::A)/* && key_delay == 0*/) {
 				//key_delay = 20;
-				PrototypeClass*proto = Level_Prototypes_Get(0);
+				PrototypeClass*proto = Level_Prototypes_Get(Game->map.player_sprite_index);
 				if(proto!=nullptr){
 					*Player_Sprite = SpriteClass(proto, 1, Player_Sprite->x, Player_Sprite->y);
 					Effect_Stars(Player_Sprite->x, Player_Sprite->y, COLOR_VIOLET);

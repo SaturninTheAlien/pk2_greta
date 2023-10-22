@@ -45,6 +45,13 @@ void Prototype_ClearAll(){
 	mPrototypes.clear();
 }
 
+PrototypeClass* Get_Prototype_Debug(std::size_t index){
+	if(index<mPrototypes.size()){
+		return mPrototypes[index];
+	}
+	return nullptr;
+}
+
 PrototypeClass* Prototype_Load(const std::string& filename_in){
 
 	bool legacy_spr = true; //try to load legacy .spr file

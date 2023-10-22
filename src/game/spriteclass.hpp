@@ -20,6 +20,7 @@
 class PrototypeClass;
 
 void Prototype_ClearAll();
+PrototypeClass* Get_Prototype_Debug(std::size_t index);
 PrototypeClass* Prototype_Load(const std::string& filename);
 
 //Classes used in game

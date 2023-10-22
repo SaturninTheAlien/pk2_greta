@@ -8,15 +8,6 @@
 #include "engine/PLog.hpp"
 #include "engine/types.hpp"
 
-#ifndef __ANDROID__
-#include "engine/render/PGl.hpp"
-#include "engine/render/PSdlSoft.hpp"
-#endif
-
-#ifdef _WIN32
-#include <versionhelpers.h>
-#endif
-
 #include "engine/render/PSdl.hpp"
 
 #include <SDL.h>
@@ -287,8 +278,8 @@ int init(int width, int height, const char* name, const char* icon, int render_m
 	done:
 #endif
 
-	if (render_method == RENDERER_SDL_SOFTWARE)
-		fullscreen_mode = SDL_WINDOW_FULLSCREEN;
+	/*if (render_method == RENDERER_SDL_SOFTWARE)
+		fullscreen_mode = SDL_WINDOW_FULLSCREEN;*/
 
 	window = SDL_CreateWindow(name, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, window_flags);
 	if (!window) {

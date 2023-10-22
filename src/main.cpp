@@ -85,7 +85,8 @@ static void read_config() {
 		else if (strcmp(txt, "sdl") == 0)
 			render_method = PRender::RENDERER_SDL;
 		else if (strcmp(txt, "software") == 0)
-			render_method = PRender::RENDERER_SDL_SOFTWARE;
+			throw std::runtime_error("Software rendering is deprecated!");
+			//render_method = PRender::RENDERER_SDL_SOFTWARE;
 		else if (strcmp(txt, "opengl") == 0)
 			render_method = PRender::RENDERER_OPENGL;
 		else if (strcmp(txt, "opengles") == 0)
@@ -176,7 +177,21 @@ static void read_args(int argc, char *argv[]) {
 
 	for (int i = 1; i < argc; i++) {
 		std::string arg = argv[i];
-		if(arg=="--version" || arg=="-v"){
+		if(arg=="--help" || arg=="-h"){
+			printf("Pekka Kana 2 (Pekka the Rooster 2) is a jump 'n run game made "
+			"in the spirit of classic platformers such as Super Mario, SuperTux, Sonic the Hedgehog,"
+			" Jazz Jackrabbit, Super Frog and so on.\n"
+			"Available command arguments are:\n"
+			"-h / --help -> print help,\n"
+			"-v / --version -> print version string,\n"
+			"-t / --test \"episode/level\" -> test/play particular level\n"
+			"(e.g ./pekka-kana-2 --test \"rooster island 2/level13.map\"),\n"
+			"-d / --dev -> enable the cheats and the debug tools,\n"
+			"--fps -> enable the FPS counter.\n"
+			);
+			exit(0);
+		}
+		else if(arg=="--version" || arg=="-v"){
 			printf(PK2_VERSION_STR "\n");
 			exit(0);
 		}
