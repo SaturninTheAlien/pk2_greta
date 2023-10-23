@@ -63,7 +63,13 @@ class Path {
     ~Path();
 
     bool operator ==(Path path);
-    const char* c_str();
+    const char* c_str()const{
+        return this->path.c_str();
+    }
+
+    const std::string& str()const{
+        return this->path;
+    }
 
     //type:
     // ""  - all files and directories

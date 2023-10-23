@@ -147,12 +147,6 @@ bool Path::operator==(Path path) { //needed?
 
 }
 
-const char* Path::c_str() {
-
-	return path.c_str();
-	
-}
-
 const char* Get_Extension(const char* string) {
 
 	int len = strlen(string);
@@ -609,6 +603,36 @@ static int SDLCALL pfile_zip_close(SDL_RWops* context) {
 }
 //-------------------------
 
+#ifdef PK2_USE_ZIP
+
+zip_file_t* mOpenZipFile(Zip* zip_file, const char*filename, int&size){
+	int index = zip_get_index(zip_file->zip, filename, &size);
+	if (index < 0 || size<=0) {
+
+		std::ostringstream os;
+		os<<"Can't get RW from zip \""<<zip_file->name<<
+		"\", file \""<<filename<<"\"";
+
+		throw std::runtime_error(os.str());
+	}
+
+	zip_file_t* zfile = zip_fopen_index(zip_file->zip, index, 0);
+	if (!zfile) {
+
+		std::ostringstream os;
+		os<<"RW from zip \""<<zip_file->name<<"\", file \""<<
+		filename<<"\" is NULL";
+
+
+		throw std::runtime_error(os.str());
+
+	}
+
+	return zfile;
+}
+
+#endif
+
 RW* Path::GetRW(const char* mode)const {
 
 	SDL_RWops* ret;
@@ -619,93 +643,38 @@ RW* Path::GetRW(const char* mode)const {
 
 		#ifdef PK2_USE_ZIP
 		
-		int size;
+		/*int size=0;
 		int index = zip_get_index(this->zip_file->zip, cstr, &size);
 		if (index < 0) {
 
 			PLog::Write(PLog::ERR, "PFile", "Can't get RW from zip \"%s\", file \"%s\"", this->zip_file->name.c_str(), cstr);
 			return nullptr;
 
+		}*/
+		int size = 0;
+
+		try{
+			zip_file_t* zfile = mOpenZipFile(this->zip_file, cstr, size);
+			void* buffer = SDL_malloc(size);
+			zip_fread(zfile, buffer, size);
+			zip_fclose(zfile);
+
+			ret = SDL_RWFromConstMem(buffer, size);
+			ret->close = pfile_mem_close;
+			return (RW*)ret;
 		}
-
-		zip_file_t* zfile = zip_fopen_index(this->zip_file->zip, index, 0);
-		if (!zfile) {
-
-			PLog::Write(PLog::ERR, "PFile", "RW from zip \"%s\", file \"%s\" is NULL", this->zip_file->name.c_str(), cstr);
+		catch(const std::exception& e){
+			PLog::Write(PLog::ERR, "PFile", e.what()); 
 			return nullptr;
-
 		}
-
-		/*ret = SDL_AllocRW(); // TODO - why isn't it working? (maybe I can't open two files from the same zip)
-		if (ret == nullptr) {
-
-			PLog::Write(PLog::ERR, "PFile", "Can't allocate RW");
-			return nullptr;
-
-		}
-
-		ret->size = pfile_zip_size;
-		ret->seek = pfile_zip_seek;
-		ret->read = pfile_zip_read;
-		ret->write = pfile_zip_write;
-		ret->close = pfile_zip_close;
-		ret->hidden.unknown.data1 = zfile;
-		ret->hidden.unknown.data2 = (void*)size;
-		ret->type = 0;
-				
-		return (RW*)ret;*/
-
-		void* buffer = SDL_malloc(size);
-		zip_fread(zfile, buffer, size);
-		zip_fclose(zfile);
-
-		ret = SDL_RWFromConstMem(buffer, size);
-		if (!ret) {
-
-			return nullptr;
-		
-		}
-
-		ret->close = pfile_mem_close;
-		return (RW*)ret;
 
 		#else
 
-		return nullptr;
+		throw std::runtime_error("Zip is not supported in this PK2 version!");
 		
 		#endif
 		
 	}
-	
-	#ifdef __ANDROID__
-	if (cstr[0] != '/') { //From APK --TODO why?
-
-		SDL_RWops* temp = SDL_RWFromFile(cstr, mode);
-		if (!temp) {
-
-			PLog::Write(PLog::ERR, "PFile", "Can't get RW from apk file \"%s\"", cstr);
-			return nullptr;
-
-		}
-
-		int size = SDL_RWsize(temp);
-		void* buffer = SDL_malloc(size);
-
-		SDL_RWread(temp, buffer, size, 1);
-		SDL_RWclose(temp);
-
-		ret = SDL_RWFromConstMem(buffer, size);
-		if (!ret) {
-
-			return nullptr;
-		
-		}
-
-		ret->close = pfile_mem_close;
-		return (RW*)ret;
-	
-	}
-	#endif
 
 	ret = SDL_RWFromFile(cstr, mode);
 	if (!ret) {
@@ -722,7 +691,19 @@ RW* Path::GetRW(const char* mode)const {
 nlohmann::json Path::GetJSON()const{
 	
 	if(this->zip_file!=nullptr){
-		throw std::runtime_error("TO DO: Read JSON from zip file.");
+
+		int size = 0;
+		zip_file_t* zfile = mOpenZipFile(this->zip_file, this->path.c_str(), size);
+		char* buffer = new char[size+1];
+		buffer[size] = '\0';
+		
+		zip_fread(zfile, buffer, size);
+		zip_fclose(zfile);
+
+		nlohmann::json res = nlohmann::json::parse(buffer);
+		delete[] buffer;
+		return res;
+
 	}else{
 		std::ifstream in(this->path.c_str());
 		nlohmann::json res = nlohmann::json::parse(in);
