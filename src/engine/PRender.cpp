@@ -32,11 +32,15 @@ static Renderer* renderer;
 
 void load_ui_texture(PFile::Path file) {
 
-	PFile::RW* rw = file.GetRW("r");
-	SDL_Surface* surface = IMG_Load_RW((SDL_RWops*)rw, 1);
-
-	renderer->load_ui_texture(surface);
-
+	try{
+		PFile::RW rw = file.GetRW2("r");
+		SDL_Surface* surface = IMG_Load_RW((SDL_RWops*)(rw._rwops), 1);
+		renderer->load_ui_texture(surface);
+	}
+	catch(const PFile::PFileException& e){
+		PLog::Write(PLog::ERR,"PRender", e.what());
+		throw std::runtime_error("Cannot load UI Texture!");
+	}
 }
 
 void render_ui(FRECT src, FRECT dst, float alpha) {

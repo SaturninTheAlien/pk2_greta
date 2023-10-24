@@ -100,13 +100,13 @@ class EpisodeClass {
 
 		PFile::Path Get_Dir(std::string file);
 
-		int  Open_Scores();
 		int  Save_Scores();
 
 		void Update_NextLevel();
 
 	private:
-		
+		int  Open_Scores();
+
 		void Clear_Scores();
 
 };

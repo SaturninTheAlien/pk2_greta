@@ -116,23 +116,18 @@ int load_sfx(PFile::Path path) {
 	for( int i = 0; i < MAX_SOUNDS; i++ )
 		if (chunks[i] == NULL) {
 
-			PFile::RW* rw = path.GetRW("r");
-			if (rw == nullptr) {
+			try{
+				PFile::RW rw = path.GetRW2("r");
+				chunks[i] = Mix_LoadWAV_RW((SDL_RWops*)(rw._rwops), 0);
+				rw.close();
 
-				PLog::Write(PLog::ERR, "PSound", "Couldn't open %s", path.c_str());
-				break;
-
-			} else {
-
-				chunks[i] = Mix_LoadWAV_RW((SDL_RWops*)rw, 0);
-				rw->close();
-			
 				ret = i;
-
 			}
-
+			catch(const PFile::PFileException& e){
+				PLog::Write(PLog::ERR, "PSound", e.what());
+				PLog::Write(PLog::ERR, "PSound", "Couldn't open %s", path.c_str());
+			}
 			break;
-
 		}
 	
 	SDL_UnlockMutex(chunks_mutex);
@@ -391,19 +386,35 @@ int load_overlay_music(PFile::Path path) { //TODO - load ovarlay from zip
 	if (overlay_playing)
 		resume_music();
 
-	if (overlay_music) {
+	if (overlay_music!=nullptr) {
 		Mix_FreeMusic(overlay_music);
-		overlay_rw->close();
+		overlay_music = nullptr;
 	}
 
-	overlay_rw = path.GetRW("r");
-	overlay_music = Mix_LoadMUS_RW((SDL_RWops*) overlay_rw, 0);
+	if(overlay_rw!=nullptr){
+		delete overlay_rw;
+		overlay_rw = nullptr;
+	}
 
-	if (overlay_music == NULL) {
+	try
+	{
+		overlay_rw = new PFile::RW(path.GetRW2("r"));
+		overlay_music = Mix_LoadMUS_RW((SDL_RWops*)(overlay_rw->_rwops), 0);
+	}
+	catch(const PFile::PFileException& e)
+	{
+		PLog::Write(PLog::ERR, "PSound", e.what());
+		PLog::Write(PLog::ERR, "PSound", "Unable to overlay load music \"%s\"", path.c_str());
+		return -1;
+	}
+	
+
+	if (overlay_music == nullptr) {
 
 		PLog::Write(PLog::WARN, "PSound", Mix_GetError());
 		Mix_ClearError();
-		overlay_rw->close();
+		delete overlay_rw;
+		overlay_rw = nullptr;
 
 		return -1;
 	
@@ -422,21 +433,33 @@ int start_music(PFile::Path path) {
 	Mix_HaltMusic();
 	overlay_playing = false;
 
-	if (music) {
+	if (music!=nullptr) {
 		Mix_FreeMusic(music);
-		music_rw->close();
+		music = nullptr;
 	}
 
+	if(music_rw!=nullptr){
+		delete music_rw;
+		music_rw = nullptr;
+	}
 	playingMusic = path;
 
-	music_rw = path.GetRW("r");
-	music = Mix_LoadMUS_RW((SDL_RWops*) music_rw, 0);
+	try{
+		music_rw = new PFile::RW(path.GetRW2("r"));
+		music = Mix_LoadMUS_RW((SDL_RWops*)(music_rw->_rwops), 0);
+	}
+	catch(const PFile::PFileException& e){
+		PLog::Write(PLog::ERR, "PSound", e.what());
+		PLog::Write(PLog::ERR, "PSound", "Unable to load music \"%s\"",path.c_str());
+	}
 	
-	if (music == NULL) {
+	if (music == nullptr) {
 
 		PLog::Write(PLog::WARN, "PSound", Mix_GetError());
 		Mix_ClearError();
-		music_rw->close();
+
+		delete music_rw;
+		music_rw = nullptr;
 
 		return -1;
 	
@@ -447,8 +470,9 @@ int start_music(PFile::Path path) {
 		Mix_ClearError();
 
 		Mix_FreeMusic(music);
-		music = NULL;
-		music_rw->close();
+		music = nullptr;
+		delete music_rw;
+		music_rw = nullptr;
 
 		return -1;
 	
@@ -581,19 +605,26 @@ int terminate() {
 	clear_channels();
 	reset_sfx();
 	
-	if(music != NULL) {
+	if(music != nullptr) {
 		Mix_FreeMusic(music);
-		music_rw->close();
+		music = nullptr;
 	}
-	music = NULL;
-	music_rw = NULL;
 
-	if(overlay_music != NULL) {
-		Mix_FreeMusic(overlay_music);
-		overlay_rw->close();
+	if(music_rw != nullptr){
+		delete music_rw;
+		music_rw = nullptr;
 	}
-	overlay_music = NULL;
-	overlay_rw = NULL;
+
+	if(overlay_music != nullptr) {
+		Mix_FreeMusic(overlay_music);
+		overlay_music = nullptr;
+	}
+
+	if(overlay_rw != nullptr){
+		delete overlay_rw;
+		overlay_rw = nullptr;
+	}
+
 
 	if (queue_thread != NULL) {
 

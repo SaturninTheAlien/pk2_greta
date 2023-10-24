@@ -48,43 +48,6 @@ MapClass::~MapClass(){
 }
 
 void MapClass::Load(PFile::Path path){
-	
-	/*char version[8];
-
-	PFile::RW* file = path.GetRW("r");
-	if (file == nullptr){
-		throw PExcept::FileNotFoundException(path.c_str(), PExcept::MISSING_LEVEL);
-	}
-
-	file->read(version, sizeof(version));
-	file->close();
-
-	//int ok = 2;
-
-	PLog::Write(PLog::DEBUG, "PK2", "Loading %s, version %s", path.c_str(), version);
-
-	if (strcmp(version,"1.3")==0) {
-		this->LoadVersion13(path);
-	}
-	else if (strcmp(version,"1.2")==0) {
-		this->LoadVersion12(path);
-	}
-	else if (strcmp(version,"1.1")==0) {
-		this->LoadVersion11(path);
-	}
-	else if (strcmp(version,"1.0")==0) {
-		this->LoadVersion10(path);
-	}
-	else if (strcmp(version,"0.1")==0) {
-		this->LoadVersion01(path);
-	}
-	else{
-		version[7] = '\0';
-		std::ostringstream os;
-		os<<"Unsupported level format: \""<<version<<"\"";
-		throw PExcept::PException(os.str());
-	}*/
-
 	this->Load_Plain_Data(path);
 	
 	path.SetFile(this->tileset_filename);
@@ -97,54 +60,54 @@ void MapClass::Load(PFile::Path path){
 }
 
 void MapClass::Load_Plain_Data(PFile::Path path) {
-	char version[8];
+	try{
+		char version[8];
+		PFile::RW file = path.GetRW2("r");
 
-	PFile::RW* file = path.GetRW("r");
-	if (file == nullptr){
+		file.read(version, sizeof(version));
+		file.close();
+
+		//int ok = 2;
+
+		PLog::Write(PLog::DEBUG, "PK2 Map", "Loading %s, version %s", path.c_str(), version);
+
+		if (strcmp(version,"1.3")==0) {
+			this->LoadVersion13(path);
+		}
+		else if (strcmp(version,"1.2")==0) {
+			this->LoadVersion12(path);
+		}
+		else if (strcmp(version,"1.1")==0) {
+			this->LoadVersion11(path);
+		}
+		else if (strcmp(version,"1.0")==0) {
+			this->LoadVersion10(path);
+		}
+		else if (strcmp(version,"0.1")==0) {
+			this->LoadVersion01(path);
+		}
+		else{
+			version[7] = '\0';
+			std::ostringstream os;
+			os<<"Unsupported level format: \""<<version<<"\"";
+			throw PExcept::PException(os.str());
+		}
+
+	}
+	catch(const PFile::PFileException& e){
+		PLog::Write(PLog::ERR,"PK2 Map",e.what());
 		throw PExcept::FileNotFoundException(path.c_str(), PExcept::MISSING_LEVEL);
-	}
-
-	file->read(version, sizeof(version));
-	file->close();
-
-	//int ok = 2;
-
-	PLog::Write(PLog::DEBUG, "PK2", "Loading %s, version %s", path.c_str(), version);
-
-	if (strcmp(version,"1.3")==0) {
-		this->LoadVersion13(path);
-	}
-	else if (strcmp(version,"1.2")==0) {
-		this->LoadVersion12(path);
-	}
-	else if (strcmp(version,"1.1")==0) {
-		this->LoadVersion11(path);
-	}
-	else if (strcmp(version,"1.0")==0) {
-		this->LoadVersion10(path);
-	}
-	else if (strcmp(version,"0.1")==0) {
-		this->LoadVersion01(path);
-	}
-	else{
-		version[7] = '\0';
-		std::ostringstream os;
-		os<<"Unsupported level format: \""<<version<<"\"";
-		throw PExcept::PException(os.str());
 	}
 }
 
-int MapClass::LoadVersion01(PFile::Path path){
+void MapClass::LoadVersion01(PFile::Path path){
 
 	PK2KARTTA kartta;
 
-	PFile::RW* file = path.GetRW("r");
-	if (file == nullptr) {
-		return 1;
-	}
+	PFile::RW file = path.GetRW2("r");
 
-	file->read(&kartta, sizeof(PK2KARTTA));
-	file->close();
+	file.read(&kartta, sizeof(PK2KARTTA));
+	file.close();
 
 	strcpy(this->version, PK2MAP_LAST_VERSION);
 	strcpy(this->tileset_filename,"blox.bmp");
@@ -164,20 +127,15 @@ int MapClass::LoadVersion01(PFile::Path path){
 	memset(this->background_tiles,255, sizeof(background_tiles));
 
 	memset(this->sprite_tiles,255, sizeof(sprite_tiles));
-
-	return(0);
 }
-int MapClass::LoadVersion10(PFile::Path path){
+void MapClass::LoadVersion10(PFile::Path path){
 	
 	MapClass kartta;
 
-	PFile::RW* file = path.GetRW("r");
-	if (file == nullptr) {
-		return 1;
-	}
+	PFile::RW file = path.GetRW2("r");
 
-	file->read(&kartta, sizeof(PK2KARTTA));
-	file->close();
+	file.read(&kartta, sizeof(PK2KARTTA));
+	file.close();
 
 	strcpy(this->version,		kartta.version);
 	strcpy(this->tileset_filename,	kartta.tileset_filename);
@@ -199,36 +157,30 @@ int MapClass::LoadVersion10(PFile::Path path){
 
 	for (u32 i=0; i<PK2MAP_MAP_SIZE; i++)
 		this->sprite_tiles[i] = kartta.sprite_tiles[i];
-
-	return 0;
 }
-int MapClass::LoadVersion11(PFile::Path path){
-	int virhe = 0;
-
-	PFile::RW* file = path.GetRW("r");
-	if (file == nullptr) {
-		return 1;
-	}
+void MapClass::LoadVersion11(PFile::Path path){
+	PFile::RW file = path.GetRW2("r");
 
 	memset(this->background_tiles, 255, sizeof(this->background_tiles));
 	memset(this->foreground_tiles , 255, sizeof(this->foreground_tiles));
 	memset(this->sprite_tiles, 255, sizeof(this->sprite_tiles));
 
-	file->read(this->version,      sizeof(char) * 5);
-	file->read(this->tileset_filename, sizeof(char) * 13);
-	file->read(this->background_filename,  sizeof(char) * 13);
-	file->read(this->music_filename,    sizeof(char) * 13);
-	file->read(this->name,        sizeof(char) * 40);
-	file->read(this->author,      sizeof(char) * 40);
-	file->read(&this->map_time,       sizeof(int));
-	file->read(&this->extra,      sizeof(u8));
-	file->read(&this->background_scrolling,     sizeof(u8));
-	file->read(this->background_tiles,     sizeof(background_tiles));
-	if (file->read(this->foreground_tiles,  sizeof(foreground_tiles)) != PK2MAP_MAP_SIZE)
-		virhe = 2;
-	file->read(this->sprite_tiles,     sizeof(sprite_tiles));
+	file.read(this->version,      sizeof(char) * 5);
+	file.read(this->tileset_filename, sizeof(char) * 13);
+	file.read(this->background_filename,  sizeof(char) * 13);
+	file.read(this->music_filename,    sizeof(char) * 13);
+	file.read(this->name,        sizeof(char) * 40);
+	file.read(this->author,      sizeof(char) * 40);
+	file.read(&this->map_time,       sizeof(int));
+	file.read(&this->extra,      sizeof(u8));
+	file.read(&this->background_scrolling,     sizeof(u8));
+	file.read(this->background_tiles,     sizeof(background_tiles));
+	if (file.read(this->foreground_tiles,  sizeof(foreground_tiles)) != PK2MAP_MAP_SIZE){
+		throw std::runtime_error("Incoorect size of foreground_tiles array");
+	}
+	file.read(this->sprite_tiles,     sizeof(sprite_tiles));
 
-	file->close();
+	file.close();
 
 	for (u32 i=0;i<PK2MAP_MAP_SIZE;i++)
 		if (foreground_tiles[i] != 255)
@@ -242,16 +194,13 @@ int MapClass::LoadVersion11(PFile::Path path){
 		if (sprite_tiles[i] != 255)
 			sprite_tiles[i] -= 50;
 
-	return (virhe);
+	//return (virhe);
 }
-int MapClass::LoadVersion12(PFile::Path path){
+void MapClass::LoadVersion12(PFile::Path path){
 
 	char luku[8];
 	
-	PFile::RW* file = path.GetRW("r");
-	if (file == nullptr) {
-		return 1;
-	}
+	PFile::RW file = path.GetRW2("r");
 
 	memset(this->background_tiles, 255, sizeof(this->background_tiles));
 	memset(this->foreground_tiles , 255, sizeof(this->foreground_tiles));
@@ -261,59 +210,54 @@ int MapClass::LoadVersion12(PFile::Path path){
 		strcpy(this->sprite_filenames[i],"");
 
 	//tiedosto->read ((char *)this, sizeof (*this));
-	file->read(version,      sizeof(version));
-	file->read(tileset_filename, sizeof(tileset_filename));
-	file->read(background_filename,  sizeof(background_filename));
-	file->read(music_filename,    sizeof(music_filename));
-	file->read(name,        sizeof(name));
-	file->read(author,      sizeof(author));
+	file.read(version,      sizeof(version));
+	file.read(tileset_filename, sizeof(tileset_filename));
+	file.read(background_filename,  sizeof(background_filename));
+	file.read(music_filename,    sizeof(music_filename));
+	file.read(name,        sizeof(name));
+	file.read(author,      sizeof(author));
 
-	file->read(luku, sizeof(luku));
+	file.read(luku, sizeof(luku));
 	this->level_number = atoi(luku);
 
-	file->read(luku, sizeof(luku));
+	file.read(luku, sizeof(luku));
 	this->weather = atoi(luku);
 
-	file->read(luku, sizeof(luku));
+	file.read(luku, sizeof(luku));
 	this->button1_time = atoi(luku);
 
-	file->read(luku, sizeof(luku));
+	file.read(luku, sizeof(luku));
 	this->button2_time = atoi(luku);
 
-	file->read(luku, sizeof(luku));
+	file.read(luku, sizeof(luku));
 	this->button3_time = atoi(luku);
 
-	file->read(luku, sizeof(luku));
+	file.read(luku, sizeof(luku));
 	this->map_time = atoi(luku);
 
-	file->read(luku, sizeof(luku));
+	file.read(luku, sizeof(luku));
 	this->extra = atoi(luku);
 
-	file->read(luku, sizeof(luku));
+	file.read(luku, sizeof(luku));
 	this->background_scrolling = atoi(luku);
 
-	file->read(luku, sizeof(luku));
+	file.read(luku, sizeof(luku));
 	this->player_sprite_index = atoi(luku);
 
-	file->read(background_tiles, sizeof(background_tiles));
-	file->read(foreground_tiles,  sizeof(foreground_tiles));
-	file->read(sprite_tiles, sizeof(sprite_tiles));
+	file.read(background_tiles, sizeof(background_tiles));
+	file.read(foreground_tiles,  sizeof(foreground_tiles));
+	file.read(sprite_tiles, sizeof(sprite_tiles));
 
-	file->read(sprite_filenames, sizeof(sprite_filenames[0]) * PK2MAP_MAP_MAX_PROTOTYPES);
+	file.read(sprite_filenames, sizeof(sprite_filenames[0]) * PK2MAP_MAP_MAX_PROTOTYPES);
 
-	file->close();
-
-	return 0;
+	file.close();
 }
-int MapClass::LoadVersion13(PFile::Path path){
+void MapClass::LoadVersion13(PFile::Path path){
 
 	char luku[8];
 	u32 i;
 
-	PFile::RW* file = path.GetRW("r");
-	if (file == nullptr) {
-		return 1;
-	}
+	PFile::RW file = path.GetRW2("r");
 
 	memset(this->background_tiles, 255, sizeof(this->background_tiles));
 	memset(this->foreground_tiles , 255, sizeof(this->foreground_tiles));
@@ -322,107 +266,105 @@ int MapClass::LoadVersion13(PFile::Path path){
 	for (i=0;i<PK2MAP_MAP_MAX_PROTOTYPES;i++)
 		strcpy(this->sprite_filenames[i],"");
 
-	file->read(version,      sizeof(version));
-	file->read(tileset_filename, sizeof(tileset_filename));
-	file->read(background_filename,  sizeof(background_filename));
-	file->read(music_filename,    sizeof(music_filename));
-	file->read(name,        sizeof(name));
+	file.read(version,      sizeof(version));
+	file.read(tileset_filename, sizeof(tileset_filename));
+	file.read(background_filename,  sizeof(background_filename));
+	file.read(music_filename,    sizeof(music_filename));
+	file.read(name,        sizeof(name));
 
 	for (int i = 38; i > 0 && (name[i] == (char)0xCD); i--)
 		name[i] = 0;
 	
-	file->read(author,      sizeof(author));
+	file.read(author,      sizeof(author));
 
-	file->read(luku, sizeof(luku));
+	file.read(luku, sizeof(luku));
 	this->level_number = atoi(luku);
 	memset(luku, 0, sizeof(luku));
 
-	file->read(luku, sizeof(luku));
+	file.read(luku, sizeof(luku));
 	this->weather = atoi(luku);
 	memset(luku, 0, sizeof(luku));
 
-	file->read(luku, sizeof(luku));
+	file.read(luku, sizeof(luku));
 	this->button1_time = atoi(luku);
 	memset(luku, 0, sizeof(luku));
 
-	file->read(luku, sizeof(luku));
+	file.read(luku, sizeof(luku));
 	this->button2_time = atoi(luku);
 	memset(luku, 0, sizeof(luku));
 
-	file->read(luku, sizeof(luku));
+	file.read(luku, sizeof(luku));
 	this->button3_time = atoi(luku);
 	memset(luku, 0, sizeof(luku));
 
-	file->read(luku, sizeof(luku));
+	file.read(luku, sizeof(luku));
 	this->map_time = atoi(luku);
 	memset(luku, 0, sizeof(luku));
 
-	file->read(luku, sizeof(luku));
+	file.read(luku, sizeof(luku));
 	this->extra = atoi(luku);
 	memset(luku, 0, sizeof(luku));
 
-	file->read(luku, sizeof(luku));
+	file.read(luku, sizeof(luku));
 	this->background_scrolling = atoi(luku);
 	memset(luku, 0, sizeof(luku));
 
-	file->read(luku, sizeof(luku));
+	file.read(luku, sizeof(luku));
 	this->player_sprite_index = atoi(luku);
 	memset(luku, 0, sizeof(luku));
 
-	file->read(luku, sizeof(luku));
+	file.read(luku, sizeof(luku));
 	this->x = atoi(luku);
 	memset(luku, 0, sizeof(luku));
 
-	file->read(luku, sizeof(luku));
+	file.read(luku, sizeof(luku));
 	this->y = atoi(luku);
 	memset(luku, 0, sizeof(luku));
 
-	file->read(luku, sizeof(luku));
+	file.read(luku, sizeof(luku));
 	this->icon = atoi(luku);
 	memset(luku, 0, sizeof(luku));
 
 	u32 lkm;
-	file->read(luku, sizeof(luku));
+	file.read(luku, sizeof(luku));
 	lkm = (int)atoi(luku);
 
-	file->read(sprite_filenames, sizeof(sprite_filenames[0]) * lkm);
+	file.read(sprite_filenames, sizeof(sprite_filenames[0]) * lkm);
 
 	u32 width, height;
 	u32 offset_x, offset_y;
 
 	// background_tiles
-	file->read(luku, sizeof(luku)); offset_x = atol(luku); memset(luku, 0, sizeof(luku));
-	file->read(luku, sizeof(luku)); offset_y = atol(luku); memset(luku, 0, sizeof(luku));
-	file->read(luku, sizeof(luku)); width   = atol(luku); memset(luku, 0, sizeof(luku));
-	file->read(luku, sizeof(luku)); height  = atol(luku); memset(luku, 0, sizeof(luku));
+	file.read(luku, sizeof(luku)); offset_x = atol(luku); memset(luku, 0, sizeof(luku));
+	file.read(luku, sizeof(luku)); offset_y = atol(luku); memset(luku, 0, sizeof(luku));
+	file.read(luku, sizeof(luku)); width   = atol(luku); memset(luku, 0, sizeof(luku));
+	file.read(luku, sizeof(luku)); height  = atol(luku); memset(luku, 0, sizeof(luku));
 	for (u32 y = offset_y; y <= offset_y + height; y++) {
 		u32 x_start = offset_x + y * PK2MAP_MAP_WIDTH;
-		file->read(&background_tiles[x_start], width + 1);
+		file.read(&background_tiles[x_start], width + 1);
 	}
 
 	// foreground_tiles
-	file->read(luku, sizeof(luku)); offset_x = atol(luku); memset(luku, 0, sizeof(luku));
-	file->read(luku, sizeof(luku)); offset_y = atol(luku); memset(luku, 0, sizeof(luku));
-	file->read(luku, sizeof(luku)); width   = atol(luku); memset(luku, 0, sizeof(luku));
-	file->read(luku, sizeof(luku)); height  = atol(luku); memset(luku, 0, sizeof(luku));
+	file.read(luku, sizeof(luku)); offset_x = atol(luku); memset(luku, 0, sizeof(luku));
+	file.read(luku, sizeof(luku)); offset_y = atol(luku); memset(luku, 0, sizeof(luku));
+	file.read(luku, sizeof(luku)); width   = atol(luku); memset(luku, 0, sizeof(luku));
+	file.read(luku, sizeof(luku)); height  = atol(luku); memset(luku, 0, sizeof(luku));
 	for (u32 y = offset_y; y <= offset_y + height; y++) {
 		u32 x_start = offset_x + y * PK2MAP_MAP_WIDTH;
-		file->read(&foreground_tiles[x_start], width + 1);
+		file.read(&foreground_tiles[x_start], width + 1);
 	}
 
 	//sprite_tiles
-	file->read(luku, sizeof(luku)); offset_x = atol(luku); memset(luku, 0, sizeof(luku));
-	file->read(luku, sizeof(luku)); offset_y = atol(luku); memset(luku, 0, sizeof(luku));
-	file->read(luku, sizeof(luku)); width   = atol(luku); memset(luku, 0, sizeof(luku));
-	file->read(luku, sizeof(luku)); height  = atol(luku); memset(luku, 0, sizeof(luku));
+	file.read(luku, sizeof(luku)); offset_x = atol(luku); memset(luku, 0, sizeof(luku));
+	file.read(luku, sizeof(luku)); offset_y = atol(luku); memset(luku, 0, sizeof(luku));
+	file.read(luku, sizeof(luku)); width   = atol(luku); memset(luku, 0, sizeof(luku));
+	file.read(luku, sizeof(luku)); height  = atol(luku); memset(luku, 0, sizeof(luku));
 	for (u32 y = offset_y; y <= offset_y + height; y++) {
 		u32 x_start = offset_x + y * PK2MAP_MAP_WIDTH;
-		file->read(&sprite_tiles[x_start], width + 1);
+		file.read(&sprite_tiles[x_start], width + 1);
 	}
 
-	file->close();
-
-	return 0;
+	file.close();
 }
 
 int MapClass::Load_BG(PFile::Path path){

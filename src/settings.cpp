@@ -24,28 +24,28 @@ GAME_CONTROLS* Input;
 
 int Settings_GetId(PFile::Path path, u32& id) {
 
-	PFile::RW *file = path.GetRW("r");
-	if (file == nullptr) {
+	try{
+		PFile::RW file = path.GetRW2("r");
+		char version[4];
 
+		file.read(version, 4);
+		if (strncmp(version, SETTINGS_VERSION, 4) != 0) {
+
+			id = 0;
+			file.close();
+			return 2;
+
+		}
+
+		file.read(id);
+		file.close();
+		return 0;
+
+	}
+	catch(const PFile::PFileException& e){
+		PLog::Write(PLog::WARN, "PK2 Settings", e.what());
 		return 1;
-		
 	}
-
-	char version[4];
-
-	file->read(version, 4);
-	if (strncmp(version, SETTINGS_VERSION, 4) != 0) {
-
-		id = 0;
-		file->close();
-		return 2;
-
-	}
-
-	file->read(id);
-	file->close();
-	return 0;
-
 }
 
 void Settings_Init() {
@@ -112,75 +112,84 @@ int Settings_Open() {
 
 	PFile::Path path(data_path, SETTINGS_FILE);
 
-	PFile::RW* file = path.GetRW("r");
+	try{
+		PFile::RW file = path.GetRW2("r");
+		/*if (file == nullptr) {
+			Settings_Init();
+			Settings_Save();
+			return 1;
+		}*/
 
-	if (file == nullptr) {
+		char version[4];
+		file.read(version, 4);
+		
+		if (strncmp(version, SETTINGS_VERSION, 4) != 0) { 
+			// If settings isn't in current version
+			Settings_Init();
+			Settings_Save();
+			return 2;
+		}
+
+		file.read(Settings.id);
+		file.read(Settings.language, sizeof(Settings.language));
+
+		file.read(Settings.draw_transparent);
+		file.read(Settings.transparent_text);
+		file.read(Settings.draw_weather);
+		file.read(Settings.draw_itembar);
+		file.read(Settings.bg_sprites);
+		
+		file.read(Settings.fps);
+		file.read(Settings.isFullScreen);
+		file.read(Settings.double_speed);
+		file.read(Settings.shader_type);
+		
+		file.read(Settings.keyboard.left);
+		file.read(Settings.keyboard.right);
+		file.read(Settings.keyboard.up);
+		file.read(Settings.keyboard.down);
+		file.read(Settings.keyboard.jump);
+		file.read(Settings.keyboard.walk_slow);
+		file.read(Settings.keyboard.attack1);
+		file.read(Settings.keyboard.attack2);
+		file.read(Settings.keyboard.open_gift);
+
+		file.read(Settings.using_controller);
+		file.read(Settings.vibration);
+		file.read(Settings.joystick.left);
+		file.read(Settings.joystick.right);
+		file.read(Settings.joystick.up);
+		file.read(Settings.joystick.down);
+		file.read(Settings.joystick.jump);
+		file.read(Settings.joystick.walk_slow);
+		file.read(Settings.joystick.attack1);
+		file.read(Settings.joystick.attack2);
+		file.read(Settings.joystick.open_gift);
+
+		file.read(Settings.music_max_volume);
+		file.read(Settings.sfx_max_volume);
+
+		file.read(Settings.gui);
+		
+		file.close();
+
+		Id_To_String(Settings.id, id_code, 8);
+
+		if (Settings.shader_type == SETTINGS_MODE_CRT) {
+			screen_width = 640;
+			screen_height = 480;
+		}
+		PLog::Write(PLog::DEBUG, "PK2", "Opened settings");
+
+	}
+	catch(const PFile::PFileException& e){
+		PLog::Write(PLog::DEBUG, "PK2", e.what());
+		PLog::Write(PLog::DEBUG, "PK2", "No settings found");
+		
 		Settings_Init();
 		Settings_Save();
 		return 1;
 	}
-
-	char version[4];
-	file->read(version, 4);
-	
-	if (strncmp(version, SETTINGS_VERSION, 4) != 0) { 
-		// If settings isn't in current version
-		Settings_Init();
-        Settings_Save();
-		return 2;
-	}
-
-	file->read(Settings.id);
-	file->read(Settings.language, sizeof(Settings.language));
-
-	file->read(Settings.draw_transparent);
-	file->read(Settings.transparent_text);
-	file->read(Settings.draw_weather);
-	file->read(Settings.draw_itembar);
-	file->read(Settings.bg_sprites);
-	
-	file->read(Settings.fps);
-	file->read(Settings.isFullScreen);
-	file->read(Settings.double_speed);
-	file->read(Settings.shader_type);
-	
-	file->read(Settings.keyboard.left);
-	file->read(Settings.keyboard.right);
-	file->read(Settings.keyboard.up);
-	file->read(Settings.keyboard.down);
-	file->read(Settings.keyboard.jump);
-	file->read(Settings.keyboard.walk_slow);
-	file->read(Settings.keyboard.attack1);
-	file->read(Settings.keyboard.attack2);
-	file->read(Settings.keyboard.open_gift);
-
-	file->read(Settings.using_controller);
-	file->read(Settings.vibration);
-	file->read(Settings.joystick.left);
-	file->read(Settings.joystick.right);
-	file->read(Settings.joystick.up);
-	file->read(Settings.joystick.down);
-	file->read(Settings.joystick.jump);
-	file->read(Settings.joystick.walk_slow);
-	file->read(Settings.joystick.attack1);
-	file->read(Settings.joystick.attack2);
-	file->read(Settings.joystick.open_gift);
-
-	file->read(Settings.music_max_volume);
-	file->read(Settings.sfx_max_volume);
-
-	file->read(Settings.gui);
-	
-	file->close();
-
-	Id_To_String(Settings.id, id_code, 8);
-
-	if (Settings.shader_type == SETTINGS_MODE_CRT) {
-		screen_width = 640;
-		screen_height = 480;
-	}
-
-	PLog::Write(PLog::DEBUG, "PK2", "Opened settings");
 	
 	return 0;
 
@@ -190,59 +199,59 @@ int Settings_Save() {
 
 	PFile::Path path(data_path, SETTINGS_FILE);
 
-	PFile::RW* file = path.GetRW("w");
-	if (file == nullptr) {
+	PFile::RW file = path.GetRW2("w");
+	/*if (file == nullptr) {
 
 		PLog::Write(PLog::ERR, "PK2", "Can't save settings");
 		return 1;
 	
-	}
+	}*/
 	
 	// Save value by value, this defines the file structure
-	file->write(SETTINGS_VERSION, sizeof(SETTINGS_VERSION));
+	file.write(SETTINGS_VERSION, sizeof(SETTINGS_VERSION));
 
-	file->write(Settings.id);
-	file->write(Settings.language, sizeof(Settings.language));
+	file.write(Settings.id);
+	file.write(Settings.language, sizeof(Settings.language));
 
-	file->write(Settings.draw_transparent);
-	file->write(Settings.transparent_text);
-	file->write(Settings.draw_weather);
-	file->write(Settings.draw_itembar);
-	file->write(Settings.bg_sprites);
+	file.write(Settings.draw_transparent);
+	file.write(Settings.transparent_text);
+	file.write(Settings.draw_weather);
+	file.write(Settings.draw_itembar);
+	file.write(Settings.bg_sprites);
 	
-	file->write(Settings.fps);
-	file->write(Settings.isFullScreen);
-	file->write(Settings.double_speed);
-	file->write(Settings.shader_type);
+	file.write(Settings.fps);
+	file.write(Settings.isFullScreen);
+	file.write(Settings.double_speed);
+	file.write(Settings.shader_type);
 	
-	file->write(Settings.keyboard.left);
-	file->write(Settings.keyboard.right);
-	file->write(Settings.keyboard.up);
-	file->write(Settings.keyboard.down);
-	file->write(Settings.keyboard.jump);
-	file->write(Settings.keyboard.walk_slow);
-	file->write(Settings.keyboard.attack1);
-	file->write(Settings.keyboard.attack2);
-	file->write(Settings.keyboard.open_gift);
+	file.write(Settings.keyboard.left);
+	file.write(Settings.keyboard.right);
+	file.write(Settings.keyboard.up);
+	file.write(Settings.keyboard.down);
+	file.write(Settings.keyboard.jump);
+	file.write(Settings.keyboard.walk_slow);
+	file.write(Settings.keyboard.attack1);
+	file.write(Settings.keyboard.attack2);
+	file.write(Settings.keyboard.open_gift);
 
-	file->write(Settings.using_controller);
-	file->write(Settings.vibration);
-	file->write(Settings.joystick.left);
-	file->write(Settings.joystick.right);
-	file->write(Settings.keyboard.up);
-	file->write(Settings.joystick.down);
-	file->write(Settings.joystick.jump);
-	file->write(Settings.joystick.walk_slow);
-	file->write(Settings.joystick.attack1);
-	file->write(Settings.joystick.attack2);
-	file->write(Settings.joystick.open_gift);
+	file.write(Settings.using_controller);
+	file.write(Settings.vibration);
+	file.write(Settings.joystick.left);
+	file.write(Settings.joystick.right);
+	file.write(Settings.keyboard.up);
+	file.write(Settings.joystick.down);
+	file.write(Settings.joystick.jump);
+	file.write(Settings.joystick.walk_slow);
+	file.write(Settings.joystick.attack1);
+	file.write(Settings.joystick.attack2);
+	file.write(Settings.joystick.open_gift);
 
-	file->write(Settings.music_max_volume);
-	file->write(Settings.sfx_max_volume);
+	file.write(Settings.music_max_volume);
+	file.write(Settings.sfx_max_volume);
 
-	file->write(Settings.gui);
+	file.write(Settings.gui);
 	
-	file->close();
+	file.close();
 	
 	PLog::Write(PLog::DEBUG, "PK2", "Saved settings");
 

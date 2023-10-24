@@ -166,11 +166,11 @@ class MapClass {
 
     private:
 
-    int LoadVersion01(PFile::Path path);
-    int LoadVersion10(PFile::Path path);
-    int LoadVersion11(PFile::Path path);
-    int LoadVersion12(PFile::Path path);
-    int LoadVersion13(PFile::Path path);
+    void LoadVersion01(PFile::Path path);
+    void LoadVersion10(PFile::Path path);
+    void LoadVersion11(PFile::Path path);
+    void LoadVersion12(PFile::Path path);
+    void LoadVersion13(PFile::Path path);
     
     int Load_BG(PFile::Path path);
     void Load_TilesImage(PFile::Path path);

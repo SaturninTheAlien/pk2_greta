@@ -533,76 +533,6 @@ std::string Path::GetFileName() {
 
 }
 
-//SDL_RW interface --------
-extern "C" {
-static int SDLCALL pfile_mem_close(SDL_RWops* context) {
-
-	if (context) {
-
-		SDL_free(context->hidden.mem.base);
-		SDL_FreeRW(context);
-
-	}
-
-	return 0;
-
-}
-
-#ifdef PK2_USE_ZIP
-static Sint64 SDLCALL pfile_zip_size(SDL_RWops* context) {
-
-	return (Sint64)context->hidden.unknown.data2;
-
-}
-
-static Sint64 SDLCALL pfile_zip_seek(SDL_RWops* context, Sint64 offset, int whence) {
-
-	zip_file_t* zfile = (zip_file_t*)context->hidden.unknown.data1;
-
-	switch (whence) {
-		case RW_SEEK_SET:
-			zip_fseek(zfile, offset, SEEK_SET);
-		case RW_SEEK_CUR:
-			zip_fseek(zfile, offset, SEEK_CUR);
-		case RW_SEEK_END:
-			zip_fseek(zfile, offset, SEEK_END);
-		default:
-			return SDL_SetError("Unknown value for 'whence'");
-    }
-
-	return (Sint64)zip_ftell(zfile);
-
-}
-
-static size_t SDLCALL pfile_zip_read(SDL_RWops* context, void *ptr, size_t size, size_t maxnum) {
-
-	zip_file_t* zfile = (zip_file_t*)context->hidden.unknown.data1;
-
-	return zip_fread(zfile, ptr, size * maxnum);
-
-}
-
-static size_t SDLCALL pfile_zip_write(SDL_RWops* context, const void *ptr, size_t size, size_t num) {
-
-	SDL_SetError("Can't write zip RW");
-
-	return 0;
-
-}
-
-static int SDLCALL pfile_zip_close(SDL_RWops* context) {
-
-	zip_file_t* zfile = (zip_file_t*)context->hidden.unknown.data1;
-	zip_fclose(zfile);
-	SDL_FreeRW(context);
-
-	return 0;
-}
-#endif
-
-}
-//-------------------------
-
 #ifdef PK2_USE_ZIP
 
 zip_file_t* mOpenZipFile(Zip* zip_file, const char*filename, int&size){
@@ -613,7 +543,7 @@ zip_file_t* mOpenZipFile(Zip* zip_file, const char*filename, int&size){
 		os<<"Can't get RW from zip \""<<zip_file->name<<
 		"\", file \""<<filename<<"\"";
 
-		throw std::runtime_error(os.str());
+		throw PFileException(os.str());
 	}
 
 	zip_file_t* zfile = zip_fopen_index(zip_file->zip, index, 0);
@@ -624,7 +554,7 @@ zip_file_t* mOpenZipFile(Zip* zip_file, const char*filename, int&size){
 		filename<<"\" is NULL";
 
 
-		throw std::runtime_error(os.str());
+		throw PFileException(os.str());
 
 	}
 
@@ -633,64 +563,49 @@ zip_file_t* mOpenZipFile(Zip* zip_file, const char*filename, int&size){
 
 #endif
 
-RW* Path::GetRW(const char* mode)const {
+RW Path::GetRW2(const char* mode)const {
 
 	SDL_RWops* ret;
-
-	const char* cstr = this->path.c_str();
-
 	if (this->zip_file != nullptr) {
 
 		#ifdef PK2_USE_ZIP
 		
-		/*int size=0;
-		int index = zip_get_index(this->zip_file->zip, cstr, &size);
-		if (index < 0) {
-
-			PLog::Write(PLog::ERR, "PFile", "Can't get RW from zip \"%s\", file \"%s\"", this->zip_file->name.c_str(), cstr);
-			return nullptr;
-
-		}*/
 		int size = 0;
+		zip_file_t* zfile = mOpenZipFile(this->zip_file, this->path.c_str(), size);
+		void* buffer = SDL_malloc(size);
+		zip_fread(zfile, buffer, size);
+		zip_fclose(zfile);
 
-		try{
-			zip_file_t* zfile = mOpenZipFile(this->zip_file, cstr, size);
-			void* buffer = SDL_malloc(size);
-			zip_fread(zfile, buffer, size);
-			zip_fclose(zfile);
-
-			ret = SDL_RWFromConstMem(buffer, size);
-			ret->close = pfile_mem_close;
-			return (RW*)ret;
-		}
-		catch(const std::exception& e){
-			PLog::Write(PLog::ERR, "PFile", e.what()); 
-			return nullptr;
-		}
+		ret = SDL_RWFromConstMem(buffer, size);
+		return RW(ret, buffer);
 
 		#else
 
-		throw std::runtime_error("Zip is not supported in this PK2 version!");
+		throw PFileException("Zip is not supported in this PK2 version!");
 		
 		#endif
 		
 	}
+	else{
+		ret = SDL_RWFromFile(this->path.c_str(), mode);
+		if (!ret) {
 
-	ret = SDL_RWFromFile(cstr, mode);
-	if (!ret) {
+			std::ostringstream os;
+			os<<"Can't get RW from file\""<<this->path<<"\"";
+			std::string s = os.str();
+			//PLog::Write(PLog::ERR, "PFile", s.c_str());
+			throw PFileException(s);
+		}
 
-		PLog::Write(PLog::ERR, "PFile", "Can't get RW from file \"%s\"", cstr);
-		return nullptr;
-
+		return RW(ret, nullptr);
 	}
-
-	return (RW*)ret;
-
 }
 
 nlohmann::json Path::GetJSON()const{
 	
 	if(this->zip_file!=nullptr){
+
+		#ifdef PK2_USE_ZIP
 
 		int size = 0;
 		zip_file_t* zfile = mOpenZipFile(this->zip_file, this->path.c_str(), size);
@@ -704,6 +619,12 @@ nlohmann::json Path::GetJSON()const{
 		delete[] buffer;
 		return res;
 
+		#else
+
+		throw PFileException("Zip is not supported in this PK2 version!");
+		
+		#endif
+
 	}else{
 		std::ifstream in(this->path.c_str());
 		nlohmann::json res = nlohmann::json::parse(in);
@@ -711,12 +632,20 @@ nlohmann::json Path::GetJSON()const{
 	}
 }
 
+RW::RW(RW&& source){
+	this->_rwops = source._rwops;
+	this->_mem_buffer = source._mem_buffer;
+
+	source._rwops = nullptr;
+	source._mem_buffer = nullptr;
+}
+
 int RW::read(std::string& str) {
 
 	str.clear();
 
 	while(1) {
-		u8 c = SDL_ReadU8((SDL_RWops*)this);
+		u8 c = SDL_ReadU8((SDL_RWops*)(this->_rwops));
 
 		if (c == '\0')
 			return str.size();
@@ -729,12 +658,12 @@ int RW::read(std::string& str) {
 
 int RW::read(void* val, size_t size) {
 
-	return SDL_RWread((SDL_RWops*)this, val, 1, size);
+	return SDL_RWread((SDL_RWops*)(this->_rwops), val, 1, size);
 
 }
 int RW::read(bool& val) {
 
-	u8 v = SDL_ReadU8((SDL_RWops*)this);
+	u8 v = SDL_ReadU8((SDL_RWops*)(this->_rwops));
 	
 	if (v == 0) val = false;
 	else val = true;
@@ -744,113 +673,113 @@ int RW::read(bool& val) {
 }
 int RW::read(u8& val) {
 
-	val = SDL_ReadU8((SDL_RWops*)this);
+	val = SDL_ReadU8((SDL_RWops*)(this->_rwops));
 	return 1;
 
 }
 int RW::read(s8& val) {
 
-	val = SDL_ReadU8((SDL_RWops*)this);
+	val = SDL_ReadU8((SDL_RWops*)(this->_rwops));
 	return 1;
 
 }
 int RW::read(u16& val) {
 
-	val = SDL_ReadLE16((SDL_RWops*)this);
+	val = SDL_ReadLE16((SDL_RWops*)(this->_rwops));
 	return 1;
 
 }
 int RW::read(s16& val) {
 
-	val = SDL_ReadLE16((SDL_RWops*)this);
+	val = SDL_ReadLE16((SDL_RWops*)(this->_rwops));
 	return 1;
 
 }
 int RW::read(u32& val) {
 
-	val = SDL_ReadLE32((SDL_RWops*)this);
+	val = SDL_ReadLE32((SDL_RWops*)(this->_rwops));
 	return 1;
 
 }
 int RW::read(s32& val) {
 
-	val = SDL_ReadLE32((SDL_RWops*)this);
+	val = SDL_ReadLE32((SDL_RWops*)(this->_rwops));
 	return 1;
 
 }
 int RW::read(u64& val) {
 
-	val = SDL_ReadLE64((SDL_RWops*)this);
+	val = SDL_ReadLE64((SDL_RWops*)(this->_rwops));
 	return 1;
 
 }
 int RW::read(s64& val) {
 
-	val = SDL_ReadLE64((SDL_RWops*)this);
+	val = SDL_ReadLE64((SDL_RWops*)(this->_rwops));
 	return 1;
 
 }
 
 int RW::write(std::string& str) {
 
-	return SDL_RWwrite((SDL_RWops*)this, str.c_str(), 1, str.size() + 1);
+	return SDL_RWwrite((SDL_RWops*)(this->_rwops), str.c_str(), 1, str.size() + 1);
 
 }
 
 int RW::write(const void* val, size_t size) {
 
-	return SDL_RWwrite((SDL_RWops*)this, val, size, 1);
+	return SDL_RWwrite((SDL_RWops*)(this->_rwops), val, size, 1);
 
 }
 int RW::write(bool val) {
 
-	return SDL_WriteU8((SDL_RWops*)this, val);
+	return SDL_WriteU8((SDL_RWops*)(this->_rwops), val);
 
 }
 int RW::write(u8 val) {
 
-	return SDL_WriteU8((SDL_RWops*)this, val);
+	return SDL_WriteU8((SDL_RWops*)(this->_rwops), val);
 
 }
 int RW::write(s8 val) {
 
-	return SDL_WriteU8((SDL_RWops*)this, val);
+	return SDL_WriteU8((SDL_RWops*)(this->_rwops), val);
 
 }
 int RW::write(u16 val) {
 
-	return SDL_WriteLE16((SDL_RWops*)this, val);
+	return SDL_WriteLE16((SDL_RWops*)(this->_rwops), val);
 
 }
 int RW::write(s16 val) {
 
-	return SDL_WriteLE16((SDL_RWops*)this, val);
+	return SDL_WriteLE16((SDL_RWops*)(this->_rwops), val);
 
 }
 int RW::write(u32 val) {
 
-	return SDL_WriteLE32((SDL_RWops*)this, val);
+	return SDL_WriteLE32((SDL_RWops*)(this->_rwops), val);
 
 }
 int RW::write(s32 val) {
 
-	return SDL_WriteLE32((SDL_RWops*)this, val);
+	return SDL_WriteLE32((SDL_RWops*)(this->_rwops), val);
 
 }
 int RW::write(u64 val) {
 
-	return SDL_WriteLE64((SDL_RWops*)this, val);
+	return SDL_WriteLE64((SDL_RWops*)(this->_rwops), val);
 
 }
 int RW::write(s64 val) {
 
-	return SDL_WriteLE64((SDL_RWops*)this, val);
+	return SDL_WriteLE64((SDL_RWops*)(this->_rwops), val);
 
 }
 
 size_t RW::size() {
 
-	SDL_RWops* rwops = (SDL_RWops*) this;
+	SDL_RWops* rwops = (SDL_RWops*)(this->_rwops);
 
 	return SDL_RWsize(rwops);
 
@@ -858,7 +787,7 @@ size_t RW::size() {
 
 size_t RW::to_buffer(void** buffer) {
 
-	SDL_RWops* rwops = (SDL_RWops*) this;
+	SDL_RWops* rwops = (SDL_RWops*)(this->_rwops);
 	
 	size_t size = SDL_RWsize(rwops);
 	
@@ -885,17 +814,24 @@ size_t RW::to_buffer(void** buffer) {
 
 }
 
-int RW::close() {
-	SDL_RWops* rwops = (SDL_RWops*) this;
+void RW::close() {
+
+	if(this->_rwops!=nullptr){
+		SDL_RWops* rwops = (SDL_RWops*)(this->_rwops);
 	
-	int ret = SDL_RWclose(rwops);
-	if (ret != 0) {
-	
-		PLog::Write(PLog::ERR, "PFile", "Error freeing rw");
-	
+		int ret = SDL_RWclose(rwops);
+		if (ret != 0) {
+		
+			PLog::Write(PLog::ERR, "PFile", "Error freeing rw");
+		}
+
+		this->_rwops = nullptr;
 	}
 
-	return ret;
+	if(this->_mem_buffer!=nullptr){
+		SDL_free(this->_mem_buffer);
+		this->_mem_buffer = nullptr;
+	}
 
 }
 

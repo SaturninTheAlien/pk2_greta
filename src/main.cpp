@@ -63,12 +63,9 @@ static void read_config() {
 	bool ok = conf.Read_File(path);
 	if (!ok) {
 		
-		PFile::RW* rw = path.GetRW("w");
-		if (rw) {
-			rw->write(default_config, sizeof(default_config) - 1);
-			rw->close();
-		}
-
+		PFile::RW rw = path.GetRW2("w");
+		rw.write(default_config, sizeof(default_config) - 1);
+		rw.close();
 		return;
 	}
 

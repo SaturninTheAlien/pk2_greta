@@ -95,8 +95,6 @@ PrototypeClass* Prototype_Load(const std::string& filename_in){
 			PFile::Path path = Episode->Get_Dir(filename_in);
 			if (!FindAsset(&path, "sprites" PE_SEP)) {
 				throw PExcept::FileNotFoundException(filename_clean, PExcept::MISSING_SPRITE_PROTOTYPE);
-				/*PLog::Write(PLog::ERR, "PK2 sprites", "Couldn't find %s", filename_in.c_str());
-				return nullptr;*/
 			}
 			path_j = path;
 			protot = new PrototypeClass();
@@ -143,7 +141,7 @@ PrototypeClass* Prototype_Load(const std::string& filename_in){
 
 	}
 	catch(const std::exception& e){
-		PLog::Write(PLog::ERR, "PK2 sprites", e.what());
+		PLog::Write(PLog::ERR, "PK2 Sprites", e.what());
 		if(protot!=nullptr){
 			delete protot;
 			protot = nullptr;
@@ -153,8 +151,6 @@ PrototypeClass* Prototype_Load(const std::string& filename_in){
 		s1 += e.what();
 
 		throw PExcept::PException(s1);
-
-		//PLog::Write(PLog::ERR, "PK2 sprites", "Couldn't find %s", filename_in.c_str());
 	}
 
 	return nullptr;
@@ -662,40 +658,45 @@ void PrototypeClass::LoadPrototypeJSON(PFile::Path path){
 }
 
 void PrototypeClass::LoadPrototypeLegacy(PFile::Path path){
-	PFile::RW* file = path.GetRW("r");
-	if (file == nullptr) {	
+
+	try{
+		PFile::RW file = path.GetRW2("r");
+		char versio[4];
+		file.read(versio, 4);
+
+		if (strcmp(versio,"1.0") == 0){
+			PrototypeClass10 proto;
+			file.read(&proto, sizeof(proto));
+			this->SetProto10(proto);
+		}
+		else if (strcmp(versio,"1.1") == 0){
+			PrototypeClass11 proto;
+			file.read(&proto, sizeof(proto));
+			this->SetProto11(proto);
+		}
+		else if (strcmp(versio,"1.2") == 0){
+			PrototypeClass12 proto;
+			file.read(&proto, sizeof(proto));
+			this->SetProto12(proto);
+		}
+		else if (strcmp(versio,"1.3") == 0){
+			PrototypeClass13 proto;
+			file.read(&proto, sizeof(proto));
+			this->SetProto13(proto);
+		}
+		else {
+			file.close();
+			throw UnsupportedSpriteVersionException(versio);
+		}
+		this->version = versio;
+		file.close();
+
+
+	}
+	catch(const std::exception& e){
+		PLog::Write(PLog::ERR, "PK2 Sprites", e.what());
 		throw PExcept::FileNotFoundException(path.c_str(), PExcept::MISSING_SPRITE_PROTOTYPE);
-	}
-
-	char versio[4];
-	file->read(versio, 4);
-
-	if (strcmp(versio,"1.0") == 0){
-		PrototypeClass10 proto;
-		file->read(&proto, sizeof(proto));
-		this->SetProto10(proto);
-	}
-	else if (strcmp(versio,"1.1") == 0){
-		PrototypeClass11 proto;
-		file->read(&proto, sizeof(proto));
-		this->SetProto11(proto);
-	}
-	else if (strcmp(versio,"1.2") == 0){
-		PrototypeClass12 proto;
-		file->read(&proto, sizeof(proto));
-		this->SetProto12(proto);
-	}
-	else if (strcmp(versio,"1.3") == 0){
-		PrototypeClass13 proto;
-		file->read(&proto, sizeof(proto));
-		this->SetProto13(proto);
-	}
-	else {
-		file->close();
-		throw UnsupportedSpriteVersionException(versio);
-	}
-	this->version = versio;
-	file->close();
+	}	
 }
 
 
@@ -712,17 +713,11 @@ void PrototypeClass::LoadAssets(PFile::Path path){
 
 		throw PExcept::FileNotFoundException(this->picture_filename, PExcept::MISSING_SPRITE_TEXTURE);
 
-		/*PLog::Write(PLog::ERR, "PK2", "Couldn't find sprite image %s", this->picture_filename.c_str());
-		return -1;*/
-
 	}
 
 	int bufferi = PDraw::image_load(image, false, this->change_color_to_alpha, this->color_to_alpha);
 	if (bufferi == -1) {
 		throw PExcept::FileNotFoundException(this->picture_filename, PExcept::MISSING_SPRITE_TEXTURE);
-		/*PLog::Write(PLog::ERR, "PK2", "Couldn't load sprite image %s", this->picture_filename.c_str());
-		return -1;*/
-
 	}
 
 	//Change sprite colors
@@ -768,7 +763,6 @@ void PrototypeClass::LoadAssets(PFile::Path path){
 
 	PDraw::image_delete(bufferi);
 
-	//Load sounds
 	for (int i = 0; i < SPRITE_SOUNDS_NUMBER; i++) {
 
 		if(!this->sound_files[i].empty()){
@@ -781,13 +775,10 @@ void PrototypeClass::LoadAssets(PFile::Path path){
 
 			} else {
 
-				PLog::Write(PLog::ERR, "PK2", "Can't find sound %s", this->sound_files[i].c_str());
-				//return -1;
-
+				PLog::Write(PLog::ERR, "PK2 Sprites", "Can't find sound %s", this->sound_files[i].c_str());
 			}
 		}
 	}
-	//return 0;
 }
 
 int PrototypeClass::Draw(int x, int y, int frame){

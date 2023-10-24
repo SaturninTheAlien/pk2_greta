@@ -31,26 +31,27 @@
 
 namespace PLog {
 
-static PFile::RW* log_file = NULL;
+static PFile::RW* log_file = nullptr;
 static u8 log_level = 0;
 static bool print_to_stdout = false;
 
-static SDL_mutex* mutex = NULL;
+static SDL_mutex* mutex = nullptr;
 
 void Init(u8 level, PFile::Path file) {
 
-    if (mutex == NULL)
+    if (mutex == nullptr){
         mutex = SDL_CreateMutex();
+    }
 
     log_level = level;
 
-    if (log_file != NULL)
-        log_file->close();
-    
-    log_file = NULL;
+    if(log_file!=nullptr){
+        delete log_file;
+        log_file = nullptr;
+    }
 
     if (file.GetFileName().size() > 0)
-        log_file = file.GetRW("w");
+        log_file = new PFile::RW(file.GetRW2("w"));
     
     #ifndef _WIN32
 		print_to_stdout = true;
@@ -171,14 +172,13 @@ void Exit() {
     Write(DEBUG, "PLog", "Terminated");
 
     SDL_DestroyMutex(mutex);
-    mutex = NULL;
+    mutex = nullptr;
     
-    if (log_file != NULL)
-        log_file->close();
-
-    log_file = NULL;
+    if (log_file != nullptr){
+        delete log_file;
+        log_file = nullptr;
+    }
     log_level = 0;
-
 }
 
 }

@@ -9,12 +9,36 @@
 
 #include <vector>
 #include <string>
+#include <stdexcept>
+
 
 namespace PFile {
 
+class PFileException:public std::exception{
+public:
+    PFileException(const std::string& message):message(message){}
+    const char* what() const noexcept{
+        return message.c_str();
+    }
+private:
+    std::string message;
+};
+
 struct Zip;
 
-struct RW {
+class RW {
+public:
+    RW(void* rwops, void*mem_buffer=nullptr):
+    _rwops(rwops), _mem_buffer(mem_buffer){
+    }
+
+    RW(const RW& source)=delete;
+    RW& operator=(const RW& source)=delete;
+
+    RW(RW&& source);
+    ~RW(){
+        this->close();
+    }
 
     size_t size();
     size_t to_buffer(void** buffer);
@@ -49,7 +73,11 @@ struct RW {
     int write(u64 val);
     int write(s64 val);
 
-    int close();
+    void close();
+
+    void * _rwops;
+private:
+    void * _mem_buffer;
 
 };
 
@@ -89,7 +117,7 @@ class Path {
     std::string GetDirectory();
     std::string GetFileName();
 
-    RW* GetRW(const char* mode)const;
+    RW GetRW2(const char* mode)const;
     nlohmann::json GetJSON()const;
 
     private:

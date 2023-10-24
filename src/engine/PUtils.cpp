@@ -32,13 +32,17 @@ void Setcwd() {
 	char* path = SDL_GetBasePath();
 	if (path) {
 		
-		chdir(path);
+		if(chdir(path)!=0){
+			PLog::Write(PLog::ERR,"PK2","Cannot change the working directory to \"%s\"", path);
+		}
 		SDL_free(path);
 	
 	}
 
 	#ifndef _WIN32
-	chdir(".." PE_SEP "res");
+	if(chdir(".." PE_SEP "res")!=0){
+		PLog::Write(PLog::ERR,"PK2","Cannot change the working directory to \"res\"");
+	}
 	#endif
 
 	path = getcwd(NULL, 0);

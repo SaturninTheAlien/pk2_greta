@@ -3,6 +3,7 @@
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
 #include "engine/PLang.hpp"
+#include "engine/PLog.hpp"
 
 #include <SDL.h>
 #include <cstring>
@@ -31,55 +32,56 @@ PLang::~PLang(){}
 
 bool PLang::Read_File(PFile::Path path){
 
-	PFile::RW* io = path.GetRW("r");
+	try{
+		PFile::RW io = path.GetRW2("r");
+		tekstit.clear();
+		titles.clear();
 
-	if (io == nullptr)
-		return false;
+		u8 marker;
+		int table_index = -1;
+		int read = READ_SKIP;
 
-	tekstit.clear();
-	titles.clear();
+		while(io.read(&marker, 1)) {
 
-	u8 marker;
-	int table_index = -1;
-	int read = READ_SKIP;
+			if (marker == '\r' || marker == '\n') {
+				read = READ_SKIP;
+				continue;
+			}
 
-	while(io->read(&marker, 1)) {
-
-		if (marker == '\r' || marker == '\n') {
-			read = READ_SKIP;
-			continue;
-		}
-
-		switch (read) {
-			case READ_SKIP:
-				if (marker == MARKER_1) {
-					read = READ_TITLE;
-					tekstit.push_back("");
-					titles.push_back("");
-					table_index++;
-				} 
-				break;
-			
-			case READ_TITLE:
-				if (marker == MARKER_2)
-					read = READ_SPACE;
-				else
-					titles[table_index] += marker;
-				break;
-			
-			case READ_SPACE:
-				if (marker == ' ' || marker == '\t')
+			switch (read) {
+				case READ_SKIP:
+					if (marker == MARKER_1) {
+						read = READ_TITLE;
+						tekstit.push_back("");
+						titles.push_back("");
+						table_index++;
+					} 
 					break;
-				read = READ_TEXT;
 				
-			case READ_TEXT:
-				tekstit[table_index] += marker;
-				break;
+				case READ_TITLE:
+					if (marker == MARKER_2)
+						read = READ_SPACE;
+					else
+						titles[table_index] += marker;
+					break;
+				
+				case READ_SPACE:
+					if (marker == ' ' || marker == '\t')
+						break;
+					read = READ_TEXT;
+					
+				case READ_TEXT:
+					tekstit[table_index] += marker;
+					break;
 
+			}
 		}
+		io.close();
 	}
-
-    io->close();
+	catch(const PFile::PFileException& e){
+		PLog::Write(PLog::ERR, "Plang", e.what());
+		return false;
+	}	
 
 	loaded = true;
 	return true;

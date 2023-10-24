@@ -130,16 +130,16 @@ int image_load(PFile::Path path, bool getPalette,
     
     }
 
-    PFile::RW* rw = path.GetRW("r");
-    if (!rw) {
-
+    try{
+        PFile::RW rw = path.GetRW2("r");
+        imageList[index] = IMG_Load_RW((SDL_RWops*)(rw._rwops), 0);
+        rw.close();
+    }
+    catch(const PFile::PFileException& e){
+        PLog::Write(PLog::ERR, "PDraw", e.what());
         PLog::Write(PLog::ERR, "PDraw", "Couldn't find %s", path.c_str());
         return -1;
-
     }
-
-    imageList[index] = IMG_Load_RW((SDL_RWops*) rw, 0);
-    rw->close();
 
     if (imageList[index] == NULL) {
 
