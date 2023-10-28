@@ -2,6 +2,7 @@
 //Pekka Kana 2
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
+#include <sstream>
 #include <algorithm>
 #include <filesystem>
 #include "engine/PFile.hpp"
