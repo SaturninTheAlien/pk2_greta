@@ -118,7 +118,7 @@ int Draw_EndGame(){
 	return 0;
 }
 
-int Screen_Ending_Init() {
+void Screen_Ending_Init() {
 	
 	if(PUtils::Is_Mobile())
 		GUI_Change(UI_TOUCH_TO_START);
@@ -145,12 +145,9 @@ int Screen_Ending_Init() {
 	siirry_lopusta_menuun = false;
 
 	Fade_in(FADE_FAST);
-
-	return 0;
-
 }
 
-int Screen_Ending(){
+void Screen_Ending(){
 
 	Draw_EndGame();
 
@@ -176,6 +173,4 @@ int Screen_Ending(){
 	if (Episode->glows)
 		if (degree % 4 == 0)
 			PDraw::rotate_palette(224,239);
-
-	return 0;
 }

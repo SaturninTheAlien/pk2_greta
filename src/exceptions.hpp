@@ -23,6 +23,7 @@ enum{
     MISSING_TILESET=4,
     MISSING_MUSIC=5,
     MISSING_LEVEL=6,
+    MISSING_ENGLISH_TEXT=7
 };
 
 class PException: public std::exception{
@@ -43,6 +44,8 @@ public:
     const char* what() const noexcept{
         return message.c_str();
     }
+    const std::string filename;
+    const int type;
 private:
     std::string message;
 };

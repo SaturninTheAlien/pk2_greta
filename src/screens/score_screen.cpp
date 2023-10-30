@@ -273,7 +273,7 @@ int Draw_ScoreCount() {
 }
 
 
-int Screen_ScoreCount_Init() {
+void Screen_ScoreCount_Init() {
 
 	if(PUtils::Is_Mobile())
 		GUI_Change(UI_CURSOR);
@@ -333,11 +333,9 @@ int Screen_ScoreCount_Init() {
 	going_to_map = false;
 	Fade_in(FADE_FAST);
 
-	return 0;
-
 }
 
-int Screen_ScoreCount() {
+void Screen_ScoreCount() {
 
 	Draw_ScoreCount();
 
@@ -470,7 +468,5 @@ int Screen_ScoreCount() {
 	if (Episode->glows)
 		if (degree % 4 == 0)
 			PDraw::rotate_palette(224,239);
-
-	return 0;
 
 }

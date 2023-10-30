@@ -1426,7 +1426,7 @@ int Draw_Menu() {
 
 
 
-int Screen_Menu_Init() {
+void Screen_Menu_Init() {
 
 	if(PUtils::Is_Mobile())
 		GUI_Change(UI_CURSOR);
@@ -1456,11 +1456,9 @@ int Screen_Menu_Init() {
 
 	menu_valittu_id = 1;
 
-	return 0;
-
 }
 
-int Screen_Menu() {
+void Screen_Menu() {
 	
 	if (key_delay == 0 && menu_lue_kontrollit == 0) {
 		if (PInput::Keydown(PInput::UP) || (PInput::Keydown(PInput::LEFT) && !editing_name)
@@ -1531,6 +1529,4 @@ int Screen_Menu() {
 	if (Settings.double_speed)
 		degree = 1 + degree % 360;
 
-	return 0;
-	
 }

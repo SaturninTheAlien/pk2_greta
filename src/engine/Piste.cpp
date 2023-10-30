@@ -7,6 +7,7 @@
 #include "engine/platform.hpp"
 
 #include <SDL.h>
+#include <functional>
 
 #include <iostream>
 
@@ -151,20 +152,16 @@ void terminate() {
 
 }
 
-void loop(int (*GameLogic)()) {
+void loop(std::function<void()> GameLogic) {
 	
 	static int frame_counter = 0;
 	static u32 last_time = 0;
-		
-	int error = 0;
 
 	running = true;
 
 	while(running) {
 		
-		error = GameLogic();
-		if (error) break;
-		
+		GameLogic();
 		logic();
 
 		frame_counter++;

@@ -12,7 +12,8 @@
 
 namespace PExcept{
 
-FileNotFoundException::FileNotFoundException(const std::string& filename, int type){
+FileNotFoundException::FileNotFoundException(const std::string& filename, int type):
+filename(filename), type(type){
     std::ostringstream os;
 
     os<<"Missing file: \""<<filename<<"\" (";
@@ -43,10 +44,16 @@ FileNotFoundException::FileNotFoundException(const std::string& filename, int ty
     case MISSING_MUSIC:{
         os<<"Music";
     }
+    break;
     case MISSING_LEVEL:{
         os<<"Level";
     }
     break;
+    case MISSING_ENGLISH_TEXT:{
+        os<<"Language file";        
+    }
+    break;
+
     default:
         os<<"Unknown";
         break;

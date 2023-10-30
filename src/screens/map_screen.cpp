@@ -22,6 +22,7 @@
 #include "sfx.hpp"
 #include "save.hpp"
 #include "system.hpp"
+#include "exceptions.hpp"
 
 bool going_to_game = false;
 
@@ -286,11 +287,10 @@ int Play_Music() {
 
 }
 
-int Screen_Map_Init() {
+void Screen_Map_Init() {
 
 	if (!Episode) {
-		PK2_Error("Episode not started");
-		return 1;
+		throw PExcept::PException("Episode not started!");
 	}
 
 	if(PUtils::Is_Mobile())
@@ -322,12 +322,9 @@ int Screen_Map_Init() {
 	going_to_game = false;
 
 	Fade_in(FADE_SLOW);
-
-	return 0;
-	
 }
 
-int Screen_Map() {
+void Screen_Map() {
 
 	PK_Draw_Map();
 
@@ -376,6 +373,4 @@ int Screen_Map() {
 	if (Episode->glows)
 		if (degree % 4 == 0)
 			PDraw::rotate_palette(224,239);
-
-	return 0;
 }

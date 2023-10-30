@@ -17,7 +17,8 @@
 #include "language.hpp"
 
 #include "engine/Piste.hpp"
-
+#include <sstream>
+#include <exceptions.hpp>
 #include <cstring>
 #include <ctime>
 
@@ -78,14 +79,9 @@ bool Draw_Menu_Text(const char *teksti, int x, int y, char end) {
 
 #include <time.h>
 
-int Screen_First_Start() {
+void Screen_First_Start() {
 
 	srand(time(nullptr));
-
-	/*if(test_level)
-		//srand(0);
-	else
-		//srand(Settings.id);*/
 	
 	Calculate_SinCos();
 
@@ -101,32 +97,14 @@ int Screen_First_Start() {
 		strcpy(Settings.language, "english.txt");
 		
 		if(Load_Language(Settings.language) != 0) {
-
-			PLog::Write(PLog::FATAL, "PK2", "Could not find the default language file!");
-			PK2_Error("Error");
-			return -1;
-
+			throw PExcept::FileNotFoundException("english.txt", PExcept::MISSING_ENGLISH_TEXT);
 		}
 
 	}
 	
 	if (Load_Fonts(tekstit) != 0) {
-
-		strcpy(Settings.language, "english.txt");
-		if(Load_Language(Settings.language) != 0) {
-
-			PLog::Write(PLog::FATAL, "PK2", "Could not find the default language file!");
-			PK2_Error("Error");
-			return -1;
-
-		}
-
 		if (Load_Fonts(tekstit) != 0) {
-
-			PLog::Write(PLog::FATAL, "PK2", "Couldn't load fonts!");
-			PK2_Error("Error");
-			return -1;
-
+			throw PExcept::PException("Couldn't load fonts!");
 		}
 	
 	}
@@ -194,9 +172,6 @@ int Screen_First_Start() {
 
 	Fade_in(FADE_SLOW);
 	PSound::set_musicvolume_now(Settings.music_max_volume);
-	
-	return 0;
-
 }
 
 //If the screen change
@@ -220,13 +195,14 @@ int Screen_Change() {
 }
 
 //Main Loop
-int Screen_Loop() {
+void Screen_Loop() {
 
 	if (next_screen != current_screen) Screen_Change();
 
 	if (PK2_error){
-		PLog::Write(PLog::ERR, "PK2", "interrupting (1) due to error: %s", PK2_error_msg);
-		return 1;
+		std::ostringstream os;
+		os<<"Main loop interruption due to error (1): "<<PK2_error_msg;
+		throw PExcept::PException(os.str());
 	}
 	
 	bool keys_move = (current_screen == SCREEN_MAP);
@@ -247,8 +223,9 @@ int Screen_Loop() {
 	}
 
 	if (PK2_error){
-		PLog::Write(PLog::ERR, "PK2", "interrupting (2) due to error: %s", PK2_error_msg);
-		return 1;
+		std::ostringstream os;
+		os<<"Main loop interruption due to error (2): "<<PK2_error_msg;
+		throw PExcept::PException(os.str());
 	}
 
 	if (key_delay > 0)
@@ -259,7 +236,4 @@ int Screen_Loop() {
 
 	// Fade and thunder
 	Update_Colors();
-
-	return 0;
-
 }

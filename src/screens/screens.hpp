@@ -17,7 +17,7 @@ enum SCREEN {
 	SCREEN_SCORING,
 	SCREEN_END,
 
-	SCREEN_LUA,
+	SCREEN_LEVEL_ERROR,
 };
 
 extern int current_screen;
@@ -30,21 +30,19 @@ extern PFile::Path lua_script_path;
 
 void Fade_Quit();
 
-int Screen_Intro_Init();
-int Screen_Menu_Init();
-int Screen_Map_Init();
-int Screen_InGame_Init();
-int Screen_ScoreCount_Init();
-int Screen_Ending_Init();
-int Screen_Lua_Init();
+void Screen_Intro_Init();
+void Screen_Menu_Init();
+void Screen_Map_Init();
+void Screen_InGame_Init();
+void Screen_ScoreCount_Init();
+void Screen_Ending_Init();
 
-int Screen_Intro();
-int Screen_Menu();
-int Screen_Map();
-int Screen_InGame();
-int Screen_ScoreCount();
-int Screen_Ending();
-int Screen_Lua();
+void Screen_Intro();
+void Screen_Menu();
+void Screen_Map();
+void Screen_InGame();
+void Screen_ScoreCount();
+void Screen_Ending();
 
-int Screen_First_Start();
-int Screen_Loop();
+void Screen_First_Start();
+void Screen_Loop();

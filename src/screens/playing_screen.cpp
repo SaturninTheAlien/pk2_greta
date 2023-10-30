@@ -604,7 +604,7 @@ int Draw_InGame() {
 
 
 
-int Screen_InGame_Init(){
+void Screen_InGame_Init(){
 
 	if(PUtils::Is_Mobile()) {
 		if (Settings.gui)
@@ -625,11 +625,9 @@ int Screen_InGame_Init(){
 		degree = degree_temp;
 	
 	}
-	
-	return 0;
 }
 
-int Update_Camera(){
+void Update_Camera(){
 
 	Game->camera_x = (int)Player_Sprite->x-screen_width / 2;
 	Game->camera_y = (int)Player_Sprite->y-screen_height / 2;
@@ -689,10 +687,9 @@ int Update_Camera(){
 	if (Game->camera_y > int(PK2MAP_MAP_HEIGHT-screen_height/32)*32)
 		Game->camera_y = int(PK2MAP_MAP_HEIGHT-screen_height/32)*32;
 
-	return 0;
 }
 
-int Screen_InGame(){
+void Screen_InGame(){
 
 	if (!Game->level_clear && (!Game->has_time || Game->timeout > 0)) {
 		Game->map.SetTilesAnimations(degree, Game->palikka_animaatio/7, Game->button1, Game->button2, Game->button3);
@@ -940,6 +937,4 @@ int Screen_InGame(){
 		PDraw::image_snapshot(bg_screen);
 
 	}
-
-	return 0;
 }

@@ -19,7 +19,7 @@
 static uint intro_counter = 0;
 static bool closing_intro = false;
 
-int Draw_Intro(){
+void Draw_Intro(){
 
 	u32 pistelogo_alku  = 300;
 	u32 pistelogo_loppu = pistelogo_alku + 500;
@@ -79,11 +79,9 @@ int Draw_Intro(){
 		CreditsText_Draw("powered by", fontti1, 120, 230, sdl_alku, sdl_loppu, intro_counter);
 		CreditsText_Draw("SDL 2",  fontti1, 120, 250, sdl_alku+20, sdl_loppu+20, intro_counter);
 	}
-
-	return 0;
 }
 
-int Screen_Intro_Init() {
+void Screen_Intro_Init() {
 	
 	if(PUtils::Is_Mobile())
 		GUI_Change(UI_TOUCH_TO_START);
@@ -101,11 +99,9 @@ int Screen_Intro_Init() {
 	intro_counter = 0;
 
 	Fade_in(FADE_FAST);
-
-	return 0;
 }
 
-int Screen_Intro() {
+void Screen_Intro() {
 	
 	Draw_Intro();
 
@@ -127,6 +123,4 @@ int Screen_Intro() {
 		}
 
 	}
-
-	return 0;
 }
