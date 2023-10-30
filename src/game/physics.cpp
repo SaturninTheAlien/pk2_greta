@@ -382,11 +382,24 @@ void SpriteOnDeath(SpriteClass* sprite){
 		Game->game_over = true;
 		key_delay = 50; //TODO - reduce
 	} // Killed the chick
-	if (sprite->prototype->bonus != nullptr && sprite->prototype->bonuses_number > 0)
-		if (sprite->prototype->bonus_always || rand()%4 == 1)
-			for (int bi=0; bi<sprite->prototype->bonuses_number; bi++)
-				Sprites_add(sprite->prototype->bonus,0,sprite_x-11+(10-rand()%20),
-									sprite_ala-16-(10+rand()%20), sprite, true);
+
+
+	if (sprite->prototype->bonus != nullptr && sprite->prototype->bonuses_number > 0){
+		if (sprite->prototype->bonus_always || rand()%4 == 1){
+
+			int bonuses_number = sprite->prototype->bonuses_number;
+			PrototypeClass* bonus = sprite->prototype->bonus;
+
+			if(bonuses_number>1){
+				for(int i=0;i<bonuses_number;++i){
+					Sprites_add(bonus, 0, sprite_x+(10-rand()%21),sprite_y+(10-rand()%21), nullptr, true);
+				}
+			}
+			else if(bonuses_number==1){
+				Sprites_add(bonus, 0, sprite_x,sprite_y, nullptr, true);
+			}			
+		}
+	}
 
 	if (sprite->HasAI(AI_CHANGE_SKULL_BLOCKS_IF_DEAD) && !sprite->HasAI(AI_CHANGE_SKULL_BLOCKS_IF_DAMAGED))
 		Game->Change_SkullBlocks();
@@ -401,13 +414,10 @@ void SpriteOnDeath(SpriteClass* sprite){
 					sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 
 	if (sprite->HasAI(AI_REBORN)) {
-		Sprites_add(sprite->prototype, 0, 
-			sprite->orig_x - sprite->prototype->width,
-			sprite->orig_y - sprite->prototype->height,
-			sprite, false);
+		Sprites_add(sprite->prototype, 0, sprite->orig_x, sprite->orig_y, nullptr, true);
 	}
 
-	if (sprite->prototype->type == TYPE_GAME_CHARACTER && sprite->prototype->score != 0){
+	if (sprite->prototype->type == TYPE_GAME_CHARACTER && sprite->prototype->score != 0 && sprite!=Player_Sprite){
 		Fadetext_New(fontti2,std::to_string(sprite->prototype->score),(int)sprite->x-8,(int)sprite->y-8,80);
 		Game->score_increment += sprite->prototype->score;
 	}

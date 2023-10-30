@@ -124,13 +124,10 @@ void Sprites_add(PrototypeClass* protot, int is_Player_Sprite, double x, double 
 	if (is_Player_Sprite) Player_Sprite = sprite;
 
 	if(isbonus) { //If it is a bonus dropped by enemy
-
-		sprite->x += sprite->prototype->width;
-		sprite->y += sprite->prototype->height/2;
 		sprite->orig_x = sprite->x;
 		sprite->orig_y = sprite->y;
 		sprite->jump_timer = 1;
-		sprite->a = rand()%2 - rand()%4;
+		sprite->a = 3 - rand()%7;
 		sprite->damage_timer = 35;//25
 
 	} else {
