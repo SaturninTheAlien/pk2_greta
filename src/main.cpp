@@ -22,7 +22,7 @@
 #include "system.hpp"
 #include "language.hpp"
 #include "settings.hpp"
-
+#include <filesystem>
 
 #include <cstring>
 #include <algorithm>
@@ -254,7 +254,7 @@ static void set_paths() { // Todo - move to the engine
 	#ifdef PK2_PORTABLE
 
 	data_path = "." PE_SEP "data" PE_SEP;
-	PUtils::CreateDir(data_path);
+	std::filesystem::create_directory(data_path);
 
 	#else
 

@@ -3,6 +3,7 @@
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
 #include "system.hpp"
+#include <filesystem>
 
 #include "engine/PLog.hpp"
 #include "engine/PUtils.hpp"
@@ -177,36 +178,9 @@ void Draw_Cursor(int x, int y) {
 }
 
 void Prepare_DataPath() {
-
-	PUtils::CreateDir(data_path);
-	PUtils::CreateDir(data_path + "scores" PE_SEP);
-	PUtils::CreateDir(data_path + "mapstore" PE_SEP);
-
-}
-
-void Move_DataPath(std::string new_path) {
-
-	PLog::Write(PLog::DEBUG, "PK2", "Renaming data from %s to %s", data_path.c_str(), new_path.c_str());
-
-	// There is a save on the destination
-	PFile::Path old_settings = PFile::Path(new_path, "settings.ini");
-	if (old_settings.Find()) {
-	    u32 id;
-		int ret = Settings_GetId(old_settings, id);
-		if (ret == 0) {
-            char ids[8];
-            Id_To_String(id, ids, 8);
-            std::string bkp_dir = data_path + "backups" + PE_SEP;
-            PUtils::CreateDir(bkp_dir);
-            PUtils::RenameDir(new_path, bkp_dir + ids + PE_SEP);
-        }
-	}
-
-	PUtils::RemoveDir(new_path);
-	PUtils::RenameDir(data_path, new_path);
-
-	data_path = new_path;
-
+	std::filesystem::create_directory(data_path);
+	std::filesystem::create_directory(data_path + "scores" PE_SEP);
+	std::filesystem::create_directory(data_path + "mapstore" PE_SEP);
 }
 
 //TODO - Receive Episode, organize this

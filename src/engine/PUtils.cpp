@@ -8,7 +8,7 @@
 #include "engine/PFile.hpp"
 
 #include <SDL.h>
-
+#include <filesystem>
 #include <cstring>
 #include <string>
 #include <locale>
@@ -123,54 +123,6 @@ int Alphabetical_Compare(const char *a, const char *b) {
 	return 0;
 }
 
-#ifdef _WIN32
-
-int CreateDir(std::string path){
-	std::wstring temp = std::wstring(path.begin(), path.end());
-	return CreateDirectory(temp.c_str(), NULL);
-	
-}
-
-int RemoveDir(std::string path) {
-
-	std::string command = "rmdir /s /q " + path;
-	return system(command.c_str());
-
-}
-
-int RenameDir(std::string old_path, std::string new_path) {
-
-	std::string command = "ren " + old_path + " " + new_path;
-	return system(command.c_str());
-
-}
-
-#else
-
-int CreateDir(std::string path) {
-
-	return mkdir(path.c_str(), 0700);
-	
-}
-
-int RemoveDir(std::string path) {
-
-	// TODO - find a better way
-	std::string command = "rm -rf " + path;
-	return system(command.c_str());
-
-}
-
-int RenameDir(std::string old_path, std::string new_path) {
-
-	// TODO - find a better way
-	std::string command = "mv " + old_path + " " + new_path;
-	return system(command.c_str());
-
-}
-
-#endif
-
 void GetLanguage(char* lang) {
 
 	#if (SDL_COMPILEDVERSION < 2014)
@@ -189,7 +141,7 @@ void GetLanguage(char* lang) {
 void Show_Error(const char* txt) {
 	
 	// TODO
-	//SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERR, "Error", txt, NULL);
+	// SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERR, "Error", txt, NULL);
 
 }
 
