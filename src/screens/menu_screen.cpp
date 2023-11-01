@@ -185,28 +185,28 @@ int  Draw_BackNext(int x, int y) {
 		&& PInput::mouse_y > y && PInput::mouse_y < y + 31
 		&& !mouse_hidden;
 
-	if (mouse_on1 || menu_valittu_id == menu_valinta_id) {
+	if (mouse_on1 || chosen_menu_id == selected_menu_id) {
 		PDraw::image_cutclip(game_assets,x+randx,y+randy,566,124,566+31,124+31);
-		menu_valittu_id = menu_valinta_id;
+		chosen_menu_id = selected_menu_id;
 	} else
 		PDraw::image_cutclip(game_assets,x,y,566,124,566+31,124+31);
 
-	if (mouse_on2 || menu_valittu_id == menu_valinta_id+1) {
+	if (mouse_on2 || chosen_menu_id == selected_menu_id+1) {
 		PDraw::image_cutclip(game_assets,x+val+randx,y+randy,535,124,535+31,124+31);
-		menu_valittu_id = menu_valinta_id+1;
+		chosen_menu_id = selected_menu_id+1;
 	} else
 		PDraw::image_cutclip(game_assets,x+val,y,535,124,535+31,124+31);
 
 	int ret = 0;
 
 	int c = Clicked();
-	if ((c == 1 && mouse_on1) || (c > 1 && menu_valittu_id == menu_valinta_id)) {
+	if ((c == 1 && mouse_on1) || (c > 1 && chosen_menu_id == selected_menu_id)) {
 	
 		Play_MenuSFX(menu_sound, 100);
 		key_delay = 7;
 		ret = 1;
 	
-	} else if ((c == 1 && mouse_on2) || (c > 1 && menu_valittu_id == menu_valinta_id + 1)) {
+	} else if ((c == 1 && mouse_on2) || (c > 1 && chosen_menu_id == selected_menu_id + 1)) {
 	
 		Play_MenuSFX(menu_sound, 100);
 		key_delay = 7;
@@ -214,7 +214,7 @@ int  Draw_BackNext(int x, int y) {
 	
 	}
 
-	menu_valinta_id += 2;
+	selected_menu_id += 2;
 
 	return ret;
 }
@@ -243,15 +243,15 @@ int  Draw_Radio(int x, int y, int num, int sel) {
 		bool mouse_on = mouse_on_y && PInput::mouse_x > xn && PInput::mouse_x < xn + 31;
 
 		if (mouse_on) {
-			menu_valittu_id = menu_valinta_id + i;
+			chosen_menu_id = selected_menu_id + i;
 		}
 
-		if (menu_valittu_id == menu_valinta_id + i) {
+		if (chosen_menu_id == selected_menu_id + i) {
 			xn += randx;
 			yn += randy;
 		}
 
-		if ((c == 1 && mouse_on) || (c > 1 && menu_valittu_id == menu_valinta_id + i)) {
+		if ((c == 1 && mouse_on) || (c > 1 && chosen_menu_id == selected_menu_id + i)) {
 
 			Play_MenuSFX(menu_sound, 100);
 			key_delay = 10;
@@ -268,7 +268,7 @@ int  Draw_Radio(int x, int y, int num, int sel) {
 
 	}
 
-	menu_valinta_id += num;
+	selected_menu_id += num;
 	return ret;
 
 }
@@ -457,7 +457,7 @@ void Draw_Menu_Name() {
 			editing_name = false;
 			PInput::EndKeyboard();
 
-			menu_valittu_id = 1;
+			chosen_menu_id = 1;
 		}
 
 		if (key == PInput::LEFT) {
@@ -479,7 +479,7 @@ void Draw_Menu_Name() {
 		PInput::EndKeyboard();
 		
 		menu_nyt = MENU_EPISODES;
-		//menu_valittu_id = menu_valinta_id = 1;
+		//chosen_menu_id = selected_menu_id = 1;
 
 	}
 
@@ -802,7 +802,7 @@ void Draw_Menu_Graphics() {
 
 		if (Draw_Menu_Text("back",100,360)) {
 			moreOptions = false;
-			menu_valittu_id = 0; //Set menu cursor to 0
+			chosen_menu_id = 0; //Set menu cursor to 0
 		}
 
 	}
@@ -918,7 +918,7 @@ void Draw_Menu_Graphics() {
 		//if (!PUtils::Is_Mobile())
 			if (Draw_Menu_Text("more",100,360)){
 				moreOptions = true;
-				menu_valittu_id = 0; //Set menu cursor to 0
+				chosen_menu_id = 0; //Set menu cursor to 0
 			}
 
 	}
@@ -1065,7 +1065,7 @@ void Draw_Menu_Controls() {
 	if (menu_lue_kontrollit == 0){
 		if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.controls_edit),100,my)) {
 			menu_lue_kontrollit = 1;
-			menu_valittu_id = 0; //Set menu cursor to 0
+			chosen_menu_id = 0; //Set menu cursor to 0
 		}
 	}
 
@@ -1077,7 +1077,7 @@ void Draw_Menu_Controls() {
 			if (Draw_Menu_Text("use game controller",100,my)) {
 				Settings.using_controller = SET_TRUE;
 				Input = &Settings.joystick;
-				menu_valittu_id = 0; //Set menu cursor to 0
+				chosen_menu_id = 0; //Set menu cursor to 0
 				save_settings = true;
 			}
 
@@ -1086,7 +1086,7 @@ void Draw_Menu_Controls() {
 			if (Draw_Menu_Text("use keyboard",100,my)) {
 				Settings.using_controller = SET_FALSE;
 				Input = &Settings.keyboard;
-				menu_valittu_id = 0; //Set menu cursor to 0
+				chosen_menu_id = 0; //Set menu cursor to 0
 				save_settings = true;
 			}
 
@@ -1119,7 +1119,7 @@ void Draw_Menu_Controls() {
 		}
 
 		menu_lue_kontrollit = 0;
-		menu_valittu_id = 0;
+		chosen_menu_id = 0;
 		save_settings = true;
 	}
 
@@ -1164,7 +1164,7 @@ void Draw_Menu_Controls() {
 	if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_return),180,my)){
 		menu_nyt = MENU_MAIN;
 		menu_lue_kontrollit = 0;
-		menu_valittu_id = 0;
+		chosen_menu_id = 0;
 	}
 
 	u8 k = 0;
@@ -1180,7 +1180,7 @@ void Draw_Menu_Controls() {
 		/*|| PInput::Keydown(PInput::ESCAPE) || PInput::Keydown(PInput::RETURN) || PInput::Keydown(PInput::JOY_START)*/) {
 		
 			menu_lue_kontrollit = 0;
-			menu_valittu_id = 0;
+			chosen_menu_id = 0;
 			key_delay = 20;
 			save_settings = true;
 		
@@ -1205,7 +1205,7 @@ void Draw_Menu_Controls() {
 
 			if (menu_lue_kontrollit > 8) {
 				menu_lue_kontrollit = 0;
-				menu_valittu_id = 0;
+				chosen_menu_id = 0;
 				save_settings = true;
 			}
 
@@ -1397,7 +1397,7 @@ int Draw_Menu() {
 
 	PDraw::image_clip(bg_screen);
 
-	menu_valinta_id = 1;
+	selected_menu_id = 1;
 
 	switch (menu_nyt) {
 		case MENU_MAIN     : Draw_Menu_Main();     break;
@@ -1454,7 +1454,7 @@ void Screen_Menu_Init() {
 	bg_square.right = 320 + 5;
 	bg_square.bottom = 240 + 5;
 
-	menu_valittu_id = 1;
+	chosen_menu_id = 1;
 
 }
 
@@ -1463,22 +1463,22 @@ void Screen_Menu() {
 	if (key_delay == 0 && menu_lue_kontrollit == 0) {
 		if (PInput::Keydown(PInput::UP) || (PInput::Keydown(PInput::LEFT) && !editing_name)
 			|| PInput::Keydown(PInput::JOY_UP) || (PInput::Keydown(PInput::JOY_LEFT) && !editing_name)){
-			menu_valittu_id--;
+			chosen_menu_id--;
 			mouse_hidden = true;
 
-			if (menu_valittu_id < 1)
-				menu_valittu_id = menu_valinta_id-1;
+			if (chosen_menu_id < 1)
+				chosen_menu_id = selected_menu_id-1;
 
 			key_delay = 9;
 		}
 
 		if (PInput::Keydown(PInput::DOWN) || (PInput::Keydown(PInput::RIGHT) && !editing_name)
 			|| PInput::Keydown(PInput::JOY_DOWN) || (PInput::Keydown(PInput::JOY_RIGHT) && !editing_name)){
-			menu_valittu_id++;
+			chosen_menu_id++;
 			mouse_hidden = true;
 
-			if (menu_valittu_id > menu_valinta_id-1)
-				menu_valittu_id = 1;
+			if (chosen_menu_id > selected_menu_id-1)
+				chosen_menu_id = 1;
 
 			key_delay = 9;
 		}
@@ -1487,10 +1487,10 @@ void Screen_Menu() {
 
 		if (!wasPressed && PInput::Keydown(PInput::ESCAPE) && menu_nyt == MENU_MAIN) {
 			mouse_hidden = true;
-			if(menu_valittu_id == menu_valinta_id-1)
+			if(chosen_menu_id == selected_menu_id-1)
 				Fade_Quit();
 			else
-				menu_valittu_id = menu_valinta_id-1;
+				chosen_menu_id = selected_menu_id-1;
 		}
 
 		wasPressed = PInput::Keydown(PInput::ESCAPE);
@@ -1498,7 +1498,7 @@ void Screen_Menu() {
 	}
 
 	if (menu_lue_kontrollit > 0) {
-		menu_valittu_id = 0;
+		chosen_menu_id = 0;
 	}
 
 	if (menu_nyt != MENU_NAME){ //TODO - Why run this every frame?
@@ -1522,7 +1522,7 @@ void Screen_Menu() {
 	Draw_Menu();
 
 	if (menu_nyt != menu_ennen)
-		menu_valittu_id = 0;
+		chosen_menu_id = 0;
 
 	degree = 1 + degree % 360;
 

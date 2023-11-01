@@ -90,10 +90,12 @@ This example starts the level13.map (the robot boss fight) on dev mode:
     * AI_ATTACK_2_IF_PLAYER_ABOVE (32)
     * AI_TRANSFORM_IF_PLAYER_BELLOW (33)
     * AI_TRANSFORM_IF_PLAYER_ABOVE (34)
+    * AI_MOVE_X_COS_FREE (68)
+    * AI_MOVE_Y_COS_FREE (69)
 
 # Experimental features
 * Sprite inheritance / "parent" field.
-* AI_FOLLOW_COMMANDS and "commands" field in the new sprite format.
+* AI_FOLLOW_COMMANDS (40) and "commands" field in the new sprite format.
 
 Currently available commands:
 > waypoint_x, <tile_x>\
@@ -118,6 +120,9 @@ but not vice versa (the hedgehog gift trap still works).
 but not vice versa (for example, rooster player is still friendly after using a pig potion).
 
 * If there is a missing tileset or sprite prototype there will be a dialog window and the game will quit without “Segmentation fault”.
+
+* Fixed the glitch that some dropped bonuses like oranges dropped by hedgehogs used to nearly always move left.
+Also the hedgehog from the box used to move nearly always left at the beginning due to the same bug.
 
 # Plans:
 * Translate all the Finnish variable names and comments to English.

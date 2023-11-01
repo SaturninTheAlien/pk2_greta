@@ -25,8 +25,8 @@
 int current_screen = SCREEN_FIRST_START;
 int next_screen = SCREEN_NOT_SET;
 
-uint menu_valittu_id = 0;
-uint menu_valinta_id = 1;
+uint chosen_menu_id = 0;
+uint selected_menu_id = 1;
 
 static bool closing_game = false;
 
@@ -48,9 +48,9 @@ bool Draw_Menu_Text(const char *teksti, int x, int y, char end) {
 		&& PInput::mouse_y > y && PInput::mouse_y < y + TEXT_H
 		&& !mouse_hidden;
 
-	if ( mouse_on || (menu_valittu_id == menu_valinta_id) ) {
+	if ( mouse_on || (chosen_menu_id == selected_menu_id) ) {
 
-		menu_valittu_id = menu_valinta_id;
+		chosen_menu_id = selected_menu_id;
 		Wavetext_Draw(teksti, fontti3, x, y, end);//
 
 		int c = Clicked();
@@ -58,7 +58,7 @@ bool Draw_Menu_Text(const char *teksti, int x, int y, char end) {
 
 			Play_MenuSFX(menu_sound, 100);
 			key_delay = 20;
-			menu_valinta_id++;
+			selected_menu_id++;
 			
 			return true;
 
@@ -72,7 +72,7 @@ bool Draw_Menu_Text(const char *teksti, int x, int y, char end) {
 	
 	}
 
-	menu_valinta_id++;
+	selected_menu_id++;
 
 	return false;
 }
@@ -186,6 +186,7 @@ int Screen_Change() {
 		case SCREEN_GAME    : Screen_InGame_Init();     break;
 		case SCREEN_SCORING : Screen_ScoreCount_Init(); break;
 		case SCREEN_END     : Screen_Ending_Init();     break;
+		case SCREEN_LEVEL_ERROR: Screen_LevelError_Init();	break;
 		default             : Fade_Quit();              break;
 	}
 
@@ -219,6 +220,7 @@ void Screen_Loop() {
 		case SCREEN_GAME    : Screen_InGame();     break;
 		case SCREEN_SCORING : Screen_ScoreCount(); break;
 		case SCREEN_END     : Screen_Ending();     break;
+		case SCREEN_LEVEL_ERROR: Screen_LevelError();	break;
 		default             : Fade_Quit();         break;
 	}
 

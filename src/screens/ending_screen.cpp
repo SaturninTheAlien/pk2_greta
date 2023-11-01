@@ -21,7 +21,7 @@
 #include "engine/types.hpp"
 
 static u32 loppulaskuri = 0;
-static bool siirry_lopusta_menuun = false;
+static bool change_to_next_screen = false;
 
 int Draw_EndGame_Image(int x, int y, int tyyppi, int plus, int rapytys){
 	int frm = 0;
@@ -142,7 +142,7 @@ void Screen_Ending_Init() {
 	PSound::set_musicvolume(Settings.music_max_volume);
 
 	loppulaskuri = 0;
-	siirry_lopusta_menuun = false;
+	change_to_next_screen = false;
 
 	Fade_in(FADE_FAST);
 }
@@ -156,7 +156,7 @@ void Screen_Ending(){
 	loppulaskuri++;
 	//introlaskuri = loppulaskuri; // introtekstej� varten
 
-	if (siirry_lopusta_menuun && !Is_Fading()) {
+	if (change_to_next_screen && !Is_Fading()) {
 		PSound::set_musicvolume_now(Settings.music_max_volume);
 		//next_screen = SCREEN_MENU;
 		next_screen = SCREEN_MAP;
@@ -164,7 +164,7 @@ void Screen_Ending(){
 
 	if (key_delay == 0) {
 		if (Clicked() || Gui_touch) {
-			siirry_lopusta_menuun = true;
+			change_to_next_screen = true;
 			PSound::set_musicvolume(0);
 			Fade_out(FADE_SLOW);
 		}
