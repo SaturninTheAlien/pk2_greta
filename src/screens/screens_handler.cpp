@@ -2,8 +2,10 @@
 //Pekka Kana 2
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
-#include "screens/screens.hpp"
+#include "screens_handler.hpp"
 
+
+#include "exceptions.hpp"
 #include "sfx.hpp"
 #include "settings.hpp"
 #include "gui.hpp"
@@ -18,68 +20,27 @@
 
 #include "engine/Piste.hpp"
 #include <sstream>
-#include <exceptions.hpp>
-#include <cstring>
 #include <ctime>
-
-int current_screen = SCREEN_FIRST_START;
-int next_screen = SCREEN_NOT_SET;
-
-uint chosen_menu_id = 0;
-uint selected_menu_id = 1;
-
-static bool closing_game = false;
-
-void Fade_Quit() {
-
-	if(!closing_game) Fade_out(FADE_FAST);
-	closing_game = true;
-	PSound::set_musicvolume(0);
-	
-}
-
-bool Draw_Menu_Text(const char *teksti, int x, int y, char end) {
-
-	const int TEXT_H = 20; 
-
-	int length = strlen(teksti) * 15;
-
-	bool mouse_on = PInput::mouse_x > x && PInput::mouse_x < x + length 
-		&& PInput::mouse_y > y && PInput::mouse_y < y + TEXT_H
-		&& !mouse_hidden;
-
-	if ( mouse_on || (chosen_menu_id == selected_menu_id) ) {
-
-		chosen_menu_id = selected_menu_id;
-		Wavetext_Draw(teksti, fontti3, x, y, end);//
-
-		int c = Clicked();
-		if ( (c == 1 && mouse_on) || (c > 1) ) {
-
-			Play_MenuSFX(menu_sound, 100);
-			key_delay = 20;
-			selected_menu_id++;
-			
-			return true;
-
-		}
-
-		//Wavetext_Draw(teksti, fontti3, x, y);
-
-	} else {
-	
-		WavetextSlow_Draw(teksti, fontti2, x, y, end);
-	
-	}
-
-	selected_menu_id++;
-
-	return false;
-}
 
 #include <time.h>
 
-void Screen_First_Start() {
+
+#include "intro_screen.hpp"
+#include "menu_screen.hpp"
+#include "map_screen.hpp"
+#include "playing_screen.hpp"
+#include "score_screen.hpp"
+#include "ending_screen.hpp"
+
+ScreensHandler::ScreensHandler():
+	screens_map({
+		{SCREEN_INTRO, new IntroScreen()},
+		{SCREEN_MENU, new MenuScreen()},
+		{SCREEN_MAP, new MapScreen()},
+		{SCREEN_GAME, new PlayingScreen()},
+		{SCREEN_SCORING, new ScoreScreen()},
+		{SCREEN_END, new EndingScreen()},
+	}){
 
 	srand(time(nullptr));
 	
@@ -174,8 +135,20 @@ void Screen_First_Start() {
 	PSound::set_musicvolume_now(Settings.music_max_volume);
 }
 
+ScreensHandler::~ScreensHandler(){
+
+	for(std::pair<int, Screen*> p : this->screens_map){
+		if(p.second!=nullptr){
+			delete p.second;
+			p.second = nullptr;
+		}	
+	}
+	this->screens_map.clear();
+}
+
+
 //If the screen change
-int Screen_Change() {
+/*int Screen_Change() {
 
 	Fade_in(FADE_NORMAL);
 
@@ -193,36 +166,39 @@ int Screen_Change() {
 	current_screen = next_screen;
 
 	return 0;
-}
+}*/
 
 //Main Loop
-void Screen_Loop() {
+void ScreensHandler::Loop() {
 
-	if (next_screen != current_screen) Screen_Change();
+	if(Screen::next_screen != this->current_screen_index){
+		this->current_screen_index = Screen::next_screen;
+
+		auto it = this->screens_map.find(Screen::next_screen);
+		if(it==this->screens_map.end()){
+			std::ostringstream os;
+			os<<"Screen with index "<<Screen::next_screen<<" not found!";
+			throw PExcept::PException(os.str());
+		}
+		this->current_screen = it->second;		
+
+		Fade_in(FADE_NORMAL);
+
+		this->current_screen->Init();
+	}
 
 	if (PK2_error){
 		std::ostringstream os;
 		os<<"Main loop interruption due to error (1): "<<PK2_error_msg;
 		throw PExcept::PException(os.str());
 	}
-	
-	bool keys_move = (current_screen == SCREEN_MAP);
-	bool relative = Settings.isFullScreen;
-	PInput::UpdateMouse(keys_move, relative);
+
+	PInput::UpdateMouse(this->current_screen->keys_move, Settings.isFullScreen);
 	
 	if (PUtils::Is_Mobile())
 		GUI_Update();
 
-	switch (current_screen) {
-		case SCREEN_INTRO   : Screen_Intro();      break;
-		case SCREEN_MENU    : Screen_Menu();       break;
-		case SCREEN_MAP     : Screen_Map();        break;
-		case SCREEN_GAME    : Screen_InGame();     break;
-		case SCREEN_SCORING : Screen_ScoreCount(); break;
-		case SCREEN_END     : Screen_Ending();     break;
-		case SCREEN_LEVEL_ERROR: Screen_LevelError();	break;
-		default             : Fade_Quit();         break;
-	}
+	this->current_screen->Loop();
 
 	if (PK2_error){
 		std::ostringstream os;
@@ -233,9 +209,9 @@ void Screen_Loop() {
 	if (key_delay > 0)
 		key_delay--;
 
-	if (closing_game && !Is_Fading())
+	if (Screen::closing_game && !Is_Fading()){
 		Piste::stop();
-
+	}
 	// Fade and thunder
 	Update_Colors();
 }

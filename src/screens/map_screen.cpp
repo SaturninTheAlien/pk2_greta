@@ -2,13 +2,16 @@
 //Pekka Kana 2
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
-#include "screens/screens.hpp"
+#include "map_screen.hpp"
 
 #include "engine/PLog.hpp"
 #include "engine/PDraw.hpp"
 #include "engine/PInput.hpp"
 #include "engine/PSound.hpp"
 #include "engine/PUtils.hpp"
+
+#include <array>
+#include <string>
 
 #include <cstring>
 
@@ -24,9 +27,11 @@
 #include "system.hpp"
 #include "exceptions.hpp"
 
-bool going_to_game = false;
+MapScreen::MapScreen(){
+	this->keys_move = true;
+}
 
-int PK_Draw_Map_Button(int x, int y, int type){
+int MapScreen::PK_Draw_Map_Button(int x, int y, int type){
 
 	const int BORDER = 23; //Max 23
 	int ret = 0;
@@ -63,9 +68,7 @@ int PK_Draw_Map_Button(int x, int y, int type){
 	return ret;
 }
 
-int PK_Draw_Map() {
-
-	//char luku[20];
+void MapScreen::Draw() {
 
 	PDraw::image_clip(bg_screen, 0, 0);
 
@@ -73,7 +76,6 @@ int PK_Draw_Map() {
 
 	int ysize = ShadowedText_Draw(tekstit->Get_Text(PK_txt.map_total_score), 100, 92);
 	
-	//sprintf(luku, "%i", Episode->player_score);
 	ShadowedText_Draw(std::to_string(Episode->player_score), 100 + ysize + 15, 92);
 
 	if (Episode->scores.episode_top_score > 0) {
@@ -82,18 +84,14 @@ int PK_Draw_Map() {
 		PDraw::font_write(fontti1,Episode->scores.episode_top_player,360+ysize+10,72);
 		
 		ysize = PDraw::font_write(fontti1,tekstit->Get_Text(PK_txt.map_episode_hiscore),360,92);
-		//sprintf(luku, "%i", Episode->scores.episode_top_score);
 		PDraw::font_write(fontti2,std::to_string(Episode->scores.episode_top_score), 360+ysize+15,92);
 
 	}
 
 	if (Episode->next_level < UINT32_MAX) {
 		ysize = PDraw::font_write(fontti1,tekstit->Get_Text(PK_txt.map_next_level),100,120);
-		//sprintf(luku, "%i", Episode->next_level);
 		PDraw::font_write(fontti1,std::to_string(Episode->next_level),100+ysize+15,120);
 	}
-
-	//PK_Particles_Draw();
 
 	if (Episode->level_count == 0) {
 		PDraw::font_write(fontti2,tekstit->Get_Text(PK_txt.episodes_no_maps),180,290);
@@ -236,58 +234,52 @@ int PK_Draw_Map() {
 			}
 		}
 	}
-
-	return 0;
 }
 
-int Play_Music() {
+void MapScreen::Play_Music() {
 
 	PFile::Path mapmus = Episode->Get_Dir("");
+	bool music_found = false;
+	//for(const std::s)
 
-	mapmus.SetFile("map.mp3");
-	if (mapmus.Find())
-		goto found;
-	
-	mapmus.SetFile("map.ogg");
-	if (mapmus.Find())
-		goto found;
-	
-	mapmus.SetFile("map.xm");
-	if (mapmus.Find())
-		goto found;
-	
-	mapmus.SetFile("map.mod");
-	if (mapmus.Find())
-		goto found;
-	
-	mapmus.SetFile("map.it");
-	if (mapmus.Find())
-		goto found;
-	
-	mapmus.SetFile("map.s3m");
-	if (mapmus.Find())
-		goto found;
-	
-	mapmus = PFile::Path("music" PE_SEP "map.mp3");
-	if (mapmus.Find())
-		goto found;
-	
-	mapmus.SetFile("map.ogg");
-	if (mapmus.Find())
-		goto found;
-	
-	mapmus.SetFile("map.xm");
-	
-	found:
+	static const std::array<std::string, 6> map_music_filenames = {
+		"map.xm",
+		"map.ogg",
+		"map.mp3",
+		"map.s3m",
+		"map.mod",
+		"map.it",
+	};
 
-	PSound::start_music(mapmus);
-	PSound::set_musicvolume_now(Settings.music_max_volume);
+	for(const std::string& music_name:map_music_filenames){
+		mapmus.SetFile(music_name);
+		if(mapmus.Find()){
+			//PLog::Write(PLog::DEBUG, "Found map music");
+			music_found = true;
+			break;
+		}
+	}
+	if(!music_found){
+		mapmus = PFile::Path("music" PE_SEP);
+		for(const std::string& music_name:map_music_filenames){
+			mapmus.SetFile(music_name);
+			if(mapmus.Find()){
+				music_found = true;
+				break;
+			}
+		}
+	}
 
-	return 0;
-
+	if(music_found){
+		PSound::start_music(mapmus);
+		PSound::set_musicvolume_now(Settings.music_max_volume);
+	}
+	else{
+		PLog::Write(PLog::ERR,"PK2","Map music not found!");
+	}
 }
 
-void Screen_Map_Init() {
+void MapScreen::Init() {
 
 	if (!Episode) {
 		throw PExcept::PException("Episode not started!");
@@ -324,9 +316,9 @@ void Screen_Map_Init() {
 	Fade_in(FADE_SLOW);
 }
 
-void Screen_Map() {
+void MapScreen::Loop() {
 
-	PK_Draw_Map();
+	this->Draw();
 
 	degree = 1 + degree % 360;
 

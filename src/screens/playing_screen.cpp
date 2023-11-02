@@ -3,7 +3,9 @@
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
 #include <sstream>
-#include "screens/screens.hpp"
+#include "playing_screen.hpp"
+
+
 #include "engine/Piste.hpp"
 
 #include <cstring>
@@ -23,12 +25,15 @@
 #include "system.hpp"
 #include "settings.hpp"
 
-static bool draw_debug_info = false;
+PlayingScreen::PlayingScreen(){
 
-static int debug_drawn_sprites = 0;
-static int debug_active_sprites = 0;
+}
 
-bool Is_Sprite_Visible(SpriteClass* sprite) {
+PlayingScreen::~PlayingScreen(){
+	
+}
+
+bool PlayingScreen::Is_Sprite_Visible(const SpriteClass* sprite)const {
 
 	return (sprite->x - sprite->prototype->picture_frame_width/2  < Game->camera_x + screen_width &&
 			sprite->x + sprite->prototype->picture_frame_width/2  > Game->camera_x &&
@@ -37,7 +42,7 @@ bool Is_Sprite_Visible(SpriteClass* sprite) {
 	
 }
 
-int Draw_InGame_BGSprites() {
+void PlayingScreen::Draw_InGame_BGSprites() {
 
 	for (SpriteClass* sprite : bgSprites_List) {
 
@@ -119,10 +124,9 @@ int Draw_InGame_BGSprites() {
 			sprite->hidden = true;
 		}
 	}
-	return 0;
 }
 
-void Draw_InGame_Sprites() {
+void PlayingScreen::Draw_InGame_Sprites() {
 
 	for (SpriteClass* sprite : Sprites_List) {
 
@@ -173,7 +177,7 @@ void Draw_InGame_Sprites() {
 	}
 }
 
-int Draw_InGame_DebugInfo() {
+void PlayingScreen::Draw_InGame_DebugInfo() {
 	int vali, fy = 70;
 	//char lukua[20];
 
@@ -255,9 +259,9 @@ int Draw_InGame_DebugInfo() {
 	vali += PDraw::font_write(fontti1,std::to_string(Game->timeout),390,screen_height-10);
 
 	PDraw::set_offset(screen_width, screen_height);
-	return 0;
 }
-int Draw_InGame_DevKeys() {
+
+void PlayingScreen::Draw_InGame_DevKeys() {
 
 	const char txt0[] = "dev mode";
 	int char_w = PDraw::font_write(fontti1, txt0, 0, screen_height - 10) / strlen(txt0);
@@ -267,7 +271,7 @@ int Draw_InGame_DevKeys() {
 
 	if (!PInput::Keydown(PInput::H)) {
 		PDraw::font_write(fontti1, help, screen_width - strlen(help) * char_w, screen_height - 10);
-		return 0;
+		return;
 	}
 	const char txts[][32] = {
 		"z: press buttons",
@@ -304,10 +308,10 @@ int Draw_InGame_DevKeys() {
 	
 	for (uint i = 0; i < nof_txt; i++)
 		PDraw::font_write(fontti1, txts[i], posx, posy + i*10);
-
-	return 0;
 }
-int Draw_InGame_BG() {
+
+
+void PlayingScreen::Draw_InGame_BG() {
 
 	int pallarx = ( Game->camera_x % (640*3) ) / 3;
 	int pallary = ( Game->camera_y % (480*3) ) / 3;
@@ -348,12 +352,9 @@ int Draw_InGame_BG() {
 		}
 	
 	}
-
-	return 0;
-
 }
 
-int Draw_InGame_Gifts() {
+void PlayingScreen::Draw_InGame_Gifts() {
 
 	int x,y;
 
@@ -365,10 +366,9 @@ int Draw_InGame_Gifts() {
 			Gifts_Draw(i, x, y);
 			x += 38;
 		}
-
-	return 0;
 }
-int Draw_InGame_Lower_Menu() {
+
+void PlayingScreen::Draw_InGame_Lower_Menu() {
 	//char luku[16];
 	int x, y;
 
@@ -425,11 +425,9 @@ int Draw_InGame_Lower_Menu() {
 		PDraw::font_write(fontti1,tekstit->Get_Text(PK_txt.game_items),15,screen_height-65);
 
 	Draw_InGame_Gifts();
-
-	return 0;
 }
 
-int Draw_InGame_UI(){
+void PlayingScreen::Draw_InGame_UI(){
 	//char luku[16];
 	int vali = 20;
 	int my = 14;
@@ -514,14 +512,9 @@ int Draw_InGame_UI(){
 		else
 			PDraw::font_writealpha_s(fontti1,Game->info_text,alue.left+4,alue.top+4,Game->info_timer-11);
 	}
-
-	return 0;
 }
 
-int Draw_InGame() {
-
-	//char luku[16];
-
+void PlayingScreen::Draw() {
 	debug_drawn_sprites = 0;
 
 	Draw_InGame_BG();
@@ -563,12 +556,10 @@ int Draw_InGame() {
 			else
 				txt_size = PDraw::font_write(fontti1, "fps: ", 570, 48);
 			
-			//sprintf(luku, "%i", fps);
 			PDraw::font_write(fontti1, std::to_string(fps), 570 + txt_size, 48);
 		
 		}
 		if (speedrun_mode) {
-			//sprintf(luku, "%li", long(Game->frame_count));
 			PDraw::font_write(fontti1, std::to_string(Game->frame_count), 570, 38);
 		}
 	}
@@ -598,13 +589,9 @@ int Draw_InGame() {
 		Wavetext_Draw(tekstit->Get_Text(PK_txt.game_tryagain),fontti2,screen_width/2-75,screen_height/2-9+10);
 	
 	}
-
-	return 0;
 }
 
-
-
-void Screen_InGame_Init(){
+void PlayingScreen::Init(){
 
 	if(PUtils::Is_Mobile()) {
 		if (Settings.gui)
@@ -627,7 +614,7 @@ void Screen_InGame_Init(){
 	}
 }
 
-void Update_Camera(){
+void PlayingScreen::Update_Camera(){
 
 	Game->camera_x = (int)Player_Sprite->x-screen_width / 2;
 	Game->camera_y = (int)Player_Sprite->y-screen_height / 2;
@@ -689,7 +676,7 @@ void Update_Camera(){
 
 }
 
-void Screen_InGame(){
+void PlayingScreen::Loop(){
 
 	if (!Game->level_clear && (!Game->has_time || Game->timeout > 0)) {
 		Game->map.SetTilesAnimations(degree, Game->palikka_animaatio/7, Game->button1, Game->button2, Game->button3);
@@ -718,7 +705,7 @@ void Screen_InGame(){
 
 	if (!skip_frame) {
 
-		Draw_InGame();
+		Draw();
 
 	} else {
 

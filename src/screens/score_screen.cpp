@@ -2,7 +2,8 @@
 //Pekka Kana 2
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
-#include "screens/screens.hpp"
+#include "score_screen.hpp"
+
 #include "engine/Piste.hpp"
 
 #include "gfx/text.hpp"
@@ -34,28 +35,7 @@ enum {
 	COUNT_ENDED
 };
 
-bool going_to_map;
-
-int counting_phase;
-int counting_delay;
-
-float apples_xoffset;
-u32 apples_counted;
-u32 apples_not_counted;
-
-u32 total_seconds;
-
-u32 total_score;
-u32 bonus_score;
-s32 time_score;
-u32 energy_score;
-u32 gifts_score;
-
-bool map_new_record;
-bool map_new_time_record;
-bool episode_new_record;
-
-int LevelScore_Compare(int level, u32 score, u32 apples, s32 time){
+int ScoreScreen::LevelScore_Compare(int level, u32 score, u32 apples, s32 time){
 
 	if(test_level)return 0;
 	
@@ -96,7 +76,7 @@ int LevelScore_Compare(int level, u32 score, u32 apples, s32 time){
 	return ret;
 
 }
-int EpisodeScore_Compare(u32 score){
+int ScoreScreen::EpisodeScore_Compare(u32 score){
 	if(test_level) return 0;
 
 	int ret = 0;
@@ -114,7 +94,7 @@ int EpisodeScore_Compare(u32 score){
 
 }
 
-int Draw_ScoreCount() {
+int ScoreScreen::Draw_ScoreCount() {
 
 	//char luku[20];
 	int x, y;
@@ -273,7 +253,15 @@ int Draw_ScoreCount() {
 }
 
 
-void Screen_ScoreCount_Init() {
+ScoreScreen::ScoreScreen(){
+
+}
+
+ScoreScreen::~ScoreScreen(){
+	PDraw::image_delete(bg_screen);
+}
+
+void ScoreScreen::Init() {
 
 	if(PUtils::Is_Mobile())
 		GUI_Change(UI_CURSOR);
@@ -335,7 +323,7 @@ void Screen_ScoreCount_Init() {
 
 }
 
-void Screen_ScoreCount() {
+void ScoreScreen::Loop() {
 
 	Draw_ScoreCount();
 

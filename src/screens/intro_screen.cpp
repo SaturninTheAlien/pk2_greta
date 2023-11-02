@@ -2,7 +2,7 @@
 //Pekka Kana 2
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
-#include "screens/screens.hpp"
+#include "intro_screen.hpp"
 
 #include "gfx/text.hpp"
 #include "gui.hpp"
@@ -16,10 +16,7 @@
 #include "engine/PSound.hpp"
 #include "engine/PUtils.hpp"
 
-static uint intro_counter = 0;
-static bool closing_intro = false;
-
-void Draw_Intro(){
+void IntroScreen::Draw(){
 
 	u32 pistelogo_alku  = 300;
 	u32 pistelogo_loppu = pistelogo_alku + 500;
@@ -81,7 +78,7 @@ void Draw_Intro(){
 	}
 }
 
-void Screen_Intro_Init() {
+void IntroScreen::Init() {
 	
 	if(PUtils::Is_Mobile())
 		GUI_Change(UI_TOUCH_TO_START);
@@ -101,9 +98,9 @@ void Screen_Intro_Init() {
 	Fade_in(FADE_FAST);
 }
 
-void Screen_Intro() {
+void IntroScreen::Loop() {
 	
-	Draw_Intro();
+	Draw();
 
 	degree = 1 + degree % 360;
 

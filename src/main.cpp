@@ -12,7 +12,7 @@
 #include "engine/Piste.hpp"
 #include "version.hpp"
 
-#include "screens/screens.hpp"
+#include "screens/screens_handler.hpp"
 #include "gfx/text.hpp"
 #include "game/game.hpp"
 #include "episode/episodeclass.hpp"
@@ -390,22 +390,29 @@ int main(int argc, char *argv[]) {
 
 	}
 
+	ScreensHandler *handler = nullptr;
 	try{
-		Screen_First_Start();
-
-		next_screen = SCREEN_INTRO;
-		if (dev_mode)
-			next_screen = SCREEN_MENU;
-		if (test_level) {
+		handler = new ScreensHandler();
+		Screen::next_screen = SCREEN_INTRO;
+		if(dev_mode){
+			Screen::next_screen = SCREEN_MENU;
+		}
+		
+		if(test_level){
 			start_test(test_path.c_str());
-			next_screen = SCREEN_GAME;
+			Screen::next_screen = SCREEN_GAME;
 		}
 
-		Piste::loop(Screen_Loop); //The game loop
+		Piste::loop(std::bind(&ScreensHandler::Loop, handler)); //The game loop
 	}
 	catch(const std::exception& e){
 		PLog::Write(PLog::FATAL, "PK2", e.what());
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Fatal error!", e.what(), nullptr);
+	}
+
+	if(handler!=nullptr){
+		delete handler;
+		handler = nullptr;
 	}
 
 	quit();

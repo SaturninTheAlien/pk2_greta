@@ -110,8 +110,8 @@ class Path {
 
     bool Is_Zip();
 
-    int SetFile(std::string file);
-    int SetPath(std::string path);
+    void SetFile(std::string file);
+    void SetPath(std::string path);
     void FixSep();
 
     std::string GetDirectory();

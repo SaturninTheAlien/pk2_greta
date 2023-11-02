@@ -494,19 +494,16 @@ bool Path::Is_Zip() {
 
 }
 
-int Path::SetFile(std::string file) {
+void Path::SetFile(std::string file) {
 
 	int dif = this->path.find_last_of(PE_SEP);
 
 	file = file.substr(0, file.find_last_not_of(" ") + 1);
 
 	this->path = this->path.substr(0, dif + 1) + file;
-
-	return 0;
-
 }
 
-int Path::SetPath(std::string path) {
+void Path::SetPath(std::string path) {
 
 	int s = path.size();
 	if (s > 0)
@@ -515,9 +512,6 @@ int Path::SetPath(std::string path) {
 
 	this->path = path + this->GetFileName();
 	this->FixSep();
-
-	return 0;
-
 }
 
 std::string Path::GetDirectory() {

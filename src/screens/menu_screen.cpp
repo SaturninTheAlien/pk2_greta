@@ -3,7 +3,7 @@
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
 #include <sstream>
-#include "screens/screens.hpp"
+#include "menu_screen.hpp"
 
 #include "settings.hpp"
 #include "gui.hpp"
@@ -23,45 +23,10 @@
 
 #include <SDL_system.h>
 
-enum MENU {
-
-	MENU_MAIN,
-	MENU_EPISODES,
-	MENU_CONTROLS,
-	MENU_GRAPHICS,
-	MENU_SOUNDS,
-	MENU_NAME,
-	MENU_LOAD,
-	MENU_TALLENNA,
-	MENU_LANGUAGE,
-	MENU_DATA
-
-};
-
-struct MENU_RECT {
-
-	int left, right;
-	int top, bottom;
-
-} bg_square;
-
-int menu_nyt = MENU_MAIN;
-int menu_lue_kontrollit = 0;
-
-uint menu_name_index = 0;
-char menu_name_last_mark = '\0';
-char menu_name[20] = "";
-
-uint episode_page = 0;
-
-uint langlistindex = 0;
-
-bool editing_name = false;
-
-int Draw_BGSquare(int left, int top, int right, int bottom, u8 pvari){
+void MenuScreen::Draw_BGSquare(int left, int top, int right, int bottom, u8 pvari){
 	
 	if (Episode)
-		return 0;
+		return;
 
 	if (bg_square.left < left)
 		bg_square.left++;
@@ -140,12 +105,9 @@ int Draw_BGSquare(int left, int top, int right, int bottom, u8 pvari){
 	PDraw::screen_fill(left,top,left+1,bottom,144);
 	PDraw::screen_fill(left,bottom-1,right,bottom,138);
 	PDraw::screen_fill(right-1,top,right,bottom,138);
-
-	return 0;
-
 }
 
-int Draw_BoolBox(int x, int y, bool muuttuja, bool active) {
+bool MenuScreen::Draw_BoolBox(int x, int y, bool muuttuja, bool active) {
 	
 	PDraw::RECT img_src, img_dst = {x , y, 0, 0};
 
@@ -171,7 +133,7 @@ int Draw_BoolBox(int x, int y, bool muuttuja, bool active) {
 	return false;
 }
 
-int  Draw_BackNext(int x, int y) {
+int MenuScreen::Draw_BackNext(int x, int y) {
 	int val = 45;
 
 	int randx = rand()%3 - rand()%3;
@@ -220,7 +182,7 @@ int  Draw_BackNext(int x, int y) {
 }
 
 
-int  Draw_Radio(int x, int y, int num, int sel) {
+int MenuScreen::Draw_Radio(int x, int y, int num, int sel) {
 
 	const PDraw::RECT sel_src = {504,124,31,31};
 	const PDraw::RECT uns_src = {473,124,31,31};
@@ -273,7 +235,7 @@ int  Draw_Radio(int x, int y, int num, int sel) {
 
 }
 
-void Draw_Menu_Main() {
+void MenuScreen::Draw_Menu_Main() {
 	int my = PUtils::Is_Mobile()? 260 : 240;//250;
 
 	Draw_BGSquare(160, 200, 640-180, 410, 224);
@@ -360,7 +322,7 @@ void Draw_Menu_Main() {
 
 }
 
-void Draw_Menu_Name() {
+void MenuScreen::Draw_Menu_Name() {
 
 	bool mouse_on_text = false;
 	size_t nameSize = strlen(menu_name);
@@ -497,7 +459,7 @@ void Draw_Menu_Name() {
 
 }
 
-void Draw_Menu_Load() {
+void MenuScreen::Draw_Menu_Load() {
 
 	int my = 0, vali = 0;
 	//char number[32];
@@ -587,7 +549,7 @@ void Draw_Menu_Load() {
 
 }
 
-void Draw_Menu_Save() {
+void MenuScreen::Draw_Menu_Save() {
 
 	int my = 0, vali = 0;
 	//char number[32];
@@ -648,7 +610,7 @@ void Draw_Menu_Save() {
 
 }
 
-void Draw_Menu_Graphics() {
+void MenuScreen::Draw_Menu_Graphics() {
 
 	int mx = 0, my = 150, option;
 	static bool moreOptions = false;
@@ -933,7 +895,7 @@ void Draw_Menu_Graphics() {
 
 }
 
-void Draw_Menu_Sounds() {
+void MenuScreen::Draw_Menu_Sounds() {
 
 	Draw_BGSquare(40, 70, 640-40, 410, 224);
 
@@ -1017,7 +979,7 @@ void Draw_Menu_Sounds() {
 
 }
 
-void Draw_Menu_Controls() {
+void MenuScreen::Draw_Menu_Controls() {
 	
 	int my = 130;
 	bool save_settings = false;
@@ -1217,7 +1179,7 @@ void Draw_Menu_Controls() {
 
 }
 
-void Draw_Menu_Episodes() {
+void MenuScreen::Draw_Menu_Episodes() {
 	int my = 0;
 
 	Draw_BGSquare(80, 130, 640-80, 450, 224);
@@ -1287,7 +1249,7 @@ void Draw_Menu_Episodes() {
 
 }
 
-void Draw_Menu_Language() {
+void MenuScreen::Draw_Menu_Language() {
 
 	Draw_BGSquare(110, 130, 640-110, 450, 224);
 
@@ -1341,7 +1303,7 @@ void Draw_Menu_Language() {
 
 }
 
-void Draw_Menu_Data() {
+void MenuScreen::Draw_Menu_Data() {
 
 #ifdef __ANDROID__
 
@@ -1393,7 +1355,7 @@ void Draw_Menu_Data() {
 
 }
 
-int Draw_Menu() {
+void MenuScreen::Draw() {
 
 	PDraw::image_clip(bg_screen);
 
@@ -1419,14 +1381,11 @@ int Draw_Menu() {
 	if (!mouse_hidden)
 		if (!PUtils::Is_Mobile() || !Settings.gui)
 			Draw_Cursor(PInput::mouse_x, PInput::mouse_y);
-
-	return 0;
-
 }
 
 
 
-void Screen_Menu_Init() {
+void MenuScreen::Init() {
 
 	if(PUtils::Is_Mobile())
 		GUI_Change(UI_CURSOR);
@@ -1458,7 +1417,7 @@ void Screen_Menu_Init() {
 
 }
 
-void Screen_Menu() {
+void MenuScreen::Loop() {
 	
 	if (key_delay == 0 && menu_lue_kontrollit == 0) {
 		if (PInput::Keydown(PInput::UP) || (PInput::Keydown(PInput::LEFT) && !editing_name)
@@ -1519,7 +1478,7 @@ void Screen_Menu() {
 	my = cy;
 	mb = cb;
 
-	Draw_Menu();
+	Draw();
 
 	if (menu_nyt != menu_ennen)
 		chosen_menu_id = 0;

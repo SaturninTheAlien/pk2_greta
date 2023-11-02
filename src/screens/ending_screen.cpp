@@ -2,7 +2,7 @@
 //Pekka Kana 2
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
-#include "screens/screens.hpp"
+#include "ending_screen.hpp"
 
 #include "episode/episodeclass.hpp"
 #include "gfx/text.hpp"
@@ -20,10 +20,7 @@
 
 #include "engine/types.hpp"
 
-static u32 loppulaskuri = 0;
-static bool change_to_next_screen = false;
-
-int Draw_EndGame_Image(int x, int y, int tyyppi, int plus, int rapytys){
+void EndingScreen::Draw_EndGame_Image(int x, int y, int tyyppi, int plus, int rapytys){
 	int frm = 0;
 	int yk = 0;
 
@@ -86,10 +83,8 @@ int Draw_EndGame_Image(int x, int y, int tyyppi, int plus, int rapytys){
 		}
 		PDraw::image_cutclip(bg_screen,x,y, 217+frm*29, 33, 243+frm*29, 61);
 	}
-
-	return 0;
 }
-int Draw_EndGame(){
+void EndingScreen::Draw_EndGame(){
 
 	u32 onnittelut_alku	= 300;
 	u32 onnittelut_loppu	= onnittelut_alku + 1000;
@@ -114,11 +109,9 @@ int Draw_EndGame(){
 	if (loppulaskuri > the_end_alku) {
 		CreditsText_Draw(tekstit->Get_Text(PK_txt.end_the_end), fontti2, 280, 190, the_end_alku, the_end_loppu, loppulaskuri);
 	}
-
-	return 0;
 }
 
-void Screen_Ending_Init() {
+void EndingScreen::Init() {
 	
 	if(PUtils::Is_Mobile())
 		GUI_Change(UI_TOUCH_TO_START);
@@ -147,7 +140,7 @@ void Screen_Ending_Init() {
 	Fade_in(FADE_FAST);
 }
 
-void Screen_Ending(){
+void EndingScreen::Loop(){
 
 	Draw_EndGame();
 
