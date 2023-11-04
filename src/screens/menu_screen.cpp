@@ -1376,7 +1376,7 @@ void MenuScreen::Draw() {
 	}
 
 	if (!Episode)
-		PDraw::font_write(fontti1, PK2_VERSION, 0, 470);
+		PDraw::font_write(fontti1, PK2_VERSION_STR_MENU, 0, 470);
 
 	if (!mouse_hidden)
 		if (!PUtils::Is_Mobile() || !Settings.gui)

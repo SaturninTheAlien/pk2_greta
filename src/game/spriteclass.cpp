@@ -781,9 +781,8 @@ void PrototypeClass::LoadAssets(PFile::Path path){
 	}
 }
 
-int PrototypeClass::Draw(int x, int y, int frame){
+void PrototypeClass::Draw(int x, int y, int frame)const{
 	PDraw::image_clip(this->frames[frame], x, y);
-	return 0;
 }
 bool PrototypeClass::HasAI(int ai)const{
 	return std::find(this->AI_v.begin(), this->AI_v.end(), ai) != this->AI_v.end();

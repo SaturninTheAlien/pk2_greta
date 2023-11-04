@@ -163,7 +163,7 @@ class PrototypeClass{
     void     LoadAssets(PFile::Path path);
 
     
-    int     Draw(int x, int y, int frame);
+    void     Draw(int x, int y, int frame)const;
     bool    HasAI(int AI)const;
 
     std::vector<SpriteCommands::Command*>commands;

@@ -17,6 +17,8 @@
 #include "system.hpp"
 #include "episode/episodeclass.hpp"
 #include "gui.hpp"
+#include "exceptions.hpp"
+
 
 #include "engine/types.hpp"
 #include "engine/PInput.hpp"
@@ -202,7 +204,7 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 		/**********************************************************************/
 		/* Examine if block is the exit                                       */
 		/**********************************************************************/
-		if (block.koodi == BLOCK_EXIT) {
+		if (block.koodi == BLOCK_EXIT && sprite->energy>0) {
 			if ((!Game->chick_mode && sprite->player != 0) || sprite->HasAI(AI_CHICK))
 				Game->Finnish();
 		}
@@ -378,6 +380,13 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 
 void SpriteOnDeath(SpriteClass* sprite){
 	int how_destroyed = sprite->prototype->how_destroyed;
+
+	if(sprite->HasAI(AI_EVIL_ONE)){
+		PSound::set_musicvolume(0);
+		Game->music_stopped = true;		
+	}
+
+
 	if (sprite->HasAI(AI_CHICK)){
 		Game->game_over = true;
 		key_delay = 50; //TODO - reduce
@@ -423,10 +432,11 @@ void SpriteOnDeath(SpriteClass* sprite){
 	}
 }
 
-int UpdateSprite(SpriteClass* sprite){
+void UpdateSprite(SpriteClass* sprite){
 	
-	if (!sprite->prototype)
-		return -1;
+	if (!sprite->prototype){
+		throw PExcept::PException("Sprite with null prototype is not acceptable!");
+	}
 
 	// Save values
 	sprite_x = sprite->x;
@@ -1363,12 +1373,6 @@ int UpdateSprite(SpriteClass* sprite){
 													break;
 				case AI_TURN_BACK_IF_DAMAGED:			sprite->AI_Turn_Back_If_Damaged();
 													break;
-				case AI_EVIL_ONE:					if (sprite->energy < 1) 
-													{
-														PSound::set_musicvolume(0);
-														Game->music_stopped = true;
-													}
-													break;
 				
 				case AI_DESTRUCTED_NEXT_TO_PLAYER:	sprite->AI_Destructed_Next_To_Player(*Player_Sprite);
 													break;
@@ -1495,12 +1499,9 @@ int UpdateSprite(SpriteClass* sprite){
 	if (sprite->prototype->sounds[SOUND_RANDOM] != -1 && rand()%200 == 1 && sprite->energy > 0)
 		Play_GameSFX(sprite->prototype->sounds[SOUND_RANDOM],80,(int)sprite_x, (int)sprite_y,
 					  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
-
-	return 0;
-
 }
 
-int UpdateBonusSprite(SpriteClass* sprite){
+void UpdateBonusSprite(SpriteClass* sprite){
 
 	sprite_x = sprite->x;
 	sprite_y = sprite->y;
@@ -1943,7 +1944,5 @@ int UpdateBonusSprite(SpriteClass* sprite){
 	/* The energy doesn't matter that the player is a bonus item */
 	if (sprite->player != 0)
 		sprite->energy = 0;
-
-	return 0;
 }
 

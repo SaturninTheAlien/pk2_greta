@@ -351,7 +351,7 @@ static void log_data() {
 
 	PLog::Write(PLog::DEBUG, "PK2", "Pekka Kana 2 started!");
 	PLog::Write(PLog::DEBUG, "PK2", "Game version: %s", PK2_VERSION_STR);
-	PLog::Write(PLog::DEBUG, "PK2", "Number: 0x%x", PK2_VERNUM);
+	//PLog::Write(PLog::DEBUG, "PK2", "Number: 0x%x", PK2_VERNUM);
 
 	/*#ifdef COMMIT_HASH
 	PLog::Write(PLog::DEBUG, "PK2", "Cammit hash: " COMMIT_HASH);

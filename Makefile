@@ -30,8 +30,15 @@ LDFLAGS += $(shell pkg-config sdl2 --libs) -lSDL2_mixer -lSDL2_image
 CXXFLAGS += -DPK2_USE_ZIP $(shell pkg-config libzip --cflags)
 LDFLAGS += $(shell pkg-config libzip --libs)
 
+# Version string
+PK2_VERSION = $(shell git log -1 --pretty=format:"%s" | grep -o 'v[0-9]\+\.[0-9]\+')
+ifeq ($(PK2_VERSION),)
+	PK2_VERSION = \(Unknown version\)
+endif
+
+
 # Portable (data is stored with resorces):
-CXXFLAGS += -DPK2_PORTABLE
+CXXFLAGS += -DPK2_PORTABLE -DPK2_VERSION=\"$(PK2_VERSION)\"
 
 # Commit hash
 CXXFLAGS += -DCOMMIT_HASH='"$(shell git rev-parse --short HEAD)"'
@@ -100,4 +107,7 @@ clean:
 	@rm -rf $(BIN_DIR)
 	@rm -rf $(BUILD_DIR)
 
-.PHONY: pk2 clean all
+version_test:
+	echo $(PK2_VERSION)
+
+.PHONY: pk2 clean all version_test

@@ -73,8 +73,14 @@ void IntroScreen::Draw(){
 	}
 
 	if (intro_counter > sdl_alku) {
-		CreditsText_Draw("powered by", fontti1, 120, 230, sdl_alku, sdl_loppu, intro_counter);
-		CreditsText_Draw("SDL 2",  fontti1, 120, 250, sdl_alku+20, sdl_loppu+20, intro_counter);
+		CreditsText_Draw("Greta Engine by", fontti1, 120, 230, sdl_alku, sdl_loppu, intro_counter);
+		CreditsText_Draw("Saturnin The Alien", fontti1, 120, 250, sdl_alku+20, sdl_loppu+20, intro_counter);
+		CreditsText_Draw("https://github.com/SaturninTheAlien/pk2_greta", fontti1, 120, 270, sdl_alku+20, sdl_loppu+20, intro_counter);
+		CreditsText_Draw("and the piste gamez community", fontti1, 120, 290, sdl_alku+40, sdl_loppu+40, intro_counter);
+		CreditsText_Draw("https://discord.gg/yDncSxp", fontti1, 120, 310, sdl_alku+40, sdl_loppu+40, intro_counter);
+
+		CreditsText_Draw("powered by", fontti1, 120, 390, sdl_alku+70, sdl_loppu+70, intro_counter);
+		CreditsText_Draw("SDL 2",  fontti1, 120, 410, sdl_alku+70, sdl_loppu+70, intro_counter);
 	}
 }
 

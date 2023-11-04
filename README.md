@@ -70,11 +70,10 @@ Now just clone the code and run `make` on pk2 directory and run `/bin/pekka-kana
 
 # User made episodes:
 https://sites.google.com/view/makyuni/makyu-home/pekka-kana/makyunis-mapstore?authuser=0\
-To add a new episode, just download the zip, etract and put it inside "res/" on local data.
+To add an episode just download a zip file and put it into "/res/data/mapstore" ("/data/mapstore" on Windows).
 
 The game can be started with the "--dev" argument to enable the
-cheats and "--test" following by the episode and level to
-open directly on the level.
+cheats and "--test" followed by "episode_name/level_filename" to play/test a particular level. 
 
 This example starts the level13.map (the robot boss fight) on dev mode:
 ```
@@ -107,7 +106,12 @@ Currently available commands:
 Commands / waypoints are executed by the sprite in a loop unless there is "self_destruction" or "transform" command.
 
 # Fixed bugs
-* Fixed the dead player teleporter bug. Player corpse are no longer teleported by the teleporters.
+
+* Fixed the bug making it possible to win a level by the dead Pekka.
+Player corpse reaching the exit sign no longer makes the level completed.
+* Killing the evil one no longer results "hiscore" music fading after reaching the exit tile.
+
+* Fixed the dead player teleporter bug. Player corpse is no longer teleported by the teleporters.
 
 * Fixed broken pixels in some backgrounds caused by converting the color 255 to alpha (for example backround in "Iv4n island 2/level13.map"). Currently the color-to-alpha feature is disabled while loading the background image.
 
@@ -131,7 +135,7 @@ Also the hedgehog from the box used to move nearly always left at the beginning 
 * New map format, bigger maps and more tiles.
 
 # Known bugs
-* Killing the evil one results music fading after reaching the exit tile.
+* Incorrect edges calculation around BLOCK_BARRIER_DOWN (legacy bug)
 
 
 # Used libraries

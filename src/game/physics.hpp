@@ -7,5 +7,5 @@
 #include "game/spriteclass.hpp"
 
 void SpriteOnDeath(SpriteClass* sprite);
-int UpdateSprite(SpriteClass* sprite);
-int UpdateBonusSprite(SpriteClass* sprite);
+void UpdateSprite(SpriteClass* sprite);
+void UpdateBonusSprite(SpriteClass* sprite);
