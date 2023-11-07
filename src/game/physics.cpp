@@ -733,7 +733,7 @@ void UpdateSprite(SpriteClass* sprite){
 	/* Blocks colision -                                                                     */
 	/*****************************************************************************************/
 
-	if (sprite->prototype->makes_sounds){ //Find the tiles that the sprite occupies
+	if (sprite->prototype->check_tiles){ //Find the tiles that the sprite occupies
 
 		int palikat_x_lkm = (int)((sprite_leveys) /32)+4; //Number of blocks
 		int palikat_y_lkm = (int)((sprite_korkeus)/32)+4;
@@ -807,7 +807,7 @@ void UpdateSprite(SpriteClass* sprite){
 			else
 				sprite2_yla = 0;
 
-			if (sprite2->prototype->is_wall && sprite->prototype->makes_sounds) { //If there is a block sprite active
+			if (sprite2->prototype->is_wall && sprite->prototype->check_tiles) { //If there is a block sprite active
 
 				if (sprite_x-sprite_leveys/2 +sprite_a  <= sprite2->x + sprite2->prototype->width /2 &&
 					sprite_x+sprite_leveys/2 +sprite_a  >= sprite2->x - sprite2->prototype->width /2 &&
@@ -1578,7 +1578,7 @@ void UpdateBonusSprite(SpriteClass* sprite){
 
 		for (SpriteClass* sprite2 : Sprites_List) {
 			if (sprite2 != sprite && !sprite2->removed) {
-				if (sprite2->prototype->is_wall && sprite->prototype->makes_sounds) {
+				if (sprite2->prototype->is_wall && sprite->prototype->check_tiles) {
 					if (sprite_x-sprite_leveys/2 +sprite_a <= sprite2->x + sprite2->prototype->width /2 &&
 						sprite_x+sprite_leveys/2 +sprite_a >= sprite2->x - sprite2->prototype->width /2 &&
 						sprite_y-sprite_korkeus/2+sprite_b <= sprite2->y + sprite2->prototype->height/2 &&
@@ -1666,7 +1666,7 @@ void UpdateBonusSprite(SpriteClass* sprite){
 
 		// Lasketaan
 
-		if (sprite->prototype->makes_sounds)
+		if (sprite->prototype->check_tiles)
 		{
 
 			int palikat_x_lkm = (int)((sprite_leveys) /32)+4;
