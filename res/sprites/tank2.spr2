@@ -81,6 +81,7 @@
     "can_open_locks": false,
     "can_swim": false,
     "charge_time": 100,
+    "check_tiles": true,
     "color": "red",
     "damage": 1,
     "damage_type": 1,
@@ -103,7 +104,6 @@
     "is_wall_left": true,
     "is_wall_right": true,
     "is_wall_up": true,
-    "makes_sounds": true,
     "max_jump": 28,
     "max_speed": 1.0,
     "name": "tank squirel 2",
@@ -122,7 +122,9 @@
         "attack2": "tankshot.wav",
         "damage": "damage.wav",
         "destruction": "ko1.wav",
-        "random": ""
+        "random": "",
+        "special1": "",
+        "special2": ""
     },
     "transformation": "",
     "type": 1,

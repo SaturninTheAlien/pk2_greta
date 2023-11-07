@@ -99,6 +99,7 @@
     "can_open_locks": false,
     "can_swim": false,
     "charge_time": 50,
+    "check_tiles": true,
     "color": "normal",
     "damage": 1,
     "damage_type": 1,
@@ -121,7 +122,6 @@
     "is_wall_left": true,
     "is_wall_right": true,
     "is_wall_up": true,
-    "makes_sounds": true,
     "max_jump": 20,
     "max_speed": 2.0,
     "name": "bad birdy",
@@ -140,7 +140,9 @@
         "attack2": "",
         "damage": "chick.wav",
         "destruction": "ko1.wav",
-        "random": ""
+        "random": "",
+        "special1": "",
+        "special2": ""
     },
     "transformation": "",
     "type": 1,

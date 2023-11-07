@@ -113,7 +113,7 @@ public:
     PrototypeClass* ammo1     = nullptr;
     PrototypeClass* ammo2     = nullptr;
 
-    bool    makes_sounds = true;
+    bool    check_tiles = true;
     int     sound_frequency      = 22050;
     bool    random_sound_frequency    = true;
 

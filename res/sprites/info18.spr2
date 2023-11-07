@@ -72,6 +72,7 @@
     "can_open_locks": false,
     "can_swim": false,
     "charge_time": 300,
+    "check_tiles": false,
     "color": "normal",
     "damage": 0,
     "damage_type": 0,
@@ -94,7 +95,6 @@
     "is_wall_left": true,
     "is_wall_right": true,
     "is_wall_up": true,
-    "makes_sounds": false,
     "max_jump": 0,
     "max_speed": 0.0,
     "name": "wind info",
@@ -113,7 +113,9 @@
         "attack2": "",
         "damage": "",
         "destruction": "",
-        "random": ""
+        "random": "",
+        "special1": "",
+        "special2": ""
     },
     "transformation": "",
     "type": 1,

@@ -108,6 +108,7 @@
     "can_open_locks": false,
     "can_swim": false,
     "charge_time": 30,
+    "check_tiles": true,
     "color": "orange",
     "damage": 1,
     "damage_type": 1,
@@ -130,7 +131,6 @@
     "is_wall_left": true,
     "is_wall_right": true,
     "is_wall_up": true,
-    "makes_sounds": true,
     "max_jump": 28,
     "max_speed": 2.0,
     "name": "hot chilli pig",
@@ -149,7 +149,9 @@
         "attack2": "pig2.wav",
         "damage": "pig.wav",
         "destruction": "pig_ko.wav",
-        "random": ""
+        "random": "",
+        "special1": "",
+        "special2": ""
     },
     "transformation": "",
     "type": 1,

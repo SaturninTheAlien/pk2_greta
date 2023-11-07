@@ -53,6 +53,7 @@
     "can_open_locks": false,
     "can_swim": false,
     "charge_time": 0,
+    "check_tiles": true,
     "color": "normal",
     "damage": 3,
     "damage_type": 2,
@@ -75,7 +76,6 @@
     "is_wall_left": true,
     "is_wall_right": true,
     "is_wall_up": true,
-    "makes_sounds": true,
     "max_jump": 0,
     "max_speed": 0.0,
     "name": "big wall",
@@ -94,7 +94,9 @@
         "attack2": "",
         "damage": "",
         "destruction": "",
-        "random": ""
+        "random": "",
+        "special1": "",
+        "special2": ""
     },
     "transformation": "",
     "type": 1,

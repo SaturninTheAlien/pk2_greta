@@ -80,6 +80,7 @@
     "can_open_locks": false,
     "can_swim": false,
     "charge_time": 15,
+    "check_tiles": true,
     "color": "red",
     "damage": 1,
     "damage_type": 13,
@@ -102,7 +103,6 @@
     "is_wall_left": true,
     "is_wall_right": true,
     "is_wall_up": true,
-    "makes_sounds": true,
     "max_jump": 10,
     "max_speed": 3.0,
     "name": "angry bee",
@@ -121,7 +121,9 @@
         "attack2": "",
         "damage": "",
         "destruction": "bee_ko.wav",
-        "random": "bee.wav"
+        "random": "bee.wav",
+        "special1": "",
+        "special2": ""
     },
     "transformation": "",
     "type": 1,

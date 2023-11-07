@@ -352,7 +352,7 @@ void PrototypeClass::SetProto12(PrototypeClass12 &proto){
 	random_sound_frequency			= proto.random_sound_frequency;
 	immunity_type				= proto.immunity_type;
 	vibrates				= proto.vibrates;
-	makes_sounds		= proto.makes_sounds;
+	check_tiles		= proto.check_tiles;
 	how_destroyed		= proto.how_destroyed;
 	type				= proto.sprite_type;
 	damage				= proto.damage;
@@ -421,7 +421,7 @@ void PrototypeClass::SetProto13(PrototypeClass13 &proto){
 	random_sound_frequency			= proto.random_sound_frequency;
 	immunity_type				= proto.immunity_type;
 	vibrates				= proto.vibrates;
-	makes_sounds		= proto.makes_sounds;
+	check_tiles		= proto.check_tiles;
 	how_destroyed		= proto.how_destroyed;
 	type				= proto.sprite_type;
 	damage				= proto.damage;
@@ -573,7 +573,7 @@ void PrototypeClass::SetProto20(const nlohmann::json& j){
 
 	jsonReadBool(j, "is_wall_up", this->is_wall_up);
 
-	jsonReadBool(j, "makes_sounds", this->makes_sounds);
+	jsonReadBool(j, "check_tiles", this->check_tiles);
 
 	jsonReadInt(j, "max_jump", this->max_jump);
 

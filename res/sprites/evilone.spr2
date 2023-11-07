@@ -109,6 +109,7 @@
     "can_open_locks": false,
     "can_swim": false,
     "charge_time": 15,
+    "check_tiles": true,
     "color": "normal",
     "damage": 1,
     "damage_type": 1,
@@ -131,7 +132,6 @@
     "is_wall_left": true,
     "is_wall_right": true,
     "is_wall_up": true,
-    "makes_sounds": true,
     "max_jump": 16,
     "max_speed": 0.0,
     "name": "the evil one",
@@ -150,7 +150,9 @@
         "attack2": "crow.wav",
         "damage": "crow.wav",
         "destruction": "crow_ko.wav",
-        "random": "crow.wav"
+        "random": "crow.wav",
+        "special1": "",
+        "special2": ""
     },
     "transformation": "",
     "type": 1,

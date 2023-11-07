@@ -102,6 +102,7 @@
     "can_open_locks": false,
     "can_swim": false,
     "charge_time": 15,
+    "check_tiles": true,
     "color": "red",
     "damage": 1,
     "damage_type": 1,
@@ -124,7 +125,6 @@
     "is_wall_left": true,
     "is_wall_right": true,
     "is_wall_up": true,
-    "makes_sounds": true,
     "max_jump": 5,
     "max_speed": 2.0,
     "name": "jumping bunny",
@@ -143,7 +143,9 @@
         "attack2": "bunny_at.wav",
         "damage": "bunny_dm.wav",
         "destruction": "bunny_ko.wav",
-        "random": ""
+        "random": "",
+        "special1": "",
+        "special2": ""
     },
     "transformation": "",
     "type": 1,

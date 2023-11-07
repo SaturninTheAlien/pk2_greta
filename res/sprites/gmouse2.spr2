@@ -100,6 +100,7 @@
     "can_open_locks": false,
     "can_swim": false,
     "charge_time": 120,
+    "check_tiles": true,
     "color": "red",
     "damage": 3,
     "damage_type": 1,
@@ -122,7 +123,6 @@
     "is_wall_left": true,
     "is_wall_right": true,
     "is_wall_up": true,
-    "makes_sounds": true,
     "max_jump": 43,
     "max_speed": 2.0,
     "name": "giant mouse 2",
@@ -141,7 +141,9 @@
         "attack2": "",
         "damage": "",
         "destruction": "ko1.wav",
-        "random": ""
+        "random": "",
+        "special1": "",
+        "special2": ""
     },
     "transformation": "",
     "type": 1,

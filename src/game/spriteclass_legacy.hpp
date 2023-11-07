@@ -160,7 +160,7 @@ struct PrototypeClass12{
     char    ammo1_sprite[13];
     char    ammo2_sprite[13];
 
-    bool    makes_sounds;
+    bool    check_tiles;
     u32     sound_frequency;
     bool    random_sound_frequency;
 
@@ -238,7 +238,7 @@ struct PrototypeClass13{
     char    ammo2_sprite[100];                 // ammo 2 sprite
 
 
-    bool    makes_sounds;                      //?make sounds?
+    bool    check_tiles;                      //?make sounds?
     u32     sound_frequency;                           // sound frequency (def. 22050)
     bool    random_sound_frequency;                         // use random frequency?
 

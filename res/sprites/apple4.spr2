@@ -62,6 +62,7 @@
     "can_open_locks": false,
     "can_swim": false,
     "charge_time": 500,
+    "check_tiles": true,
     "color": "green",
     "damage": 0,
     "damage_type": 0,
@@ -84,7 +85,6 @@
     "is_wall_left": true,
     "is_wall_right": true,
     "is_wall_up": true,
-    "makes_sounds": true,
     "max_jump": 22,
     "max_speed": 3.0,
     "name": "rotten apple",
@@ -103,7 +103,9 @@
         "attack2": "",
         "damage": "",
         "destruction": "",
-        "random": ""
+        "random": "",
+        "special1": "",
+        "special2": ""
     },
     "transformation": "",
     "type": 2,

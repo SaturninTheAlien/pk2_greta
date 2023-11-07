@@ -78,6 +78,7 @@
     "can_open_locks": false,
     "can_swim": true,
     "charge_time": 12,
+    "check_tiles": true,
     "color": "normal",
     "damage": 1,
     "damage_type": 1,
@@ -100,7 +101,6 @@
     "is_wall_left": false,
     "is_wall_right": false,
     "is_wall_up": false,
-    "makes_sounds": true,
     "max_jump": 0,
     "max_speed": 2.0,
     "name": "moving platform (wall climber)",
@@ -119,7 +119,9 @@
         "attack2": "",
         "damage": "",
         "destruction": "",
-        "random": ""
+        "random": "",
+        "special1": "",
+        "special2": ""
     },
     "transformation": "",
     "type": 1,

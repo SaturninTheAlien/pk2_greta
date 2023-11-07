@@ -71,6 +71,7 @@
     "can_open_locks": false,
     "can_swim": false,
     "charge_time": 300,
+    "check_tiles": true,
     "color": "normal",
     "damage": 2,
     "damage_type": 1,
@@ -93,7 +94,6 @@
     "is_wall_left": true,
     "is_wall_right": true,
     "is_wall_up": false,
-    "makes_sounds": true,
     "max_jump": 5,
     "max_speed": 3.0,
     "name": "falling spike ceiling",
@@ -112,7 +112,9 @@
         "attack2": "",
         "damage": "",
         "destruction": "",
-        "random": ""
+        "random": "",
+        "special1": "",
+        "special2": ""
     },
     "transformation": "",
     "type": 1,

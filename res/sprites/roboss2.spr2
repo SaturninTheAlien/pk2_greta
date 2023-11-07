@@ -77,6 +77,7 @@
     "can_open_locks": false,
     "can_swim": false,
     "charge_time": 300,
+    "check_tiles": true,
     "color": "normal",
     "damage": 3,
     "damage_type": 1,
@@ -99,7 +100,6 @@
     "is_wall_left": true,
     "is_wall_right": true,
     "is_wall_up": true,
-    "makes_sounds": true,
     "max_jump": 20,
     "max_speed": 3.0,
     "name": "flying metal hen",
@@ -118,7 +118,9 @@
         "attack2": "",
         "damage": "boss2_dm.wav",
         "destruction": "boss2_ko.wav",
-        "random": ""
+        "random": "",
+        "special1": "",
+        "special2": ""
     },
     "transformation": "roboss3.spr2",
     "type": 1,

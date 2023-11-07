@@ -87,6 +87,7 @@
     "can_open_locks": false,
     "can_swim": false,
     "charge_time": 15,
+    "check_tiles": true,
     "color": "normal",
     "damage": 2,
     "damage_type": 13,
@@ -109,7 +110,6 @@
     "is_wall_left": true,
     "is_wall_right": true,
     "is_wall_up": true,
-    "makes_sounds": true,
     "max_jump": 10,
     "max_speed": 1.0,
     "name": "giant bee",
@@ -128,7 +128,9 @@
         "attack2": "",
         "damage": "damage.wav",
         "destruction": "bee_ko.wav",
-        "random": "bee.wav"
+        "random": "bee.wav",
+        "special1": "",
+        "special2": ""
     },
     "transformation": "",
     "type": 1,

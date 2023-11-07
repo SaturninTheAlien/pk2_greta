@@ -98,6 +98,7 @@
     "can_open_locks": false,
     "can_swim": false,
     "charge_time": 80,
+    "check_tiles": true,
     "color": "normal",
     "damage": 3,
     "damage_type": 1,
@@ -120,7 +121,6 @@
     "is_wall_left": true,
     "is_wall_right": true,
     "is_wall_up": true,
-    "makes_sounds": true,
     "max_jump": 30,
     "max_speed": 0.0,
     "name": "giant mouse",
@@ -139,7 +139,9 @@
         "attack2": "tennis.wav",
         "damage": "",
         "destruction": "ko1.wav",
-        "random": ""
+        "random": "",
+        "special1": "",
+        "special2": ""
     },
     "transformation": "",
     "type": 1,

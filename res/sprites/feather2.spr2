@@ -55,6 +55,7 @@
     "can_open_locks": false,
     "can_swim": false,
     "charge_time": 0,
+    "check_tiles": true,
     "color": "green",
     "damage": -3,
     "damage_type": 7,
@@ -77,7 +78,6 @@
     "is_wall_left": true,
     "is_wall_right": true,
     "is_wall_up": true,
-    "makes_sounds": true,
     "max_jump": 0,
     "max_speed": 3.0,
     "name": "super feather",
@@ -96,7 +96,9 @@
         "attack2": "",
         "damage": "",
         "destruction": "bonus4.wav",
-        "random": ""
+        "random": "",
+        "special1": "",
+        "special2": ""
     },
     "transformation": "",
     "type": 2,

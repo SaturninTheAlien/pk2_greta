@@ -88,6 +88,7 @@
     "can_open_locks": false,
     "can_swim": false,
     "charge_time": 200,
+    "check_tiles": true,
     "color": "normal",
     "damage": 1,
     "damage_type": 4,
@@ -110,7 +111,6 @@
     "is_wall_left": true,
     "is_wall_right": true,
     "is_wall_up": true,
-    "makes_sounds": true,
     "max_jump": 5,
     "max_speed": 0.0,
     "name": "flame",
@@ -129,7 +129,9 @@
         "attack2": "",
         "damage": "",
         "destruction": "",
-        "random": ""
+        "random": "",
+        "special1": "",
+        "special2": ""
     },
     "transformation": "",
     "type": 1,

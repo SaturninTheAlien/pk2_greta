@@ -82,6 +82,7 @@
     "can_open_locks": false,
     "can_swim": false,
     "charge_time": 5,
+    "check_tiles": true,
     "color": "normal",
     "damage": 1,
     "damage_type": 0,
@@ -104,7 +105,6 @@
     "is_wall_left": true,
     "is_wall_right": true,
     "is_wall_up": true,
-    "makes_sounds": true,
     "max_jump": 22,
     "max_speed": 3.0,
     "name": "robot hen",
@@ -123,7 +123,9 @@
         "attack2": "",
         "damage": "robo_dmg.wav",
         "destruction": "explot.wav",
-        "random": "robo_rnd.wav"
+        "random": "robo_rnd.wav",
+        "special1": "",
+        "special2": ""
     },
     "transformation": "",
     "type": 1,

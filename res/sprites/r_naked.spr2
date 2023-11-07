@@ -101,6 +101,7 @@
     "can_open_locks": false,
     "can_swim": false,
     "charge_time": 0,
+    "check_tiles": true,
     "color": "normal",
     "damage": 0,
     "damage_type": 0,
@@ -123,7 +124,6 @@
     "is_wall_left": true,
     "is_wall_right": true,
     "is_wall_up": true,
-    "makes_sounds": true,
     "max_jump": 26,
     "max_speed": 3.0,
     "name": "naked rooster",
@@ -142,7 +142,9 @@
         "attack2": "p_doodle.wav",
         "damage": "p_damage.wav",
         "destruction": "p_ko.wav",
-        "random": ""
+        "random": "",
+        "special1": "",
+        "special2": ""
     },
     "transformation": "rooster.spr2",
     "type": 1,

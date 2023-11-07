@@ -63,6 +63,7 @@
     "can_open_locks": false,
     "can_swim": false,
     "charge_time": 500,
+    "check_tiles": true,
     "color": "violet",
     "damage": 0,
     "damage_type": 0,
@@ -85,7 +86,6 @@
     "is_wall_left": true,
     "is_wall_right": true,
     "is_wall_up": true,
-    "makes_sounds": true,
     "max_jump": 20,
     "max_speed": 4.0,
     "name": "newton apple",
@@ -104,7 +104,9 @@
         "attack2": "",
         "damage": "",
         "destruction": "bonus9.wav",
-        "random": ""
+        "random": "",
+        "special1": "",
+        "special2": ""
     },
     "transformation": "",
     "type": 2,

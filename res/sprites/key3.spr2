@@ -57,6 +57,7 @@
     "can_open_locks": true,
     "can_swim": false,
     "charge_time": 0,
+    "check_tiles": true,
     "color": "turquoise",
     "damage": 0,
     "damage_type": 0,
@@ -79,7 +80,6 @@
     "is_wall_left": true,
     "is_wall_right": true,
     "is_wall_up": true,
-    "makes_sounds": true,
     "max_jump": 22,
     "max_speed": 3.0,
     "name": "spoo-key 1",
@@ -98,7 +98,9 @@
         "attack2": "",
         "damage": "",
         "destruction": "bonus3.wav",
-        "random": ""
+        "random": "",
+        "special1": "",
+        "special2": ""
     },
     "transformation": "",
     "type": 2,
