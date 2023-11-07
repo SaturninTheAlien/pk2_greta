@@ -27,7 +27,7 @@ public:
 	static unsigned int chosen_menu_id;
 	static unsigned int selected_menu_id;
 	
-	static std::size_t next_screen;
+	static int next_screen;
 	virtual ~Screen(){}
 	virtual void Init()=0;
 	virtual void Loop()=0;

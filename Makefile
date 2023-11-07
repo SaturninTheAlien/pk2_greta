@@ -9,12 +9,7 @@
 CXX = c++
 
 # Optimization:
-#CXXFLAGS += -g
 CXXFLAGS += -O3
-
-# Further optimization:
-#CXXFLAGS += -march=native -fno-exceptions -fno-rtti -flto 
-#LDFLAGS += -march=native -s -Wl,--gc-sections -flto -O3
 
 # Warnings:
 CXXFLAGS += -Wall

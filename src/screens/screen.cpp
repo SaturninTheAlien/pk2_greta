@@ -7,7 +7,7 @@
 unsigned int Screen::chosen_menu_id = 0;
 unsigned int Screen::selected_menu_id = 0;
 bool Screen::closing_game = false;
-std::size_t Screen::next_screen = 0;
+int Screen::next_screen = 0;
 
 void Screen::Fade_Quit() {
 

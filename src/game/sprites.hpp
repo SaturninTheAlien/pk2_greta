@@ -25,5 +25,6 @@ void Sprites_start_directions();
 void Sprites_add(PrototypeClass* protot, int is_Player_Sprite, double x, double y, SpriteClass* emo, bool isbonus);
 void Sprites_add_ammo(PrototypeClass* protot, double x, double y, SpriteClass* emo);
 void Sprites_clear();
+void Sprites_changeSkullBlocks();
 
 int Update_Sprites();

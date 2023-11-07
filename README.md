@@ -91,6 +91,8 @@ This example starts the level13.map (the robot boss fight) on dev mode:
     * AI_TRANSFORM_IF_PLAYER_ABOVE (34)
     * AI_MOVE_X_COS_FREE (68)
     * AI_MOVE_Y_COS_FREE (69)
+    * AI_TRANSFORM_IF_SKULL_BLOCKS_CHANGED (82)
+    * AI_DIE_IF_SKULL_BLOCKS_CHANGED (83)
 
 # Experimental features
 * Sprite inheritance / "parent" field.

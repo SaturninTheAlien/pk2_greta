@@ -505,6 +505,7 @@ void GameClass::Change_SkullBlocks() {
 	PInput::Vibrate(1000);
 
 	map.Calculate_Edges();
+	Sprites_changeSkullBlocks();
 }
 
 void GameClass::Open_Locks() {

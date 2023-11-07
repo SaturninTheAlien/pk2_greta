@@ -240,6 +240,42 @@ bool bgSprite_Destructed (SpriteClass* sprite) {
 
 }
 
+void Sprites_changeSkullBlocks(){
+	for(SpriteClass* sprite: Sprites_List){
+		if(sprite==nullptr||sprite->energy<=0)continue;
+
+		for(const int& ai:sprite->prototype->AI_v){
+			switch (ai)
+			{
+			case AI_DIE_IF_SKULL_BLOCKS_CHANGED:{
+				sprite->damage_taken = sprite->energy + 1;
+				sprite->damage_taken_type = DAMAGE_ALL;
+			}	
+			break;
+			
+			case AI_TRANSFORM_IF_SKULL_BLOCKS_CHANGED:{
+				PrototypeClass * transformation = sprite->prototype->transformation;
+				if(transformation!=nullptr){
+					sprite->prototype = transformation;
+					sprite->initial_weight = transformation->weight;
+					sprite->animation_index = 0;
+					sprite->ammo1 = transformation->ammo1;
+					sprite->ammo2 = transformation->ammo2;
+					sprite->enemy = transformation->enemy;
+
+					sprite->current_command = 0;
+				}
+			}
+			break;
+			
+			default:
+				break;
+			}
+		}
+	}
+}
+
+
 int Update_Sprites() {
 	
 	const int ACTIVE_BORDER_X = 320;

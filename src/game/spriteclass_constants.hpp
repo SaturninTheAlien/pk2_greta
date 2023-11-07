@@ -243,6 +243,13 @@ RANDOM_MOVE_VERTIC._AND_HORIZ.*/
     AI_ARROW_DOWN, //80
     AI_ARROW_BARRIER, //81
 
+    /**
+     * @brief 
+     * "Greta Engine" new AIs
+     */
+    AI_TRANSFORM_IF_SKULL_BLOCKS_CHANGED, //82
+    AI_DIE_IF_SKULL_BLOCKS_CHANGED, //83
+
     // AI_82 - AI_100
 
     AI_BACKGROUND_MOON = 101,

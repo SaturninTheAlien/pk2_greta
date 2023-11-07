@@ -128,12 +128,9 @@ bool TransformationCommand::execute(SpriteClass*sprite){
         sprite->ammo2 = transformation->ammo2;
         
         sprite->enemy = transformation->enemy;
-        return false;
     }
-    else{
-        //skip command if transformation is nullptr
-        return true;
-    }
+    //skip command if transformation is nullptr
+    return true;
 };
 
 class SelfDestructionCommand: public Command{
