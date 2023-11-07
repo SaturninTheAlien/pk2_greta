@@ -242,6 +242,9 @@ void Parse_Commands(const nlohmann::json& j_in, std::vector<Command*>& commands_
                 else if(command_name=="waypoint_seen_player"){
                     commands_v.push_back(new WaypointSeenPlayer());
                 }
+                else if(command_name=="make_sound"){
+                    state = 5;
+                }
                 else if(command_name=="die" || command_name=="self_destruction"){
                     commands_v.push_back(new SelfDestructionCommand());
                 }
@@ -286,6 +289,11 @@ void Parse_Commands(const nlohmann::json& j_in, std::vector<Command*>& commands_
             if(j.is_string()){
                 auto it = PrototypeClass::SoundTypesDict.find(j.get<std::string>());
                 if(it!=PrototypeClass::SoundTypesDict.end()){
+                    if(it->second>=SPRITE_SOUNDS_NUMBER){
+                        std::ostringstream os;
+                        os<<"Sprite sound index: "<<it->second<<" out of array";
+                        throw PExcept::PException(os.str());
+                    }
                     commands_v.push_back(new MakeSoundCommand(it->second));
                 }
             }
