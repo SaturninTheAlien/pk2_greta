@@ -1378,7 +1378,7 @@ void UpdateSprite(SpriteClass* sprite){
 													break;
 				
 				case AI_FOLLOW_COMMANS:
-					sprite->AI_Follow_Commands();
+					sprite->AI_Follow_Commands(Player_Sprite);
 					break;
 
 				default:

@@ -456,7 +456,7 @@ void PrototypeClass::SetProto13(PrototypeClass13 &proto){
 	}
 }
 
-const std::map<std::string, int> jsonAnimationsMap = {
+const std::map<std::string,int> PrototypeClass::AnimationsDict = {
 	{"idle", ANIMATION_IDLE},
     {"walking", ANIMATION_WALKING},
     {"jump_up", ANIMATION_JUMP_UP},
@@ -468,7 +468,7 @@ const std::map<std::string, int> jsonAnimationsMap = {
     {"attack2", ANIMATION_ATTACK2}
 };
 
-const std::map<std::string, int> jsonSoundsMap ={
+const std::map<std::string,int> PrototypeClass::SoundTypesDict={
     {"damage", SOUND_DAMAGE},
     {"destruction", SOUND_DESTRUCTION},
     {"attack1", SOUND_ATTACK1},
@@ -478,7 +478,7 @@ const std::map<std::string, int> jsonSoundsMap ={
     {"special2", SOUND_SPECIAL2}
 };
 
-const std::map<std::string ,u8> jsonColorsMap={
+const std::map<std::string,u8> PrototypeClass::ColorsDict={
 	{"gray", COLOR_GRAY},
 	{"blue", COLOR_BLUE},
 	{"red", COLOR_RED},
@@ -504,7 +504,7 @@ void PrototypeClass::SetProto20(const nlohmann::json& j){
 
 	if(j.contains("animations")){
 		const nlohmann::json& j_animations = j["animations"]; 
-		for(std::pair<std::string, int> p: jsonAnimationsMap){
+		for(std::pair<std::string, int> p: AnimationsDict){
 			if(j_animations.contains(p.first)){
 				this->animations[p.second] = j_animations[p.first].get<SpriteAnimation>();
 			}
@@ -533,7 +533,7 @@ void PrototypeClass::SetProto20(const nlohmann::json& j){
 
 	jsonReadInt(j, "charge_time", this->charge_time);
 
-	jsonReadEnumU8(j, "color", this->color, jsonColorsMap);
+	jsonReadEnumU8(j, "color", this->color, ColorsDict);
 
 	jsonReadInt(j, "damage", this->damage);
 
@@ -601,7 +601,7 @@ void PrototypeClass::SetProto20(const nlohmann::json& j){
 
 	if(j.contains("sounds")){
 		const nlohmann::json& j_sounds = j["sounds"];
-		for(std::pair<std::string, int> p: jsonSoundsMap){
+		for(std::pair<std::string, int> p: SoundTypesDict){
 			this->sounds[p.second] = -1;
 			jsonReadString(j_sounds, p.first, this->sound_files[p.second]);
 		}
@@ -2102,7 +2102,7 @@ void SpriteClass::Animation_Egg() {
 	Animaatio(uusi_animaatio, alusta);
 }
 
-void SpriteClass::AI_Follow_Commands() {
+void SpriteClass::AI_Follow_Commands(SpriteClass* player) {
 	if(this->energy<=0 || this->prototype->commands.size()==0)return;
 
 	if(this->current_command >= this->prototype->commands.size()){
@@ -2110,7 +2110,7 @@ void SpriteClass::AI_Follow_Commands() {
 	}
 
 	SpriteCommands::Command* c = this->prototype->commands[this->current_command];
-	if(c->execute(this)){
+	if(c->execute(this, player->energy>0 && player->invisible_timer==0 ? player : nullptr)){
 		// next command
 		this->current_command++;
 	}

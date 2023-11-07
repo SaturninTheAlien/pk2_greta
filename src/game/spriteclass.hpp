@@ -10,6 +10,7 @@
 #include <list>
 #include <vector>
 #include <string>
+#include <map>
 #include <array>
 
 #include "engine/PJson.hpp"
@@ -39,7 +40,11 @@ public:
 };
 
 class PrototypeClass{
-    public:
+public:
+
+    static const std::map<std::string, int> SoundTypesDict;
+    static const std::map<std::string, int> AnimationsDict;
+    static const std::map<std::string, u8> ColorsDict;
 
     std::string version = "2.0";
 
@@ -176,7 +181,7 @@ private:
     void    SetProto20(const nlohmann::json& j);
 };
 class SpriteClass{
-    public:
+public:
 
     bool    active       = false;           // if the sprite is acting
     int     player          = 0;               // 0 = isn't player, 1 = is player
@@ -306,7 +311,7 @@ class SpriteClass{
     void AI_Die_If_Parent_Nullptr();
 
     void AI_Destructed_Next_To_Player(SpriteClass &player);
-    void AI_Follow_Commands();
+    void AI_Follow_Commands(SpriteClass *player);
     std::size_t current_command = 0;
 private:
     void Animation_Basic();

@@ -102,10 +102,13 @@ Currently available commands:
 > waypoint_x, <tile_x>\
 > waypoint_y, <tile_y>\
 > waypoint_xy, <tile_x>, <tile_y>\
-> self_destruction\
+> waypoint_orig_xy, \
+> waypoint_seen_player, \
+> make_sound <sound_type>, \
+> die\
 > transform
 
-Commands / waypoints are executed by the sprite in a loop unless there is "self_destruction" or "transform" command.
+Commands / waypoints are executed by the sprite in a loop unless there is "die" or "transform" command.
 
 # Fixed bugs
 

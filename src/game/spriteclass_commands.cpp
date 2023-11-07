@@ -9,6 +9,8 @@
 #include "spriteclass_commands.hpp"
 #include "spriteclass.hpp"
 #include "exceptions.hpp"
+#include "sprites.hpp"
+#include "sfx.hpp"
 
 namespace SpriteCommands{
 
@@ -17,12 +19,12 @@ class WaypointX:public Command{
 public:
     WaypointX(double target_x):target_x(target_x){};
     ~WaypointX()=default;
-    bool execute(SpriteClass*sprite);
+    bool execute(SpriteClass*sprite, SpriteClass*);
 private:
     double target_x;
 };
 
-bool WaypointX::execute(SpriteClass*sprite){
+bool WaypointX::execute(SpriteClass*sprite, SpriteClass*){
 
     double max_speed = sprite->prototype->max_speed / 3.5;
     double dx = sprite->x - this->target_x;
@@ -50,12 +52,12 @@ class WaypointY:public Command{
 public:
     WaypointY(double target_y):target_y(target_y){};
     ~WaypointY()=default;
-    bool execute(SpriteClass*sprite);
+    bool execute(SpriteClass*sprite, SpriteClass*);
 private:
     double target_y;
 };
 
-bool WaypointY::execute(SpriteClass*sprite){
+bool WaypointY::execute(SpriteClass*sprite, SpriteClass*){
     double max_speed = sprite->prototype->max_speed / 3.5;
     double dy = sprite->y - this->target_y;
 
@@ -80,15 +82,16 @@ class Waypoint: public Command{
 public:
     Waypoint(double target_x, double target_y):target_x(target_x), target_y(target_y){};
     ~Waypoint()=default;
-    bool execute(SpriteClass*sprite);
+    bool execute(SpriteClass*sprite, SpriteClass*);
 private:
     double target_x, target_y;
 };
 
-bool Waypoint::execute(SpriteClass*sprite){
+
+bool waypoint_xy_helper(SpriteClass*sprite, double target_x, double target_y){
     double velocity = sprite->prototype->max_speed / 3.5;
-    double dx = sprite->x - this->target_x;
-    double dy = sprite->y - this->target_y;
+    double dx = sprite->x - target_x;
+    double dy = sprite->y - target_y;
 
     double eps2 = dx*dx + dy*dy; 
 
@@ -110,13 +113,57 @@ bool Waypoint::execute(SpriteClass*sprite){
     return false;
 }
 
-class TransformationCommand: public Command{
+
+bool Waypoint::execute(SpriteClass*sprite, SpriteClass*){
+    return waypoint_xy_helper(sprite, this->target_x, this->target_y);
+}
+
+
+class WaypointSeenPlayer: public Command{
 public:
-    bool execute(SpriteClass*sprite);
+    bool execute(SpriteClass*sprite, SpriteClass*);
+};
+
+bool WaypointSeenPlayer::execute(SpriteClass*sprite, SpriteClass*player){
+    //if(player==nullptr)return true;
+
+    bool success = true;
+    if(player!=nullptr){
+        if(sprite->seen_player_x==-1){
+            sprite->seen_player_x = player->x;
+            sprite->seen_player_y = player->y;
+        }
+
+        success = waypoint_xy_helper(sprite, sprite->seen_player_x, sprite->seen_player_y);
+    }
+
+    if(success){
+        sprite->seen_player_x = -1;
+        sprite->seen_player_y = -1;
+    }
+
+    return success;
+}
+
+
+class WaypointOrigXY: public Command{
+public:
+    bool execute(SpriteClass*sprite, SpriteClass*);
 };
 
 
-bool TransformationCommand::execute(SpriteClass*sprite){
+bool WaypointOrigXY::execute(SpriteClass*sprite, SpriteClass*){
+    return waypoint_xy_helper(sprite, sprite->orig_x, sprite->orig_y);
+}
+
+
+class TransformationCommand: public Command{
+public:
+    bool execute(SpriteClass*sprite, SpriteClass*);
+};
+
+
+bool TransformationCommand::execute(SpriteClass*sprite, SpriteClass*){
     PrototypeClass* transformation = sprite->prototype->transformation;   
 
     if(transformation!=nullptr){
@@ -135,13 +182,28 @@ bool TransformationCommand::execute(SpriteClass*sprite){
 
 class SelfDestructionCommand: public Command{
 public:
-    bool execute(SpriteClass*sprite);
+    bool execute(SpriteClass*sprite, SpriteClass*);
 };
 
-bool SelfDestructionCommand::execute(SpriteClass*sprite){
+bool SelfDestructionCommand::execute(SpriteClass*sprite, SpriteClass*){
     sprite->damage_taken = sprite->energy;
 	sprite->damage_taken_type = DAMAGE_ALL;
     return false;
+}
+
+
+class MakeSoundCommand: public Command{
+public:
+    MakeSoundCommand(int sound_index):sound_index(sound_index){}
+    bool execute(SpriteClass*sprite, SpriteClass*);
+private:
+    int sound_index = -1;
+};
+
+bool MakeSoundCommand::execute(SpriteClass*sprite, SpriteClass*){
+    Play_GameSFX(sprite->prototype->sounds[this->sound_index],100, (int)sprite->x, (int)sprite->y,
+    sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
+    return true;
 }
 
 double getCommandXPos(const nlohmann::json& j, int prototypeWidth){
@@ -174,7 +236,13 @@ void Parse_Commands(const nlohmann::json& j_in, std::vector<Command*>& commands_
                 else if(command_name=="waypoint_xy"){
                     state = 3;
                 }
-                else if(command_name=="self_destruction"){
+                else if(command_name=="waypoint_orig_xy"){
+                    commands_v.push_back(new WaypointOrigXY());
+                }
+                else if(command_name=="waypoint_seen_player"){
+                    commands_v.push_back(new WaypointSeenPlayer());
+                }
+                else if(command_name=="die" || command_name=="self_destruction"){
                     commands_v.push_back(new SelfDestructionCommand());
                 }
                 else if(command_name=="transform"){
@@ -213,7 +281,17 @@ void Parse_Commands(const nlohmann::json& j_in, std::vector<Command*>& commands_
             }
             state=0;
             break;
-        
+
+        case 5:
+            if(j.is_string()){
+                auto it = PrototypeClass::SoundTypesDict.find(j.get<std::string>());
+                if(it!=PrototypeClass::SoundTypesDict.end()){
+                    commands_v.push_back(new MakeSoundCommand(it->second));
+                }
+            }
+
+            state=0;
+            break;
         default:
             break;
         }
