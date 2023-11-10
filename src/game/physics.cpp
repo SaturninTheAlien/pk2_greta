@@ -1031,8 +1031,11 @@ void UpdateSprite(SpriteClass* sprite){
 		sprite->damage_taken_type = DAMAGE_NONE;
 	}
 
-	if (sprite->damage_taken != 0 && sprite->energy > 0 && sprite->prototype->how_destroyed != FX_DESTRUCT_EI_TUHOUDU){
-		if (sprite->prototype->immunity_type != sprite->damage_taken_type || sprite->prototype->immunity_type == DAMAGE_NONE){
+	if (sprite->damage_taken != 0 && sprite->energy > 0){
+		
+		if ((sprite->prototype->immunity_type != sprite->damage_taken_type
+		|| sprite->prototype->immunity_type == DAMAGE_NONE)
+		&& sprite->prototype->how_destroyed != FX_DESTRUCT_EI_TUHOUDU){
 			SpriteOnDamage(sprite);
 		}
 
