@@ -111,7 +111,7 @@ Currently available commands:
 Commands / waypoints are executed by the sprite in a loop unless there is "die" or "transform" command.
 
 # Fixed bugs
-
+* Fixed the bug causing indestructible sprites taking damage after transformation.
 * Fixed the bug making it possible to win a level by the dead Pekka.
 Player corpse reaching the exit sign no longer makes the level completed.
 * Killing the evil one no longer results "hiscore" music fading after reaching the exit tile.
