@@ -378,20 +378,83 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 	}
 }
 
+
+void SpriteOnDamage(SpriteClass* sprite){
+	sprite->energy -= sprite->damage_taken;
+	sprite->damage_timer = DAMAGE_TIME;
+
+	if (sprite->damage_taken_type == DAMAGE_ELECTRIC)
+		sprite->damage_timer *= 6;
+
+	Play_GameSFX(sprite->prototype->sounds[SOUND_DAMAGE], 100, (int)sprite->x, (int)sprite->y,
+					sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
+
+	if (sprite->prototype->how_destroyed%100 == FX_DESTRUCT_HOYHENET)
+		Effect_Destruction(FX_DESTRUCT_HOYHENET, (u32)sprite->x, (u32)sprite->y);
+
+	if (sprite->prototype->type != TYPE_PROJECTILE){
+		Particles_New(PARTICLE_STAR,sprite_x,sprite_y,-1,-1,60,0.01,128);
+		Particles_New(PARTICLE_STAR,sprite_x,sprite_y, 0,-1,60,0.01,128);
+		Particles_New(PARTICLE_STAR,sprite_x,sprite_y, 1,-1,60,0.01,128);
+	}
+
+	for(const int& ai:sprite->prototype->AI_v){
+
+		switch (ai){
+		case AI_CHANGE_SKULL_BLOCKS_IF_DAMAGED:
+			Game->Change_SkullBlocks();
+		
+		break;
+
+		case AI_ATTACK_1_IF_DAMAGED:{
+			sprite->attack1_timer = sprite->prototype->attack1_time;
+			sprite->charging_timer = 0;
+		}
+		break;
+
+		case AI_ATTACK_2_IF_DAMAGED:{
+			sprite->attack2_timer = sprite->prototype->attack2_time;
+			sprite->charging_timer = 0;
+		}
+		break;
+
+		default:
+			break;
+		}
+	}
+}
+
 void SpriteOnDeath(SpriteClass* sprite){
 	int how_destroyed = sprite->prototype->how_destroyed;
 
-	if(sprite->HasAI(AI_EVIL_ONE)){
-		PSound::set_musicvolume(0);
-		Game->music_stopped = true;		
+	for(const int& ai: sprite->prototype->AI_v){
+		switch (ai)
+		{
+		case AI_EVIL_ONE:{
+			PSound::set_musicvolume(0);
+			Game->music_stopped = true;	
+		}
+		break;
+
+		case AI_CHICK:{
+			Game->game_over = true;
+			key_delay = 50; //TODO - reduce
+		}
+		break;
+		case AI_REBORN:{
+			Sprites_add(sprite->prototype, 0, sprite->orig_x, sprite->orig_y, nullptr, true);
+		}
+		break;
+
+		case AI_CHANGE_SKULL_BLOCKS_IF_DEAD:{
+			Game->Change_SkullBlocks();
+		}
+		break;
+
+		default:
+			break;
+		}
 	}
-
-
-	if (sprite->HasAI(AI_CHICK)){
-		Game->game_over = true;
-		key_delay = 50; //TODO - reduce
-	} // Killed the chick
-
 
 	if (sprite->prototype->bonus != nullptr && sprite->prototype->bonuses_number > 0){
 		if (sprite->prototype->bonus_always || rand()%4 == 1){
@@ -410,9 +473,6 @@ void SpriteOnDeath(SpriteClass* sprite){
 		}
 	}
 
-	if (sprite->HasAI(AI_CHANGE_SKULL_BLOCKS_IF_DEAD) && !sprite->HasAI(AI_CHANGE_SKULL_BLOCKS_IF_DAMAGED))
-		Game->Change_SkullBlocks();
-
 	if (how_destroyed >= FX_DESTRUCT_ANIMAATIO)
 		how_destroyed -= FX_DESTRUCT_ANIMAATIO;
 	else
@@ -421,10 +481,6 @@ void SpriteOnDeath(SpriteClass* sprite){
 	Effect_Destruction(how_destroyed, (u32)sprite->x, (u32)sprite->y);
 	Play_GameSFX(sprite->prototype->sounds[SOUND_DESTRUCTION],100, (int)sprite->x, (int)sprite->y,
 					sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
-
-	if (sprite->HasAI(AI_REBORN)) {
-		Sprites_add(sprite->prototype, 0, sprite->orig_x, sprite->orig_y, nullptr, true);
-	}
 
 	if (sprite->prototype->type == TYPE_GAME_CHARACTER && sprite->prototype->score != 0 && sprite!=Player_Sprite){
 		Fadetext_New(fontti2,std::to_string(sprite->prototype->score),(int)sprite->x-8,(int)sprite->y-8,80);
@@ -977,37 +1033,7 @@ void UpdateSprite(SpriteClass* sprite){
 
 	if (sprite->damage_taken != 0 && sprite->energy > 0 && sprite->prototype->how_destroyed != FX_DESTRUCT_EI_TUHOUDU){
 		if (sprite->prototype->immunity_type != sprite->damage_taken_type || sprite->prototype->immunity_type == DAMAGE_NONE){
-			sprite->energy -= sprite->damage_taken;
-			sprite->damage_timer = DAMAGE_TIME;
-
-			if (sprite->damage_taken_type == DAMAGE_ELECTRIC)
-				sprite->damage_timer *= 6;
-
-			Play_GameSFX(sprite->prototype->sounds[SOUND_DAMAGE], 100, (int)sprite->x, (int)sprite->y,
-						  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
-
-			if (sprite->prototype->how_destroyed%100 == FX_DESTRUCT_HOYHENET)
-				Effect_Destruction(FX_DESTRUCT_HOYHENET, (u32)sprite->x, (u32)sprite->y);
-
-			if (sprite->prototype->type != TYPE_PROJECTILE){
-				Particles_New(PARTICLE_STAR,sprite_x,sprite_y,-1,-1,60,0.01,128);
-				Particles_New(PARTICLE_STAR,sprite_x,sprite_y, 0,-1,60,0.01,128);
-				Particles_New(PARTICLE_STAR,sprite_x,sprite_y, 1,-1,60,0.01,128);
-			}
-
-			if (sprite->HasAI(AI_CHANGE_SKULL_BLOCKS_IF_DAMAGED))
-				Game->Change_SkullBlocks();
-
-			if (sprite->HasAI(AI_ATTACK_1_IF_DAMAGED)){
-				sprite->attack1_timer = sprite->prototype->attack1_time;
-				sprite->charging_timer = 0;
-			}
-
-			if (sprite->HasAI(AI_ATTACK_2_IF_DAMAGED)){
-				sprite->attack2_timer = sprite->prototype->attack2_time;
-				sprite->charging_timer = 0;
-			}
-
+			SpriteOnDamage(sprite);
 		}
 
 		sprite->damage_taken = 0;

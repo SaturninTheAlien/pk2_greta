@@ -6,6 +6,8 @@
  * @brief 
  * Experimental commands/waypoints AI by SaturninTheAlien
  */
+
+#include <sstream>
 #include "spriteclass_commands.hpp"
 #include "spriteclass.hpp"
 #include "exceptions.hpp"

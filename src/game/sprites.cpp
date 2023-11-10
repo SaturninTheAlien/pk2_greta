@@ -84,7 +84,48 @@ void Sprites_start_directions() {
 	for (SpriteClass* sprite : Sprites_List) {
 		sprite->a = 0;
 
-		if (sprite->HasAI(AI_RANDOM_START_DIRECTION)){
+		for(const int& ai: sprite->prototype->AI_v){
+			switch (ai)
+			{
+			case AI_RANDOM_START_DIRECTION:{
+				while (sprite->a == 0) {
+					sprite->a = ((rand()%2 - rand()%2) * sprite->prototype->max_speed) / 3.5;//2;
+				}
+			}
+			break;
+
+			case AI_RANDOM_START_DIRECTION_VERT:{
+				while (sprite->b == 0) {
+					sprite->b = ((rand()%2 - rand()%2) * sprite->prototype->max_speed) / 3.5;//2;
+				}
+			}
+			break;
+
+			case AI_START_DIRECTIONS_TOWARDS_PLAYER:{
+
+				if (sprite->x < Player_Sprite->x)
+					sprite->a = sprite->prototype->max_speed / 3.5;
+
+				if (sprite->x > Player_Sprite->x)
+					sprite->a = (sprite->prototype->max_speed * -1) / 3.5;
+			}
+
+			break;
+
+			case AI_START_DIRECTIONS_TOWARDS_PLAYER_VERT:{
+				if (sprite->y < Player_Sprite->y)
+					sprite->b = sprite->prototype->max_speed / -3.5;
+
+				if (sprite->y > Player_Sprite->y)
+					sprite->b = sprite->prototype->max_speed / 3.5;
+			}
+			
+			default:
+				break;
+			}
+		}
+
+		/*if (sprite->HasAI(AI_RANDOM_START_DIRECTION)){
 			while (sprite->a == 0) {
 				sprite->a = ((rand()%2 - rand()%2) * sprite->prototype->max_speed) / 3.5;//2;
 			}
@@ -112,7 +153,7 @@ void Sprites_start_directions() {
 
 			if (sprite->y > Player_Sprite->y)
 				sprite->b = sprite->prototype->max_speed / 3.5;
-		}
+		}*/
 	}
 }
 
@@ -220,9 +261,6 @@ bool Sprite_Destructed (SpriteClass* sprite) {
 		return false;
 	
 	if (sprite->removed) {
-		if (sprite->HasAI(AI_CHICK)) // Killed the chick
-			Game->game_over = true;
-		
 		delete sprite;
 		return true;
 	}
