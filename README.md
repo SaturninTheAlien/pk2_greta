@@ -87,7 +87,7 @@ This example starts the level13.map (the robot boss fight) on dev mode:
 * New AIs:
     * AI_ATTACK_1_IF_PLAYER_ABOVE (31)
     * AI_ATTACK_2_IF_PLAYER_ABOVE (32)
-    * AI_TRANSFORM_IF_PLAYER_BELLOW (33)
+    * AI_TRANSFORM_IF_PLAYER_BELOW (33)
     * AI_TRANSFORM_IF_PLAYER_ABOVE (34)
     * AI_MOVE_X_COS_FREE (68)
     * AI_MOVE_Y_COS_FREE (69)
@@ -111,6 +111,9 @@ Currently available commands:
 Commands / waypoints are executed by the sprite in a loop unless there is "die" or "transform" command.
 
 # Fixed bugs
+
+* Ambient sprites (indestructible and harmless) such as chains and white butterflies no longer block attacks.
+
 * Fixed the bug causing indestructible sprites taking damage after transformation.
 * Fixed the bug making it possible to win a level by the dead Pekka.
 Player corpse reaching the exit sign no longer makes the level completed.

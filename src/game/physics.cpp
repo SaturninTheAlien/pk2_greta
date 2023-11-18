@@ -955,7 +955,9 @@ void UpdateSprite(SpriteClass* sprite){
 				} */
 
 				// If two sprites from different teams touch each other
-				if (sprite->enemy != sprite2->enemy && sprite->parent_sprite != sprite2) {
+				if (sprite->enemy != sprite2->enemy && sprite->parent_sprite != sprite2 &&
+				!sprite->prototype->ambient && !sprite2->prototype->ambient) {
+					
 					if (sprite2->prototype->type != TYPE_BACKGROUND &&
 						sprite->prototype->type   != TYPE_BACKGROUND &&
 						sprite2->prototype->type != TYPE_TELEPORT &&
@@ -1262,9 +1264,9 @@ void UpdateSprite(SpriteClass* sprite){
 													if (Player_Sprite->invisible_timer == 0)
 														sprite->AI_Attack_2_if_Player_in_Front(*Player_Sprite);
 													break;
-				case AI_ATTACK_1_IF_PLAYER_BELLOW:
+				case AI_ATTACK_1_IF_PLAYER_BELOW:
 													if (Player_Sprite->invisible_timer == 0)
-														sprite->AI_Attack_1_if_Player_Bellow(*Player_Sprite);
+														sprite->AI_Attack_1_if_Player_Below(*Player_Sprite);
 													break;
 
 				/**
@@ -1279,9 +1281,9 @@ void UpdateSprite(SpriteClass* sprite){
 													if(Player_Sprite->invisible_timer == 0)
 														sprite->AI_Attack_2_If_Player_Above(*Player_Sprite);
 													break;
-				case AI_TRANSFORM_IF_PLAYER_BELLOW:
+				case AI_TRANSFORM_IF_PLAYER_BELOW:
 													if(Player_Sprite->invisible_timer == 0)
-														sprite->AI_Transform_If_Player_Bellow(*Player_Sprite);
+														sprite->AI_Transform_If_Player_Below(*Player_Sprite);
 													break;
 				case AI_TRANSFORM_IF_PLAYER_ABOVE:
 													if(Player_Sprite->invisible_timer == 0)

@@ -117,6 +117,11 @@ PrototypeClass* Prototype_Load(const std::string& filename_in){
 			}
 		}
 
+		//Check if ambient
+		if(protot->how_destroyed==FX_DESTRUCT_EI_TUHOUDU && protot->damage==0){
+			protot->ambient=true;
+		}
+
 		//Load transformation
 		if(!protot->transformation_sprite.empty()){
 			protot->transformation = Prototype_Load(protot->transformation_sprite);
@@ -1495,7 +1500,7 @@ void SpriteClass::AI_Attack_2_if_Player_in_Front(SpriteClass &player){
 		}
 	}
 }
-void SpriteClass::AI_Attack_1_if_Player_Bellow(SpriteClass &player){
+void SpriteClass::AI_Attack_1_if_Player_Below(SpriteClass &player){
 	if (energy > 0 && damage_timer == 0 && player.energy > 0)
 	{
 		if ((player.x - x < prototype->width && player.x - x > -prototype->width) &&
@@ -1557,7 +1562,7 @@ void SpriteClass::AI_Transform_If_Player_Above(SpriteClass& player){
  * 
  * "Greta Engine", new AI
  */
-void SpriteClass::AI_Transform_If_Player_Bellow(SpriteClass& player){
+void SpriteClass::AI_Transform_If_Player_Below(SpriteClass& player){
 	if(energy > 0 && player.energy>0){
 		if ((player.x - x < prototype->width && player.x - x > -prototype->width) &&
 			(player.y > y && player.y - y < 350))

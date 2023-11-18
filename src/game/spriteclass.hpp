@@ -143,6 +143,13 @@ public:
      */
     bool    always_active = false;   // 
 
+    /**
+     * @brief 
+     * If the creature sprite is ambient (like white butterflies or chain),
+     * it should not consume attacks or interact with other sprites 
+     */
+    bool    ambient = false;
+
 
     bool change_color_to_alpha = true;
     unsigned int color_to_alpha = 255;
@@ -281,12 +288,12 @@ public:
     void AI_Attack_2_Nonstop();
     void AI_Attack_1_if_Player_in_Front(SpriteClass &player);
     void AI_Attack_2_if_Player_in_Front(SpriteClass &player);
-    void AI_Attack_1_if_Player_Bellow(SpriteClass &player);
+    void AI_Attack_1_if_Player_Below(SpriteClass &player);
 
     void AI_Attack_1_If_Player_Above(SpriteClass& player);
     void AI_Attack_2_If_Player_Above(SpriteClass& player);
     void AI_Transform_If_Player_Above(SpriteClass& player);
-    void AI_Transform_If_Player_Bellow(SpriteClass& player);
+    void AI_Transform_If_Player_Below(SpriteClass& player);
 
 
     void AI_NonStop();
