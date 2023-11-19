@@ -111,6 +111,7 @@ Currently available commands:
 Commands / waypoints are executed by the sprite in a loop unless there is "die" or "transform" command.
 
 # Fixed bugs
+* Wall sprites are no longer walls after their death.
 
 * Ambient sprites (indestructible and harmless) such as chains and white butterflies no longer block attacks.
 

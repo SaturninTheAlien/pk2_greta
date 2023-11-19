@@ -863,7 +863,7 @@ void UpdateSprite(SpriteClass* sprite){
 			else
 				sprite2_yla = 0;
 
-			if (sprite2->prototype->is_wall && sprite->prototype->check_tiles) { //If there is a block sprite active
+			if (sprite2->prototype->is_wall && sprite->prototype->check_tiles && sprite2->energy>0) { //If there is a block sprite active
 
 				if (sprite_x-sprite_leveys/2 +sprite_a  <= sprite2->x + sprite2->prototype->width /2 &&
 					sprite_x+sprite_leveys/2 +sprite_a  >= sprite2->x - sprite2->prototype->width /2 &&
