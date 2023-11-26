@@ -320,6 +320,8 @@ public:
     void AI_Destructed_Next_To_Player(SpriteClass &player);
     void AI_Follow_Commands(SpriteClass *player);
     std::size_t current_command = 0;
+    int command_timer = -1;
+
 private:
     void Animation_Basic();
     void Animation_Rooster();

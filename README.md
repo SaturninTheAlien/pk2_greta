@@ -99,18 +99,20 @@ This example starts the level13.map (the robot boss fight) on dev mode:
 * AI_FOLLOW_COMMANDS (40) and "commands" field in the new sprite format.
 
 Currently available commands:
-> waypoint_x, <tile_x>\
-> waypoint_y, <tile_y>\
-> waypoint_xy, <tile_x>, <tile_y>\
+> waypoint_x, \<tile_x\>\
+> waypoint_y, \<tile_y\>\
+> waypoint_xy, \<tile_x\>, \<tile_y\>\
 > waypoint_orig_xy, \
 > waypoint_seen_player, \
-> make_sound <sound_type>, \
-> die\
-> transform
+> make_sound \<sound_type\>, \
+> die, \
+> transform, \
+> wait, \<ticks\> 
 
 Commands / waypoints are executed by the sprite in a loop unless there is "die" or "transform" command.
 
 # Fixed bugs
+* Fixed the bug causing dropped bonuses with weight 0 to levitate (not tested yet!),
 * Wall sprites are no longer walls after their death.
 
 * Ambient sprites (indestructible and harmless) such as chains and white butterflies no longer block attacks.

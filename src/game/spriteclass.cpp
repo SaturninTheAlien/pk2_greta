@@ -64,6 +64,10 @@ PrototypeClass* Prototype_Load(const std::string& filename_in){
 		legacy_spr = false;
 		filename_clean = filename_in.substr(0, filename_in.size() -5);
 	}
+	else if(filename_in.size()>4 && filename_in.substr(filename_in.size()-4,4)==".SPR"){
+		filename_clean = filename_in.substr(0, filename_in.size() -4);
+	}
+
 	else if(filename_in.size()>0){
 		legacy_spr = false;
 		filename_clean = filename_in;
@@ -148,6 +152,10 @@ PrototypeClass* Prototype_Load(const std::string& filename_in){
 	catch(const std::exception& e){
 		PLog::Write(PLog::ERR, "PK2 Sprites", e.what());
 		if(protot!=nullptr){
+			auto it = std::find(mPrototypes.begin(), mPrototypes.end(), protot);
+			if(it!=mPrototypes.end()){
+				mPrototypes.erase(it);
+			}
 			delete protot;
 			protot = nullptr;
 		}

@@ -157,7 +157,7 @@ void Sprites_start_directions() {
 	}
 }
 
-void Sprites_add(PrototypeClass* protot, int is_Player_Sprite, double x, double y, SpriteClass* emo, bool isbonus) {
+void Sprites_add(PrototypeClass* protot, int is_Player_Sprite, double x, double y, SpriteClass* parent, bool isbonus) {
 
 	SpriteClass* sprite = new SpriteClass(protot, is_Player_Sprite, x, y);
 	Sprites_List.push_back(sprite);
@@ -168,8 +168,15 @@ void Sprites_add(PrototypeClass* protot, int is_Player_Sprite, double x, double 
 		sprite->orig_x = sprite->x;
 		sprite->orig_y = sprite->y;
 		sprite->jump_timer = 1;
-		sprite->a = 3 - rand()%7;
 		sprite->damage_timer = 35;//25
+
+		if(sprite->weight!=0){
+			sprite->a = 3 - rand()%7;
+		}
+		else{
+			sprite->a = 0;
+			sprite->b = 0;
+		}
 
 	} else {
 
@@ -177,20 +184,11 @@ void Sprites_add(PrototypeClass* protot, int is_Player_Sprite, double x, double 
 		sprite->y += sprite->prototype->height/2;
 		sprite->orig_x = sprite->x;
 		sprite->orig_y = sprite->y;
-		
+		sprite->parent_sprite = parent;
 	}
 
 	if (protot->type == TYPE_BACKGROUND)
-		Sprites_add_bg(sprite);
-
-
-	sprite->parent_sprite = emo;
-
-	/*if (emo != nullptr)
-		sprite->parent_sprite = emo;
-	else
-		sprite->parent_sprite = sprite;*/
-	
+		Sprites_add_bg(sprite);	
 }
 
 void Sprites_add_ammo(PrototypeClass* protot, double x, double y, SpriteClass* emo) {

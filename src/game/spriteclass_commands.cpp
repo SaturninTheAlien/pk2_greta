@@ -208,6 +208,30 @@ bool MakeSoundCommand::execute(SpriteClass*sprite, SpriteClass*){
     return true;
 }
 
+
+class WaitCommand: public Command{
+public:
+    WaitCommand(int wait_time): wait_time(wait_time){};
+    bool execute(SpriteClass*sprite, SpriteClass*);
+private:
+    int wait_time = 0;
+};
+
+bool WaitCommand::execute(SpriteClass*sprite, SpriteClass*){
+    if(sprite->command_timer==-1){
+        sprite->command_timer = this->wait_time;
+    }
+
+    if(sprite->command_timer==0){
+        sprite->command_timer=-1;
+        return true;
+    }
+    else{
+        --sprite->command_timer;
+        return false;
+    }
+}
+
 double getCommandXPos(const nlohmann::json& j, int prototypeWidth){
     return j.get<double>() * 32 + ((double)prototypeWidth)/2;
 }
@@ -252,6 +276,9 @@ void Parse_Commands(const nlohmann::json& j_in, std::vector<Command*>& commands_
                 }
                 else if(command_name=="transform"){
                     commands_v.push_back(new TransformationCommand());
+                }
+                else if(command_name=="wait"){
+                    state = 6;
                 }
             }
             break;
@@ -300,6 +327,13 @@ void Parse_Commands(const nlohmann::json& j_in, std::vector<Command*>& commands_
                 }
             }
 
+            state=0;
+            break;
+        case 6:
+            if(j.is_number_integer()){
+                int wait_time = j.get<int>();
+                commands_v.push_back(new WaitCommand(wait_time));
+            }
             state=0;
             break;
         default:
