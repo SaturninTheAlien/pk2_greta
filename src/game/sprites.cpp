@@ -170,7 +170,7 @@ void Sprites_add(PrototypeClass* protot, int is_Player_Sprite, double x, double 
 		sprite->jump_timer = 1;
 		sprite->damage_timer = 35;//25
 
-		if(sprite->weight!=0){
+		if(sprite->weight!=0 || sprite->prototype->type!=TYPE_BONUS){
 			sprite->a = 3 - rand()%7;
 		}
 		else{
