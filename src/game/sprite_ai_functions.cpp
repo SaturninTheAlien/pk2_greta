@@ -1,0 +1,824 @@
+//#########################
+//Pekka Kana 2
+//Copyright (c) 2003 Janne Kivilahti
+//#########################
+#include "sprite_ai_functions.hpp"
+#include "spriteclass.hpp"
+#include "gfx/effect.hpp"
+#include "game.hpp"
+
+
+namespace AI_Functions{
+
+SpriteClass*player = nullptr;
+SpriteClass*player_invisible = nullptr;
+
+
+void Rooster(SpriteClass*s){
+    if (rand()%50 == 10 && s->a != 0)
+        s->a /= 1.1;
+
+    if (rand()%150 == 10 && s->b == 0 && s->jump_timer == 0 && s->can_move_up)
+    {
+        s->jump_timer = 1;
+        while (s->a == 0)
+            s->a = rand()%2 - rand()%2;
+    }
+
+    if (rand()%20 == 1 && s->b == 0 && s->jump_timer == 0 && !s->can_move_right && !s->flip_x)
+    {
+        s->jump_timer = 1;
+        while (s->a == 0)
+            s->a = rand()%2;
+    }
+
+    if (rand()%20 == 1 && s->b == 0 && s->jump_timer == 0 && !s->can_move_left && s->flip_x)
+    {
+        s->jump_timer = 1;
+        while (s->a == 0)
+            s->a = rand()%2 * -1;
+    }
+
+    if (rand()%200 == 10)
+        s->a = rand()%2 - rand()%2;
+
+    if (s->jump_timer == s->prototype->max_jump && s->a == 0)
+    {
+        while (s->a == 0)
+            s->a = rand()%2 - rand()%2;
+    }
+
+    if (s->a < 0)
+        s->flip_x = true;
+
+    if (s->a > 0)
+        s->flip_x = false;
+
+}
+
+void BlueFrog(SpriteClass*s){
+    if (s->action_timer%100 == 0 && s->jump_timer == 0 && s->can_move_up)
+    {
+        s->jump_timer = 1;
+    }
+}
+
+void RedFrog(SpriteClass*s){
+    if (s->action_timer%100 == 0 && s->can_move_up)
+    {
+        s->jump_timer = 1;
+
+    }
+
+    if (s->jump_timer > 0)
+    {
+        if (!s->flip_x)
+            s->a = s->prototype->max_speed / 3.5;
+        else
+            s->a = s->prototype->max_speed / -3.5;
+    }
+}
+
+void Egg(SpriteClass*s){
+    if (!s->can_move_down)
+		s->energy = 0;
+
+	//a /= 1.01;
+
+	if (s->energy == 0 && s->charging_timer == 0)
+		s->charging_timer = s->prototype->charge_time;
+
+	if (s->charging_timer == 1)
+		s->removed = true;
+}
+
+void Egg2(SpriteClass*s){
+    if (!s->can_move_down)
+		s->damage_taken = s->prototype->energy;
+
+	//a /= 1.01;
+
+	if (s->energy == 0 && s->charging_timer == 0)
+		s->charging_timer = s->prototype->charge_time;
+
+	if (s->charging_timer == 1)
+		s->removed = true;
+}
+
+
+void Projectile(SpriteClass*s){
+    if (s->a < 0)
+		s->flip_x = true;
+
+	if (s->a > 0)
+		s->flip_x = false;
+
+	if (s->charging_timer == 0)
+		s->charging_timer = s->prototype->charge_time;
+
+	if (s->charging_timer == 1)
+	{
+		s->damage_taken = s->prototype->energy;
+		s->damage_taken_type = DAMAGE_ALL;
+	}
+
+	if (s->energy < 1)
+		s->removed = true;
+}
+
+void Jumper(SpriteClass*s){
+    if (!s->can_move_down && s->b==0 && s->jump_timer == 0)
+	{
+		s->jump_timer = 1;
+	}
+
+	if (s->a < 0)
+		s->flip_x = true;
+
+	if (s->a > 0)
+		s->flip_x = false;
+}
+
+void Basic(SpriteClass*s){
+    if (s->x < 10)
+	{
+		s->x = 10;
+		s->can_move_left = false;
+	}
+
+	else if (s->x > 8192)
+	{
+		s->x = 8192;
+		s->can_move_right = false;
+	}
+
+	if (s->y > 9920)
+	{
+		s->y = 9920;
+	}
+
+	else if (s->y < -32)
+	{
+		s->y = -32;
+	}
+
+	if (s->a < 0)
+		s->flip_x = true;
+
+	else if (s->a > 0)
+		s->flip_x = false;
+
+	s->action_timer++;
+
+	if (s->action_timer > 31320) // divisible by 360
+		s->action_timer = 0;
+}
+
+void NonStop(SpriteClass*s){
+    double max = s->prototype->max_speed / 3.5;
+
+    if (s->flip_x)
+    {
+        if (s->a > -max)
+            s->a -= 0.1;
+    }
+    else
+    {
+        if (s->a < max)
+            s->a += 0.1;
+    }
+}
+
+void Turning_Horizontally(SpriteClass*s){
+
+    if (!s->can_move_right)
+    {
+        s->a = s->prototype->max_speed / -3.5;
+    }
+
+    if (!s->can_move_left)
+    {
+        s->a = s->prototype->max_speed / 3.5;
+    }
+}
+void Turning_Vertically(SpriteClass*s){
+    if (!s->can_move_down)
+    {
+        s->b = s->prototype->max_speed / -3.5;
+    }
+
+    if (!s->can_move_up)
+    {
+        s->b = s->prototype->max_speed / 3.5;
+    }
+}
+
+void Look_For_Cliffs(SpriteClass*s){
+    double max = s->prototype->max_speed / 3.5;
+
+    if (s->reuna_oikealla && s->a > -max){
+        s->a -= 0.13;
+    }
+
+    if (s->edge_on_the_left && s->a < max){
+        s->a += 0.13;
+    }
+
+    /*
+    if (this->reuna_oikealla && this->a > 0)
+    {
+        this->a = this->a * -1;
+        flip_x = true;
+    }
+
+    if (this->edge_on_the_left && this->a < 0)
+    {
+        this->a = this->a * -1;
+        flip_x = false;
+    }
+	*/
+}
+
+void Random_Change_Dir_H(SpriteClass*s){
+    if (rand()%150 == 1)
+    {
+        int max = (int)(s->prototype->max_speed / 4);
+
+        while (s->a == 0 && max > 0)
+            s->a = rand()%max+1 - rand()%max+1;
+    }
+}
+
+void Random_Turning(SpriteClass*s){
+    if (s->action_timer%400 == 1 && s->a == 0)
+    {
+        s->flip_x = !s->flip_x;
+    }
+}
+
+
+void Turn_Back_If_Damaged(SpriteClass*s) {
+
+	if (s->damage_timer == 1) {
+		
+		if (s->a != 0) s->a = -s->a;
+
+		s->flip_x = !s->flip_x;
+	
+	}
+}
+
+
+void Random_Jump(SpriteClass*s){
+    if (rand()%150 == 10 && s->b == 0 && s->jump_timer == 0 && s->can_move_up){
+        s->jump_timer = 1;
+    }
+}
+
+void Follow_Player(SpriteClass*s){
+	if (player!=nullptr)
+	{
+		double max = s->prototype->max_speed / 3.5;
+
+		if (s->a > -max && s->x > player->x)
+		{
+			s->a -= 0.1;
+		}
+
+		if (s->a < max && s->x < player->x)
+		{
+			s->a += 0.1;
+		}
+
+		s->seen_player_x = (int)(player->x+player->a);
+		s->seen_player_y = (int)(player->y+player->b);
+
+		if (s->prototype->max_speed == 0)
+		{
+			if (player->x < s->x)
+				s->flip_x = true;
+			else
+				s->flip_x = false;
+		}
+	}
+}
+
+void Follow_Player_If_Seen(SpriteClass*s){
+	if (player!=nullptr){
+
+		double max = s->prototype->max_speed / 3.5;
+
+		if (s->seen_player_x != -1){
+			if (s->a > -max && s->x > s->seen_player_x)
+				s->a -= 0.1;
+
+			if (s->a < max && s->x < s->seen_player_x)
+				s->a += 0.1;
+		}
+
+		if ((player->x < s->x && s->flip_x) || (player->x > s->x && ! s->flip_x)){
+			if ((player->x - s->x < 300 && player->x - s->x > -300) &&
+				(player->y - s->y < s->prototype->height && player->y - s->y > -s->prototype->height)){
+				s->seen_player_x = (int)(player->x+player->a);
+				s->seen_player_y = (int)(player->y+player->b);
+			}
+			else{
+				s->seen_player_x = -1;
+				s->seen_player_y = -1;
+			}
+		}
+	}
+}
+
+
+void Follow_Player_Vert_Hori(SpriteClass*s){
+	if (player!=nullptr)
+	{
+		double max = s->prototype->max_speed / 3.5;
+
+		if (s->a > -max && s->x > player->x)
+		{
+			s->a -= 0.1;
+		}
+
+		if (s->a < max && s->x < player->x)
+		{
+			s->a += 0.1;
+		}
+
+		if (s->b > -max && s->y > player->y)
+		{
+			s->b -= 0.4;
+		}
+
+		if (s->b < max && s->y < player->y)
+		{
+			s->b += 0.4;
+		}
+
+		s->seen_player_x = (int)(player->x+player->a);
+		s->seen_player_y = (int)(player->y+player->b);
+
+		if (s->prototype->max_speed == 0)
+		{
+			if (player->x < s->x)
+				s->flip_x = true;
+			else
+				s->flip_x = false;
+		}
+	}
+}
+
+
+void Follow_Player_If_Seen_Vert_Hori(SpriteClass*s){
+	if (player!=nullptr){
+		double max = s->prototype->max_speed / 3.5;
+
+		if (s->seen_player_x != -1){
+			if (s->a > -max && s->x > s->seen_player_x)
+				s->a -= 0.1;
+
+			if (s->a < max && s->x < s->seen_player_x)
+				s->a += 0.1;
+
+			if (s->b > -max && s->y > s->seen_player_y)
+				s->b -= 0.4;
+
+			if (s->b < max && s->y < s->seen_player_y)
+				s->b += 0.4;
+		}
+
+		if ((player->x < s->x && s->flip_x) || (player->x > s->x && ! s->flip_x)){
+			if ((player->x - s->x < 300 && player->x - s->x > -300) &&
+				(player->y - s->y < 80 && player->y - s->y > -80)){
+				s->seen_player_x = (int)(player->x+player->a);
+				s->seen_player_y = (int)(player->y+player->b);
+			}
+			else{
+				s->seen_player_x = -1;
+				s->seen_player_y = -1;
+			}
+		}
+	}
+}
+
+void Run_Away_From_Player(SpriteClass*s){
+	if (player!=nullptr)
+	{
+		if ((player->x < s->x && s->flip_x && !player->flip_x) || (player->x > s->x && !s->flip_x && player->flip_x))
+			if ((player->x - s->x < 300 && player->x - s->x > -300) &&
+				(player->y - s->y < s->prototype->height && player->y - s->y > -s->prototype->height))
+			{
+				double max = s->prototype->max_speed / 2.5;
+
+				if (s->x > player->x) {
+					s->a = max;
+					s->flip_x = false;
+				}
+
+				if (s->x < player->x) {
+					s->a = max * -1;
+					s->flip_x = true;
+				}
+			}
+	}
+}
+
+
+void SelfDestruction(SpriteClass*s){
+	if (s->charging_timer == 0)
+		s->charging_timer = s->prototype->charge_time;
+
+	if (s->charging_timer == 1)
+	{
+		s->damage_taken = s->energy;
+		s->damage_taken_type = DAMAGE_ALL;
+	}
+}
+
+void Attack_1_If_Damaged(SpriteClass*s){
+	if (s->damage_taken > 0)
+	{
+		s->attack1_timer = s->prototype->attack1_time;
+		s->charging_timer = 0;
+	}
+}
+
+
+void Attack_2_If_Damaged(SpriteClass*s){
+	if (s->damage_taken > 0)
+	{
+		s->attack2_timer = s->prototype->attack2_time;
+		s->charging_timer = 0;
+	}
+}
+
+void Attack_1_Nonstop(SpriteClass*s){
+	if (s->charging_timer == 0)
+	{
+		s->attack1_timer = s->prototype->attack1_time;
+	}
+}
+void Attack_2_Nonstop(SpriteClass*s){
+	if (s->charging_timer == 0)
+	{
+		s->attack2_timer = s->prototype->attack2_time;
+	}
+}
+
+
+void Attack_1_if_Player_in_Front(SpriteClass*s){
+	if (s->damage_timer == 0 && player!=nullptr)
+	{
+		if ((player->x - s->x < 200 && player->x - s->x > -200) &&
+			(player->y - s->y < s->prototype->height && player->y - s->y > -s->prototype->height))
+		{
+			if ((player->x < s->x && s->flip_x) || (player->x > s->x && !s->flip_x))
+			{
+				s->attack1_timer = s->prototype->attack1_time;
+			}
+		}
+	}
+}
+void Attack_2_if_Player_in_Front(SpriteClass*s){
+	if (s->damage_timer == 0 && player!=nullptr)
+	{
+		if ((player->x - s->x < 200 && player->x - s->x > -200) &&
+			(player->y - s->y < s->prototype->height && player->y - s->y > -s->prototype->height))
+		{
+			if ((player->x < s->x && s->flip_x) || (player->x > s->x && !s->flip_x))
+			{
+				s->attack2_timer = s->prototype->attack2_time;
+			}
+		}
+	}
+}
+void Attack_1_if_Player_Bellow(SpriteClass*s){
+	if (s->damage_timer == 0 && player!=nullptr)
+	{
+		if ((player->x - s->x < s->prototype->width && player->x - s->x > -s->prototype->width) &&
+			(player->y > s->y && player->y - s->y < 350))
+		{
+			s->attack1_timer = s->prototype->attack2_time;
+		}
+	}
+}
+/**
+ * @brief 
+ * 
+ * "Greta Engine", new AI
+ */
+void Attack_1_If_Player_Above(SpriteClass*s){
+	if (s->damage_timer == 0 && player!=nullptr)
+	{
+		if ((player->x - s->x < s->prototype->width && player->x - s->x > -s->prototype->width) &&
+			(player->y < s->y && s->y - player->y < 350))
+		{
+			s->attack1_timer = s->prototype->attack1_time;
+		}
+	}
+}
+
+/**
+ * @brief 
+ * 
+ * "Greta Engine", new AI
+ */
+void Attack_2_If_Player_Above(SpriteClass*s){
+	if (s->damage_timer == 0 && player!=nullptr)
+	{
+		if ((player->x - s->x < s->prototype->width && player->x - s->x > -s->prototype->width) &&
+			(player->y < s->y && s->y - player->y < 350))
+		{
+			s->attack2_timer = s->prototype->attack2_time;
+		}
+	}
+}
+
+/**
+ * @brief 
+ * 
+ * "Greta Engine", new AI
+ */
+void Transform_If_Player_Above(SpriteClass*s){
+	if(player!=nullptr){
+		if ((player->x - s->x < s->prototype->width && player->x - s->x > -s->prototype->width) &&
+			(player->y < s->y && s->y - player->y < 350))
+		{
+			Self_Transformation(s);
+		}
+	}
+}
+
+void Transform_If_Player_Bellow(SpriteClass*s){
+	if(player!=nullptr){
+		if ((player->x - s->x < s->prototype->width && player->x - s->x > -s->prototype->width) &&
+			(player->y > s->y && player->y - s->y < 350))
+		{
+			Self_Transformation(s);
+		}
+	}
+}
+///////
+
+
+void Jump_If_Player_Above(SpriteClass*s){
+	if (s->jump_timer == 0 && player!=nullptr)
+	{
+		if ((player->x - s->x < s->prototype->width && player->x - s->x > -s->prototype->width) &&
+			(player->y < s->y && s->y - player->y < 350))
+		{
+			s->jump_timer = 1;
+		}
+	}
+}
+
+void Damaged_by_Water(SpriteClass*s){
+	if (s->in_water){
+		s->damage_taken++;
+		s->damage_taken_type = DAMAGE_WATER;
+	}
+}
+
+void Kill_Everyone(SpriteClass*s){
+	s->enemy = !s->enemy;
+}
+
+void Friction_Effect(SpriteClass*s){
+	if (!s->can_move_down)
+		s->a /= 1.07;
+	else
+		s->a /= 1.02;
+}
+
+void Hiding(SpriteClass*s){
+	if (s->hidden)
+	{
+		s->a /= 1.02;
+		s->crouched = true;
+	}
+}
+
+void Return_To_Orig_X(SpriteClass*s){
+
+	if(s->seen_player_x == -1){
+		double max = s->prototype->max_speed / 3.5;
+
+		if (s->x < s->orig_x-16 && s->a < max)
+			s->a += 0.05;
+
+		if (s->x > s->orig_x+16 && s->a > -max)
+			s->a -= 0.05;
+	}	
+}
+void Return_To_Orig_Y(SpriteClass*s){
+	if(s->seen_player_y==-1){
+		double max = s->prototype->max_speed / 3.5;
+
+		if (s->y < s->orig_y-16 && s->b < max)
+			s->b += 0.04;
+
+		if (s->y > s->orig_y+16 && s->b > -max)
+			s->b -= 0.04;
+	}
+}
+
+
+void Follow_Commands(SpriteClass* s) {
+	if(s->prototype->commands.size()==0)return;
+
+	if(s->current_command >= s->prototype->commands.size()){
+		s->current_command = 0;
+	}
+
+	SpriteCommands::Command* c = s->prototype->commands[s->current_command];
+	if(c->execute(s, player)){
+		// next command
+		s->current_command++;
+	}
+}
+
+void Transform_When_Energy_Under_2(SpriteClass* s){
+
+	PrototypeClass* transformation = s->prototype->transformation;
+
+	if (transformation!=nullptr&& s->energy < 2 && transformation != s->prototype) {
+		s->prototype = transformation;
+		s->initial_weight = s->prototype->weight;
+	}
+}
+
+
+void Transform_When_Energy_Over_1(SpriteClass* s){
+
+	PrototypeClass* transformation = s->prototype->transformation;
+	if (transformation!=nullptr && s->energy > 1 && transformation != s->prototype) {
+		s->prototype = transformation;
+		s->initial_weight = s->prototype->weight;
+		Effect_Destruction(FX_DESTRUCT_SAVU_HARMAA, (u32)s->x, (u32)s->y);
+		//return true;
+	}
+
+	//return false;
+}
+
+void Self_Transformation(SpriteClass* s){
+
+	PrototypeClass* transformation = s->prototype->transformation;
+	if (transformation!=nullptr && transformation != s->prototype)
+	{
+		if (s->mutation_timer/*charging_timer*/ == 0)
+			s->mutation_timer/*charging_timer*/ = s->prototype->charge_time;
+
+		if (s->mutation_timer/*charging_timer*/ == 1)
+		{
+			s->prototype = transformation;
+			s->initial_weight = s->prototype->weight;
+
+			s->ammo1 = s->prototype->ammo1;
+			s->ammo2 = s->prototype->ammo2;
+
+			s->animation_index = -1;
+
+			s->Animaatio(ANIMATION_IDLE,true);
+		}
+	}
+}
+
+void Transform_If_Damaged(SpriteClass* s){
+	PrototypeClass* transformation = s->prototype->transformation;
+	if (transformation!=nullptr  && transformation != s->prototype)
+	{
+		if (s->damage_taken > 0)
+		{
+			s->prototype = transformation;
+			s->initial_weight = s->prototype->weight;
+
+			s->ammo1 = s->prototype->ammo1;
+			s->ammo2 = s->prototype->ammo2;
+
+			s->animation_index = -1;
+
+			s->Animaatio(ANIMATION_IDLE,true);
+		}
+	}
+}
+void Die_If_Parent_Nullptr(SpriteClass* s){
+	if (s->parent_sprite != nullptr)
+	{
+		if (s->parent_sprite->energy < 1 && s->energy > 0)
+		{
+			s->damage_taken = s->energy;
+			s->damage_taken_type = DAMAGE_ALL;
+		}
+	}
+}
+
+void Random_Move_Vert_Hori(SpriteClass* s){
+
+	if (rand()%150 == 1 || s->action_timer == 1)
+	if ((int)s->a == 0 || (int)s->b == 0)
+	{
+		int max = (int)s->prototype->max_speed;
+
+		if (max != 0)
+		{
+			while (s->a == 0)
+				s->a = rand()%(max+1) - rand()%(max+1);
+
+			while (s->b == 0)
+				s->b = rand()%(max+1) - rand()%(max+1);
+
+			//a /= 3.0;
+			//b /= 3.0;
+		}
+
+	}
+}
+
+void Destructed_Next_To_Player(SpriteClass* s) {
+
+	if(player_invisible==nullptr)return;
+
+	double dx = s->x - player_invisible->x;
+	double dy = s->y - player_invisible->y;
+
+	int dist = s->prototype->energy * 32;
+
+	if (s->energy > 0 && dx*dx + dy*dy < dist*dist) {
+
+		s->damage_taken = s->prototype->energy;
+		s->damage_taken_type = DAMAGE_ALL;
+		
+	}
+}
+
+
+void Climber(SpriteClass*s){
+
+	if (!s->can_move_down && s->can_move_left)
+	{
+		s->b = 0;
+		s->a = s->prototype->max_speed / -3.5;
+		//return 1;
+	}
+
+	if (!s->can_move_up && s->can_move_right)
+	{
+		s->b = 0;
+		s->a = s->prototype->max_speed / 3.5;
+		//b = this->prototype->max_speed / 3.5;
+		//return 1;
+	}
+
+	if (!s->can_move_right && s->can_move_down)
+	{
+		s->a = 0;
+		s->b = s->prototype->max_speed / 3.5;
+		//return 1;
+	}
+
+	if (!s->can_move_left && s->can_move_up)
+	{
+		s->a = 0;
+		s->b = s->prototype->max_speed / -3.5;
+		//return 1;
+	}
+}
+void Climber2(SpriteClass*s){
+
+	if (s->can_move_left && s->can_move_right && s->can_move_up && s->can_move_down) {
+
+		if (s->a < 0) {
+			s->b = s->prototype->max_speed / 3.5;
+			//a = 0;
+		}
+		else if (s->a > 0) {
+			s->b = s->prototype->max_speed / -3.5;
+			//a = 0;
+		}
+		else if (s->b < 0) {
+			s->a = s->prototype->max_speed / -3.5;
+			//b = 0;
+		}
+		else if (s->b > 0) {
+			s->a = s->prototype->max_speed / 3.5;
+			//b = 0;
+		}
+		if (s->b != 0)
+			s->a = 0;
+	}
+
+}
+
+void Fall_When_Shaken(SpriteClass*s){
+
+	int tarina = Game->vibration + Game->button_vibration;
+
+	if (tarina > 0)
+	{
+		s->initial_weight = 0.5;
+	}
+}
+
+}
