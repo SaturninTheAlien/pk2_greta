@@ -129,11 +129,10 @@ void PlayingScreen::Draw_InGame_BGSprites() {
 void PlayingScreen::Draw_InGame_Sprites() {
 
 	for (SpriteClass* sprite : Sprites_List) {
-
 		if (sprite->prototype->type == TYPE_BACKGROUND)
 			continue;
 		
-		if (sprite->removed)
+		if (sprite->removed || sprite->respawn_timer>0)
 			continue;
 
 		if (Is_Sprite_Visible(sprite)) {

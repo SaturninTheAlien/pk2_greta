@@ -424,6 +424,17 @@ void SpriteOnDamage(SpriteClass* sprite){
 	}
 }
 
+void SpriteOnRespawn(SpriteClass* sprite){
+	double ax, ay;
+	ax = sprite->x;//-sprite->prototype->width;
+	ay = sprite->y-sprite->prototype->height/2.0;
+	sprite->removed = false;
+	sprite->energy = sprite->prototype->energy;
+	Effect_Stars(ax, ay, sprite->prototype->color);
+	/*for (int r=1;r<6;r++)
+		Particles_New(PARTICLE_SPARK,ax+rand()%10-rand()%10, ay+rand()%10-rand()%10,0,0,rand()%100,0.1,32);*/
+}
+
 void SpriteOnDeath(SpriteClass* sprite){
 	int how_destroyed = sprite->prototype->how_destroyed;
 
@@ -442,7 +453,10 @@ void SpriteOnDeath(SpriteClass* sprite){
 		}
 		break;
 		case AI_REBORN:{
-			Sprites_add(sprite->prototype, 0, sprite->orig_x, sprite->orig_y, nullptr, true);
+			sprite->respawn_timer = sprite->prototype->charge_time;
+			sprite->energy = sprite->prototype->energy;
+			sprite->removed = false;
+			//Sprites_add(sprite->prototype, 0, sprite->orig_x, sprite->orig_y, nullptr, true);
 		}
 		break;
 
@@ -1608,7 +1622,7 @@ void UpdateBonusSprite(SpriteClass* sprite){
 		PK2BLOCK spritepalikka; 
 
 		for (SpriteClass* sprite2 : Sprites_List) {
-			if (sprite2 != sprite && !sprite2->removed) {
+			if (sprite2 != sprite && !sprite2->removed && sprite->respawn_timer==0) {
 				if (sprite2->prototype->is_wall && sprite->prototype->check_tiles) {
 					if (sprite_x-sprite_leveys/2 +sprite_a <= sprite2->x + sprite2->prototype->width /2 &&
 						sprite_x+sprite_leveys/2 +sprite_a >= sprite2->x - sprite2->prototype->width /2 &&
@@ -1879,15 +1893,12 @@ void UpdateBonusSprite(SpriteClass* sprite){
 				}
 
 				if (sprite->HasAI(AI_REBORN)) {
-					double ax, ay;
-					ax = sprite->orig_x;//-sprite->prototype->width;
-					ay = sprite->orig_y-sprite->prototype->height/2.0;
-					/*Sprites_add(sprite->prototype, 0, ax-17, ay, sprite, false);*/
-					sprite->removed = false;
-					sprite->energy = sprite->prototype->energy;
-					for (int r=1;r<6;r++)
-						Particles_New(PARTICLE_SPARK,ax+rand()%10-rand()%10, ay+rand()%10-rand()%10,0,0,rand()%100,0.1,32);
 
+					sprite->respawn_timer = sprite->prototype->charge_time;
+					sprite->energy = sprite->prototype->energy;
+					sprite->removed = false;
+					sprite->x = sprite->orig_x;
+					sprite->y = sprite->orig_y;
 				}
 
 				if (sprite->prototype->bonus != nullptr)

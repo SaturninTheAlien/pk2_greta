@@ -170,14 +170,13 @@ void Sprites_add(PrototypeClass* protot, int is_Player_Sprite, double x, double 
 		sprite->jump_timer = 1;
 		sprite->damage_timer = 35;//25
 
-		if(sprite->weight!=0 || sprite->prototype->type!=TYPE_BONUS){
-			sprite->a = 3 - rand()%7;
-		}
-		else{
+		if(protot->weight==0 && protot->max_speed==0){
 			sprite->a = 0;
 			sprite->b = 0;
 		}
-
+		else{
+			sprite->a = 3 - rand()%7;
+		}
 	} else {
 
 		sprite->x = x + 16 + 1;
@@ -321,18 +320,28 @@ int Update_Sprites() {
 
 	//Activate sprite if it is next to the screen
 	for (SpriteClass* sprite : Sprites_List) {
+		if(sprite->respawn_timer>0){
+			sprite->active=false;
+			--sprite->respawn_timer;
 
-		if(sprite->prototype->always_active){
+			if(sprite->respawn_timer==0){
+				SpriteOnRespawn(sprite);
+			}
+
+		}
+		else if(sprite->prototype->always_active){
 			sprite->active=true;
 		}
 		else if (sprite->x < Game->camera_x + 640 + ACTIVE_BORDER_X &&
 			sprite->x > Game->camera_x - ACTIVE_BORDER_X &&
 			sprite->y < Game->camera_y + 480 + ACTIVE_BORDER_y &&
-			sprite->y > Game->camera_y - ACTIVE_BORDER_y)
-			sprite->active = true;
-		else
+			sprite->y > Game->camera_y - ACTIVE_BORDER_y){
+				sprite->active = true;
+			}
+			
+		else{
 			sprite->active = false;
-	
+		}	
 	}
 
 	// Update bonus first to get energy change

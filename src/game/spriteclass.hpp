@@ -238,6 +238,10 @@ public:
     unsigned int current_sequence = 0;               // current sequence
     int      frame_timer      = 0;               // frame times
     int     mutation_timer   = 0;               // the mutation timer
+    int     respawn_timer = 0;
+
+    std::size_t current_command = 0;
+    int     command_timer = -1;
 
     bool CanDamageOnCollision(const SpriteClass* target)const;
 
@@ -319,8 +323,6 @@ public:
 
     void AI_Destructed_Next_To_Player(SpriteClass &player);
     void AI_Follow_Commands(SpriteClass *player);
-    std::size_t current_command = 0;
-    int command_timer = -1;
 
 private:
     void Animation_Basic();
