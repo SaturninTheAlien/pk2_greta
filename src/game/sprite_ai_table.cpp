@@ -12,15 +12,30 @@
 
 namespace SpriteAI{
 
-std::map<int, AI_Class> sprite_ai_table;
 
-void Init_AI(int id,
+AI_Table AI_Table::INSTANCE;
+
+
+void AI_Table::InitSpriteAIs(std::vector<AI_Class>& ai_vec, const std::vector<int>& ai_indices)const{
+    if(ai_vec.size()>0)ai_vec.clear();
+
+    for(const int& index: ai_indices){
+
+        auto it = this->mTable.find(index);
+        if(it!=this->mTable.end()){
+            ai_vec.push_back(it->second);
+        }
+    }
+};
+
+
+void AI_Table::Init_AI(int id,
         int trigger,
         void (*func)(SpriteClass*),
-        bool creatures=true,
-        bool player=false,
-        bool bonuses=false,
-        bool backgrounds=false){
+        bool creatures,
+        bool player,
+        bool bonuses,
+        bool backgrounds){
 
     AI_Class ai;
 
@@ -31,12 +46,13 @@ void Init_AI(int id,
     ai.apply_to_player = player;
     ai.apply_to_bonuses = bonuses;
     ai.apply_to_backgrounds = backgrounds;
-    
-    sprite_ai_table[id] = ai;
+
+    this->mTable[id] = ai;
+    //sprite_ai_table[id] = ai;    
 }
 
 
-void Init(){
+AI_Table::AI_Table(){
     
     Init_AI(AI_ROOSTER, AI_TRIGGER_ALIVE, AI_Functions::Rooster);
     Init_AI(AI_LITTLE_CHICKEN, AI_TRIGGER_ALIVE, AI_Functions::Rooster);
@@ -187,7 +203,7 @@ void Init(){
         ai.apply_to_backgrounds = false;
         ai.apply_to_player = false;
 
-        sprite_ai_table[id] = ai;
+        this->mTable[id] = ai;
     }
 }
 

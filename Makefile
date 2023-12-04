@@ -28,7 +28,7 @@ LDFLAGS += $(shell pkg-config libzip --libs)
 # Version string
 PK2_VERSION = $(shell git log -1 --pretty=format:"%s" | grep -o 'v[0-9]\+\.[0-9]\+')
 ifeq ($(PK2_VERSION),)
-	PK2_VERSION = \(Unknown version\)
+	PK2_VERSION = "Unknown_version"
 endif
 
 

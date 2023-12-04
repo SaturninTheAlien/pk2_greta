@@ -5,6 +5,7 @@
 #pragma once
 #include <string>
 #include <map>
+#include <vector>
 #include <functional>
 #include "spriteclass_constants.hpp"
 
@@ -47,7 +48,30 @@ public:
     bool apply_to_backgrounds = false;
 };
 
-void Init();
-extern std::map<int, AI_Class> sprite_ai_table;
+/*
+AI Table, singleton
+*/
+class AI_Table{
+public:
+    static AI_Table INSTANCE;
+
+    void InitSpriteAIs(std::vector<AI_Class>& ai_vec, const std::vector<int>& ai_indices)const;
+
+    AI_Table(const AI_Table& src) = delete;
+    AI_Table& operator=(const AI_Table& src) = delete;
+private:
+    AI_Table();
+    void Init_AI(int id,
+        int trigger,
+        void (*func)(SpriteClass*),
+        bool creatures=true,
+        bool player=false,
+        bool bonuses=false,
+        bool backgrounds=false);
+
+
+    std::map<int, AI_Class> mTable;
+};
+//extern std::map<int, AI_Class> sprite_ai_table;
 
 }
