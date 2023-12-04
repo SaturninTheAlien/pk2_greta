@@ -64,8 +64,4 @@ void Climber(SpriteClass*s);
 void Climber2(SpriteClass*s);
 void Fall_When_Shaken(SpriteClass*s);
 
-extern SpriteClass* player;
-extern SpriteClass* player_invisible;
-
-
 }

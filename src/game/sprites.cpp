@@ -2,6 +2,7 @@
 //Pekka Kana 2
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
+
 #include "game/sprites.hpp"
 
 #include "engine/PSound.hpp"
@@ -12,6 +13,8 @@
 #include "episode/episodeclass.hpp"
 #include "physics.hpp"
 #include "system.hpp"
+#include "sprite_ai_table.hpp"
+
 
 #include <algorithm>
 #include <cstring>
@@ -312,6 +315,22 @@ void Sprites_changeSkullBlocks(){
 
 
 int Update_Sprites() {
+
+	if(Player_Sprite!=nullptr && Player_Sprite->energy>0){
+		AI_Functions::player_invisible = Player_Sprite;
+
+		if(Player_Sprite->invisible_timer>0){
+			AI_Functions::player = nullptr;
+		}
+		else{
+			AI_Functions::player = Player_Sprite;
+		}
+
+	}
+	else{
+		AI_Functions::player = nullptr;
+		AI_Functions::player_invisible = nullptr;
+	}
 	
 	const int ACTIVE_BORDER_X = 320;
 	const int ACTIVE_BORDER_y = 240;
@@ -387,7 +406,9 @@ int Update_Sprites() {
 void Sprites_clear() {
 
 	for (SpriteClass* sprite : Sprites_List) {
-		delete sprite;
+		if(sprite!=nullptr){
+			delete sprite;
+		}
 	}
 
 	Sprites_List.clear();

@@ -12,7 +12,6 @@
 
 namespace SpriteAI{
 
-
 AI_Table AI_Table::INSTANCE;
 
 
@@ -134,9 +133,9 @@ AI_Table::AI_Table(){
     Init_AI(AI_MOVE_X_COS_FREE, AI_TRIGGER_ALIVE, [](SpriteClass*s){s->AI_Move_X(cos_table(s->action_timer/2));});
     Init_AI(AI_MOVE_Y_COS_FREE, AI_TRIGGER_ALIVE, [](SpriteClass*s){s->AI_Move_Y(cos_table(s->action_timer/2));});
 
-    Init_AI(AI_TRANSFORM_WHEN_ENERGY_UNDER_2, AI_TRIGGER_ALIVE, AI_Functions::Transform_When_Energy_Under_2);
+    Init_AI(AI_TRANSFORM_WHEN_ENERGY_UNDER_2, AI_TRIGGER_ALIVE, AI_Functions::Transform_When_Energy_Under_2, true, true);
 
-    Init_AI(AI_TRANSFORM_WHEN_ENERGY_OVER_1, AI_TRIGGER_ALIVE, AI_Functions::Transform_When_Energy_Over_1);
+    Init_AI(AI_TRANSFORM_WHEN_ENERGY_OVER_1, AI_TRIGGER_ALIVE, AI_Functions::Transform_When_Energy_Over_1, true, true);
 
     Init_AI(AI_SELF_TRANSFORMATION, AI_TRIGGER_ALIVE, AI_Functions::Self_Transformation, true, true, true, true);
 

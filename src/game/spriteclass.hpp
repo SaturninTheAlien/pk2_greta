@@ -17,6 +17,8 @@
 #include "spriteclass_legacy.hpp"
 #include "spriteclass_constants.hpp"
 #include "spriteclass_commands.hpp"
+#include "sprite_ai_table.hpp"
+
 
 class PrototypeClass;
 
@@ -84,6 +86,8 @@ public:
     int     score        = 0;
 
     std::vector<int> AI_v;
+    std::vector<SpriteAI::AI_Class> AI_f;
+
     int first_ai()const{
         return AI_v.empty()? 0 : AI_v[0];
     }

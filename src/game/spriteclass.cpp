@@ -792,6 +792,8 @@ void PrototypeClass::LoadAssets(PFile::Path path){
 			}
 		}
 	}
+
+	SpriteAI::AI_Table::INSTANCE.InitSpriteAIs(this->AI_f, this->AI_v);
 }
 
 void PrototypeClass::Draw(int x, int y, int frame)const{

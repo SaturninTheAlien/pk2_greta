@@ -502,6 +502,26 @@ void SpriteOnDeath(SpriteClass* sprite){
 	}
 }
 
+void DisplayInfo(SpriteClass* sprite, int info){
+    if (AI_Functions::player_invisible!=nullptr &&
+    (AI_Functions::player_invisible->x - sprite->x < 10
+    && AI_Functions::player_invisible->x - sprite->x > -10) &&
+    (AI_Functions::player_invisible->y - sprite->y < sprite->prototype->height
+    && AI_Functions::player_invisible->y - sprite->y > -sprite->prototype->height)){
+        
+        //int info = ai.info_id;
+        std::string sinfo = "info";
+        if (info < 10) sinfo += '0';
+        sinfo += std::to_string(info);
+
+        int index = Episode->infos.Search_Id(sinfo.c_str());
+        if (index != -1)
+            Game->Show_Info(Episode->infos.Get_Text(index));
+        else if(info<100)
+            Game->Show_Info(tekstit->Get_Text(PK_txt.infos[info]));
+    }
+}
+
 void UpdateSprite(SpriteClass* sprite){
 	
 	if (!sprite->prototype){
@@ -675,38 +695,13 @@ void UpdateSprite(SpriteClass* sprite){
 		}
 
 		/* AI */
-		for(const int& sprite_ai:sprite->prototype->AI_v)
-			switch (sprite_ai){
-			
-			case AI_TRANSFORM_WHEN_ENERGY_UNDER_2:
-			sprite->AI_Transform_When_Energy_Under_2();
+		for(const SpriteAI::AI_Class& ai:sprite->prototype->AI_f){
+			if(!ai.apply_to_player)continue;
 
-				/*if (sprite->prototype->transformation != nullptr)
-					sprite->AI_Transform_When_Energy_Under_2(sprite->prototype->transformation);*/
-			break;
-			
-			case AI_TRANSFORM_WHEN_ENERGY_OVER_1:
-			sprite->AI_Transform_When_Energy_Over_1();
-
-			/*if (sprite->prototype->transformation != nullptr)
-				if (sprite->AI_Transform_When_Energy_Over_1(sprite->prototype->transformation)==1)
-					Effect_Destruction(FX_DESTRUCT_SAVU_HARMAA, (u32)sprite->x, (u32)sprite->y);*/
-			break;
-			
-			case AI_SELF_TRANSFORMATION:
-				sprite->AI_Self_Transformation();
-			break;
-			
-			case AI_DAMAGED_BY_WATER:
-				sprite->AI_Damaged_by_Water();
-			break;
-			
-			case AI_TRANSFORM_IF_DAMAGED:
-				sprite->AI_Transform_If_Damaged();
-			break;
-
-			default: break;
+			if( (sprite->energy>0 && ai.trigger==AI_TRIGGER_ALIVE) || ai.trigger==AI_TRIGGER_ANYWAY){
+				ai.func(sprite);
 			}
+		}
 
 		/* It is not acceptable that a player is anything other than the game character */
 		if (sprite->prototype->type != TYPE_GAME_CHARACTER)
@@ -1208,246 +1203,21 @@ void UpdateSprite(SpriteClass* sprite){
 	
 	if (sprite->player == 0) {
 
-		for(const int& sprite_ai: sprite->prototype->AI_v){
-			switch (sprite_ai) {
-				case AI_ROOSTER:						sprite->AI_Rooster();
-													break;
-				case AI_LITTLE_CHICKEN:					sprite->AI_Rooster();
-													break;
-				case AI_BLUE_FROG:					sprite->AI_BlueFrog();
-													break;
-				case AI_RED_FROG:					sprite->AI_RedFrog();
-													break;
-				case AI_BONUS:						sprite->AI_Bonus();
-													break;
-				case AI_EGG:						sprite->AI_Egg();
-													break;
-				case AI_EGG2:						sprite->AI_Egg2();
-													break;
-				case AI_PROJECTILE:					sprite->AI_Projectile();
-													break;
-				case AI_JUMPER:						sprite->AI_Jumper();
-													break;
-				case AI_BASIC:						sprite->AI_Basic();
-													break;
-				case AI_NONSTOP:					sprite->AI_NonStop();
-													break;
-				case AI_TURNING_HORIZONTALLY:		sprite->AI_Turning_Horizontally();
-													break;
-				case AI_TURNING_VERTICALLY:			sprite->AI_Turning_Vertically();
-													break;
-				case AI_LOOK_FOR_CLIFFS:				sprite->AI_Look_For_Cliffs();
-													break;
-				case AI_RANDOM_CHANGE_DIRECTION_H:	sprite->AI_Random_Change_Dir_H();
-													break;
-				case AI_RANDOM_TURNING:			sprite->AI_Random_Turning();
-													break;
-				case AI_RANDOM_JUMP:				sprite->AI_Random_Jump();
-													break;
-				case AI_FOLLOW_PLAYER:			if (Player_Sprite->invisible_timer == 0)
-														sprite->AI_Follow_Player(*Player_Sprite);
-													break;
-				case AI_FOLLOW_PLAYER_IF_IN_FRONT:	if (Player_Sprite->invisible_timer == 0)
-														sprite->AI_Follow_Player_If_Seen(*Player_Sprite);
-													break;
-				case AI_FOLLOW_PLAYER_VERT_HORI:	if (Player_Sprite->invisible_timer == 0)
-														sprite->AI_Follow_Player_Vert_Hori(*Player_Sprite);
-													break;
-				case AI_FOLLOW_PLAYER_IF_IN_FRONT_VERT_HORI:
-													if (Player_Sprite->invisible_timer == 0)
-														sprite->AI_Follow_Player_If_Seen_Vert_Hori(*Player_Sprite);
-													break;
-				case AI_RUN_AWAY_FROM_PLAYER:	if (Player_Sprite->invisible_timer == 0)
-														sprite->AI_Run_Away_From_Player(*Player_Sprite);
-													break;
-				case AI_SELF_DESTRUCTION:			sprite->AI_SelfDestruction();
-													break;
-				case AI_ATTACK_1_IF_DAMAGED:		sprite->AI_Attack_1_If_Damaged();
-													break;
-				case AI_ATTACK_2_IF_DAMAGED:		sprite->AI_Attack_2_If_Damaged();
-													break;
-				case AI_ATTACK_1_NONSTOP:			sprite->AI_Attack_1_Nonstop();
-													break;
-				case AI_ATTACK_2_NONSTOP:			sprite->AI_Attack_2_Nonstop();
-													break;
-				case AI_ATTACK_1_IF_PLAYER_IN_FRONT:
-													if (Player_Sprite->invisible_timer == 0)
-														sprite->AI_Attack_1_if_Player_in_Front(*Player_Sprite);
-													break;
-				case AI_ATTACK_2_IF_PLAYER_IN_FRONT:
-													if (Player_Sprite->invisible_timer == 0)
-														sprite->AI_Attack_2_if_Player_in_Front(*Player_Sprite);
-													break;
-				case AI_ATTACK_1_IF_PLAYER_BELOW:
-													if (Player_Sprite->invisible_timer == 0)
-														sprite->AI_Attack_1_if_Player_Below(*Player_Sprite);
-													break;
-
-				/**
-				 * @brief 
-				 * "Greta Engine" new AIs
-				 */
-				case AI_ATTACK_1_IF_PLAYER_ABOVE:
-													if(Player_Sprite->invisible_timer == 0)
-														sprite->AI_Attack_1_If_Player_Above(*Player_Sprite);
-													break;
-				case AI_ATTACK_2_IF_PLAYER_ABOVE:
-													if(Player_Sprite->invisible_timer == 0)
-														sprite->AI_Attack_2_If_Player_Above(*Player_Sprite);
-													break;
-				case AI_TRANSFORM_IF_PLAYER_BELOW:
-													if(Player_Sprite->invisible_timer == 0)
-														sprite->AI_Transform_If_Player_Below(*Player_Sprite);
-													break;
-				case AI_TRANSFORM_IF_PLAYER_ABOVE:
-													if(Player_Sprite->invisible_timer == 0)
-														sprite->AI_Transform_If_Player_Above(*Player_Sprite);
-													break;
-
-
-
-				case AI_JUMP_IF_PLAYER_ABOVE:
-													if (Player_Sprite->invisible_timer == 0)
-														sprite->AI_Jump_If_Player_Above(*Player_Sprite);
-													break;
-				case AI_DAMAGED_BY_WATER:		sprite->AI_Damaged_by_Water();
-													break;
-				case AI_KILL_EVERYONE:				sprite->AI_Kill_Everyone();
-													break;
-				case AI_FRICTION_EFFECT:			sprite->AI_Friction_Effect();
-													break;
-				case AI_HIDING:						sprite->AI_Hiding();
-													break;
-				case AI_RETURN_TO_ORIG_X:				sprite->AI_Return_To_Orig_X();
-													break;
-				case AI_RETURN_TO_ORIG_Y:				sprite->AI_Return_To_Orig_Y();
-													break;
-				case AI_MOVE_X_COS:				sprite->AI_Move_X(cos_table(degree));
-													break;
-				case AI_MOVE_Y_COS:				sprite->AI_Move_Y(cos_table(degree));
-													break;
-				case AI_MOVE_X_SIN:				sprite->AI_Move_X(sin_table(degree));
-													break;
-				case AI_MOVE_Y_SIN:				sprite->AI_Move_Y(sin_table(degree));
-													break;
-				case AI_MOVE_X_COS_FAST:		sprite->AI_Move_X(cos_table(degree*2));
-													break;
-				case AI_MOVE_Y_SIN_FAST:		sprite->AI_Move_Y(sin_table(degree*2));
-													break;
-				case AI_MOVE_X_COS_SLOW:		sprite->AI_Move_X(cos_table(degree/2));
-													break;
-				case AI_MOVE_Y_SIN_SLOW:		sprite->AI_Move_Y(sin_table(degree/2));
-													break;
-				case AI_MOVE_Y_SIN_FREE:		sprite->AI_Move_Y(sin_table(sprite->action_timer/2));
-													break;
-				
-				case AI_MOVE_X_COS_FREE:		sprite->AI_Move_X(cos_table(sprite->action_timer/2));
-													break;
-				
-				case AI_MOVE_Y_COS_FREE:		sprite->AI_Move_Y(cos_table(sprite->action_timer/2));
-													break;
-
-													
-				case AI_TRANSFORM_WHEN_ENERGY_UNDER_2:
-												sprite->AI_Transform_When_Energy_Under_2();
-													break;
-				case AI_TRANSFORM_WHEN_ENERGY_OVER_1:
-												sprite->AI_Transform_When_Energy_Over_1();
-													break;
-				case AI_SELF_TRANSFORMATION:		
-													sprite->AI_Self_Transformation();
-													break;
-				case AI_TRANSFORM_IF_DAMAGED:	
-													sprite->AI_Transform_If_Damaged();
-													break;
-				case AI_TELEPORT:					if (sprite->AI_Teleport(Sprites_List, *Player_Sprite))
-													{
-
-														Game->camera_x = (int)Player_Sprite->x;
-														Game->camera_y = (int)Player_Sprite->y;
-														Game->dcamera_x = Game->camera_x-screen_width/2;
-														Game->dcamera_y = Game->camera_y-screen_height/2;
-														Fade_in(FADE_NORMAL);
-														if (sprite->prototype->sounds[SOUND_ATTACK2] != -1)
-															Play_MenuSFX(sprite->prototype->sounds[SOUND_ATTACK2], 100);
-															//Play_GameSFX(, 100, Game->camera_x, Game->camera_y, SOUND_SAMPLERATE, false);
-
-
-													}
-													break;
-				case AI_CLIMBER:					sprite->AI_Climber();
-													break;
-				case AI_CLIMBER2:					sprite->AI_Climber2();
-													break;
-				case AI_DIE_IF_PARENT_NULL:	sprite->AI_Die_If_Parent_Nullptr();
-													break;
-
-				case AI_FALL_WHEN_SHAKEN:			sprite->AI_Fall_When_Shaken(Game->vibration + Game->button_vibration);
-													break;
-				case AI_MOVE_DOWN_IF_SWITCH_1_PRESSED: sprite->AI_Move_If_Switch_Pressed(Game->button1,0,1);
-													break;
-				case AI_MOVE_UP_IF_SWITCH_1_PRESSED: sprite->AI_Move_If_Switch_Pressed(Game->button1,0,-1);
-													break;
-				case AI_MOVE_LEFT_IF_SWITCH_1_PRESSED: sprite->AI_Move_If_Switch_Pressed(Game->button1,-1,0);
-													break;
-				case AI_MOVE_RIGHT_IF_SWITCH_1_PRESSED: sprite->AI_Move_If_Switch_Pressed(Game->button1,1,0);
-													break;
-				case AI_MOVE_DOWN_IF_SWITCH_2_PRESSED: sprite->AI_Move_If_Switch_Pressed(Game->button2,0,1);
-													break;
-				case AI_MOVE_UP_IF_SWITCH_2_PRESSED: sprite->AI_Move_If_Switch_Pressed(Game->button2,0,-1);
-													break;
-				case AI_MOVE_LEFT_IF_SWITCH_2_PRESSED: sprite->AI_Move_If_Switch_Pressed(Game->button2,-1,0);
-													break;
-				case AI_MOVE_RIGHT_IF_SWITCH_2_PRESSED: sprite->AI_Move_If_Switch_Pressed(Game->button2,1,0);
-													break;
-				case AI_MOVE_DOWN_IF_SWITCH_3_PRESSED: sprite->AI_Move_If_Switch_Pressed(Game->button3,0,1);
-													break;
-				case AI_MOVE_UP_IF_SWITCH_3_PRESSED: sprite->AI_Move_If_Switch_Pressed(Game->button3,0,-1);
-													break;
-				case AI_MOVE_LEFT_IF_SWITCH_3_PRESSED: sprite->AI_Move_If_Switch_Pressed(Game->button3,-1,0);
-													break;
-				case AI_MOVE_RIGHT_IF_SWITCH_3_PRESSED: sprite->AI_Move_If_Switch_Pressed(Game->button3,1,0);
-													break;
-				case AI_FALL_IF_SWITCH_1_PRESSED: sprite->AI_Tippuu_If_Switch_Pressed(Game->button1);
-													break;
-				case AI_FALL_IF_SWITCH_2_PRESSED: sprite->AI_Tippuu_If_Switch_Pressed(Game->button2);
-													break;
-				case AI_FALL_IF_SWITCH_3_PRESSED: sprite->AI_Tippuu_If_Switch_Pressed(Game->button3);
-													break;
-				case AI_RANDOM_MOVE_VERT_HORI:	sprite->AI_Random_Move_Vert_Hori();
-													break;
-				case AI_TURN_BACK_IF_DAMAGED:			sprite->AI_Turn_Back_If_Damaged();
-													break;
-				
-				case AI_DESTRUCTED_NEXT_TO_PLAYER:	sprite->AI_Destructed_Next_To_Player(*Player_Sprite);
-													break;
-				
-				case AI_FOLLOW_COMMANS:
-					sprite->AI_Follow_Commands(Player_Sprite);
-					break;
-
-				default:
-
-				if (sprite_ai >= AI_INFOS_BEGIN && sprite_ai <= AI_INFOS_END)
-					if (sprite->AI_Info(*Player_Sprite)) {
-
-						int info = sprite_ai - AI_INFOS_BEGIN + 1;
-						
-						std::string sinfo = "info";
-						if (info < 10) sinfo += '0';
-						sinfo += std::to_string(info);
-
-						int index = Episode->infos.Search_Id(sinfo.c_str());
-						if (index != -1)
-							Game->Show_Info(Episode->infos.Get_Text(index));
-						else
-							Game->Show_Info(tekstit->Get_Text(PK_txt.infos[info]));
-
-					}
+		for(SpriteAI::AI_Class& ai : sprite->prototype->AI_f){
+			if(!ai.apply_to_creatures)continue;
+			
+			if(ai.trigger==AI_TRIGGER_ANYWAY){
+				ai.func(sprite);
 			}
+			else if(sprite->energy>0){
 
-
-
+				if(ai.info_id!=-1){
+					DisplayInfo(sprite, ai.info_id);
+				}
+				else if(ai.trigger==AI_TRIGGER_ALIVE){
+					ai.func(sprite);
+				}
+			}
 		}
 	}
 
@@ -1958,28 +1728,13 @@ void UpdateBonusSprite(SpriteClass* sprite){
 			}
 		}
 	}
-	for(const int& sprite_ai: sprite->prototype->AI_v){
+	for(const SpriteAI::AI_Class& ai: sprite->prototype->AI_f){
 
-		switch (sprite_ai) {
-		
-		case AI_BONUS:				sprite->AI_Bonus(); break;
+		if(!ai.apply_to_bonuses)continue;
 
-		case AI_SELF_DESTRUCTION:	sprite->AI_SelfDestruction(); break;
-
-		case AI_BASIC:				sprite->AI_Basic(); break;
-
-		case AI_SELF_TRANSFORMATION:
-									sprite->AI_Self_Transformation();
-		
-				/*if (sprite->prototype->transformation != nullptr)
-										sprite->AI_Self_Transformation(sprite->prototype->transformation);*/
-									break;
-
-		case AI_FALL_WHEN_SHAKEN:	sprite->AI_Fall_When_Shaken(Game->vibration + Game->button_vibration);
-									break;
-
-		default:					break;
-		
+		if((sprite->energy>0 && ai.trigger==AI_TRIGGER_ALIVE)
+		||  ai.trigger==AI_TRIGGER_ANYWAY){
+			ai.func(sprite);
 		}
 	}
 

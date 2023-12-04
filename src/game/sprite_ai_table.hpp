@@ -31,6 +31,11 @@ enum AI_TRIGGER{
     AI_TRIGGER_PLAYER_IN_FRONT,
 };
 
+namespace AI_Functions{
+    extern SpriteClass* player;
+    extern SpriteClass* player_invisible;
+}
+
 namespace SpriteAI{
 
 
@@ -38,7 +43,6 @@ class AI_Class{
 public:
     AI_Class() = default;
     int id = AI_NONE;
-    int info_id = -1;
     int trigger = AI_TRIGGER_NONE;
     std::function<void(SpriteClass* sprite)> func;
 
@@ -46,6 +50,8 @@ public:
     bool apply_to_creatures = false;
     bool apply_to_bonuses = false;
     bool apply_to_backgrounds = false;
+
+    int info_id = -1;
 };
 
 /*
