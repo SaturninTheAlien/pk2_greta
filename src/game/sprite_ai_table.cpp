@@ -7,7 +7,6 @@
 #include "system.hpp"
 #include "spriteclass.hpp"
 #include "game.hpp"
-#include "sfx.hpp"
 #include "sprites.hpp"
 
 namespace SpriteAI{
@@ -141,24 +140,7 @@ AI_Table::AI_Table(){
 
     Init_AI(AI_TRANSFORM_IF_DAMAGED, AI_TRIGGER_ALIVE, AI_Functions::Transform_If_Damaged, true, true); //TO DO Redesign
 
-    Init_AI(AI_TELEPORT, AI_TRIGGER_ALIVE, [](SpriteClass*sprite){
-        if(AI_Functions::player_invisible!=nullptr){
-            if (sprite->AI_Teleport(Sprites_List, *AI_Functions::player_invisible))
-            {
-
-                Game->camera_x = (int)AI_Functions::player_invisible->x;
-                Game->camera_y = (int)AI_Functions::player_invisible->y;
-                Game->dcamera_x = Game->camera_x-screen_width/2;
-                Game->dcamera_y = Game->camera_y-screen_height/2;
-                Fade_in(FADE_NORMAL);
-                if (sprite->prototype->sounds[SOUND_ATTACK2] != -1)
-                    Play_MenuSFX(sprite->prototype->sounds[SOUND_ATTACK2], 100);
-                    //Play_GameSFX(, 100, Game->camera_x, Game->camera_y, SOUND_SAMPLERATE, false);
-
-
-            }
-        }
-    });
+    Init_AI(AI_TELEPORT, AI_TRIGGER_ALIVE, AI_Functions::Teleporter);
 
     Init_AI(AI_CLIMBER, AI_TRIGGER_ALIVE, AI_Functions::Climber);
     Init_AI(AI_CLIMBER2, AI_TRIGGER_ALIVE, AI_Functions::Climber2);
@@ -167,24 +149,24 @@ AI_Table::AI_Table(){
 
     Init_AI(AI_FALL_WHEN_SHAKEN, AI_TRIGGER_ALIVE, AI_Functions::Fall_When_Shaken, true, true, true, true); //TO DO Redesign
 
-    Init_AI(AI_MOVE_DOWN_IF_SWITCH_1_PRESSED, AI_TRIGGER_ALIVE, [](SpriteClass*sprite){sprite->AI_Move_If_Switch_Pressed(Game->button1,0,1);});
-    Init_AI(AI_MOVE_UP_IF_SWITCH_1_PRESSED, AI_TRIGGER_ALIVE, [](SpriteClass*sprite){sprite->AI_Move_If_Switch_Pressed(Game->button1,0,-1);});
-    Init_AI(AI_MOVE_LEFT_IF_SWITCH_1_PRESSED, AI_TRIGGER_ALIVE, [](SpriteClass*sprite){sprite->AI_Move_If_Switch_Pressed(Game->button1,-1,0);});
-    Init_AI(AI_MOVE_RIGHT_IF_SWITCH_1_PRESSED, AI_TRIGGER_ALIVE, [](SpriteClass*sprite){sprite->AI_Move_If_Switch_Pressed(Game->button1,1,0);});
+    Init_AI(AI_MOVE_DOWN_IF_SWITCH_1_PRESSED, AI_TRIGGER_ALIVE, [](SpriteClass*s){AI_Functions::Move_If_Switch_Pressed(s, Game->button1,0,1);});
+    Init_AI(AI_MOVE_UP_IF_SWITCH_1_PRESSED, AI_TRIGGER_ALIVE, [](SpriteClass*s){AI_Functions::Move_If_Switch_Pressed(s, Game->button1,0,-1);});
+    Init_AI(AI_MOVE_LEFT_IF_SWITCH_1_PRESSED, AI_TRIGGER_ALIVE, [](SpriteClass*s){AI_Functions::Move_If_Switch_Pressed(s, Game->button1,-1,0);});
+    Init_AI(AI_MOVE_RIGHT_IF_SWITCH_1_PRESSED, AI_TRIGGER_ALIVE, [](SpriteClass*s){AI_Functions::Move_If_Switch_Pressed(s, Game->button1,1,0);});
 
-    Init_AI(AI_MOVE_DOWN_IF_SWITCH_2_PRESSED, AI_TRIGGER_ALIVE, [](SpriteClass*sprite){sprite->AI_Move_If_Switch_Pressed(Game->button2,0,1);});
-    Init_AI(AI_MOVE_UP_IF_SWITCH_2_PRESSED, AI_TRIGGER_ALIVE, [](SpriteClass*sprite){sprite->AI_Move_If_Switch_Pressed(Game->button2,0,-1);});
-    Init_AI(AI_MOVE_LEFT_IF_SWITCH_2_PRESSED, AI_TRIGGER_ALIVE, [](SpriteClass*sprite){sprite->AI_Move_If_Switch_Pressed(Game->button2,-1,0);});
-    Init_AI(AI_MOVE_RIGHT_IF_SWITCH_2_PRESSED, AI_TRIGGER_ALIVE, [](SpriteClass*sprite){sprite->AI_Move_If_Switch_Pressed(Game->button2,1,0);});
+    Init_AI(AI_MOVE_DOWN_IF_SWITCH_2_PRESSED, AI_TRIGGER_ALIVE, [](SpriteClass*s){AI_Functions::Move_If_Switch_Pressed(s, Game->button2,0,1);});
+    Init_AI(AI_MOVE_UP_IF_SWITCH_2_PRESSED, AI_TRIGGER_ALIVE, [](SpriteClass*s){AI_Functions::Move_If_Switch_Pressed(s, Game->button2,0,-1);});
+    Init_AI(AI_MOVE_LEFT_IF_SWITCH_2_PRESSED, AI_TRIGGER_ALIVE, [](SpriteClass*s){AI_Functions::Move_If_Switch_Pressed(s, Game->button2,-1,0);});
+    Init_AI(AI_MOVE_RIGHT_IF_SWITCH_2_PRESSED, AI_TRIGGER_ALIVE, [](SpriteClass*s){AI_Functions::Move_If_Switch_Pressed(s, Game->button2,1,0);});
 
-    Init_AI(AI_MOVE_DOWN_IF_SWITCH_3_PRESSED, AI_TRIGGER_ALIVE, [](SpriteClass*sprite){sprite->AI_Move_If_Switch_Pressed(Game->button3,0,1);});
-    Init_AI(AI_MOVE_UP_IF_SWITCH_3_PRESSED, AI_TRIGGER_ALIVE, [](SpriteClass*sprite){sprite->AI_Move_If_Switch_Pressed(Game->button3,0,-1);});
-    Init_AI(AI_MOVE_LEFT_IF_SWITCH_3_PRESSED, AI_TRIGGER_ALIVE, [](SpriteClass*sprite){sprite->AI_Move_If_Switch_Pressed(Game->button3,-1,0);});
-    Init_AI(AI_MOVE_RIGHT_IF_SWITCH_3_PRESSED, AI_TRIGGER_ALIVE, [](SpriteClass*sprite){sprite->AI_Move_If_Switch_Pressed(Game->button3,1,0);});
+    Init_AI(AI_MOVE_DOWN_IF_SWITCH_3_PRESSED, AI_TRIGGER_ALIVE, [](SpriteClass*s){AI_Functions::Move_If_Switch_Pressed(s, Game->button3,0,1);});
+    Init_AI(AI_MOVE_UP_IF_SWITCH_3_PRESSED, AI_TRIGGER_ALIVE, [](SpriteClass*s){AI_Functions::Move_If_Switch_Pressed(s, Game->button3,0,-1);});
+    Init_AI(AI_MOVE_LEFT_IF_SWITCH_3_PRESSED, AI_TRIGGER_ALIVE, [](SpriteClass*s){AI_Functions::Move_If_Switch_Pressed(s, Game->button3,-1,0);});
+    Init_AI(AI_MOVE_RIGHT_IF_SWITCH_3_PRESSED, AI_TRIGGER_ALIVE, [](SpriteClass*s){AI_Functions::Move_If_Switch_Pressed(s, Game->button3,1,0);});
 
-    Init_AI(AI_FALL_IF_SWITCH_1_PRESSED, AI_TRIGGER_ALIVE, [](SpriteClass*sprite){sprite->AI_Tippuu_If_Switch_Pressed(Game->button1);});
-    Init_AI(AI_FALL_IF_SWITCH_2_PRESSED, AI_TRIGGER_ALIVE, [](SpriteClass*sprite){sprite->AI_Tippuu_If_Switch_Pressed(Game->button2);});
-    Init_AI(AI_FALL_IF_SWITCH_2_PRESSED, AI_TRIGGER_ALIVE, [](SpriteClass*sprite){sprite->AI_Tippuu_If_Switch_Pressed(Game->button3);});
+    Init_AI(AI_FALL_IF_SWITCH_1_PRESSED, AI_TRIGGER_ALIVE, [](SpriteClass*s){if(Game->button1>0)s->initial_weight=1.5;});
+    Init_AI(AI_FALL_IF_SWITCH_2_PRESSED, AI_TRIGGER_ALIVE, [](SpriteClass*s){if(Game->button2>0)s->initial_weight=1.5;});
+    Init_AI(AI_FALL_IF_SWITCH_2_PRESSED, AI_TRIGGER_ALIVE, [](SpriteClass*s){if(Game->button3>0)s->initial_weight=1.5;});
 
     Init_AI(AI_RANDOM_MOVE_VERT_HORI, AI_TRIGGER_ALIVE, AI_Functions::Random_Move_Vert_Hori);
 

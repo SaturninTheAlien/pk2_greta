@@ -64,4 +64,9 @@ void Climber(SpriteClass*s);
 void Climber2(SpriteClass*s);
 void Fall_When_Shaken(SpriteClass*s);
 
+
+void Teleporter(SpriteClass*s);
+
+void Move_If_Switch_Pressed(SpriteClass*s, int game_button, int ak, int bk);
+
 }

@@ -97,12 +97,12 @@ void PlayingScreen::Draw_InGame_BGSprites() {
 										orig_x = sprite->x;
 										orig_y = sprite->y;
 										break;
-		case AI_SELF_DESTRUCTION:	sprite->AI_SelfDestruction();
+		/*case AI_SELF_DESTRUCTION:	sprite->AI_SelfDestruction();
 										break;
 		
 		case AI_SELF_TRANSFORMATION:
 									sprite->AI_Self_Transformation();
-									break;
+									break;*/
 								
 		default: break;
 		}
