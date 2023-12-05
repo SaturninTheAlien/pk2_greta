@@ -69,4 +69,21 @@ void Teleporter(SpriteClass*s);
 
 void Move_If_Switch_Pressed(SpriteClass*s, int game_button, int ak, int bk);
 
+/**
+ * @brief 
+ * AIs triggered on Death
+ */
+
+void EvilOne(SpriteClass*s);
+void Chick(SpriteClass*s);
+void Reborn(SpriteClass*s);
+
+/**
+ * @brief 
+ * AIs triggered when sprite hurt
+ */
+
+
+
+
 }

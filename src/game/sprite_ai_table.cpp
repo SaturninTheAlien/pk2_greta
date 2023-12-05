@@ -51,6 +51,11 @@ void AI_Table::Init_AI(int id,
 
 
 AI_Table::AI_Table(){
+
+    /**
+     * @brief
+     * AIs triggered on each tick
+     */
     
     Init_AI(AI_ROOSTER, AI_TRIGGER_ALIVE, AI_Functions::Rooster);
     Init_AI(AI_LITTLE_CHICKEN, AI_TRIGGER_ALIVE, AI_Functions::Rooster);
@@ -173,7 +178,12 @@ AI_Table::AI_Table(){
     Init_AI(AI_TURN_BACK_IF_DAMAGED, AI_TRIGGER_ALIVE, AI_Functions::Turn_Back_If_Damaged);
     Init_AI(AI_DESTRUCTED_NEXT_TO_PLAYER, AI_TRIGGER_ALIVE, AI_Functions::Destructed_Next_To_Player);
 
-    Init_AI(AI_FOLLOW_COMMANS, AI_TRIGGER_ALIVE, AI_Functions::Follow_Commands);
+    Init_AI(AI_FOLLOW_COMMANDS, AI_TRIGGER_ALIVE, AI_Functions::Follow_Commands);
+
+    /**
+     * @brief 
+     * Infos
+     */
 
     for(int id=AI_INFOS_BEGIN;id<=AI_INFOS_END;++id){
         AI_Class ai;
@@ -186,6 +196,30 @@ AI_Table::AI_Table(){
 
         this->mTable[id] = ai;
     }
+
+    /**
+     * @brief
+     * AIs triggered on death
+     * 
+     */
+
+
+    Init_AI(AI_EVIL_ONE, AI_TRIGGER_DEATH, AI_Functions::EvilOne);
+    Init_AI(AI_REBORN, AI_TRIGGER_DEATH, AI_Functions::Reborn);
+    Init_AI(AI_CHICK, AI_TRIGGER_DEATH, AI_Functions::Chick);
+    Init_AI(AI_CHANGE_SKULL_BLOCKS_IF_DEAD, AI_TRIGGER_DEATH, [](SpriteClass*s){
+        Game->Change_SkullBlocks();
+    });
+
+    /**
+     * @brief 
+     * AIs triggered on damage
+     * 
+     */
+
+    Init_AI(AI_CHANGE_SKULL_BLOCKS_IF_DAMAGED, AI_TRIGGER_DAMAGE, [](SpriteClass*s){
+        Game->Change_SkullBlocks();
+    });
 }
 
 }

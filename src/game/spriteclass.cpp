@@ -966,54 +966,6 @@ void SpriteClass::AI_Move_Y(double liike){
 	if (energy > 0)
 		this->y = this->orig_y + liike;
 }
-
-bool SpriteClass::AI_Teleport(const std::list<SpriteClass*>& spritet, SpriteClass &player){
-	bool siirto = false;
-
-	if (energy > 0 &&player.energy>0 && charging_timer == 0 && attack1_timer == 0)
-	{
-		if (player.x <= x + prototype->width /2 && player.x >= x - prototype->width /2 &&
-			player.y <= y + prototype->height/2 && player.y >= y - prototype->height/2 )
-		{
-
-			std::vector<SpriteClass*> portit;
-
-			// search for teleports of the same type
-			for (SpriteClass* sprite : spritet)
-				if (prototype == sprite->prototype && sprite != this)
-						portit.push_back(sprite);
-
-			// if it didn't find any, search for all teleports
-			if (portit.size() == 0) {
-				for (SpriteClass* sprite : spritet)
-					if (sprite->prototype->type == TYPE_TELEPORT && sprite != this)
-						portit.push_back(sprite);
-			}
-
-			// if you don't have any teleports (excluding the teleport itself), return
-			if (portit.size() == 0)
-				return false;
-
-			// arvotaan kohdeportti
-			SpriteClass* dst = portit[rand()%portit.size()];
-			
-			player.x = dst->x;
-			player.y = dst->y;
-			//charging_timer    = prototype->charge_time;
-			//attack1_timer = prototype->attack1_time;
-			//spritet[i].charging_timer    = spritet[i].prototype->charge_time;
-			dst->attack1_timer = dst->prototype->attack1_time;
-			dst->charging_timer = 0;
-			this->charging_timer = 0;
-
-			siirto = true;
-		}
-	}
-
-	return siirto;
-}
-
-
 void SpriteClass::Animation_Basic(){
 
 	int uusi_animaatio = -1;

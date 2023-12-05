@@ -193,7 +193,7 @@ RANDOM_MOVE_VERTIC._AND_HORIZ.*/
      * @brief 
      * "Greta Engine" commands/waypoints AI
      */
-    AI_FOLLOW_COMMANS = 40,
+    AI_FOLLOW_COMMANDS = 40,
 
     AI_MOVE_X_COS = 41,
     AI_MOVE_Y_COS, //42

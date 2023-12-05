@@ -398,6 +398,13 @@ void SpriteOnDamage(SpriteClass* sprite){
 		Particles_New(PARTICLE_STAR,sprite_x,sprite_y, 1,-1,60,0.01,128);
 	}
 
+
+	/*for(const SpriteAI::AI_Class& ai: sprite->prototype->AI_f){
+		if(ai.trigger==AI_TRIGGER_DAMAGE){
+			ai.func(sprite);
+		}
+	}*/
+
 	for(const int& ai:sprite->prototype->AI_v){
 
 		switch (ai){
@@ -438,35 +445,10 @@ void SpriteOnRespawn(SpriteClass* sprite){
 void SpriteOnDeath(SpriteClass* sprite){
 	int how_destroyed = sprite->prototype->how_destroyed;
 
-	for(const int& ai: sprite->prototype->AI_v){
-		switch (ai)
-		{
-		case AI_EVIL_ONE:{
-			PSound::set_musicvolume(0);
-			Game->music_stopped = true;	
-		}
-		break;
+	for(const SpriteAI::AI_Class&ai: sprite->prototype->AI_f){
 
-		case AI_CHICK:{
-			Game->game_over = true;
-			key_delay = 50; //TODO - reduce
-		}
-		break;
-		case AI_REBORN:{
-			sprite->respawn_timer = sprite->prototype->charge_time;
-			sprite->energy = sprite->prototype->energy;
-			sprite->removed = false;
-			//Sprites_add(sprite->prototype, 0, sprite->orig_x, sprite->orig_y, nullptr, true);
-		}
-		break;
-
-		case AI_CHANGE_SKULL_BLOCKS_IF_DEAD:{
-			Game->Change_SkullBlocks();
-		}
-		break;
-
-		default:
-			break;
+		if(ai.trigger==AI_TRIGGER_DEATH){
+			ai.func(sprite);
 		}
 	}
 

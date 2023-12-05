@@ -319,7 +319,7 @@ public:
     void AI_Move_Y(double liike);
     //void AI_Tippuu_If_Switch_Pressed(int kytkin);
     //void AI_Move_If_Switch_Pressed(int button, int ak, int bk);
-    bool AI_Teleport(const std::list<SpriteClass*>& spritet, SpriteClass &player);
+    //bool AI_Teleport(const std::list<SpriteClass*>& spritet, SpriteClass &player);
     //void AI_Climber();
     //void AI_Climber2();
     //bool AI_Info(SpriteClass &player);

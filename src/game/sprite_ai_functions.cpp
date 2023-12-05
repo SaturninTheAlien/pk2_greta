@@ -9,6 +9,7 @@
 #include "sprites.hpp"
 #include "system.hpp"
 #include "sfx.hpp"
+#include "engine/PSound.hpp"
 
 namespace AI_Functions{
 
@@ -888,5 +889,28 @@ void Teleporter(SpriteClass*s){
 		}
 	}
 }
+
+
+/**
+ * @brief 
+ * AIs triggered on Death
+ */
+
+void EvilOne(SpriteClass*s){
+	PSound::set_musicvolume(0);
+	Game->music_stopped = true;	
+}
+
+void Chick(SpriteClass*s){
+	Game->game_over = true;
+	key_delay = 50; //TODO - reduce
+}
+
+void Reborn(SpriteClass*s){
+	s->respawn_timer = s->prototype->charge_time;
+	s->energy = s->prototype->energy;
+	s->removed = false;
+}
+
 
 }
