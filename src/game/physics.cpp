@@ -26,11 +26,6 @@
 
 #include <cstring>
 
-static double sprite_x;
-static double sprite_y;
-static double sprite_a;
-static double sprite_b;
-
 static double sprite_left;
 static double sprite_right;
 static double sprite_upper;
@@ -115,50 +110,50 @@ static void Check_SpriteBlock(SpriteClass* sprite, const PK2BLOCK &block) {
 
 	//left and right
 	if (sprite_upper < block.ala && sprite_bottom-1 > block.yla){
-		if (sprite_right+sprite_a-1 > block.vasen && sprite_left+sprite_a < block.oikea){
+		if (sprite_right+sprite->a-1 > block.vasen && sprite_left+sprite->a < block.oikea){
 			// Tutkitaan onko sprite menossa oikeanpuoleisen palikan sis��n.
-			if (sprite_right+sprite_a < block.oikea){
+			if (sprite_right+sprite->a < block.oikea){
 				// Onko block sein�?
 				if (block.oikealle == BLOCK_WALL){
 					oikealle = false;
 					if (block.koodi == BLOCK_LIFT_HORI)
-						sprite_x = block.vasen - sprite_width/2;
+						sprite->x = block.vasen - sprite_width/2;
 				}
 			}
 
-			if (sprite_left+sprite_a > block.vasen){
+			if (sprite_left+sprite->a > block.vasen){
 				if (block.vasemmalle == BLOCK_WALL){
 					vasemmalle = false;
 
 					if (block.koodi == BLOCK_LIFT_HORI)
-						sprite_x = block.oikea + sprite_width/2;
+						sprite->x = block.oikea + sprite_width/2;
 
 				}
 			}
 		}
 	}
 
-	sprite_left = sprite_x-sprite_width/2;
-	sprite_right = sprite_x+sprite_width/2;
+	sprite_left = sprite->x-sprite_width/2;
+	sprite_right = sprite->x+sprite_width/2;
 
 	//ceil and floor
 
 	if (sprite_left < block.oikea && sprite_right-1 > block.vasen){
-		if (sprite_bottom+sprite_b-1 >= block.yla && sprite_upper+sprite_b <= block.ala){
-			if (sprite_bottom+sprite_b-1 <= block.ala){
+		if (sprite_bottom+sprite->b-1 >= block.yla && sprite_upper+sprite->b <= block.ala){
+			if (sprite_bottom+sprite->b-1 <= block.ala){
 				if (block.alas == BLOCK_WALL){
 					alas = false;
 
 					if (block.koodi == BLOCK_LIFT_VERT)
-						sprite_y = block.yla - sprite_height /2;
+						sprite->y = block.yla - sprite_height /2;
 
-					if (sprite_bottom-1 >= block.yla && sprite_b >= 0)
+					if (sprite_bottom-1 >= block.yla && sprite->b >= 0)
 						if (block.koodi != BLOCK_LIFT_HORI)
-							sprite_y = block.yla - sprite_height /2;
+							sprite->y = block.yla - sprite_height /2;
 				}
 			}
 
-			if (sprite_upper+sprite_b > block.yla){
+			if (sprite_upper+sprite->b > block.yla){
 				if (block.ylos == BLOCK_WALL){
 					ylos = false;
 
@@ -174,7 +169,7 @@ static void Check_SpriteBlock(SpriteClass* sprite, const PK2BLOCK &block) {
 void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 
 	//If sprite is in the block
-	if (sprite_x <= block.oikea && sprite_x >= block.vasen && sprite_y <= block.ala && sprite_y >= block.yla){
+	if (sprite->x <= block.oikea && sprite->x >= block.vasen && sprite->y <= block.ala && sprite->y >= block.yla){
 
 		/**********************************************************************/
 		/* Examine if block is water background                               */
@@ -223,7 +218,7 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 
 	//Examine if there is a block on bottom
 	if ((block.koodi<80 || block.koodi>139) && block.koodi != BLOCK_BARRIER_DOWN && block.koodi < 150){
-		int mask_index = (int)(sprite_x+sprite_a) - block.vasen;
+		int mask_index = (int)(sprite->x+sprite->a) - block.vasen;
 
 		if (mask_index < 0)
 			mask_index = 0;
@@ -257,22 +252,22 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 			}
 
 			Effect_Explosion(block.vasen+16, block.yla+10, 0);
-			Play_GameSFX(open_locks_sound,100, (int)sprite_x, (int)sprite_y, SOUND_SAMPLERATE, false);
+			Play_GameSFX(open_locks_sound,100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, false);
 		}
 
 		/**********************************************************************/
 		/* Make wind effects                                                  */
 		/**********************************************************************/
 		if (block.koodi == BLOCK_DRIFT_LEFT && vasemmalle)
-			sprite_a -= 0.02;
+			sprite->a -= 0.02;
 
 		if (block.koodi == BLOCK_DRIFT_RIGHT && oikealle)
-			sprite_a += 0.02;	//0.05
+			sprite->a += 0.02;	//0.05
 
 		/*********************************************************************/
 		/* Examine if sprite is on the border to fall                        */
 		/*********************************************************************/
-		if (block.border && sprite->jump_timer <= 0 && sprite_y < block.ala && sprite_y > block.yla){
+		if (block.border && sprite->jump_timer <= 0 && sprite->y < block.ala && sprite->y > block.yla){
 			/* && sprite_bottom <= block.ala+2)*/ // onko sprite tullut borderlle
 			if (sprite_left > block.vasen)
 				sprite->edge_on_the_left = true;
@@ -285,47 +280,47 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 	//Examine walls on left and right
 
 	if (sprite_upper < block.ala && sprite_bottom-1 > block.yla) {
-		if (sprite_right+sprite_a-1 > block.vasen && sprite_left+sprite_a < block.oikea) {
+		if (sprite_right+sprite->a-1 > block.vasen && sprite_left+sprite->a < block.oikea) {
 			// Examine whether the sprite going in the right side of the block.
-			if (sprite_right+sprite_a < block.oikea) {
+			if (sprite_right+sprite->a < block.oikea) {
 				// Onko block sein�?
 				if (block.oikealle == BLOCK_WALL) {
 					oikealle = false;
 
 					if (block.koodi == BLOCK_LIFT_HORI)
-						sprite_x = block.vasen - sprite_width/2;
+						sprite->x = block.vasen - sprite_width/2;
 				}
 			}
 			// Examine whether the sprite going in the left side of the block.
-			if (sprite_left+sprite_a > block.vasen) {
+			if (sprite_left+sprite->a > block.vasen) {
 				if (block.vasemmalle == BLOCK_WALL) {
 					vasemmalle = false;
 
 					if (block.koodi == BLOCK_LIFT_HORI)
-						sprite_x = block.oikea + sprite_width/2;
+						sprite->x = block.oikea + sprite_width/2;
 
 				}
 			}
 		}
 	}
 
-	sprite_left = sprite_x - sprite_width/2;
-	sprite_right = sprite_x + sprite_width/2;
+	sprite_left = sprite->x - sprite_width/2;
+	sprite_right = sprite->x + sprite_width/2;
 
 	//Examine walls on up and down
 
 	if (sprite_left < block.oikea && sprite_right-1 > block.vasen) { //Remove the left and right blocks
-		if (sprite_bottom+sprite_b-1 >= block.yla && sprite_upper+sprite_b <= block.ala) { //Get the up and down blocks
-			if (sprite_bottom+sprite_b-1 <= block.ala) { //Just in the sprite's foot
+		if (sprite_bottom+sprite->b-1 >= block.yla && sprite_upper+sprite->b <= block.ala) { //Get the up and down blocks
+			if (sprite_bottom+sprite->b-1 <= block.ala) { //Just in the sprite's foot
 				if (block.alas == BLOCK_WALL) { //If it is a wall
 					alas = false;
 					if (block.koodi == BLOCK_LIFT_VERT)
-						sprite_y = block.yla - sprite_height /2;
+						sprite->y = block.yla - sprite_height /2;
 
-					if (sprite_bottom-1 >= block.yla && sprite_b >= 0) {
-						//sprite_y -= sprite_bottom - block.yla;
+					if (sprite_bottom-1 >= block.yla && sprite->b >= 0) {
+						//sprite->y -= sprite_bottom - block.yla;
 						if (block.koodi != BLOCK_LIFT_HORI) {
-							sprite_y = block.yla - sprite_height /2;
+							sprite->y = block.yla - sprite_height /2;
 						}
 					}
 
@@ -333,21 +328,21 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 						if (block.koodi == BLOCK_BUTTON1 && Game->button1 == 0) {
 							Game->button1 = Game->map.button1_time;
 							Game->button_vibration = 64;
-							Play_GameSFX(switch_sound, 100, (int)sprite_x, (int)sprite_y, SOUND_SAMPLERATE, false);
+							Play_GameSFX(switch_sound, 100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, false);
 							PInput::Vibrate(1000);
 						}
 
 						if (block.koodi == BLOCK_BUTTON2 && Game->button2 == 0) {
 							Game->button2 = Game->map.button2_time;
 							Game->button_vibration = 64;
-							Play_GameSFX(switch_sound, 100, (int)sprite_x, (int)sprite_y, SOUND_SAMPLERATE, false);
+							Play_GameSFX(switch_sound, 100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, false);
 							PInput::Vibrate(1000);
 						}
 
 						if (block.koodi == BLOCK_BUTTON3 && Game->button3 == 0) {
 							Game->button3 = Game->map.button3_time;
 							Game->button_vibration = 64;
-							Play_GameSFX(switch_sound, 100, (int)sprite_x, (int)sprite_y, SOUND_SAMPLERATE, false);
+							Play_GameSFX(switch_sound, 100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, false);
 							PInput::Vibrate(1000);
 						}
 					}
@@ -355,7 +350,7 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 				}
 			}
 
-			if (sprite_upper+sprite_b > block.yla) {
+			if (sprite_upper+sprite->b > block.yla) {
 				if (block.ylos == BLOCK_WALL) {
 					ylos = false;
 
@@ -367,7 +362,7 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 
 						if (block.koodi != BLOCK_LIFT_HORI) {
 							//if (sprite->crouched)
-							//	sprite_y = block.ala + sprite_height /2;
+							//	sprite->y = block.ala + sprite_height /2;
 
 							sprite->crouched = true;
 						}
@@ -393,9 +388,9 @@ void SpriteOnDamage(SpriteClass* sprite){
 		Effect_Destruction(FX_DESTRUCT_HOYHENET, (u32)sprite->x, (u32)sprite->y);
 
 	if (sprite->prototype->type != TYPE_PROJECTILE){
-		Particles_New(PARTICLE_STAR,sprite_x,sprite_y,-1,-1,60,0.01,128);
-		Particles_New(PARTICLE_STAR,sprite_x,sprite_y, 0,-1,60,0.01,128);
-		Particles_New(PARTICLE_STAR,sprite_x,sprite_y, 1,-1,60,0.01,128);
+		Particles_New(PARTICLE_STAR,sprite->x,sprite->y,-1,-1,60,0.01,128);
+		Particles_New(PARTICLE_STAR,sprite->x,sprite->y, 0,-1,60,0.01,128);
+		Particles_New(PARTICLE_STAR,sprite->x,sprite->y, 1,-1,60,0.01,128);
 	}
 
 
@@ -460,11 +455,11 @@ void SpriteOnDeath(SpriteClass* sprite){
 
 			if(bonuses_number>1){
 				for(int i=0;i<bonuses_number;++i){
-					Sprites_add(bonus, 0, sprite_x+(10-rand()%21),sprite_y+(10-rand()%21), nullptr, true);
+					Sprites_add(bonus, 0, sprite->x+(10-rand()%21),sprite->y+(10-rand()%21), nullptr, true);
 				}
 			}
 			else if(bonuses_number==1){
-				Sprites_add(bonus, 0, sprite_x,sprite_y, nullptr, true);
+				Sprites_add(bonus, 0, sprite->x,sprite->y, nullptr, true);
 			}			
 		}
 	}
@@ -510,19 +505,13 @@ void UpdateSprite(SpriteClass* sprite){
 		throw PExcept::PException("Sprite with null prototype is not acceptable!");
 	}
 
-	// Save values
-	sprite_x = sprite->x;
-	sprite_y = sprite->y;
-	sprite_a = sprite->a;
-	sprite_b = sprite->b;
-
 	sprite_width  = sprite->prototype->width;
 	sprite_height = sprite->prototype->height;
 
-	sprite_left = sprite_x - sprite_width  / 2;
-	sprite_right = sprite_x + sprite_width  / 2;
-	sprite_upper   = sprite_y - sprite_height / 2;
-	sprite_bottom   = sprite_y + sprite_height / 2;
+	sprite_left = sprite->x - sprite_width  / 2;
+	sprite_right = sprite->x + sprite_width  / 2;
+	sprite_upper   = sprite->y - sprite_height / 2;
+	sprite_bottom   = sprite->y + sprite_height / 2;
 
 	max_speed = sprite->prototype->max_speed;
 
@@ -615,7 +604,7 @@ void UpdateSprite(SpriteClass* sprite){
 
 		if (add_speed) {
 			if (rand()%20 == 1 && sprite->animation_index == ANIMATION_WALKING) // Draw dust
-				Particles_New(PARTICLE_DUST_CLOUDS,sprite_x-8,sprite_bottom-8,0.25,-0.25,40,0,0);
+				Particles_New(PARTICLE_DUST_CLOUDS,sprite->x-8,sprite_bottom-8,0.25,-0.25,40,0,0);
 
 			a_lisays += 0.09;//0.05
 		}
@@ -636,14 +625,14 @@ void UpdateSprite(SpriteClass* sprite){
 		if (sprite->crouched)	// Slow when couch
 			a_lisays /= 10;
 
-		sprite_a += a_lisays;
+		sprite->a += a_lisays;
 
 		/* JUMPING */
 		if (sprite->prototype->weight > 0 && !swimming) {
 			if (PInput::Keydown(Input->jump) || Gui_up) {
 				if (!sprite->crouched) {
 					if (sprite->jump_timer == 0)
-						Play_GameSFX(jump_sound, 100, (int)sprite_x, (int)sprite_y,
+						Play_GameSFX(jump_sound, 100, (int)sprite->x, (int)sprite->y,
 									  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 
 					if (sprite->jump_timer <= 0)
@@ -668,10 +657,10 @@ void UpdateSprite(SpriteClass* sprite){
 				speed *= max_speed;
 
 			if (PInput::Keydown(Input->jump) || Gui_up)
-				sprite_b -= speed;
+				sprite->b -= speed;
 
 			if (PInput::Keydown(Input->down) || Gui_down)
-				sprite_b += speed;
+				sprite->b += speed;
 
 			sprite->jump_timer = 0;
 		}
@@ -705,10 +694,10 @@ void UpdateSprite(SpriteClass* sprite){
 			sprite->jump_timer = 10;
 
 		if (!hyppy_maximissa) {
-		// sprite_b = (sprite->prototype->max_jump/2 - sprite->jump_timer/2)/-2.0;//-4
-		   sprite_b = -sin_table(sprite->jump_timer)/8;//(sprite->prototype->max_jump/2 - sprite->jump_timer/2)/-2.5;
-			if (sprite_b > sprite->prototype->max_jump){
-				sprite_b = sprite->prototype->max_jump/10.0;
+		// sprite->b = (sprite->prototype->max_jump/2 - sprite->jump_timer/2)/-2.0;//-4
+		   sprite->b = -sin_table(sprite->jump_timer)/8;//(sprite->prototype->max_jump/2 - sprite->jump_timer/2)/-2.5;
+			if (sprite->b > sprite->prototype->max_jump){
+				sprite->b = sprite->prototype->max_jump/10.0;
 				sprite->jump_timer = 90 - sprite->jump_timer;
 			}
 
@@ -721,7 +710,7 @@ void UpdateSprite(SpriteClass* sprite){
 	if (sprite->jump_timer < 0)
 		sprite->jump_timer++;
 
-	if (sprite_b > 0 && !hyppy_maximissa)
+	if (sprite->b > 0 && !hyppy_maximissa)
 		sprite->jump_timer = 90;//sprite->prototype->max_jump*2;
 
 	/*****************************************************************************************/
@@ -754,27 +743,27 @@ void UpdateSprite(SpriteClass* sprite){
 	/*****************************************************************************************/
 	
 	if (sprite->weight != 0 && (sprite->jump_timer <= 0 || sprite->jump_timer >= 45) && !swimming)
-		sprite_b += sprite->weight/1.25;// + sprite_b/1.5;
+		sprite->b += sprite->weight/1.25;// + sprite->b/1.5;
 
-	if (gliding && sprite_b > 0) // If gliding
-		sprite_b /= 1.3;//1.5;//3
+	if (gliding && sprite->b > 0) // If gliding
+		sprite->b /= 1.3;//1.5;//3
 
 	/*****************************************************************************************/
 	/* Speed limits                                                                          */
 	/*****************************************************************************************/
 
-	if (sprite_b > 4.0)//4
-		sprite_b = 4.0;//4
+	if (sprite->b > 4.0)//4
+		sprite->b = 4.0;//4
 
-	if (sprite_b < -4.0)
-		sprite_b = -4.0;
+	if (sprite->b < -4.0)
+		sprite->b = -4.0;
 
 	//Limit speed 1
-	if (sprite_a > max_speed)
-		sprite_a = max_speed;
+	if (sprite->a > max_speed)
+		sprite->a = max_speed;
 
-	if (sprite_a < -max_speed)
-		sprite_a = -max_speed;
+	if (sprite->a < -max_speed)
+		sprite->a = -max_speed;
 
 	/*****************************************************************************************/
 	/* Blocks colision -                                                                     */
@@ -812,20 +801,20 @@ void UpdateSprite(SpriteClass* sprite){
 
 		if (!sprite->prototype->can_swim || sprite->energy < 1) {
 
-			sprite_b /= 2.0;
-			sprite_a /= 1.05;
+			sprite->b /= 2.0;
+			sprite->a /= 1.05;
 
 			if (sprite->jump_timer > 0 && sprite->jump_timer < 90)
 				sprite->jump_timer--;
 		}
 
 		if (rand()%80 == 1)
-			Particles_New(PARTICLE_SPARK,sprite_x-4,sprite_y,0,-0.5-rand()%2,rand()%30+30,0,32);
+			Particles_New(PARTICLE_SPARK,sprite->x-4,sprite->y,0,-0.5-rand()%2,rand()%30+30,0,32);
 	}
 
 	if (in_water != sprite->in_water) { // Sprite comes in or out from water
-		Effect_Splash(sprite_x, sprite_y, 32);
-		Play_GameSFX(splash_sound, 100, (int)sprite_x, (int)sprite_y, SOUND_SAMPLERATE, true);
+		Effect_Splash(sprite->x, sprite->y, 32);
+		Play_GameSFX(splash_sound, 100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, true);
 	}
 
 	/*****************************************************************************************/
@@ -856,10 +845,10 @@ void UpdateSprite(SpriteClass* sprite){
 
 			if (sprite2->prototype->is_wall && sprite->prototype->check_tiles && sprite2->energy>0) { //If there is a block sprite active
 
-				if (sprite_x-sprite_width/2 +sprite_a  <= sprite2->x + sprite2->prototype->width /2 &&
-					sprite_x+sprite_width/2 +sprite_a  >= sprite2->x - sprite2->prototype->width /2 &&
-					sprite_y-sprite_height/2+sprite_b <= sprite2->y + sprite2->prototype->height/2 &&
-					sprite_y+sprite_height/2+sprite_b >= sprite2->y - sprite2->prototype->height/2)
+				if (sprite->x-sprite_width/2 +sprite->a  <= sprite2->x + sprite2->prototype->width /2 &&
+					sprite->x+sprite_width/2 +sprite->a  >= sprite2->x - sprite2->prototype->width /2 &&
+					sprite->y-sprite_height/2+sprite->b <= sprite2->y + sprite2->prototype->height/2 &&
+					sprite->y+sprite_height/2+sprite->b >= sprite2->y - sprite2->prototype->height/2)
 				{
 					spritepalikka.koodi = 0;
 					spritepalikka.ala   = (int)sprite2->y + sprite2->prototype->height/2;
@@ -898,10 +887,10 @@ void UpdateSprite(SpriteClass* sprite){
 				}
 			}
 
-			if (sprite_x <= sprite2->x + sprite2->prototype->width /2 &&
-				sprite_x >= sprite2->x - sprite2->prototype->width /2 &&
-				sprite_y/*yla*/ <= sprite2->y + sprite2->prototype->height/2 &&
-				sprite_y/*ala*/ >= sprite2->y - sprite2->prototype->height/2 + sprite2_yla)
+			if (sprite->x <= sprite2->x + sprite2->prototype->width /2 &&
+				sprite->x >= sprite2->x - sprite2->prototype->width /2 &&
+				sprite->y/*yla*/ <= sprite2->y + sprite2->prototype->height/2 &&
+				sprite->y/*ala*/ >= sprite2->y - sprite2->prototype->height/2 + sprite2_yla)
 			{
 				// sprites with same index change directions when touch
 				if (sprite->prototype == sprite2->prototype &&
@@ -920,21 +909,21 @@ void UpdateSprite(SpriteClass* sprite){
 				if (sprite->HasAI(AI_ARROW_BARRIER)) {
 
 					if (sprite2->HasAI(AI_ARROW_RIGHT)) {
-						sprite_a = sprite->prototype->max_speed / 3.5;
-						sprite_b = 0;
+						sprite->a = sprite->prototype->max_speed / 3.5;
+						sprite->b = 0;
 					}
 					else if (sprite2->HasAI(AI_ARROW_LEFT)) {
-						sprite_a = sprite->prototype->max_speed / -3.5;
-						sprite_b = 0;
+						sprite->a = sprite->prototype->max_speed / -3.5;
+						sprite->b = 0;
 					}
 
 					if (sprite2->HasAI(AI_ARROW_UP)) {
-						sprite_b = sprite->prototype->max_speed / -3.5;
-						sprite_a = 0;
+						sprite->b = sprite->prototype->max_speed / -3.5;
+						sprite->a = 0;
 					}
 					else if (sprite2->HasAI(AI_ARROW_DOWN)) {
-						sprite_b = sprite->prototype->max_speed / 3.5;
-						sprite_a = 0;
+						sprite->b = sprite->prototype->max_speed / 3.5;
+						sprite->a = 0;
 					}
 				}
 
@@ -970,7 +959,7 @@ void UpdateSprite(SpriteClass* sprite){
 						
 						//Bounce on the sprite head
 						if (sprite2->b > 2 && sprite2->weight >= 0.5 &&
-							sprite2->y < sprite_y && !sprite->prototype->is_wall &&
+							sprite2->y < sprite->y && !sprite->prototype->is_wall &&
 							sprite->prototype->how_destroyed != FX_DESTRUCT_EI_TUHOUDU &&
 							sprite2->CanDamageOnCollision(sprite))
 						{
@@ -1064,40 +1053,40 @@ void UpdateSprite(SpriteClass* sprite){
 		vasemmalle = true;
 		ylos       = true;
 		alas       = true;
-		printf("%f\n", sprite_b);
+		printf("%f\n", sprite->b);
 
 	}*/
 
 	if (!oikealle)
-		if (sprite_a > 0)
-			sprite_a = 0;
+		if (sprite->a > 0)
+			sprite->a = 0;
 
 	if (!vasemmalle)
-		if (sprite_a < 0)
-			sprite_a = 0;
+		if (sprite->a < 0)
+			sprite->a = 0;
 
 	if (!ylos){
-		if (sprite_b < 0)
-			sprite_b = 0;
+		if (sprite->b < 0)
+			sprite->b = 0;
 
 		if (!hyppy_maximissa)
 			sprite->jump_timer = 95;//sprite->prototype->max_jump * 2;
 	}
 
 	if (!alas)
-		if (sprite_b >= 0){ //If sprite is falling
+		if (sprite->b >= 0){ //If sprite is falling
 			if (sprite->jump_timer > 0){
 				if (sprite->jump_timer >= 90+10){
-					Play_GameSFX(pump_sound,30,(int)sprite_x, (int)sprite_y,
+					Play_GameSFX(pump_sound,30,(int)sprite->x, (int)sprite->y,
 				                  int(25050-sprite->weight*3000),true);
 
-					//Particles_New(	PARTICLE_DUST_CLOUDS,sprite_x+rand()%5-rand()%5-10,sprite_bottom+rand()%3-rand()%3,
+					//Particles_New(	PARTICLE_DUST_CLOUDS,sprite->x+rand()%5-rand()%5-10,sprite_bottom+rand()%3-rand()%3,
 					//			  0,-0.2,rand()%50+20,0,0);
 
 					if (rand()%7 == 1) {
-						Particles_New(PARTICLE_SMOKE,sprite_x+rand()%5-rand()%5-10,sprite_bottom+rand()%3-rand()%3,
+						Particles_New(PARTICLE_SMOKE,sprite->x+rand()%5-rand()%5-10,sprite_bottom+rand()%3-rand()%3,
 									  	   0.3,-0.1,450,0,0);
-						Particles_New(PARTICLE_SMOKE,sprite_x+rand()%5-rand()%5-10,sprite_bottom+rand()%3-rand()%3,
+						Particles_New(PARTICLE_SMOKE,sprite->x+rand()%5-rand()%5-10,sprite_bottom+rand()%3-rand()%3,
 									  	   -0.3,-0.1,450,0,0);
 					}
 
@@ -1110,25 +1099,25 @@ void UpdateSprite(SpriteClass* sprite){
 				sprite->jump_timer = 0;
 			}
 
-			sprite_b = 0;
+			sprite->b = 0;
 		}
 
 	/*****************************************************************************************/
 	/* Set correct values                                                                    */
 	/*****************************************************************************************/
 
-	if (sprite_b > 4.0)
-		sprite_b = 4.0;
+	if (sprite->b > 4.0)
+		sprite->b = 4.0;
 
-	if (sprite_b < -4.0)
-		sprite_b = -4.0;
+	if (sprite->b < -4.0)
+		sprite->b = -4.0;
 
 	//Limit speed 2
-	if (sprite_a > max_speed)
-		sprite_a = max_speed;
+	if (sprite->a > max_speed)
+		sprite->a = max_speed;
 
-	if (sprite_a < -max_speed)
-		sprite_a = -max_speed;
+	if (sprite->a < -max_speed)
+		sprite->a = -max_speed;
 
 	if (sprite->energy < 0)
 		sprite->energy = 0;
@@ -1137,8 +1126,8 @@ void UpdateSprite(SpriteClass* sprite){
 		sprite->energy = sprite->prototype->energy;
 
 	if (sprite->damage_timer == 0 || sprite->player == 1) {
-		sprite_x += sprite_a;
-		sprite_y += sprite_b;
+		sprite->x += sprite->a;
+		sprite->y += sprite->b;
 	}
 
 	if (sprite == Player_Sprite || sprite->energy < 1) {
@@ -1151,17 +1140,12 @@ void UpdateSprite(SpriteClass* sprite){
 			kitka = 1.01; // And even more on snow
 
 		if (!alas)
-			sprite_a /= kitka;
+			sprite->a /= kitka;
 		else
-			sprite_a /= 1.03;//1.02//1.05
+			sprite->a /= 1.03;//1.02//1.05
 
-		sprite_b /= 1.25;
+		sprite->b /= 1.25;
 	}
-
-	sprite->x = sprite_x;
-	sprite->y = sprite_y;
-	sprite->a = sprite_a;
-	sprite->b = sprite_b;
 
 	sprite->can_move_right = oikealle;
 	sprite->can_move_left = vasemmalle;
@@ -1205,7 +1189,7 @@ void UpdateSprite(SpriteClass* sprite){
 
 	//if (kaiku == 1 && sprite->prototype->prototype == TYPE_PROJECTILE && sprite->prototype->damage_type == DAMAGE_NOISE &&
 	//	sprite->prototype->sounds[SOUND_ATTACK1] > -1)
-	//	Play_GameSFX(sprite->prototype->sounds[SOUND_ATTACK1],20, (int)sprite_x, (int)sprite_y,
+	//	Play_GameSFX(sprite->prototype->sounds[SOUND_ATTACK1],20, (int)sprite->x, (int)sprite->y,
 	//				  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 
 
@@ -1258,14 +1242,14 @@ void UpdateSprite(SpriteClass* sprite){
 					sprite->charging_timer = sprite->ammo1->projectile_charge_time;
 
 			// attack sound
-			Play_GameSFX(sprite->prototype->sounds[SOUND_ATTACK1],100, (int)sprite_x, (int)sprite_y,
+			Play_GameSFX(sprite->prototype->sounds[SOUND_ATTACK1],100, (int)sprite->x, (int)sprite->y,
 						  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 
 			if (sprite->ammo1 != nullptr) {
-				Sprites_add_ammo(sprite->ammo1,sprite_x, sprite_y, sprite);
+				Sprites_add_ammo(sprite->ammo1,sprite->x, sprite->y, sprite);
 
 		//		if (Level_Prototypes_List[sprite->ammo1].sounds[SOUND_ATTACK1] > -1)
-		//			Play_GameSFX(Level_Prototypes_List[sprite->ammo1].sounds[SOUND_ATTACK1],100, (int)sprite_x, (int)sprite_y,
+		//			Play_GameSFX(Level_Prototypes_List[sprite->ammo1].sounds[SOUND_ATTACK1],100, (int)sprite->x, (int)sprite->y,
 		//						  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 			}
 		}
@@ -1278,14 +1262,14 @@ void UpdateSprite(SpriteClass* sprite){
 				if (sprite->ammo2->projectile_charge_time > 0)
 					sprite->charging_timer = sprite->ammo2->projectile_charge_time;
 
-			Play_GameSFX(sprite->prototype->sounds[SOUND_ATTACK2],100,(int)sprite_x, (int)sprite_y,
+			Play_GameSFX(sprite->prototype->sounds[SOUND_ATTACK2],100,(int)sprite->x, (int)sprite->y,
 						  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 
 			if (sprite->ammo2 != nullptr) {
-				Sprites_add_ammo(sprite->ammo2,sprite_x, sprite_y, sprite);
+				Sprites_add_ammo(sprite->ammo2,sprite->x, sprite->y, sprite);
 
 		//		if (Level_Prototypes_List[sprite->ammo2].sounds[SOUND_ATTACK1] > -1)
-		//			Play_GameSFX(Level_Prototypes_List[sprite->ammo2].sounds[SOUND_ATTACK1],100, (int)sprite_x, (int)sprite_y,
+		//			Play_GameSFX(Level_Prototypes_List[sprite->ammo2].sounds[SOUND_ATTACK1],100, (int)sprite->x, (int)sprite->y,
 		//						  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 
 			}
@@ -1294,24 +1278,19 @@ void UpdateSprite(SpriteClass* sprite){
 
 	// Random sounds
 	if (sprite->prototype->sounds[SOUND_RANDOM] != -1 && rand()%200 == 1 && sprite->energy > 0)
-		Play_GameSFX(sprite->prototype->sounds[SOUND_RANDOM],80,(int)sprite_x, (int)sprite_y,
+		Play_GameSFX(sprite->prototype->sounds[SOUND_RANDOM],80,(int)sprite->x, (int)sprite->y,
 					  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 }
 
 void UpdateBonusSprite(SpriteClass* sprite){
 
-	sprite_x = sprite->x;
-	sprite_y = sprite->y;
-	sprite_a = sprite->a;
-	sprite_b = sprite->b;
-
 	sprite_width  = sprite->prototype->width;
 	sprite_height = sprite->prototype->height;
 
-	sprite_left = sprite_x - sprite_width  / 2;
-	sprite_right = sprite_x + sprite_width  / 2;
-	sprite_upper   = sprite_y - sprite_height / 2;
-	sprite_bottom   = sprite_y + sprite_height / 2;
+	sprite_left = sprite->x - sprite_width  / 2;
+	sprite_right = sprite->x + sprite_width  / 2;
+	sprite_upper   = sprite->y - sprite_height / 2;
+	sprite_bottom   = sprite->y + sprite_height / 2;
 
 	oikealle	= true,
 	vasemmalle	= true,
@@ -1339,10 +1318,10 @@ void UpdateBonusSprite(SpriteClass* sprite){
 	if (sprite->jump_timer > 0 && sprite->jump_timer < sprite->prototype->max_jump)
 	{
 		sprite->jump_timer ++;
-		sprite_b = (sprite->prototype->max_jump - sprite->jump_timer)/-4.0;//-2
+		sprite->b = (sprite->prototype->max_jump - sprite->jump_timer)/-4.0;//-2
 	}
 
-	if (sprite_b > 0)
+	if (sprite->b > 0)
 		sprite->jump_timer = sprite->prototype->max_jump;
 
 
@@ -1354,15 +1333,15 @@ void UpdateBonusSprite(SpriteClass* sprite){
 		// |  Gravity
 		// V
 
-		sprite_b += sprite->weight + sprite_b/1.25;
+		sprite->b += sprite->weight + sprite->b/1.25;
 
 		if (sprite->in_water)
 		{
-			if (sprite_b > 0)
-				sprite_b /= 2.0;
+			if (sprite->b > 0)
+				sprite->b /= 2.0;
 
 			if (rand()%80 == 1)
-				Particles_New(PARTICLE_SPARK,sprite_x-4,sprite_y,0,-0.5-rand()%2,rand()%30+30,0,32);
+				Particles_New(PARTICLE_SPARK,sprite->x-4,sprite->y,0,-0.5-rand()%2,rand()%30+30,0,32);
 		}
 
 		sprite->in_water = false;
@@ -1376,10 +1355,10 @@ void UpdateBonusSprite(SpriteClass* sprite){
 		for (SpriteClass* sprite2 : Sprites_List) {
 			if (sprite2 != sprite && !sprite2->removed && sprite->respawn_timer==0) {
 				if (sprite2->prototype->is_wall && sprite->prototype->check_tiles) {
-					if (sprite_x-sprite_width/2 +sprite_a <= sprite2->x + sprite2->prototype->width /2 &&
-						sprite_x+sprite_width/2 +sprite_a >= sprite2->x - sprite2->prototype->width /2 &&
-						sprite_y-sprite_height/2+sprite_b <= sprite2->y + sprite2->prototype->height/2 &&
-						sprite_y+sprite_height/2+sprite_b >= sprite2->y - sprite2->prototype->height/2)
+					if (sprite->x-sprite_width/2 +sprite->a <= sprite2->x + sprite2->prototype->width /2 &&
+						sprite->x+sprite_width/2 +sprite->a >= sprite2->x - sprite2->prototype->width /2 &&
+						sprite->y-sprite_height/2+sprite->b <= sprite2->y + sprite2->prototype->height/2 &&
+						sprite->y+sprite_height/2+sprite->b >= sprite2->y - sprite2->prototype->height/2)
 					{
 						spritepalikka.koodi = 0;
 						spritepalikka.ala   = (int)sprite2->y + sprite2->prototype->height/2;
@@ -1416,15 +1395,15 @@ void UpdateBonusSprite(SpriteClass* sprite){
 					}
 				}
 
-				if (sprite_x < sprite2->x + sprite2->prototype->width/2 &&
-					sprite_x > sprite2->x - sprite2->prototype->width/2 &&
-					sprite_y < sprite2->y + sprite2->prototype->height/2 &&
-					sprite_y > sprite2->y - sprite2->prototype->height/2 &&
+				if (sprite->x < sprite2->x + sprite2->prototype->width/2 &&
+					sprite->x > sprite2->x - sprite2->prototype->width/2 &&
+					sprite->y < sprite2->y + sprite2->prototype->height/2 &&
+					sprite->y > sprite2->y - sprite2->prototype->height/2 &&
 					sprite->damage_timer == 0)
 				{
 					if (sprite2->prototype->type != TYPE_BONUS &&
 						!(sprite2 == Player_Sprite && sprite->prototype->how_destroyed != FX_DESTRUCT_EI_TUHOUDU))
-						sprite_a += sprite2->a*(rand()%4);
+						sprite->a += sprite2->a*(rand()%4);
 
 					// lis�t��n spriten painoon sit� koskettavan toisen spriten weight
 					sprite->weight_button += sprite2->prototype->weight;
@@ -1449,17 +1428,17 @@ void UpdateBonusSprite(SpriteClass* sprite){
 
 		// Tarkistetaan ettei menn� mihink��n suuntaan liian kovaa.
 
-		if (sprite_b > 4)
-			sprite_b = 4;
+		if (sprite->b > 4)
+			sprite->b = 4;
 
-		if (sprite_b < -4)
-			sprite_b = -4;
+		if (sprite->b < -4)
+			sprite->b = -4;
 
-		if (sprite_a > 3)
-			sprite_a = 3;
+		if (sprite->a > 3)
+			sprite->a = 3;
 
-		if (sprite_a < -3)
-			sprite_a = -3;
+		if (sprite->a < -3)
+			sprite->a = -3;
 
 		// Lasketaan
 
@@ -1483,77 +1462,73 @@ void UpdateBonusSprite(SpriteClass* sprite){
 		}
 
 		if (in_water != sprite->in_water) {
-			Effect_Splash((int)sprite_x,(int)sprite_y,32);
-			Play_GameSFX(splash_sound, 100, (int)sprite_x, (int)sprite_y, SOUND_SAMPLERATE, true);
+			Effect_Splash((int)sprite->x,(int)sprite->y,32);
+			Play_GameSFX(splash_sound, 100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, true);
 		}
 
 
 		if (!oikealle)
 		{
-			if (sprite_a > 0)
-				sprite_a = -sprite_a/1.5;
+			if (sprite->a > 0)
+				sprite->a = -sprite->a/1.5;
 		}
 
 		if (!vasemmalle)
 		{
-			if (sprite_a < 0)
-				sprite_a = -sprite_a/1.5;
+			if (sprite->a < 0)
+				sprite->a = -sprite->a/1.5;
 		}
 
 		if (!ylos)
 		{
-			if (sprite_b < 0)
-				sprite_b = 0;
+			if (sprite->b < 0)
+				sprite->b = 0;
 
 			sprite->jump_timer = sprite->prototype->max_jump;
 		}
 
 		if (!alas)
 		{
-			if (sprite_b >= 0)
+			if (sprite->b >= 0)
 			{
 				if (sprite->jump_timer > 0)
 				{
 					sprite->jump_timer = 0;
-				//	if (/*sprite_b == 4*/!maassa)
-				//		Play_GameSFX(pump_sound,20,(int)sprite_x, (int)sprite_y,
+				//	if (/*sprite->b == 4*/!maassa)
+				//		Play_GameSFX(pump_sound,20,(int)sprite->x, (int)sprite->y,
 				//				      int(25050-sprite->prototype->weight*4000),true);
 				}
 
-				if (sprite_b > 2)
-					sprite_b = -sprite_b/(3+rand()%2);
+				if (sprite->b > 2)
+					sprite->b = -sprite->b/(3+rand()%2);
 				else
-					sprite_b = 0;
+					sprite->b = 0;
 			}
-			//sprite_a /= kitka;
-			sprite_a /= 1.07;
+			//sprite->a /= kitka;
+			sprite->a /= 1.07;
 		}
 		else
 		{
-			sprite_a /= 1.02;
+			sprite->a /= 1.02;
 		}
 
-		sprite_b /= 1.5;
+		sprite->b /= 1.5;
 
-		if (sprite_b > 4)
-			sprite_b = 4;
+		if (sprite->b > 4)
+			sprite->b = 4;
 
-		if (sprite_b < -4)
-			sprite_b = -4;
+		if (sprite->b < -4)
+			sprite->b = -4;
 
-		if (sprite_a > 4)
-			sprite_a = 4;
+		if (sprite->a > 4)
+			sprite->a = 4;
 
-		if (sprite_a < -4)
-			sprite_a = -4;
+		if (sprite->a < -4)
+			sprite->a = -4;
 
-		sprite_x += sprite_a;
-		sprite_y += sprite_b;
+		sprite->x += sprite->a;
+		sprite->y += sprite->b;
 
-		sprite->x = sprite_x;
-		sprite->y = sprite_y;
-		sprite->a = sprite_a;
-		sprite->b = sprite_b;
 
 		sprite->can_move_right = oikealle;
 		sprite->can_move_left = vasemmalle;
@@ -1563,7 +1538,6 @@ void UpdateBonusSprite(SpriteClass* sprite){
 	else	// jos spriten weight on nolla, tehd��n spritest� "kelluva"
 	{
 		sprite->y = sprite->orig_y + cos_table(degree+(sprite->orig_x+sprite->orig_y)) / 3.0;
-		sprite_y = sprite->y;
 	}
 
 	sprite->weight = sprite->initial_weight;
@@ -1571,10 +1545,10 @@ void UpdateBonusSprite(SpriteClass* sprite){
 	int how_destroyed;
 
 	// Test if player touches bonus
-	if (sprite_x < Player_Sprite->x + Player_Sprite->prototype->width/2 &&
-		sprite_x > Player_Sprite->x - Player_Sprite->prototype->width/2 &&
-		sprite_y < Player_Sprite->y + Player_Sprite->prototype->height/2 &&
-		sprite_y > Player_Sprite->y - Player_Sprite->prototype->height/2 &&
+	if (sprite->x < Player_Sprite->x + Player_Sprite->prototype->width/2 &&
+		sprite->x > Player_Sprite->x - Player_Sprite->prototype->width/2 &&
+		sprite->y < Player_Sprite->y + Player_Sprite->prototype->height/2 &&
+		sprite->y > Player_Sprite->y - Player_Sprite->prototype->height/2 &&
 		sprite->damage_timer == 0)
 	{
 		if (sprite->energy > 0 && Player_Sprite->energy > 0)
@@ -1706,7 +1680,7 @@ void UpdateBonusSprite(SpriteClass* sprite){
 				Play_GameSFX(sprite->prototype->sounds[SOUND_DESTRUCTION],100, (int)sprite->x, (int)sprite->y,
 							  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 
-				Effect_Destruction(how_destroyed, (u32)sprite_x, (u32)sprite_y);
+				Effect_Destruction(how_destroyed, (u32)sprite->x, (u32)sprite->y);
 			}
 		}
 	}
