@@ -60,10 +60,9 @@ void Climber(SpriteClass*s);
 void Climber2(SpriteClass*s);
 void Fall_When_Shaken(SpriteClass*s);
 
-
-void Teleporter(SpriteClass*s);
-
 void Move_If_Switch_Pressed(SpriteClass*s, int game_button, int ak, int bk);
+void Teleporter(SpriteClass*s);
+void Turn_Back_If_Damaged(SpriteClass* s);
 
 /**
  * @brief 
@@ -82,6 +81,6 @@ void Attack_1_If_Damaged(SpriteClass*s);
 void Attack_2_If_Damaged(SpriteClass*s);
 
 void Transform_If_Damaged(SpriteClass* s);
-void Turn_Back_If_Damaged(SpriteClass* s);
+
 
 }

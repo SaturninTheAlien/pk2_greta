@@ -175,6 +175,8 @@ AI_Table::AI_Table(){
 
     Init_AI(AI_FOLLOW_COMMANDS, AI_TRIGGER_ALIVE, AI_Functions::Follow_Commands);
 
+    Init_AI(AI_TURN_BACK_IF_DAMAGED, AI_TRIGGER_ALIVE, AI_Functions::Turn_Back_If_Damaged);
+
     /**
      * @brief 
      * Infos
@@ -219,7 +221,7 @@ AI_Table::AI_Table(){
     Init_AI(AI_ATTACK_1_IF_DAMAGED, AI_TRIGGER_DAMAGE, AI_Functions::Attack_1_If_Damaged); //TO DO Redesign
     Init_AI(AI_ATTACK_2_IF_DAMAGED, AI_TRIGGER_DAMAGE, AI_Functions::Attack_2_If_Damaged); //TO DO Redesign
     Init_AI(AI_TRANSFORM_IF_DAMAGED, AI_TRIGGER_DAMAGE, AI_Functions::Transform_If_Damaged, true, true); //TO DO Redesign
-    Init_AI(AI_TURN_BACK_IF_DAMAGED, AI_TRIGGER_DAMAGE, AI_Functions::Turn_Back_If_Damaged);
+    
 
     //Init_AI(AI_ATT)
 }

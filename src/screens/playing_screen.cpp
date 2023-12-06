@@ -786,6 +786,7 @@ void PlayingScreen::Loop(){
 			
 			if (PInput::Keydown(PInput::DEL)) {
 				Player_Sprite->energy = 0;
+				Player_Sprite->self_destruction = true;
 			}
 
 			if (PInput::Keydown(PInput::TAB) || PInput::Keydown(PInput::JOY_GUIDE) || Gui_tab){

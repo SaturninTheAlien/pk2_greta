@@ -847,6 +847,13 @@ void Teleporter(SpriteClass*s){
 }
 
 
+void Turn_Back_If_Damaged(SpriteClass*s) {
+	if (s->damage_timer == 1 && s->energy > 0){
+		if (s->a != 0) s->a = -s->a;
+		s->flip_x = !s->flip_x;
+	}
+}
+
 /**
  * @brief 
  * AIs triggered on death
@@ -901,11 +908,6 @@ void Transform_If_Damaged(SpriteClass* s){
 
 		s->Animaatio(ANIMATION_IDLE,true);
 	}
-}
-
-void Turn_Back_If_Damaged(SpriteClass*s) {
-	if (s->a != 0) s->a = -s->a;
-	s->flip_x = !s->flip_x;
 }
 
 
