@@ -39,9 +39,9 @@ static bool vasemmalle;
 static bool ylos;
 static bool alas;
 
-static bool in_water;
+//static bool in_water;
 
-static double max_speed;
+//static double max_speed;
 
 static PK2BLOCK Block_Get(u32 x, u32 y) {
 
@@ -513,9 +513,9 @@ void UpdateSprite(SpriteClass* sprite){
 	sprite_upper   = sprite->y - sprite_height / 2;
 	sprite_bottom   = sprite->y + sprite_height / 2;
 
-	max_speed = sprite->prototype->max_speed;
+	double max_speed = sprite->prototype->max_speed;
 
-	in_water = sprite->in_water;
+	bool in_water = sprite->in_water;
 
 	oikealle	 = true,
 	vasemmalle	 = true,
@@ -1297,10 +1297,7 @@ void UpdateBonusSprite(SpriteClass* sprite){
 	ylos		= true,
 	alas		= true;
 
-	in_water = sprite->in_water;
-
-	max_speed = sprite->prototype->max_speed;
-
+	bool in_water = sprite->in_water;
 	if (sprite->damage_timer > 0)
 		sprite->damage_timer--;
 
