@@ -123,6 +123,7 @@ void Projectile(SpriteClass*s){
 	{
 		s->damage_taken = s->prototype->energy;
 		s->damage_taken_type = DAMAGE_ALL;
+		s->self_destruction = true;
 	}
 
 	if (s->energy < 1)
@@ -257,18 +258,6 @@ void Random_Turning(SpriteClass*s){
     {
         s->flip_x = !s->flip_x;
     }
-}
-
-
-void Turn_Back_If_Damaged(SpriteClass*s) {
-
-	if (s->damage_timer == 1) {
-		
-		if (s->a != 0) s->a = -s->a;
-
-		s->flip_x = !s->flip_x;
-	
-	}
 }
 
 
@@ -436,23 +425,7 @@ void SelfDestruction(SpriteClass*s){
 	{
 		s->damage_taken = s->energy;
 		s->damage_taken_type = DAMAGE_ALL;
-	}
-}
-
-void Attack_1_If_Damaged(SpriteClass*s){
-	if (s->damage_taken > 0)
-	{
-		s->attack1_timer = s->prototype->attack1_time;
-		s->charging_timer = 0;
-	}
-}
-
-
-void Attack_2_If_Damaged(SpriteClass*s){
-	if (s->damage_taken > 0)
-	{
-		s->attack2_timer = s->prototype->attack2_time;
-		s->charging_timer = 0;
+		s->self_destruction = true;
 	}
 }
 
@@ -688,24 +661,7 @@ void Self_Transformation(SpriteClass* s){
 	}
 }
 
-void Transform_If_Damaged(SpriteClass* s){
-	PrototypeClass* transformation = s->prototype->transformation;
-	if (transformation!=nullptr  && transformation != s->prototype)
-	{
-		if (s->damage_taken > 0)
-		{
-			s->prototype = transformation;
-			s->initial_weight = s->prototype->weight;
 
-			s->ammo1 = s->prototype->ammo1;
-			s->ammo2 = s->prototype->ammo2;
-
-			s->animation_index = -1;
-
-			s->Animaatio(ANIMATION_IDLE,true);
-		}
-	}
-}
 void Die_If_Parent_Nullptr(SpriteClass* s){
 	if (s->parent_sprite != nullptr)
 	{
@@ -893,7 +849,7 @@ void Teleporter(SpriteClass*s){
 
 /**
  * @brief 
- * AIs triggered on Death
+ * AIs triggered on death
  */
 
 void EvilOne(SpriteClass*s){
@@ -910,6 +866,46 @@ void Reborn(SpriteClass*s){
 	s->respawn_timer = s->prototype->charge_time;
 	s->energy = s->prototype->energy;
 	s->removed = false;
+}
+
+
+/**
+ * @brief 
+ * AIs triggered on damage
+ * 
+ */
+
+void Attack_1_If_Damaged(SpriteClass*s){
+	s->attack1_timer = s->prototype->attack1_time;
+	s->charging_timer = 0;
+}
+
+
+void Attack_2_If_Damaged(SpriteClass*s){
+	s->attack2_timer = s->prototype->attack2_time;
+	s->charging_timer = 0;
+}
+
+
+void Transform_If_Damaged(SpriteClass* s){
+	PrototypeClass* transformation = s->prototype->transformation;
+	if (transformation!=nullptr  && transformation != s->prototype)
+	{
+		s->prototype = transformation;
+		s->initial_weight = s->prototype->weight;
+
+		s->ammo1 = s->prototype->ammo1;
+		s->ammo2 = s->prototype->ammo2;
+
+		s->animation_index = -1;
+
+		s->Animaatio(ANIMATION_IDLE,true);
+	}
+}
+
+void Turn_Back_If_Damaged(SpriteClass*s) {
+	if (s->a != 0) s->a = -s->a;
+	s->flip_x = !s->flip_x;
 }
 
 

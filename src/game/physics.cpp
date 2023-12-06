@@ -394,34 +394,11 @@ void SpriteOnDamage(SpriteClass* sprite){
 	}
 
 
-	/*for(const SpriteAI::AI_Class& ai: sprite->prototype->AI_f){
+	for(const SpriteAI::AI_Class& ai: sprite->prototype->AI_f){
+		if(!ai.apply_to_creatures)continue;
+
 		if(ai.trigger==AI_TRIGGER_DAMAGE){
 			ai.func(sprite);
-		}
-	}*/
-
-	for(const int& ai:sprite->prototype->AI_v){
-
-		switch (ai){
-		case AI_CHANGE_SKULL_BLOCKS_IF_DAMAGED:
-			Game->Change_SkullBlocks();
-		
-		break;
-
-		case AI_ATTACK_1_IF_DAMAGED:{
-			sprite->attack1_timer = sprite->prototype->attack1_time;
-			sprite->charging_timer = 0;
-		}
-		break;
-
-		case AI_ATTACK_2_IF_DAMAGED:{
-			sprite->attack2_timer = sprite->prototype->attack2_time;
-			sprite->charging_timer = 0;
-		}
-		break;
-
-		default:
-			break;
 		}
 	}
 }
@@ -1229,7 +1206,7 @@ void UpdateSprite(SpriteClass* sprite){
 	/*****************************************************************************************/
 
 	// If the sprite is ready and isn't crouching
-	if (sprite->charging_timer == 0 && !sprite->crouched) {
+	if ((sprite->charging_timer == 0 && !sprite->crouched) || sprite->self_destruction) {
 		// the attack has just started
 		if (sprite->attack1_timer == sprite->prototype->attack1_time) {
 			// provides recovery time, after which the sprite can attack again

@@ -93,9 +93,6 @@ AI_Table::AI_Table(){
     
     Init_AI(AI_SELF_DESTRUCTION, AI_TRIGGER_ALIVE, AI_Functions::SelfDestruction, true, false, true, true);
 
-    Init_AI(AI_ATTACK_1_IF_DAMAGED, AI_TRIGGER_ALIVE, AI_Functions::Attack_1_If_Damaged); //TO DO Redesign
-    Init_AI(AI_ATTACK_2_IF_DAMAGED, AI_TRIGGER_ALIVE, AI_Functions::Attack_2_If_Damaged); //TO DO Redesign
-
     Init_AI(AI_ATTACK_1_NONSTOP, AI_TRIGGER_ALIVE, AI_Functions::Attack_1_Nonstop);
     Init_AI(AI_ATTACK_2_NONSTOP, AI_TRIGGER_ALIVE, AI_Functions::Attack_2_Nonstop);
 
@@ -143,8 +140,6 @@ AI_Table::AI_Table(){
 
     Init_AI(AI_SELF_TRANSFORMATION, AI_TRIGGER_ALIVE, AI_Functions::Self_Transformation, true, true, true, true);
 
-    Init_AI(AI_TRANSFORM_IF_DAMAGED, AI_TRIGGER_ALIVE, AI_Functions::Transform_If_Damaged, true, true); //TO DO Redesign
-
     Init_AI(AI_TELEPORT, AI_TRIGGER_ALIVE, AI_Functions::Teleporter);
 
     Init_AI(AI_CLIMBER, AI_TRIGGER_ALIVE, AI_Functions::Climber);
@@ -175,7 +170,7 @@ AI_Table::AI_Table(){
 
     Init_AI(AI_RANDOM_MOVE_VERT_HORI, AI_TRIGGER_ALIVE, AI_Functions::Random_Move_Vert_Hori);
 
-    Init_AI(AI_TURN_BACK_IF_DAMAGED, AI_TRIGGER_ALIVE, AI_Functions::Turn_Back_If_Damaged);
+    
     Init_AI(AI_DESTRUCTED_NEXT_TO_PLAYER, AI_TRIGGER_ALIVE, AI_Functions::Destructed_Next_To_Player);
 
     Init_AI(AI_FOLLOW_COMMANDS, AI_TRIGGER_ALIVE, AI_Functions::Follow_Commands);
@@ -220,6 +215,13 @@ AI_Table::AI_Table(){
     Init_AI(AI_CHANGE_SKULL_BLOCKS_IF_DAMAGED, AI_TRIGGER_DAMAGE, [](SpriteClass*s){
         Game->Change_SkullBlocks();
     });
+
+    Init_AI(AI_ATTACK_1_IF_DAMAGED, AI_TRIGGER_DAMAGE, AI_Functions::Attack_1_If_Damaged); //TO DO Redesign
+    Init_AI(AI_ATTACK_2_IF_DAMAGED, AI_TRIGGER_DAMAGE, AI_Functions::Attack_2_If_Damaged); //TO DO Redesign
+    Init_AI(AI_TRANSFORM_IF_DAMAGED, AI_TRIGGER_DAMAGE, AI_Functions::Transform_If_Damaged, true, true); //TO DO Redesign
+    Init_AI(AI_TURN_BACK_IF_DAMAGED, AI_TRIGGER_DAMAGE, AI_Functions::Turn_Back_If_Damaged);
+
+    //Init_AI(AI_ATT)
 }
 
 }
