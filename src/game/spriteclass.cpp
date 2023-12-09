@@ -1124,3 +1124,21 @@ void SpriteClass::Animation_Egg() {
 	
 	Animaatio(uusi_animaatio, alusta);
 }
+
+bool SpriteClass::Transform(){
+
+	PrototypeClass * transformation = this->prototype->transformation;
+	if(transformation!=nullptr){
+		this->prototype = transformation;
+		this->initial_weight = transformation->weight;
+		this->animation_index = -1;
+		this->ammo1 = transformation->ammo1;
+		this->ammo2 = transformation->ammo2;
+		this->enemy = transformation->enemy;
+
+		this->current_command = 0;
+		return true;
+	}
+
+	return false;
+}

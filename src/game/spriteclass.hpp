@@ -262,73 +262,12 @@ public:
     void HandleEffects();                      // create sprite effects
     bool HasAI(int AI)const{
         return prototype->HasAI(AI);
-    }; // if the sprite has a AI
-
-
-    //AI_Functions
-    //void AI_Rooster();
-    //void AI_Bonus();
-    //void AI_Egg();
-    //void AI_Egg2();
-    //void AI_Projectile();
-    //void AI_Jumper();
-    //void AI_BlueFrog();
-    //void AI_RedFrog();
-    //void AI_Basic();
-    //void AI_Turning_Horizontally();
-    //void AI_Turning_Vertically();
-    //void AI_Look_For_Cliffs();
-    //void AI_Random_Turning();
-    //void AI_Random_Change_Dir_H();
-    //void AI_Random_Jump();
-    //void AI_Random_Move_Vert_Hori();
-    //void AI_Follow_Player(SpriteClass &player);
-    //void AI_Follow_Player_If_Seen(SpriteClass &player);
-    //void AI_Follow_Player_If_Seen_Vert_Hori(SpriteClass &player);
-    //void AI_Follow_Player_Vert_Hori(SpriteClass &player);
-    //int AI_Jahtaa_Pelaajaa(SpriteClass &player); //unused
-    //void AI_Run_Away_From_Player(SpriteClass &player);
-    //void AI_Transform_When_Energy_Under_2();
-    //void AI_Transform_When_Energy_Over_1();
-    //void AI_Self_Transformation();
-    //void AI_Transform_If_Damaged();
-    /*void AI_Attack_1_If_Damaged();
-    void AI_Attack_2_If_Damaged();*/
-    /*void AI_Attack_1_Nonstop();
-    void AI_Attack_2_Nonstop();*/
-    //void AI_Attack_1_if_Player_in_Front(SpriteClass &player);
-    //void AI_Attack_2_if_Player_in_Front(SpriteClass &player);
-    //void AI_Attack_1_if_Player_Below(SpriteClass &player);
-
-    //void AI_Attack_1_If_Player_Above(SpriteClass& player);
-    //void AI_Attack_2_If_Player_Above(SpriteClass& player);
-    //void AI_Transform_If_Player_Above(SpriteClass& player);
-    //void AI_Transform_If_Player_Below(SpriteClass& player);
-
-
-    //void AI_NonStop();
-    //void AI_Jump_If_Player_Above(SpriteClass &player);
-    //void AI_SelfDestruction();
-    //void AI_Damaged_by_Water();
-    //void AI_Kill_Everyone();
-    //void AI_Friction_Effect();
-    //void AI_Hiding();
-    //void AI_Return_To_Orig_X();
-    //void AI_Return_To_Orig_Y();
-    //void AI_Turn_Back_If_Damaged();
-    //void AI_Fall_When_Shaken(int tarina);
+    };
+    
     void AI_Move_X(double liike);
     void AI_Move_Y(double liike);
-    //void AI_Tippuu_If_Switch_Pressed(int kytkin);
-    //void AI_Move_If_Switch_Pressed(int button, int ak, int bk);
-    //bool AI_Teleport(const std::list<SpriteClass*>& spritet, SpriteClass &player);
-    //void AI_Climber();
-    //void AI_Climber2();
-    //bool AI_Info(SpriteClass &player);
-    //void AI_Die_If_Parent_Nullptr();
 
-    //void AI_Destructed_Next_To_Player(SpriteClass &player);
-    //void AI_Follow_Commands(SpriteClass *player);
+    bool Transform();
 
 private:
     void Animation_Basic();

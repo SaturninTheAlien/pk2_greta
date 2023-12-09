@@ -82,7 +82,7 @@ void Reborn(SpriteClass*s);
  */
 void Attack_1_If_Damaged(SpriteClass*s);
 void Attack_2_If_Damaged(SpriteClass*s);
-void Transform_If_Damaged(SpriteClass* s);
+//void Transform_If_Damaged(SpriteClass* s);
 
 /**
  * @brief 
@@ -101,6 +101,6 @@ void StartFacingThePlayerVert(SpriteClass*s);
  */
 
 void DieIfSkullBlocksChanged(SpriteClass*s);
-void TransformIfSkullBlocksChanged(SpriteClass*s);
+//void TransformIfSkullBlocksChanged(SpriteClass*s);
 
 }

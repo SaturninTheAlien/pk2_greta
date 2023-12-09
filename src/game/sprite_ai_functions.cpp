@@ -648,14 +648,9 @@ void Self_Transformation(SpriteClass* s){
 
 		if (s->mutation_timer/*charging_timer*/ == 1)
 		{
-			s->prototype = transformation;
-			s->initial_weight = s->prototype->weight;
-
-			s->ammo1 = s->prototype->ammo1;
-			s->ammo2 = s->prototype->ammo2;
+			s->Transform();
 
 			s->animation_index = -1;
-
 			s->Animaatio(ANIMATION_IDLE,true);
 		}
 	}
@@ -932,21 +927,6 @@ void Attack_2_If_Damaged(SpriteClass*s){
 }
 
 
-void Transform_If_Damaged(SpriteClass* s){
-	PrototypeClass* transformation = s->prototype->transformation;
-	if (transformation!=nullptr  && transformation != s->prototype){
-		s->prototype = transformation;
-		s->initial_weight = s->prototype->weight;
-
-		s->ammo1 = s->prototype->ammo1;
-		s->ammo2 = s->prototype->ammo2;
-
-		s->animation_index = -1;
-
-		s->Animaatio(ANIMATION_IDLE,true);
-	}
-}
-
 
 void RandomStartDirection(SpriteClass*sprite){
 	while (sprite->a == 0) {
@@ -986,20 +966,6 @@ void StartFacingThePlayerVert(SpriteClass*sprite){
 void DieIfSkullBlocksChanged(SpriteClass*sprite){
 	sprite->damage_taken = sprite->energy + 1;
 	sprite->damage_taken_type = DAMAGE_ALL;
-}
-
-void TransformIfSkullBlocksChanged(SpriteClass*sprite){
-	PrototypeClass * transformation = sprite->prototype->transformation;
-	if(transformation!=nullptr){
-		sprite->prototype = transformation;
-		sprite->initial_weight = transformation->weight;
-		sprite->animation_index = 0;
-		sprite->ammo1 = transformation->ammo1;
-		sprite->ammo2 = transformation->ammo2;
-		sprite->enemy = transformation->enemy;
-
-		sprite->current_command = 0;
-	}
 }
 
 }

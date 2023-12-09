@@ -166,20 +166,7 @@ public:
 
 
 bool TransformationCommand::execute(SpriteClass*sprite, SpriteClass*){
-    PrototypeClass* transformation = sprite->prototype->transformation;   
-
-    if(transformation!=nullptr){
-        sprite->prototype = transformation;
-        sprite->initial_weight = transformation->weight;
-        sprite->animation_index = 0;
-        
-        sprite->ammo1 = transformation->ammo1;
-        sprite->ammo2 = transformation->ammo2;
-        
-        sprite->enemy = transformation->enemy;
-    }
-    //skip command if transformation is nullptr
-    return true;
+    return sprite->Transform();
 };
 
 class SelfDestructionCommand: public Command{

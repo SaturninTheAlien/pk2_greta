@@ -223,7 +223,7 @@ AI_Table::AI_Table(){
 
     Init_AI(AI_ATTACK_1_IF_DAMAGED, AI_TRIGGER_DAMAGE, AI_Functions::Attack_1_If_Damaged);
     Init_AI(AI_ATTACK_2_IF_DAMAGED, AI_TRIGGER_DAMAGE, AI_Functions::Attack_2_If_Damaged);
-    Init_AI(AI_TRANSFORM_IF_DAMAGED, AI_TRIGGER_DAMAGE, AI_Functions::Transform_If_Damaged, true, true);
+    Init_AI(AI_TRANSFORM_IF_DAMAGED, AI_TRIGGER_DAMAGE, [](SpriteClass*s){s->Transform();}, true, true, true, true);
 
     /**
      * @brief 
@@ -243,7 +243,7 @@ AI_Table::AI_Table(){
      */
 
     Init_AI(AI_DIE_IF_SKULL_BLOCKS_CHANGED, AI_TRIGGER_SKULLS_CHANGED, AI_Functions::DieIfSkullBlocksChanged);
-    Init_AI(AI_TRANSFORM_IF_SKULL_BLOCKS_CHANGED, AI_TRIGGER_SKULLS_CHANGED, AI_Functions::TransformIfSkullBlocksChanged);
+    Init_AI(AI_TRANSFORM_IF_SKULL_BLOCKS_CHANGED, AI_TRIGGER_SKULLS_CHANGED, [](SpriteClass*s){s->Transform();}, true, true, true, true);
 }
 
 }
