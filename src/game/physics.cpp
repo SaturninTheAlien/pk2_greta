@@ -2,6 +2,7 @@
 //Pekka Kana 2
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
+#include <iostream>
 #include <sstream>
 #include "game/physics.hpp"
 
@@ -789,7 +790,7 @@ void UpdateSprite(SpriteClass* sprite){
 			Particles_New(PARTICLE_SPARK,sprite->x-4,sprite->y,0,-0.5-rand()%2,rand()%30+30,0,32);
 	}
 
-	if (in_water != sprite->in_water) { // Sprite comes in or out from water
+	if (in_water != sprite->in_water&&!sprite->initial_update) { // Sprite comes in or out from water
 		Effect_Splash(sprite->x, sprite->y, 32);
 		Play_GameSFX(splash_sound, 100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, true);
 	}
@@ -1257,6 +1258,8 @@ void UpdateSprite(SpriteClass* sprite){
 	if (sprite->prototype->sounds[SOUND_RANDOM] != -1 && rand()%200 == 1 && sprite->energy > 0)
 		Play_GameSFX(sprite->prototype->sounds[SOUND_RANDOM],80,(int)sprite->x, (int)sprite->y,
 					  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
+
+	sprite->initial_update = false;
 }
 
 void UpdateBonusSprite(SpriteClass* sprite){
@@ -1435,7 +1438,7 @@ void UpdateBonusSprite(SpriteClass* sprite){
 
 		}
 
-		if (in_water != sprite->in_water) {
+		if (in_water != sprite->in_water && !sprite->initial_update) {
 			Effect_Splash((int)sprite->x,(int)sprite->y,32);
 			Play_GameSFX(splash_sound, 100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, true);
 		}
@@ -1671,5 +1674,7 @@ void UpdateBonusSprite(SpriteClass* sprite){
 	/* The energy doesn't matter that the player is a bonus item */
 	if (sprite->player != 0)
 		sprite->energy = 0;
+
+	sprite->initial_update = false;
 }
 
