@@ -391,5 +391,6 @@ void Sprites_clear() {
 
 	Sprites_List.clear();
 	bgSprites_List.clear();
+	fgSprites_List.clear();
 	Player_Sprite = nullptr;
 }
