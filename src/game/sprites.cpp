@@ -24,6 +24,8 @@ PrototypeClass* Level_Prototypes_List[MAX_PROTOTYYPPEJA] = {nullptr};
 
 std::list<SpriteClass*> Sprites_List;
 std::list<SpriteClass*> bgSprites_List;
+std::list<SpriteClass*> fgSprites_List;
+
 SpriteClass* Player_Sprite = nullptr;
 
 void Level_Prototypes_ClearAll() {
@@ -66,9 +68,11 @@ int Level_Prototypes_LoadAll() {
 }
 
 void Sprites_add_bg(SpriteClass* sprite) {
-
 	bgSprites_List.push_back(sprite);
+}
 
+void Sprites_add_fg(SpriteClass* sprite){
+	fgSprites_List.push_back(sprite);
 }
 
 bool Compare_bgSprites(SpriteClass* s1, SpriteClass* s2) {
@@ -177,8 +181,12 @@ void Sprites_add(PrototypeClass* protot, int is_Player_Sprite, double x, double 
 		sprite->parent_sprite = parent;
 	}
 
-	if (protot->type == TYPE_BACKGROUND)
-		Sprites_add_bg(sprite);	
+	if (protot->type == TYPE_BACKGROUND){
+		Sprites_add_bg(sprite);
+	}
+	else if(protot->type == TYPE_FOREGROUND){
+		Sprites_add_fg(sprite);
+	}
 }
 
 void Sprites_add_ammo(PrototypeClass* protot, double x, double y, SpriteClass* emo) {
@@ -238,8 +246,12 @@ void Sprites_add_ammo(PrototypeClass* protot, double x, double y, SpriteClass* e
 		sprite->parent_sprite = nullptr;
 	}
 
-	if (protot->type == TYPE_BACKGROUND)
+	if (protot->type == TYPE_BACKGROUND){
 		Sprites_add_bg(sprite);
+	}
+	else if(protot->type == TYPE_FOREGROUND){
+		Sprites_add_fg(sprite);
+	}
 
 }
 
@@ -256,7 +268,7 @@ bool Sprite_Destructed (SpriteClass* sprite) {
 	return false;
 	
 }
-
+/*
 bool bgSprite_Destructed (SpriteClass* sprite) { 
 	
 	if (sprite->removed)
@@ -264,7 +276,7 @@ bool bgSprite_Destructed (SpriteClass* sprite) {
 
 	return false;
 
-}
+}*/
 
 void Sprites_changeSkullBlocks(){
 	for(SpriteClass* sprite: Sprites_List){
@@ -348,7 +360,8 @@ int Update_Sprites() {
 	}
 
 	// Clean destructed sprites
-	bgSprites_List.remove_if(bgSprite_Destructed);
+	fgSprites_List.remove_if([](SpriteClass*s){return s->removed;});
+	bgSprites_List.remove_if([](SpriteClass*s){return s->removed;});
 	Sprites_List.remove_if(Sprite_Destructed);
 
 	/*int count = 0;

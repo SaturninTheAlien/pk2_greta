@@ -19,6 +19,8 @@ private:
     bool Is_Sprite_Visible(const SpriteClass* sprite)const;
 
     void Draw_InGame_BGSprites();
+    void Draw_InGame_FGSprites();
+
     void Draw_InGame_Sprites();
     void Draw_InGame_DebugInfo();
     void Draw_InGame_DevKeys();

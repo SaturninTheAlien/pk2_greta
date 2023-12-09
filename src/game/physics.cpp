@@ -1207,7 +1207,7 @@ void UpdateSprite(SpriteClass* sprite){
 	/*****************************************************************************************/
 
 	// If the sprite is ready and isn't crouching
-	if ((sprite->charging_timer == 0 && !sprite->crouched) || sprite->self_destruction) {
+	if ((sprite->charging_timer == 0 || sprite->self_destruction) && !sprite->crouched ) {
 		// the attack has just started
 		if (sprite->attack1_timer == sprite->prototype->attack1_time) {
 			// provides recovery time, after which the sprite can attack again

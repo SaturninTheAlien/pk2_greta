@@ -89,15 +89,19 @@ This example starts the level13.map (the robot boss fight) on dev mode:
     * AI_ATTACK_2_IF_PLAYER_ABOVE (32)
     * AI_TRANSFORM_IF_PLAYER_BELOW (33)
     * AI_TRANSFORM_IF_PLAYER_ABOVE (34)
+    * AI_FOLLOW_COMMANDS (40)
     * AI_MOVE_X_COS_FREE (68)
     * AI_MOVE_Y_COS_FREE (69)
     * AI_TRANSFORM_IF_SKULL_BLOCKS_CHANGED (82)
     * AI_DIE_IF_SKULL_BLOCKS_CHANGED (83)
 
-# Experimental features
-* Sprite inheritance / "parent" field.
-* AI_FOLLOW_COMMANDS (40) and "commands" field in the new sprite format.
+    * AI_RETURN_TO_ORIG_X_FIXED (84) - similar to legacy AI_RETURN_TO_ORIG_X (28) but without oscillations,
+    * AI_RETURN_TO_ORIG_Y_FIXED (85) - similar to legacy AI_RETURN_TO_ORIG_Y (29) but without oscillations,
+    * AI_TRANSFORM_IF_DAMAGED (129) - this AI was implemented, but not working due to a bug before,
 
+* Sprite inheritance / "parent" field.
+
+* AI_FOLLOW_COMMANDS (40) and "commands" field in the new sprite format:
 Currently available commands:
 > waypoint_x, \<tile_x\>\
 > waypoint_y, \<tile_y\>\
@@ -111,8 +115,13 @@ Currently available commands:
 
 Commands / waypoints are executed by the sprite in a loop unless there is "die" or "transform" command.
 
+* Foreground sprites (type 6).
+Currently they don't have any AIs supported or parallax types.
+
 # Fixed bugs
-* Fixed the bug causing dropped bonuses with weight 0 to levitate (not tested yet!),
+* Removed initial splash effect if the sprite spawns in the water
+
+* Fixed the bug causing dropped bonuses with weight 0 to levitate (now definitely!),
 * Wall sprites are no longer walls after their death.
 
 * Ambient sprites (indestructible and harmless) such as chains and white butterflies no longer block attacks.

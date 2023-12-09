@@ -126,10 +126,26 @@ void PlayingScreen::Draw_InGame_BGSprites() {
 	}
 }
 
+void PlayingScreen::Draw_InGame_FGSprites(){
+
+	for(SpriteClass* sprite : fgSprites_List){
+
+		if(Is_Sprite_Visible(sprite)) {
+
+			sprite->hidden = false;
+			sprite->Draw(Game->camera_x,Game->camera_y);
+		}
+		else{
+			sprite->hidden = true;
+		}
+	}
+
+}
+
 void PlayingScreen::Draw_InGame_Sprites() {
 
 	for (SpriteClass* sprite : Sprites_List) {
-		if (sprite->prototype->type == TYPE_BACKGROUND)
+		if (sprite->prototype->type == TYPE_BACKGROUND || sprite->prototype->type == TYPE_FOREGROUND)
 			continue;
 		
 		if (sprite->removed || sprite->respawn_timer>0)
@@ -530,6 +546,8 @@ void PlayingScreen::Draw() {
 	Particles_DrawFront(Game->camera_x, Game->camera_y);
 
 	Game->map.DrawForegroundTiles(Game->camera_x,Game->camera_y);
+
+	Draw_InGame_FGSprites();
 
 	if (Settings.draw_itembar)
 		Draw_InGame_Lower_Menu();

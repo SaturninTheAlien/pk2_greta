@@ -12,6 +12,7 @@
 
 extern std::list<SpriteClass*> Sprites_List;
 extern std::list<SpriteClass*> bgSprites_List;
+extern std::list<SpriteClass*> fgSprites_List;
 extern SpriteClass* Player_Sprite;
 
 void Level_Prototypes_ClearAll();
