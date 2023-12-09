@@ -368,7 +368,7 @@ int GameClass::Open_Map() {
 	
 	this->keys = Count_Keys();
 
-	Sprites_start_directions();
+	Sprites_On_Game_Start();
 
 	Particles_Clear();
 	Particles_LoadBG(&map);

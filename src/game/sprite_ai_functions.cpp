@@ -854,6 +854,44 @@ void Turn_Back_If_Damaged(SpriteClass*s) {
 	}
 }
 
+
+void Return_To_Orig_X_Fixed(SpriteClass*s){
+
+	if(s->seen_player_x == -1){
+		double max_speed = s->prototype->max_speed / 3.5;
+		double dx = s->x - s->orig_x;
+
+		if(dx*dx <= max_speed*max_speed){
+			s->a = 0;
+			s->x = s->orig_x;
+		}
+		else if(s->x > s->orig_x){
+			s->flip_x = true;
+			s->a = -max_speed;
+		}
+		else{
+			s->flip_x = false;
+			s->a = max_speed;
+		}
+	}	
+}
+void Return_To_Orig_Y_Fixed(SpriteClass*s){
+	if(s->seen_player_y==-1){
+		double max_speed = s->prototype->max_speed / 3.5;
+		double dy = s->y - s->orig_y;
+		if(dy*dy <= max_speed*max_speed){
+			s->b = 0;
+			s->y = s->orig_y;
+		}
+		else if(s->y > s->orig_y){
+			s->b = -max_speed;
+		}
+		else{
+			s->b = max_speed;
+		}
+	}
+}
+
 /**
  * @brief 
  * AIs triggered on death
@@ -896,8 +934,7 @@ void Attack_2_If_Damaged(SpriteClass*s){
 
 void Transform_If_Damaged(SpriteClass* s){
 	PrototypeClass* transformation = s->prototype->transformation;
-	if (transformation!=nullptr  && transformation != s->prototype)
-	{
+	if (transformation!=nullptr  && transformation != s->prototype){
 		s->prototype = transformation;
 		s->initial_weight = s->prototype->weight;
 
@@ -910,5 +947,59 @@ void Transform_If_Damaged(SpriteClass* s){
 	}
 }
 
+
+void RandomStartDirection(SpriteClass*sprite){
+	while (sprite->a == 0) {
+		sprite->a = ((rand()%2 - rand()%2) * sprite->prototype->max_speed) / 3.5;//2;
+	}
+}
+
+void RandomStartDirectionVert(SpriteClass*sprite){
+	while (sprite->b == 0) {
+		sprite->b = ((rand()%2 - rand()%2) * sprite->prototype->max_speed) / 3.5;//2;
+	}
+}
+
+void StartFacingThePlayer(SpriteClass*sprite){
+
+	if(player==nullptr) return;
+
+	if (sprite->x < player->x)
+		sprite->a = sprite->prototype->max_speed / 3.5;
+
+	if (sprite->x > player->x)
+		sprite->a = (sprite->prototype->max_speed * -1) / 3.5;
+}
+
+void StartFacingThePlayerVert(SpriteClass*sprite){
+
+	if(player==nullptr) return;
+
+	if (sprite->y < player->y)
+		sprite->b = sprite->prototype->max_speed / -3.5;
+
+	if (sprite->y > player->y)
+		sprite->b = sprite->prototype->max_speed / 3.5;
+
+}
+
+void DieIfSkullBlocksChanged(SpriteClass*sprite){
+	sprite->damage_taken = sprite->energy + 1;
+	sprite->damage_taken_type = DAMAGE_ALL;
+}
+
+void TransformIfSkullBlocksChanged(SpriteClass*sprite){
+	PrototypeClass * transformation = sprite->prototype->transformation;
+	if(transformation!=nullptr){
+		sprite->prototype = transformation;
+		sprite->initial_weight = transformation->weight;
+		sprite->animation_index = 0;
+		sprite->ammo1 = transformation->ammo1;
+		sprite->ammo2 = transformation->ammo2;
+		sprite->enemy = transformation->enemy;
+
+		sprite->current_command = 0;
+	}
+}
 
 }

@@ -177,6 +177,9 @@ AI_Table::AI_Table(){
 
     Init_AI(AI_TURN_BACK_IF_DAMAGED, AI_TRIGGER_ALIVE, AI_Functions::Turn_Back_If_Damaged);
 
+    Init_AI(AI_RETURN_TO_ORIG_X_FIXED, AI_TRIGGER_ALIVE, AI_Functions::Return_To_Orig_X_Fixed);
+    Init_AI(AI_RETURN_TO_ORIG_Y_FIXED, AI_TRIGGER_ALIVE, AI_Functions::Return_To_Orig_Y_Fixed);
+
     /**
      * @brief 
      * Infos
@@ -218,12 +221,29 @@ AI_Table::AI_Table(){
         Game->Change_SkullBlocks();
     });
 
-    Init_AI(AI_ATTACK_1_IF_DAMAGED, AI_TRIGGER_DAMAGE, AI_Functions::Attack_1_If_Damaged); //TO DO Redesign
-    Init_AI(AI_ATTACK_2_IF_DAMAGED, AI_TRIGGER_DAMAGE, AI_Functions::Attack_2_If_Damaged); //TO DO Redesign
-    Init_AI(AI_TRANSFORM_IF_DAMAGED, AI_TRIGGER_DAMAGE, AI_Functions::Transform_If_Damaged, true, true); //TO DO Redesign
-    
+    Init_AI(AI_ATTACK_1_IF_DAMAGED, AI_TRIGGER_DAMAGE, AI_Functions::Attack_1_If_Damaged);
+    Init_AI(AI_ATTACK_2_IF_DAMAGED, AI_TRIGGER_DAMAGE, AI_Functions::Attack_2_If_Damaged);
+    Init_AI(AI_TRANSFORM_IF_DAMAGED, AI_TRIGGER_DAMAGE, AI_Functions::Transform_If_Damaged, true, true);
 
-    //Init_AI(AI_ATT)
+    /**
+     * @brief 
+     * AIs triggered on game start
+     * 
+     */
+
+    Init_AI(AI_RANDOM_START_DIRECTION, AI_TRIGGER_GAME_START, AI_Functions::RandomStartDirection);
+    Init_AI(AI_RANDOM_START_DIRECTION_VERT, AI_TRIGGER_GAME_START, AI_Functions::RandomStartDirectionVert);
+    Init_AI(AI_START_DIRECTIONS_TOWARDS_PLAYER, AI_TRIGGER_GAME_START, AI_Functions::StartFacingThePlayer);
+    Init_AI(AI_START_DIRECTIONS_TOWARDS_PLAYER_VERT, AI_TRIGGER_GAME_START, AI_Functions::StartFacingThePlayerVert);
+
+    /**
+     * @brief 
+     * Ais triggered when skull blocks changed
+     * 
+     */
+
+    Init_AI(AI_DIE_IF_SKULL_BLOCKS_CHANGED, AI_TRIGGER_SKULLS_CHANGED, AI_Functions::DieIfSkullBlocksChanged);
+    Init_AI(AI_TRANSFORM_IF_SKULL_BLOCKS_CHANGED, AI_TRIGGER_SKULLS_CHANGED, AI_Functions::TransformIfSkullBlocksChanged);
 }
 
 }

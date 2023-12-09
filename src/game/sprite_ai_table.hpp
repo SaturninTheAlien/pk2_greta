@@ -17,9 +17,12 @@ enum AI_TRIGGER{
     AI_TRIGGER_ANYWAY, //on each game tick 
     AI_TRIGGER_ALIVE, // on each game tick if sprite->energy>0
 
-    AI_TRIGGER_SPAWN,  //on spawn
-    AI_TRIGGER_DAMAGE, //if the sprite is damaged
+
     AI_TRIGGER_DEATH,  //if the sprite dies
+    AI_TRIGGER_DAMAGE, //if the sprite is damaged
+    AI_TRIGGER_GAME_START, // when the game starts
+
+    AI_TRIGGER_SPAWN,  //on spawn
 
     AI_TRIGGER_SKULLS_CHANGED, //if skull blocks are changed
 

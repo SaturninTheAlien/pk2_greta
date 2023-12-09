@@ -83,11 +83,18 @@ void Sprites_sort_bg() {
 
 }
 
-void Sprites_start_directions() {
+void Sprites_On_Game_Start() {
 	for (SpriteClass* sprite : Sprites_List) {
 		sprite->a = 0;
 
-		for(const int& ai: sprite->prototype->AI_v){
+		for(const SpriteAI::AI_Class& ai: sprite->prototype->AI_f){
+
+			if(ai.trigger==AI_TRIGGER_GAME_START || ai.trigger==AI_TRIGGER_SPAWN){
+				ai.func(sprite);
+			}
+		}
+
+		/*for(const int& ai: sprite->prototype->AI_v){
 			switch (ai)
 			{
 			case AI_RANDOM_START_DIRECTION:{
@@ -126,36 +133,6 @@ void Sprites_start_directions() {
 			default:
 				break;
 			}
-		}
-
-		/*if (sprite->HasAI(AI_RANDOM_START_DIRECTION)){
-			while (sprite->a == 0) {
-				sprite->a = ((rand()%2 - rand()%2) * sprite->prototype->max_speed) / 3.5;//2;
-			}
-		}
-
-		if (sprite->HasAI(AI_RANDOM_START_DIRECTION_VERT)){
-			while (sprite->b == 0) {
-				sprite->b = ((rand()%2 - rand()%2) * sprite->prototype->max_speed) / 3.5;//2;
-			}
-		}
-
-		if (sprite->HasAI(AI_START_DIRECTIONS_TOWARDS_PLAYER)){
-
-			if (sprite->x < Player_Sprite->x)
-				sprite->a = sprite->prototype->max_speed / 3.5;
-
-			if (sprite->x > Player_Sprite->x)
-				sprite->a = (sprite->prototype->max_speed * -1) / 3.5;
-		}
-
-		if (sprite->HasAI(AI_START_DIRECTIONS_TOWARDS_PLAYER_VERT)){
-
-			if (sprite->y < Player_Sprite->y)
-				sprite->b = sprite->prototype->max_speed / -3.5;
-
-			if (sprite->y > Player_Sprite->y)
-				sprite->b = sprite->prototype->max_speed / 3.5;
 		}*/
 	}
 }
@@ -165,12 +142,23 @@ void Sprites_add(PrototypeClass* protot, int is_Player_Sprite, double x, double 
 	SpriteClass* sprite = new SpriteClass(protot, is_Player_Sprite, x, y);
 	Sprites_List.push_back(sprite);
 
-	if (is_Player_Sprite) Player_Sprite = sprite;
+	if (is_Player_Sprite){
+		Player_Sprite = sprite;
+		AI_Functions::player_invisible = sprite;
+		if(sprite->invisible_timer==0){
+			AI_Functions::player = sprite;
+		}
+		else{
+			AI_Functions::player = nullptr;
+		}
+	}
 
 	if(isbonus) { //If it is a bonus dropped by enemy
 		sprite->orig_x = sprite->x;
 		sprite->orig_y = sprite->y;
-		sprite->jump_timer = 1;
+
+		if(sprite->weight!=0)sprite->jump_timer = 1;
+		
 		sprite->damage_timer = 35;//25
 
 		if(protot->weight==0 && protot->max_speed==0){
@@ -282,32 +270,9 @@ void Sprites_changeSkullBlocks(){
 	for(SpriteClass* sprite: Sprites_List){
 		if(sprite==nullptr||sprite->energy<=0)continue;
 
-		for(const int& ai:sprite->prototype->AI_v){
-			switch (ai)
-			{
-			case AI_DIE_IF_SKULL_BLOCKS_CHANGED:{
-				sprite->damage_taken = sprite->energy + 1;
-				sprite->damage_taken_type = DAMAGE_ALL;
-			}	
-			break;
-			
-			case AI_TRANSFORM_IF_SKULL_BLOCKS_CHANGED:{
-				PrototypeClass * transformation = sprite->prototype->transformation;
-				if(transformation!=nullptr){
-					sprite->prototype = transformation;
-					sprite->initial_weight = transformation->weight;
-					sprite->animation_index = 0;
-					sprite->ammo1 = transformation->ammo1;
-					sprite->ammo2 = transformation->ammo2;
-					sprite->enemy = transformation->enemy;
-
-					sprite->current_command = 0;
-				}
-			}
-			break;
-			
-			default:
-				break;
+		for(const SpriteAI::AI_Class& ai: sprite->prototype->AI_f){
+			if(ai.trigger==AI_TRIGGER_SKULLS_CHANGED){
+				ai.func(sprite);
 			}
 		}
 	}

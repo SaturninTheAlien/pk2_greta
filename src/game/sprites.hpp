@@ -21,7 +21,7 @@ int  Level_Prototypes_LoadAll();
 
 //void Sprites_add_bg(int index);
 void Sprites_sort_bg();
-void Sprites_start_directions();
+void Sprites_On_Game_Start();
 void Sprites_add(PrototypeClass* protot, int is_Player_Sprite, double x, double y, SpriteClass* emo, bool isbonus);
 void Sprites_add_ammo(PrototypeClass* protot, double x, double y, SpriteClass* emo);
 void Sprites_clear();

@@ -64,6 +64,9 @@ void Move_If_Switch_Pressed(SpriteClass*s, int game_button, int ak, int bk);
 void Teleporter(SpriteClass*s);
 void Turn_Back_If_Damaged(SpriteClass* s);
 
+void Return_To_Orig_X_Fixed(SpriteClass*s);
+void Return_To_Orig_Y_Fixed(SpriteClass*s);
+
 /**
  * @brief 
  * AIs triggered on death
@@ -75,12 +78,29 @@ void Reborn(SpriteClass*s);
 
 /**
  * @brief 
- * AIs triggered when on damage
+ * AIs triggered on damage
  */
 void Attack_1_If_Damaged(SpriteClass*s);
 void Attack_2_If_Damaged(SpriteClass*s);
-
 void Transform_If_Damaged(SpriteClass* s);
 
+/**
+ * @brief 
+ * AIs triggered on game start
+ */
+
+void RandomStartDirection(SpriteClass*s);
+void RandomStartDirectionVert(SpriteClass*s);
+void StartFacingThePlayer(SpriteClass*s);
+void StartFacingThePlayerVert(SpriteClass*s);
+
+/**
+ * @brief 
+ * AIs triggered when skull changed
+ * 
+ */
+
+void DieIfSkullBlocksChanged(SpriteClass*s);
+void TransformIfSkullBlocksChanged(SpriteClass*s);
 
 }
