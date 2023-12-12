@@ -1,7 +1,8 @@
 {
     "ai": [
         6,
-        38
+        38,
+        141
     ],
     "always_active": false,
     "ammo1": "",
@@ -104,7 +105,7 @@
     "damage_type": 1,
     "effect": 0,
     "enemy": true,
-    "energy": 30000,
+    "energy": 30,
     "frame": {
         "height": 31,
         "pos_x": 1,
@@ -128,7 +129,7 @@
     "picture": "spr_wall.bmp",
     "projectile_charge_time": 0,
     "random_sound_frequency": true,
-    "score": 30000,
+    "score": 1,
     "size": {
         "height": 31,
         "width": 26

@@ -101,6 +101,7 @@ void StartFacingThePlayerVert(SpriteClass*s);
  */
 
 void DieIfSkullBlocksChanged(SpriteClass*s);
+void InfiniteEnergy(SpriteClass*s);
 //void TransformIfSkullBlocksChanged(SpriteClass*s);
 
 }

@@ -82,7 +82,11 @@ This example starts the level13.map (the robot boss fight) on dev mode:
 
 # New features
 * A new sprite format .spr2 based on JSON. The legacy .spr format is still supported for compatibility reasons. All the obsolete c-style arrays in PrototypeClass have been replaced by std::vector, std::string and so there are no limits like max number of AIs and so on. There is still 12 character length limit of the sprite filename length due to the map format. Currently sprite filenames are stored as "name.spr". During the level loading, firstly "name.spr2" is searched for, then "name.spr". If the sprite name is stored as "name", only "name.spr2" is searched for.
-* "always_active" field in the new sprite format. If true, the sprite won't deactivate when off-screen.
+
+* New Fields in SPR2:
+    * "always_active" - if true, the sprite won't deactivate when off-screen.
+    * "dead_weight" - weight of the sprite corpse, if not defined the default legacy behaviour,
+    * "commands" - description below.
 
 * New AIs:
     * AI_ATTACK_1_IF_PLAYER_ABOVE (31)
@@ -98,6 +102,8 @@ This example starts the level13.map (the robot boss fight) on dev mode:
     * AI_RETURN_TO_ORIG_X_FIXED (84) - similar to legacy AI_RETURN_TO_ORIG_X (28) but without oscillations,
     * AI_RETURN_TO_ORIG_Y_FIXED (85) - similar to legacy AI_RETURN_TO_ORIG_Y (29) but without oscillations,
     * AI_TRANSFORM_IF_DAMAGED (129) - this AI was implemented, but not working due to a bug before,
+
+    * AI_INFINITE_ENERGY (141) - sprite has infinite energy, it can "receive" damage but it never dies. Only DAMAGE_TYPE_ALL (like falling into the void can really kill it)
 
 * Sprite inheritance / "parent" field.
 

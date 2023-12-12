@@ -802,8 +802,14 @@ void UpdateSprite(SpriteClass* sprite){
 	sprite->weight = sprite->initial_weight;
 	sprite->weight_button = sprite->weight;
 
-	if (sprite->energy < 1 && sprite->weight == 0) // Fall when is death
-		sprite->weight = 1;
+	if(sprite->energy < 1){
+		if(sprite->prototype->has_dead_weight){
+			sprite->weight = sprite->prototype->dead_weight;
+		}
+		else if(sprite->weight == 0){ // Fall when is death
+			sprite->weight = 1;
+		}
+	}
 
 	/*****************************************************************************************/
 	/* Sprite collision with other sprites                                                   */

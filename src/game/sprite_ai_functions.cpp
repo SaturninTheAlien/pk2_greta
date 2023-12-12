@@ -927,6 +927,14 @@ void Attack_2_If_Damaged(SpriteClass*s){
 }
 
 
+void InfiniteEnergy(SpriteClass*s){
+	if(s->damage_taken_type != DAMAGE_ALL){
+		s->damage_taken = 0;
+		s->energy = s->prototype->energy;
+	}
+}
+
+
 
 void RandomStartDirection(SpriteClass*sprite){
 	while (sprite->a == 0) {

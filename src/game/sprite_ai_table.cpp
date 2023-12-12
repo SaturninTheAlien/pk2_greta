@@ -225,6 +225,8 @@ AI_Table::AI_Table(){
     Init_AI(AI_ATTACK_2_IF_DAMAGED, AI_TRIGGER_DAMAGE, AI_Functions::Attack_2_If_Damaged);
     Init_AI(AI_TRANSFORM_IF_DAMAGED, AI_TRIGGER_DAMAGE, [](SpriteClass*s){s->Transform();}, true, true, true, true);
 
+    Init_AI(AI_INFINITE_ENERGY, AI_TRIGGER_DAMAGE, AI_Functions::InfiniteEnergy);
+
     /**
      * @brief 
      * AIs triggered on game start

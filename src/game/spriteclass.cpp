@@ -632,6 +632,11 @@ void PrototypeClass::SetProto20(const nlohmann::json& j){
 		SpriteCommands::Parse_Commands(j["commands"], this->commands, this->width, this->height);
 	}
 
+	if(j.contains("dead_weight") && j["dead_weight"].is_number()){
+		this->has_dead_weight = true;
+		this->dead_weight = j["dead_weight"].get<double>();
+	}
+
 	if(j.contains("color_to_alpha")){
 		const nlohmann::json& j2 = j["color_to_alpha"];
 		if(j2.is_null()){

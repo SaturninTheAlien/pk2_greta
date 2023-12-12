@@ -155,6 +155,17 @@ public:
     bool    ambient = false;
 
 
+    /**
+     * @brief 
+     * Weight when KO'd variable
+     * If has_dead_weight set to false, to legacy behaviour
+     * (only sprites with weight 0 fall) 
+     */
+    
+    bool has_dead_weight = false;
+    double  dead_weight = 0;
+
+
     bool change_color_to_alpha = true;
     unsigned int color_to_alpha = 255;
 
