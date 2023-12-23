@@ -50,7 +50,7 @@ void Return_To_Orig_Y(SpriteClass*s);
 void Transform_When_Energy_Under_2(SpriteClass* s);
 void Transform_When_Energy_Over_1(SpriteClass* s);
 void Self_Transformation(SpriteClass* s);
-void Die_If_Parent_Nullptr(SpriteClass* s);
+//void Die_If_Parent_Nullptr(SpriteClass* s);
 void Random_Move_Vert_Hori(SpriteClass* s);
 
 

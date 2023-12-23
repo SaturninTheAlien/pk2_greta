@@ -656,18 +656,6 @@ void Self_Transformation(SpriteClass* s){
 	}
 }
 
-
-void Die_If_Parent_Nullptr(SpriteClass* s){
-	if (s->parent_sprite != nullptr)
-	{
-		if (s->parent_sprite->energy < 1 && s->energy > 0)
-		{
-			s->damage_taken = s->energy;
-			s->damage_taken_type = DAMAGE_ALL;
-		}
-	}
-}
-
 void Random_Move_Vert_Hori(SpriteClass* s){
 
 	if (rand()%150 == 1 || s->action_timer == 1)

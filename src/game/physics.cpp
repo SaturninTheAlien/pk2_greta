@@ -455,6 +455,14 @@ void SpriteOnDeath(SpriteClass* sprite){
 		Fadetext_New(fontti2,std::to_string(sprite->prototype->score),(int)sprite->x-8,(int)sprite->y-8,80);
 		Game->score_increment += sprite->prototype->score;
 	}
+
+
+	for(SpriteClass* sprite2:Sprites_List){
+		if(sprite2->parent_sprite==sprite && sprite2->HasAI(AI_DIE_WITH_MOTHER_SPPRITE)){
+			sprite2->damage_taken = sprite2->energy;
+			sprite2->damage_taken_type = DAMAGE_ALL;
+		}
+	}
 }
 
 void DisplayInfo(SpriteClass* sprite, int info){

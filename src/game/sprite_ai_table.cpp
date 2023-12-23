@@ -145,8 +145,6 @@ AI_Table::AI_Table(){
     Init_AI(AI_CLIMBER, AI_TRIGGER_ALIVE, AI_Functions::Climber);
     Init_AI(AI_CLIMBER2, AI_TRIGGER_ALIVE, AI_Functions::Climber2);
 
-    Init_AI(AI_DIE_IF_PARENT_NULL, AI_TRIGGER_ALIVE, AI_Functions::Die_If_Parent_Nullptr);
-
     Init_AI(AI_FALL_WHEN_SHAKEN, AI_TRIGGER_ALIVE, AI_Functions::Fall_When_Shaken, true, true, true, true); //TO DO Redesign
 
     Init_AI(AI_MOVE_DOWN_IF_SWITCH_1_PRESSED, AI_TRIGGER_ALIVE, [](SpriteClass*s){AI_Functions::Move_If_Switch_Pressed(s, Game->button1,0,1);});
