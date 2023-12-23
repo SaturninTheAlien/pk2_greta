@@ -220,7 +220,7 @@ void Turning_Vertically(SpriteClass*s){
 void Look_For_Cliffs(SpriteClass*s){
     double max = s->prototype->max_speed / 3.5;
 
-    if (s->reuna_oikealla && s->a > -max){
+    if (s->edge_on_the_right && s->a > -max){
         s->a -= 0.13;
     }
 
@@ -229,7 +229,7 @@ void Look_For_Cliffs(SpriteClass*s){
     }
 
     /*
-    if (this->reuna_oikealla && this->a > 0)
+    if (this->edge_on_the_right && this->a > 0)
     {
         this->a = this->a * -1;
         flip_x = true;

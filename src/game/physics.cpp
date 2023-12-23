@@ -52,19 +52,19 @@ static PK2BLOCK Block_Get(u32 x, u32 y) {
 	// Outside the screen
 	if (x >= PK2MAP_MAP_WIDTH || y >= PK2MAP_MAP_HEIGHT) {
 		
-		block.koodi  = 255;
-		block.tausta = true;
-		block.vasen  = x*32;
-		block.oikea  = x*32 + 32;
-		block.yla    = y*32;
-		block.ala    = y*32 + 32;
+		block.id  = 255;
+		block.permeable = true;
+		block.left  = x*32;
+		block.right  = x*32 + 32;
+		block.top    = y*32;
+		block.bottom    = y*32 + 32;
 		block.water  = false;
 		block.border = true;
 
-		block.vasemmalle = 0;
-		block.oikealle = 0;
-		block.ylos = 0;
-		block.alas = 0;
+		block.left_side = 0;
+		block.right_side = 0;
+		block.top_side = 0;
+		block.bottom_side = 0;
 
 		return block;
 
@@ -75,25 +75,25 @@ static PK2BLOCK Block_Get(u32 x, u32 y) {
 	if (i<150) { //If it is ground
 
 		block        = Game->block_types[i];
-		block.vasen  = x*32+Game->block_types[i].vasen;
-		block.oikea  = x*32+32+Game->block_types[i].oikea;
-		block.yla    = y*32+Game->block_types[i].yla;
-		block.ala    = y*32+32+Game->block_types[i].ala;
+		block.left  = x*32+Game->block_types[i].left;
+		block.right  = x*32+32+Game->block_types[i].right;
+		block.top    = y*32+Game->block_types[i].top;
+		block.bottom    = y*32+32+Game->block_types[i].bottom;
 
 	} else { //If it is sky - Need to reset
 	
-		block.koodi  = 255;
-		block.tausta = true;
-		block.vasen  = x*32;
-		block.oikea  = x*32 + 32;
-		block.yla    = y*32;
-		block.ala    = y*32 + 32;
+		block.id  = 255;
+		block.permeable = true;
+		block.left  = x*32;
+		block.right  = x*32 + 32;
+		block.top    = y*32;
+		block.bottom    = y*32 + 32;
 		block.water  = false;
 
-		block.vasemmalle = 0;
-		block.oikealle = 0;
-		block.ylos = 0;
-		block.alas = 0;
+		block.left_side = 0;
+		block.right_side = 0;
+		block.top_side = 0;
+		block.bottom_side = 0;
 	
 	}
 
@@ -110,24 +110,24 @@ static PK2BLOCK Block_Get(u32 x, u32 y) {
 static void Check_SpriteBlock(SpriteClass* sprite, const PK2BLOCK &block) {
 
 	//left and right
-	if (sprite_upper < block.ala && sprite_bottom-1 > block.yla){
-		if (sprite_right+sprite->a-1 > block.vasen && sprite_left+sprite->a < block.oikea){
+	if (sprite_upper < block.bottom && sprite_bottom-1 > block.top){
+		if (sprite_right+sprite->a-1 > block.left && sprite_left+sprite->a < block.right){
 			// Tutkitaan onko sprite menossa oikeanpuoleisen palikan sis��n.
-			if (sprite_right+sprite->a < block.oikea){
+			if (sprite_right+sprite->a < block.right){
 				// Onko block sein�?
-				if (block.oikealle == BLOCK_WALL){
+				if (block.right_side == BLOCK_WALL){
 					oikealle = false;
-					if (block.koodi == BLOCK_LIFT_HORI)
-						sprite->x = block.vasen - sprite_width/2;
+					if (block.id == BLOCK_LIFT_HORI)
+						sprite->x = block.left - sprite_width/2;
 				}
 			}
 
-			if (sprite_left+sprite->a > block.vasen){
-				if (block.vasemmalle == BLOCK_WALL){
+			if (sprite_left+sprite->a > block.left){
+				if (block.left_side == BLOCK_WALL){
 					vasemmalle = false;
 
-					if (block.koodi == BLOCK_LIFT_HORI)
-						sprite->x = block.oikea + sprite_width/2;
+					if (block.id == BLOCK_LIFT_HORI)
+						sprite->x = block.right + sprite_width/2;
 
 				}
 			}
@@ -139,27 +139,27 @@ static void Check_SpriteBlock(SpriteClass* sprite, const PK2BLOCK &block) {
 
 	//ceil and floor
 
-	if (sprite_left < block.oikea && sprite_right-1 > block.vasen){
-		if (sprite_bottom+sprite->b-1 >= block.yla && sprite_upper+sprite->b <= block.ala){
-			if (sprite_bottom+sprite->b-1 <= block.ala){
-				if (block.alas == BLOCK_WALL){
+	if (sprite_left < block.right && sprite_right-1 > block.left){
+		if (sprite_bottom+sprite->b-1 >= block.top && sprite_upper+sprite->b <= block.bottom){
+			if (sprite_bottom+sprite->b-1 <= block.bottom){
+				if (block.bottom_side == BLOCK_WALL){
 					alas = false;
 
-					if (block.koodi == BLOCK_LIFT_VERT)
-						sprite->y = block.yla - sprite_height /2;
+					if (block.id == BLOCK_LIFT_VERT)
+						sprite->y = block.top - sprite_height /2;
 
-					if (sprite_bottom-1 >= block.yla && sprite->b >= 0)
-						if (block.koodi != BLOCK_LIFT_HORI)
-							sprite->y = block.yla - sprite_height /2;
+					if (sprite_bottom-1 >= block.top && sprite->b >= 0)
+						if (block.id != BLOCK_LIFT_HORI)
+							sprite->y = block.top - sprite_height /2;
 				}
 			}
 
-			if (sprite_upper+sprite->b > block.yla){
-				if (block.ylos == BLOCK_WALL){
+			if (sprite_upper+sprite->b > block.top){
+				if (block.top_side == BLOCK_WALL){
 					ylos = false;
 
-					if (sprite_upper < block.ala)
-						if (block.koodi != BLOCK_LIFT_HORI)
+					if (sprite_upper < block.bottom)
+						if (block.id != BLOCK_LIFT_HORI)
 							sprite->crouched = true;
 				}
 			}
@@ -170,7 +170,7 @@ static void Check_SpriteBlock(SpriteClass* sprite, const PK2BLOCK &block) {
 void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 
 	//If sprite is in the block
-	if (sprite->x <= block.oikea && sprite->x >= block.vasen && sprite->y <= block.ala && sprite->y >= block.yla){
+	if (sprite->x <= block.right && sprite->x >= block.left && sprite->y <= block.bottom && sprite->y >= block.top){
 
 		/**********************************************************************/
 		/* Examine if block is water background                               */
@@ -183,7 +183,7 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 		/**********************************************************************/
 		/* Examine if it touches the fire                                     */
 		/**********************************************************************/
-		if (block.koodi == BLOCK_FIRE && Game->button1 == 0 && sprite->damage_timer == 0){
+		if (block.id == BLOCK_FIRE && Game->button1 == 0 && sprite->damage_timer == 0){
 			sprite->damage_taken = 2;
 			sprite->damage_taken_type = DAMAGE_FIRE;
 		}
@@ -191,7 +191,7 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 		/**********************************************************************/
 		/* Examine if block is hideway (unused)                               */
 		/**********************************************************************/
-		if (block.koodi == BLOCK_HIDEOUT)
+		if (block.id == BLOCK_HIDEOUT)
 			sprite->hidden = true;
 		else
 			sprite->hidden = false;
@@ -200,26 +200,26 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 		/**********************************************************************/
 		/* Examine if block is the exit                                       */
 		/**********************************************************************/
-		if (block.koodi == BLOCK_EXIT && sprite->energy>0) {
+		if (block.id == BLOCK_EXIT && sprite->energy>0) {
 			if ((!Game->chick_mode && sprite->player != 0) || sprite->HasAI(AI_CHICK))
 				Game->Finnish();
 		}
 	}
 
 	//If sprite is thouching the block
-	if (sprite_left <= block.oikea-4 && sprite_right >= block.vasen+4 && sprite_upper <= block.ala && sprite_bottom >= block.yla+16){
+	if (sprite_left <= block.right-4 && sprite_right >= block.left+4 && sprite_upper <= block.bottom && sprite_bottom >= block.top+16){
 		/**********************************************************************/
 		/* Examine if it touches the fire                                     */
 		/**********************************************************************/
-		if (block.koodi == BLOCK_FIRE && Game->button1 == 0 && sprite->damage_timer == 0){
+		if (block.id == BLOCK_FIRE && Game->button1 == 0 && sprite->damage_timer == 0){
 			sprite->damage_taken = 2;
 			sprite->damage_taken_type = DAMAGE_FIRE;
 		}
 	}
 
 	//Examine if there is a block on bottom
-	if ((block.koodi<80 || block.koodi>139) && block.koodi != BLOCK_BARRIER_DOWN && block.koodi < 150){
-		int mask_index = (int)(sprite->x+sprite->a) - block.vasen;
+	if ((block.id<80 || block.id>139) && block.id != BLOCK_BARRIER_DOWN && block.id < 150){
+		int mask_index = (int)(sprite->x+sprite->a) - block.left;
 
 		if (mask_index < 0)
 			mask_index = 0;
@@ -227,21 +227,21 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 		if (mask_index > 31)
 			mask_index = 31;
 
-		block.yla += Game->block_masks[block.koodi].alas[mask_index];
+		block.top += Game->block_masks[block.id].alas[mask_index];
 
-		if (block.yla >= block.ala-2)
-			block.alas = BLOCK_BACKGROUND;
+		if (block.top >= block.bottom-2)
+			block.bottom_side = BLOCK_BACKGROUND;
 
-		block.ala -= Game->block_masks[block.koodi].ylos[mask_index];
+		block.bottom -= Game->block_masks[block.id].ylos[mask_index];
 	}
 
 	//If sprite is thouching the block (again?)
-	if (sprite_left <= block.oikea+2 && sprite_right >= block.vasen-2 && sprite_upper <= block.ala && sprite_bottom >= block.yla){
+	if (sprite_left <= block.right+2 && sprite_right >= block.left-2 && sprite_upper <= block.bottom && sprite_bottom >= block.top){
 		/**********************************************************************/
 		/* Examine if it is a key and touches lock wall                       */
 		/**********************************************************************/
-		if (block.koodi == BLOCK_LOCK && sprite->prototype->can_open_locks){
-			Game->map.foreground_tiles[block.vasen/32+(block.yla/32)*PK2MAP_MAP_WIDTH] = 255;
+		if (block.id == BLOCK_LOCK && sprite->prototype->can_open_locks){
+			Game->map.foreground_tiles[block.left/32+(block.top/32)*PK2MAP_MAP_WIDTH] = 255;
 			Game->map.Calculate_Edges();
 
 			sprite->removed = true;
@@ -252,53 +252,53 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 					Game->Open_Locks();
 			}
 
-			Effect_Explosion(block.vasen+16, block.yla+10, 0);
+			Effect_Explosion(block.left+16, block.top+10, 0);
 			Play_GameSFX(open_locks_sound,100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, false);
 		}
 
 		/**********************************************************************/
 		/* Make wind effects                                                  */
 		/**********************************************************************/
-		if (block.koodi == BLOCK_DRIFT_LEFT && vasemmalle)
+		if (block.id == BLOCK_DRIFT_LEFT && vasemmalle)
 			sprite->a -= 0.02;
 
-		if (block.koodi == BLOCK_DRIFT_RIGHT && oikealle)
+		if (block.id == BLOCK_DRIFT_RIGHT && oikealle)
 			sprite->a += 0.02;	//0.05
 
 		/*********************************************************************/
 		/* Examine if sprite is on the border to fall                        */
 		/*********************************************************************/
-		if (block.border && sprite->jump_timer <= 0 && sprite->y < block.ala && sprite->y > block.yla){
-			/* && sprite_bottom <= block.ala+2)*/ // onko sprite tullut borderlle
-			if (sprite_left > block.vasen)
+		if (block.border && sprite->jump_timer <= 0 && sprite->y < block.bottom && sprite->y > block.top){
+			/* && sprite_bottom <= block.bottom+2)*/ // onko sprite tullut borderlle
+			if (sprite_left > block.left)
 				sprite->edge_on_the_left = true;
 
-			if (sprite_right < block.oikea)
-				sprite->reuna_oikealla = true;
+			if (sprite_right < block.right)
+				sprite->edge_on_the_right = true;
 		}
 	}
 
 	//Examine walls on left and right
 
-	if (sprite_upper < block.ala && sprite_bottom-1 > block.yla) {
-		if (sprite_right+sprite->a-1 > block.vasen && sprite_left+sprite->a < block.oikea) {
+	if (sprite_upper < block.bottom && sprite_bottom-1 > block.top) {
+		if (sprite_right+sprite->a-1 > block.left && sprite_left+sprite->a < block.right) {
 			// Examine whether the sprite going in the right side of the block.
-			if (sprite_right+sprite->a < block.oikea) {
+			if (sprite_right+sprite->a < block.right) {
 				// Onko block sein�?
-				if (block.oikealle == BLOCK_WALL) {
+				if (block.right_side == BLOCK_WALL) {
 					oikealle = false;
 
-					if (block.koodi == BLOCK_LIFT_HORI)
-						sprite->x = block.vasen - sprite_width/2;
+					if (block.id == BLOCK_LIFT_HORI)
+						sprite->x = block.left - sprite_width/2;
 				}
 			}
 			// Examine whether the sprite going in the left side of the block.
-			if (sprite_left+sprite->a > block.vasen) {
-				if (block.vasemmalle == BLOCK_WALL) {
+			if (sprite_left+sprite->a > block.left) {
+				if (block.left_side == BLOCK_WALL) {
 					vasemmalle = false;
 
-					if (block.koodi == BLOCK_LIFT_HORI)
-						sprite->x = block.oikea + sprite_width/2;
+					if (block.id == BLOCK_LIFT_HORI)
+						sprite->x = block.right + sprite_width/2;
 
 				}
 			}
@@ -310,37 +310,37 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 
 	//Examine walls on up and down
 
-	if (sprite_left < block.oikea && sprite_right-1 > block.vasen) { //Remove the left and right blocks
-		if (sprite_bottom+sprite->b-1 >= block.yla && sprite_upper+sprite->b <= block.ala) { //Get the up and down blocks
-			if (sprite_bottom+sprite->b-1 <= block.ala) { //Just in the sprite's foot
-				if (block.alas == BLOCK_WALL) { //If it is a wall
+	if (sprite_left < block.right && sprite_right-1 > block.left) { //Remove the left and right blocks
+		if (sprite_bottom+sprite->b-1 >= block.top && sprite_upper+sprite->b <= block.bottom) { //Get the up and down blocks
+			if (sprite_bottom+sprite->b-1 <= block.bottom) { //Just in the sprite's foot
+				if (block.bottom_side == BLOCK_WALL) { //If it is a wall
 					alas = false;
-					if (block.koodi == BLOCK_LIFT_VERT)
-						sprite->y = block.yla - sprite_height /2;
+					if (block.id == BLOCK_LIFT_VERT)
+						sprite->y = block.top - sprite_height /2;
 
-					if (sprite_bottom-1 >= block.yla && sprite->b >= 0) {
-						//sprite->y -= sprite_bottom - block.yla;
-						if (block.koodi != BLOCK_LIFT_HORI) {
-							sprite->y = block.yla - sprite_height /2;
+					if (sprite_bottom-1 >= block.top && sprite->b >= 0) {
+						//sprite->y -= sprite_bottom - block.top;
+						if (block.id != BLOCK_LIFT_HORI) {
+							sprite->y = block.top - sprite_height /2;
 						}
 					}
 
 					if (sprite->weight_button >= 1) { // Sprite can press the buttons
-						if (block.koodi == BLOCK_BUTTON1 && Game->button1 == 0) {
+						if (block.id == BLOCK_BUTTON1 && Game->button1 == 0) {
 							Game->button1 = Game->map.button1_time;
 							Game->button_vibration = 64;
 							Play_GameSFX(switch_sound, 100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, false);
 							PInput::Vibrate(1000);
 						}
 
-						if (block.koodi == BLOCK_BUTTON2 && Game->button2 == 0) {
+						if (block.id == BLOCK_BUTTON2 && Game->button2 == 0) {
 							Game->button2 = Game->map.button2_time;
 							Game->button_vibration = 64;
 							Play_GameSFX(switch_sound, 100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, false);
 							PInput::Vibrate(1000);
 						}
 
-						if (block.koodi == BLOCK_BUTTON3 && Game->button3 == 0) {
+						if (block.id == BLOCK_BUTTON3 && Game->button3 == 0) {
 							Game->button3 = Game->map.button3_time;
 							Game->button_vibration = 64;
 							Play_GameSFX(switch_sound, 100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, false);
@@ -351,19 +351,19 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 				}
 			}
 
-			if (sprite_upper+sprite->b > block.yla) {
-				if (block.ylos == BLOCK_WALL) {
+			if (sprite_upper+sprite->b > block.top) {
+				if (block.top_side == BLOCK_WALL) {
 					ylos = false;
 
-					if (sprite_upper < block.ala) {
-						if (block.koodi == BLOCK_LIFT_VERT && sprite->crouched) {
+					if (sprite_upper < block.bottom) {
+						if (block.id == BLOCK_LIFT_VERT && sprite->crouched) {
 							sprite->damage_taken = 2;
 							sprite->damage_taken_type = DAMAGE_IMPACT;
 						}
 
-						if (block.koodi != BLOCK_LIFT_HORI) {
+						if (block.id != BLOCK_LIFT_HORI) {
 							//if (sprite->crouched)
-							//	sprite->y = block.ala + sprite_height /2;
+							//	sprite->y = block.bottom + sprite_height /2;
 
 							sprite->crouched = true;
 						}
@@ -511,7 +511,7 @@ void UpdateSprite(SpriteClass* sprite){
 	sprite->crouched = false;
 
 	sprite->edge_on_the_left = false;
-	sprite->reuna_oikealla = false;
+	sprite->edge_on_the_right = false;
 
 
 	/* Pistet��n vauhtia tainnutettuihin spriteihin */
@@ -842,37 +842,37 @@ void UpdateSprite(SpriteClass* sprite){
 					sprite->y-sprite_height/2+sprite->b <= sprite2->y + sprite2->prototype->height/2 &&
 					sprite->y+sprite_height/2+sprite->b >= sprite2->y - sprite2->prototype->height/2)
 				{
-					spritepalikka.koodi = 0;
-					spritepalikka.ala   = (int)sprite2->y + sprite2->prototype->height/2;
-					spritepalikka.oikea = (int)sprite2->x + sprite2->prototype->width/2;
-					spritepalikka.vasen = (int)sprite2->x - sprite2->prototype->width/2;
-					spritepalikka.yla   = (int)sprite2->y - sprite2->prototype->height/2;
+					spritepalikka.id = 0;
+					spritepalikka.bottom   = (int)sprite2->y + sprite2->prototype->height/2;
+					spritepalikka.right = (int)sprite2->x + sprite2->prototype->width/2;
+					spritepalikka.left = (int)sprite2->x - sprite2->prototype->width/2;
+					spritepalikka.top   = (int)sprite2->y - sprite2->prototype->height/2;
 
 					spritepalikka.water  = false;
 
-					spritepalikka.tausta = false;
+					spritepalikka.permeable = false;
 
-					spritepalikka.oikealle   = BLOCK_WALL;
-					spritepalikka.vasemmalle = BLOCK_WALL;
-					spritepalikka.ylos       = BLOCK_WALL;
-					spritepalikka.alas       = BLOCK_WALL;
+					spritepalikka.right_side   = BLOCK_WALL;
+					spritepalikka.left_side = BLOCK_WALL;
+					spritepalikka.top_side       = BLOCK_WALL;
+					spritepalikka.bottom_side       = BLOCK_WALL;
 
 					if (!sprite->prototype->is_wall){
 						if (!sprite2->prototype->is_wall_down)
-							spritepalikka.alas = BLOCK_BACKGROUND;
+							spritepalikka.bottom_side = BLOCK_BACKGROUND;
 						if (!sprite2->prototype->is_wall_up)
-							spritepalikka.ylos = BLOCK_BACKGROUND;
+							spritepalikka.top_side = BLOCK_BACKGROUND;
 						if (!sprite2->prototype->is_wall_right)
-							spritepalikka.oikealle = BLOCK_BACKGROUND;
+							spritepalikka.right_side = BLOCK_BACKGROUND;
 						if (!sprite2->prototype->is_wall_left)
-							spritepalikka.vasemmalle = BLOCK_BACKGROUND;
+							spritepalikka.left_side = BLOCK_BACKGROUND;
 					}
 
 					if (sprite2->a > 0)
-						spritepalikka.koodi = BLOCK_LIFT_HORI;
+						spritepalikka.id = BLOCK_LIFT_HORI;
 
 					if (sprite2->b > 0)
-						spritepalikka.koodi = BLOCK_LIFT_VERT;
+						spritepalikka.id = BLOCK_LIFT_VERT;
 
 					if (!(sprite == Player_Sprite && dev_mode && PInput::Keydown(PInput::Y)))
 						Check_SpriteBlock(sprite, spritepalikka); //Colision sprite and sprite block
@@ -881,8 +881,8 @@ void UpdateSprite(SpriteClass* sprite){
 
 			if (sprite->x <= sprite2->x + sprite2->prototype->width /2 &&
 				sprite->x >= sprite2->x - sprite2->prototype->width /2 &&
-				sprite->y/*yla*/ <= sprite2->y + sprite2->prototype->height/2 &&
-				sprite->y/*ala*/ >= sprite2->y - sprite2->prototype->height/2 + sprite2_yla)
+				sprite->y/*top*/ <= sprite2->y + sprite2->prototype->height/2 &&
+				sprite->y/*bottom*/ >= sprite2->y - sprite2->prototype->height/2 + sprite2_yla)
 			{
 				// sprites with same index change directions when touch
 				if (sprite->prototype == sprite2->prototype &&
@@ -1351,36 +1351,36 @@ void UpdateBonusSprite(SpriteClass* sprite){
 						sprite->y-sprite_height/2+sprite->b <= sprite2->y + sprite2->prototype->height/2 &&
 						sprite->y+sprite_height/2+sprite->b >= sprite2->y - sprite2->prototype->height/2)
 					{
-						spritepalikka.koodi = 0;
-						spritepalikka.ala   = (int)sprite2->y + sprite2->prototype->height/2;
-						spritepalikka.oikea = (int)sprite2->x + sprite2->prototype->width/2;
-						spritepalikka.vasen = (int)sprite2->x - sprite2->prototype->width/2;
-						spritepalikka.yla   = (int)sprite2->y - sprite2->prototype->height/2;
+						spritepalikka.id = 0;
+						spritepalikka.bottom   = (int)sprite2->y + sprite2->prototype->height/2;
+						spritepalikka.right = (int)sprite2->x + sprite2->prototype->width/2;
+						spritepalikka.left = (int)sprite2->x - sprite2->prototype->width/2;
+						spritepalikka.top   = (int)sprite2->y - sprite2->prototype->height/2;
 
-						spritepalikka.alas       = BLOCK_WALL;
-						spritepalikka.ylos       = BLOCK_WALL;
-						spritepalikka.oikealle   = BLOCK_WALL;
-						spritepalikka.vasemmalle = BLOCK_WALL;
+						spritepalikka.bottom_side       = BLOCK_WALL;
+						spritepalikka.top_side       = BLOCK_WALL;
+						spritepalikka.right_side   = BLOCK_WALL;
+						spritepalikka.left_side = BLOCK_WALL;
 
 						if (!sprite2->prototype->is_wall_down)
-							spritepalikka.alas		 = BLOCK_BACKGROUND;
+							spritepalikka.bottom_side		 = BLOCK_BACKGROUND;
 						if (!sprite2->prototype->is_wall_up)
-							spritepalikka.ylos		 = BLOCK_BACKGROUND;
+							spritepalikka.top_side		 = BLOCK_BACKGROUND;
 						if (!sprite2->prototype->is_wall_right)
-							spritepalikka.oikealle   = BLOCK_BACKGROUND;
+							spritepalikka.right_side   = BLOCK_BACKGROUND;
 						if (!sprite2->prototype->is_wall_left)
-							spritepalikka.vasemmalle = BLOCK_BACKGROUND;
+							spritepalikka.left_side = BLOCK_BACKGROUND;
 
 
 						spritepalikka.water  = false;
 
-						spritepalikka.tausta = false;
+						spritepalikka.permeable = false;
 
 						// Bonus accepts just walls?
-						/*spritepalikka.oikealle   = BLOCK_WALL;
-						spritepalikka.vasemmalle = BLOCK_WALL;
-						spritepalikka.ylos       = BLOCK_WALL;
-						spritepalikka.alas       = BLOCK_WALL;*/
+						/*spritepalikka.right_side   = BLOCK_WALL;
+						spritepalikka.left_side = BLOCK_WALL;
+						spritepalikka.top_side       = BLOCK_WALL;
+						spritepalikka.bottom_side       = BLOCK_WALL;*/
 
 						Check_SpriteBlock(sprite, spritepalikka); //Colision bonus and sprite block
 					}

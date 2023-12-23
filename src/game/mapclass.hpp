@@ -83,10 +83,10 @@ enum BLOCKS {
 
 struct PK2BLOCK {
 
-	u8   koodi;
-	bool tausta;
-	u8   vasemmalle, oikealle, ylos, alas;
-	int  vasen, oikea, yla, ala;
+	u8   id;
+	bool permeable;
+	u8   left_side, right_side, top_side, bottom_side;
+	int  left, right, top, bottom;
 	bool water;
 	bool border;
 

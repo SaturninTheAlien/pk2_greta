@@ -223,7 +223,7 @@ public:
     bool    can_move_right         = true;            // can sprite move right now?
     bool    can_move_left       = true;            // can sprite move left now?
     bool    edge_on_the_left = false;           // is there a pit on the left side of the sprite?
-    bool    reuna_oikealla   = false;           // is there a pit on the right side of the sprite?
+    bool    edge_on_the_right   = false;           // is there a pit on the right side of the sprite?
     int     energy          = 0;               // the sprite energy
     SpriteClass *parent_sprite   = nullptr;         // the sprite's parent
     double  weight           = 0;               // sprite weight

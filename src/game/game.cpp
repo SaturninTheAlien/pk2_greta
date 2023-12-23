@@ -173,11 +173,11 @@ int GameClass::Clean_TileBuffer() {
 // This moves the collisions of the blocks palette
 int GameClass::Move_Blocks() {
 
-	this->block_types[BLOCK_LIFT_HORI].vasen = (int)cos_table(degree);
-	this->block_types[BLOCK_LIFT_HORI].oikea = (int)cos_table(degree);
+	this->block_types[BLOCK_LIFT_HORI].left = (int)cos_table(degree);
+	this->block_types[BLOCK_LIFT_HORI].right = (int)cos_table(degree);
 
-	this->block_types[BLOCK_LIFT_VERT].ala = (int)sin_table(degree);
-	this->block_types[BLOCK_LIFT_VERT].yla = (int)sin_table(degree);
+	this->block_types[BLOCK_LIFT_VERT].bottom = (int)sin_table(degree);
+	this->block_types[BLOCK_LIFT_VERT].top = (int)sin_table(degree);
 
 	int kytkin1_y = 0,
 		kytkin2_y = 0,
@@ -217,28 +217,28 @@ int GameClass::Move_Blocks() {
 	kytkin2_y /= 2;
 	kytkin3_x /= 2;
 
-	this->block_types[BLOCK_BUTTON1].ala = kytkin1_y;
-	this->block_types[BLOCK_BUTTON1].yla = kytkin1_y;
+	this->block_types[BLOCK_BUTTON1].bottom = kytkin1_y;
+	this->block_types[BLOCK_BUTTON1].top = kytkin1_y;
 
-	this->block_types[BLOCK_BUTTON2_UP].ala = -kytkin2_y;
-	this->block_types[BLOCK_BUTTON2_UP].yla = -kytkin2_y;
+	this->block_types[BLOCK_BUTTON2_UP].bottom = -kytkin2_y;
+	this->block_types[BLOCK_BUTTON2_UP].top = -kytkin2_y;
 
-	this->block_types[BLOCK_BUTTON2_DOWN].ala = kytkin2_y;
-	this->block_types[BLOCK_BUTTON2_DOWN].yla = kytkin2_y;
+	this->block_types[BLOCK_BUTTON2_DOWN].bottom = kytkin2_y;
+	this->block_types[BLOCK_BUTTON2_DOWN].top = kytkin2_y;
 
-	this->block_types[BLOCK_BUTTON2].ala = kytkin2_y;
-	this->block_types[BLOCK_BUTTON2].yla = kytkin2_y;
+	this->block_types[BLOCK_BUTTON2].bottom = kytkin2_y;
+	this->block_types[BLOCK_BUTTON2].top = kytkin2_y;
 
-	this->block_types[BLOCK_BUTTON3_RIGHT].oikea = kytkin3_x;
-	this->block_types[BLOCK_BUTTON3_RIGHT].vasen = kytkin3_x;
-	this->block_types[BLOCK_BUTTON3_RIGHT].koodi = BLOCK_LIFT_HORI;
+	this->block_types[BLOCK_BUTTON3_RIGHT].right = kytkin3_x;
+	this->block_types[BLOCK_BUTTON3_RIGHT].left = kytkin3_x;
+	this->block_types[BLOCK_BUTTON3_RIGHT].id = BLOCK_LIFT_HORI;
 
-	this->block_types[BLOCK_BUTTON3_LEFT].oikea = -kytkin3_x;
-	this->block_types[BLOCK_BUTTON3_LEFT].vasen = -kytkin3_x;
-	this->block_types[BLOCK_BUTTON3_LEFT].koodi = BLOCK_LIFT_HORI;
+	this->block_types[BLOCK_BUTTON3_LEFT].right = -kytkin3_x;
+	this->block_types[BLOCK_BUTTON3_LEFT].left = -kytkin3_x;
+	this->block_types[BLOCK_BUTTON3_LEFT].id = BLOCK_LIFT_HORI;
 
-	this->block_types[BLOCK_BUTTON3].ala = kytkin3_x;
-	this->block_types[BLOCK_BUTTON3].yla = kytkin3_x;
+	this->block_types[BLOCK_BUTTON3].bottom = kytkin3_x;
+	this->block_types[BLOCK_BUTTON3].top = kytkin3_x;
 
 	return 0;
 
@@ -251,66 +251,66 @@ int GameClass::Calculate_Tiles() {
 	for (int i=0;i<150;i++){
 		palikka = this->block_types[i];
 
-		palikka.vasen  = 0;
-		palikka.oikea  = 0;//32
-		palikka.yla	   = 0;
-		palikka.ala    = 0;//32
+		palikka.left  = 0;
+		palikka.right  = 0;//32
+		palikka.top	   = 0;
+		palikka.bottom    = 0;//32
 
-		palikka.koodi  = i;
+		palikka.id  = i;
 
 		if ((i < 80 || i > 139) && i != 255){
-			palikka.tausta = false;
+			palikka.permeable = false;
 
-			palikka.oikealle	= BLOCK_WALL;
-			palikka.vasemmalle	= BLOCK_WALL;
-			palikka.ylos		= BLOCK_WALL;
-			palikka.alas		= BLOCK_WALL;
+			palikka.right_side	= BLOCK_WALL;
+			palikka.left_side	= BLOCK_WALL;
+			palikka.top_side		= BLOCK_WALL;
+			palikka.bottom_side		= BLOCK_WALL;
 
 			// Erikoislattiat
 
 			if (i > 139){
-				palikka.oikealle	= BLOCK_BACKGROUND;
-				palikka.vasemmalle	= BLOCK_BACKGROUND;
-				palikka.ylos		= BLOCK_BACKGROUND;
-				palikka.alas		= BLOCK_BACKGROUND;
+				palikka.right_side	= BLOCK_BACKGROUND;
+				palikka.left_side	= BLOCK_BACKGROUND;
+				palikka.top_side		= BLOCK_BACKGROUND;
+				palikka.bottom_side		= BLOCK_BACKGROUND;
 			}
 
 			// L�pik�velt�v� lattia
 
 			if (i == BLOCK_BARRIER_DOWN){
-				palikka.oikealle	= BLOCK_BACKGROUND;
-				palikka.ylos		= BLOCK_BACKGROUND;
-				palikka.alas		= BLOCK_WALL;
-				palikka.vasemmalle	= BLOCK_BACKGROUND;
-				palikka.ala -= 27;
+				palikka.right_side	= BLOCK_BACKGROUND;
+				palikka.top_side		= BLOCK_BACKGROUND;
+				palikka.bottom_side		= BLOCK_WALL;
+				palikka.left_side	= BLOCK_BACKGROUND;
+				palikka.bottom -= 27;
 			}
 
 			// M�et
 
 			if (i > 49 && i < 60){
-				palikka.oikealle	= BLOCK_BACKGROUND;
-				palikka.ylos		= BLOCK_WALL;
-				palikka.alas		= BLOCK_WALL;
-				palikka.vasemmalle	= BLOCK_BACKGROUND;
-				palikka.ala += 1;
+				palikka.right_side	= BLOCK_BACKGROUND;
+				palikka.top_side		= BLOCK_WALL;
+				palikka.bottom_side		= BLOCK_WALL;
+				palikka.left_side	= BLOCK_BACKGROUND;
+				palikka.bottom += 1;
 			}
 
 			// Kytkimet
 
 			if (i >= BLOCK_BUTTON1 && i <= BLOCK_BUTTON3){
-				palikka.oikealle	= BLOCK_WALL;
-				palikka.ylos		= BLOCK_WALL;
-				palikka.alas		= BLOCK_WALL;
-				palikka.vasemmalle	= BLOCK_WALL;
+				palikka.right_side	= BLOCK_WALL;
+				palikka.top_side		= BLOCK_WALL;
+				palikka.bottom_side		= BLOCK_WALL;
+				palikka.left_side	= BLOCK_WALL;
 			}
 		}
 		else{
-			palikka.tausta = true;
+			palikka.permeable = true;
 
-			palikka.oikealle	= BLOCK_BACKGROUND;
-			palikka.vasemmalle	= BLOCK_BACKGROUND;
-			palikka.ylos		= BLOCK_BACKGROUND;
-			palikka.alas		= BLOCK_BACKGROUND;
+			palikka.right_side	= BLOCK_BACKGROUND;
+			palikka.left_side	= BLOCK_BACKGROUND;
+			palikka.top_side		= BLOCK_BACKGROUND;
+			palikka.bottom_side		= BLOCK_BACKGROUND;
 		}
 
 		if (i > 131 && i < 140)
