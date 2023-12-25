@@ -3,9 +3,6 @@
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
 #include "game/gifts.hpp"
-
-#include "game/sprites.hpp"
-
 #include <cstring>
 
 static int gifts_count = 0;
@@ -59,7 +56,7 @@ void Gifts_Remove(int i) {
 
 }
 
-int Gifts_Use() {
+int Gifts_Use(SpritesHandler& sh) {
 	if (gifts_count > 0) {
 
 		/**
@@ -67,14 +64,14 @@ int Gifts_Use() {
 		 * Fix spyrooster green bee bug.
 		 */
 		SpriteClass* parent = nullptr;
-		if(Player_Sprite->enemy){
-			parent = Player_Sprite;
+		if(sh.Player_Sprite->enemy){
+			parent = sh.Player_Sprite;
 		}
 
-		Sprites_add(
+		sh.addSprite(
 			gifts_list[0], 0,
-			Player_Sprite->x - gifts_list[0]->width,
-			Player_Sprite->y,
+			sh.Player_Sprite->x - gifts_list[0]->width,
+			sh.Player_Sprite->y,
 			parent, false);
 
 		Gifts_Remove(0);

@@ -12,7 +12,6 @@
 
 #include "game/game.hpp"
 #include "game/gifts.hpp"
-#include "game/sprites.hpp"
 #include "game/physics.hpp"
 
 #include "gfx/text.hpp"
@@ -44,7 +43,7 @@ bool PlayingScreen::Is_Sprite_Visible(const SpriteClass* sprite)const {
 
 void PlayingScreen::Draw_InGame_BGSprites() {
 
-	for (SpriteClass* sprite : bgSprites_List) {
+	for (SpriteClass* sprite : Game->spritesHandler.bgSprites_List) {
 
 		if (sprite->removed)
 			continue;
@@ -128,7 +127,7 @@ void PlayingScreen::Draw_InGame_BGSprites() {
 
 void PlayingScreen::Draw_InGame_FGSprites(){
 
-	for(SpriteClass* sprite : fgSprites_List){
+	for(SpriteClass* sprite : Game->spritesHandler.fgSprites_List){
 
 		if(Is_Sprite_Visible(sprite)) {
 
@@ -144,7 +143,7 @@ void PlayingScreen::Draw_InGame_FGSprites(){
 
 void PlayingScreen::Draw_InGame_Sprites() {
 
-	for (SpriteClass* sprite : Sprites_List) {
+	for (SpriteClass* sprite : Game->spritesHandler.Sprites_List) {
 		if (sprite->prototype->type == TYPE_BACKGROUND || sprite->prototype->type == TYPE_FOREGROUND)
 			continue;
 		
@@ -194,29 +193,24 @@ void PlayingScreen::Draw_InGame_Sprites() {
 
 void PlayingScreen::Draw_InGame_DebugInfo() {
 	int vali, fy = 70;
-	//char lukua[20];
 
 	PDraw::set_offset(640, 480);
 
 	vali = PDraw::font_write(fontti1,"sprites: ",10,fy);
-	//sprintf(lukua, "%li", Sprites_List.size());
-	PDraw::font_write(fontti1,std::to_string(Sprites_List.size()),10+vali,fy);
+	PDraw::font_write(fontti1,std::to_string(Game->spritesHandler.Sprites_List.size()),10+vali,fy);
 	fy += 10;
 
 	vali = PDraw::font_write(fontti1,"active sprites: ",10,fy);
-	//sprintf(lukua, "%i", debug_active_sprites);
 	PDraw::font_write(fontti1,std::to_string(debug_active_sprites),10+vali,fy);
 	fy += 10;
 
 	vali = PDraw::font_write(fontti1,"animated sprites: ",10,fy);
-	//sprintf(lukua, "%i", debug_drawn_sprites);
 	PDraw::font_write(fontti1,std::to_string(debug_drawn_sprites),10+vali,fy);
 	fy += 10;
 
 	for (std::size_t i = 0; i < 40; i++) {
-		//sprintf(lukua, "%i", i);
 		PDraw::font_write(fontti1,std::to_string(i),410,10+i*10);
-		PrototypeClass*proto = Get_Prototype_Debug(i);
+		PrototypeClass*proto = Game->spritesHandler.prototypesHandler.get(i);
 
 		if (proto == nullptr) {
 			PDraw::font_write(fontti1,"-",430,10+i*10);
@@ -238,39 +232,24 @@ void PlayingScreen::Draw_InGame_DebugInfo() {
 		if (strcmp(Episode->levels_list[i].nimi,"")!=0)
 			PDraw::font_write(fontti1,Episode->levels_list[i].nimi,0,240+i*10);
 
-	//char dluku[50];
 
-	//sprintf(dluku, "%.7f", Player_Sprite->x); //Player x
+	SpriteClass* Player_Sprite = Game->spritesHandler.Player_Sprite;
+	
 	PDraw::font_write(fontti1, std::to_string(Player_Sprite->x), 10, 410);
-
-	//sprintf(dluku, "%.7f", Player_Sprite->y); //Player y
 	PDraw::font_write(fontti1, std::to_string(Player_Sprite->y), 10, 420);
-
-	//sprintf(dluku, "%.7f", Player_Sprite->b); //Player v-speed
 	PDraw::font_write(fontti1, std::to_string(Player_Sprite->b), 10, 430);
-
-	//sprintf(dluku, "%.7f", Player_Sprite->a); //Player h-speed
 	PDraw::font_write(fontti1, std::to_string(Player_Sprite->a), 10, 440);
-
 	PDraw::font_write(fontti1, Game->map_file, 10, 460);
-
-	//sprintf(lukua, "%i", Player_Sprite->jump_timer);
 	PDraw::font_write(fontti1, std::to_string(Player_Sprite->jump_timer), 270, 460);
 
 	PDraw::font_write(fontti1, Episode->Get_Dir("").c_str(), 10, 470);
 
-	//sprintf(lukua, "%i", Player_Sprite->super_mode_timer);
 	PDraw::font_write(fontti1, std::to_string(Player_Sprite->super_mode_timer), 610, 470);
-	//sprintf(lukua, "%i", Player_Sprite->invisible_timer);
 	PDraw::font_write(fontti1, std::to_string(Player_Sprite->invisible_timer), 610, 460);
-	//sprintf(lukua, "%i", Game->button1);
 	PDraw::font_write(fontti1, std::to_string(Game->button1), 610, 450);
-	//sprintf(lukua, "%i", Game->button2);
 	PDraw::font_write(fontti1, std::to_string(Game->button2), 610, 440);
-	//sprintf(lukua, "%i", Game->button3);
 	PDraw::font_write(fontti1, std::to_string(Game->button3), 610, 430);
 
-	//sprintf(lukua, "%i", Game->timeout);
 	vali += PDraw::font_write(fontti1,std::to_string(Game->timeout),390,screen_height-10);
 
 	PDraw::set_offset(screen_width, screen_height);
@@ -443,7 +422,6 @@ void PlayingScreen::Draw_InGame_Lower_Menu() {
 }
 
 void PlayingScreen::Draw_InGame_UI(){
-	//char luku[16];
 	int vali = 20;
 	int my = 14;
 
@@ -451,7 +429,8 @@ void PlayingScreen::Draw_InGame_UI(){
 	// Draw Energy
 	/////////////////
 	vali = PDraw::font_write(fontti1,tekstit->Get_Text(PK_txt.game_energy),60,my);
-	//sprintf(luku, "%i", Player_Sprite->energy);	
+
+	SpriteClass* Player_Sprite = Game->spritesHandler.Player_Sprite;
 	ShadowedText_Draw(std::to_string(Player_Sprite->energy), 60 + vali, my);
 
 	/////////////////
@@ -530,6 +509,9 @@ void PlayingScreen::Draw_InGame_UI(){
 }
 
 void PlayingScreen::Draw() {
+	SpriteClass* Player_Sprite = Game->spritesHandler.Player_Sprite;
+
+
 	debug_drawn_sprites = 0;
 
 	Draw_InGame_BG();
@@ -633,6 +615,8 @@ void PlayingScreen::Init(){
 
 void PlayingScreen::Update_Camera(){
 
+	SpriteClass* Player_Sprite = Game->spritesHandler.Player_Sprite;
+
 	Game->camera_x = (int)Player_Sprite->x-screen_width / 2;
 	Game->camera_y = (int)Player_Sprite->y-screen_height / 2;
 	
@@ -708,7 +692,7 @@ void PlayingScreen::Loop(){
 		Particles_Update();
 
 		if (!Game->level_clear && (!Game->has_time || Game->timeout > 0)) {
-			debug_active_sprites = Update_Sprites();
+			debug_active_sprites = Game->spritesHandler.onTickUpdate();
 			Game->frame_count++;
 		}
 		Fadetext_Update();
@@ -762,6 +746,8 @@ void PlayingScreen::Loop(){
 		}
 	}
 
+	SpriteClass * Player_Sprite = Game->spritesHandler.Player_Sprite;
+
 	if (Player_Sprite->energy < 1 && !Game->game_over) {
 		Game->game_over = true;
 		SpriteOnDeath(Player_Sprite);
@@ -793,7 +779,7 @@ void PlayingScreen::Loop(){
 	if (key_delay == 0) {
 		if (!Game->game_over && !Game->level_clear) {
 			if (PInput::Keydown(Input->open_gift) || Gui_gift) {
-				Gifts_Use();
+				Gifts_Use(Game->spritesHandler);
 				key_delay = 10;
 			}
 			
@@ -888,7 +874,7 @@ void PlayingScreen::Loop(){
 			}
 			if (PInput::Keydown(PInput::A)/* && key_delay == 0*/) {
 				//key_delay = 20;
-				PrototypeClass*proto = Level_Prototypes_Get(Game->map.player_sprite_index);
+				PrototypeClass*proto = Game->spritesHandler.getLevelPrototype(Game->map.player_sprite_index);
 				if(proto!=nullptr){
 					*Player_Sprite = SpriteClass(proto, 1, Player_Sprite->x, Player_Sprite->y);
 					Effect_Stars(Player_Sprite->x, Player_Sprite->y, COLOR_VIOLET);

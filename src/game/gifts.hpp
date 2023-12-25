@@ -4,12 +4,12 @@
 //#########################
 #pragma once
 
-#include "game/sprites.hpp"
+#include "sprites_handler.hpp"
 
 #define MAX_GIFTS 4
 
 bool Gifts_Add(PrototypeClass* protot);
-int Gifts_Use();
+int Gifts_Use(SpritesHandler& spritesHandler);
 void Gifts_Clean();
 int Gifts_Count();
 

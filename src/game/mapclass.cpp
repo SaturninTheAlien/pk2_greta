@@ -478,7 +478,7 @@ void MapClass::Calculate_Edges(){
 
 				if (edge){
 					this->edges[x+y*PK2MAP_MAP_WIDTH] = true;
-					//this->background_tiles[x+y*PK2MAP_MAP_WIDTH] = 49; //Debug
+					//this->background_tiles[x+y*PK2MAP_MAP_WIDTH] = 18; //Debug
 				}
 			}
 		}

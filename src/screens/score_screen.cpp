@@ -13,7 +13,6 @@
 #include "gui.hpp"
 #include "episode/episodeclass.hpp"
 #include "sfx.hpp"
-#include "game/sprites.hpp"
 #include "system.hpp"
 #include "settings.hpp"
 #include "save.hpp"
@@ -282,7 +281,7 @@ void ScoreScreen::Init() {
 	u32 temp_score = 0;
 	temp_score += Game->score;
 	temp_score += Game->timeout / 12; //(Game->timeout / 60) * 5;
-	temp_score += Player_Sprite->energy * 300;
+	temp_score += Game->spritesHandler.Player_Sprite->energy * 300;
 	for (int i = 0; i < MAX_GIFTS; i++)
 		if (Gifts_Get(i) != nullptr)
 			temp_score += Gifts_Get(i)->score + 500;
@@ -359,12 +358,12 @@ void ScoreScreen::Loop() {
 				counting_delay = 50;
 			}
 
-		} else if (Player_Sprite->energy > 0) {
+		} else if (Game->spritesHandler.Player_Sprite->energy > 0) {
 
 			counting_phase = COUNT_ENERGY;
 			counting_delay = 10;
 			energy_score+=300;
-			Player_Sprite->energy--;
+			Game->spritesHandler.Player_Sprite->energy--;
 
 			Play_MenuSFX(score_sound, 70);
 
@@ -420,8 +419,8 @@ void ScoreScreen::Loop() {
 
 			time_score = Game->timeout / 12;
 
-			energy_score += Player_Sprite->energy * 300;
-			Player_Sprite->energy = 0;
+			energy_score += Game->spritesHandler.Player_Sprite->energy * 300;
+			Game->spritesHandler.Player_Sprite->energy = 0;
 
 			for (int i = 0; i < Gifts_Count(); i++)
 				gifts_score += Gifts_Get(i)->score + 500;

@@ -7,8 +7,7 @@
 #include "system.hpp"
 #include "settings.hpp"
 #include "game/gifts.hpp"
-#include "game/sprites.hpp"
-
+#include "game/game.hpp"
 #include "engine/PRender.hpp"
 #include "engine/PGui.hpp"
 #include "engine/PInput.hpp"
@@ -339,6 +338,8 @@ void GUI_Update() {
 		float alpha = Screen_Alpha();
 
 		{
+			SpriteClass* Player_Sprite = Game->spritesHandler.Player_Sprite;
+
 			doodle_active = Player_Sprite->ammo2 != nullptr;
 			egg_active = Player_Sprite->ammo1 != nullptr;
 			gift_active = Gifts_Count() > 0;

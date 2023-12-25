@@ -11,7 +11,6 @@
 #include "spriteclass_commands.hpp"
 #include "spriteclass.hpp"
 #include "exceptions.hpp"
-#include "sprites.hpp"
 #include "sfx.hpp"
 
 namespace SpriteCommands{

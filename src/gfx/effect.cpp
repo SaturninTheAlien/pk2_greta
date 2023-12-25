@@ -5,7 +5,7 @@
 #include "gfx/effect.hpp"
 
 #include "gfx/particles.hpp"
-#include "game/sprites.hpp"
+#include "game/spriteclass_constants.hpp"
 #include "system.hpp"
 
 #include <cstdlib>

@@ -6,7 +6,8 @@
 
 #include "engine/types.hpp"
 
-#include "game/mapclass.hpp"
+#include "sprites_handler.hpp"
+#include "mapclass.hpp"
 
 const int TIME_FPS = 100; //(dec)conds * TIME_FPS = FRAMES
 const int INFO_TIME = 700;
@@ -84,6 +85,7 @@ class GameClass {
 		void Change_SkullBlocks();
 		void Open_Locks();
 
+		SpritesHandler spritesHandler;
 	private:
 		
 		bool started = false;

@@ -7,7 +7,6 @@
 #include "system.hpp"
 #include "spriteclass.hpp"
 #include "game.hpp"
-#include "sprites.hpp"
 
 namespace SpriteAI{
 

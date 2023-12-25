@@ -7,7 +7,7 @@
 #include "game/physics.hpp"
 
 #include "game/game.hpp"
-#include "game/sprites.hpp"
+
 #include "game/gifts.hpp"
 #include "settings.hpp"
 #include "gfx/particles.hpp"
@@ -433,11 +433,11 @@ void SpriteOnDeath(SpriteClass* sprite){
 
 			if(bonuses_number>1){
 				for(int i=0;i<bonuses_number;++i){
-					Sprites_add(bonus, 0, sprite->x+(10-rand()%21),sprite->y+(10-rand()%21), nullptr, true);
+					Game->spritesHandler.addSprite(bonus, 0, sprite->x+(10-rand()%21),sprite->y+(10-rand()%21), nullptr, true);
 				}
 			}
 			else if(bonuses_number==1){
-				Sprites_add(bonus, 0, sprite->x,sprite->y, nullptr, true);
+				Game->spritesHandler.addSprite(bonus, 0, sprite->x,sprite->y, nullptr, true);
 			}			
 		}
 	}
@@ -451,13 +451,13 @@ void SpriteOnDeath(SpriteClass* sprite){
 	Play_GameSFX(sprite->prototype->sounds[SOUND_DESTRUCTION],100, (int)sprite->x, (int)sprite->y,
 					sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 
-	if (sprite->prototype->type == TYPE_GAME_CHARACTER && sprite->prototype->score != 0 && sprite!=Player_Sprite){
+	if (sprite->prototype->type == TYPE_GAME_CHARACTER && sprite->prototype->score != 0 && sprite!=Game->spritesHandler.Player_Sprite){
 		Fadetext_New(fontti2,std::to_string(sprite->prototype->score),(int)sprite->x-8,(int)sprite->y-8,80);
 		Game->score_increment += sprite->prototype->score;
 	}
 
 
-	for(SpriteClass* sprite2:Sprites_List){
+	for(SpriteClass* sprite2: Game->spritesHandler.Sprites_List){
 		if(sprite2->parent_sprite==sprite && sprite2->HasAI(AI_DIE_WITH_MOTHER_SPPRITE)){
 			sprite2->damage_taken = sprite2->energy;
 			sprite2->damage_taken_type = DAMAGE_ALL;
@@ -715,6 +715,8 @@ void UpdateSprite(SpriteClass* sprite){
 		sprite->invisible_timer--;
 
 	}
+
+	SpriteClass* Player_Sprite = Game->spritesHandler.Player_Sprite;
 	
 	if (sprite->super_mode_timer > 0) {
 
@@ -828,7 +830,7 @@ void UpdateSprite(SpriteClass* sprite){
 	PK2BLOCK spritepalikka;
 
 	//Compare this sprite with every sprite in the game
-	for (SpriteClass* sprite2 : Sprites_List) {
+	for (SpriteClass* sprite2 : Game->spritesHandler.Sprites_List) {
 		if (sprite2 != sprite && sprite2->active && !sprite2->removed) {
 			if (sprite2->crouched)
 				sprite2_yla = sprite2->prototype->height / 3;//1.5;
@@ -1238,8 +1240,7 @@ void UpdateSprite(SpriteClass* sprite){
 						  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 
 			if (sprite->ammo1 != nullptr) {
-				Sprites_add_ammo(sprite->ammo1,sprite->x, sprite->y, sprite);
-
+				Game->spritesHandler.addSpriteAmmo(sprite->ammo1,sprite->x, sprite->y, sprite);
 		//		if (Level_Prototypes_List[sprite->ammo1].sounds[SOUND_ATTACK1] > -1)
 		//			Play_GameSFX(Level_Prototypes_List[sprite->ammo1].sounds[SOUND_ATTACK1],100, (int)sprite->x, (int)sprite->y,
 		//						  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
@@ -1258,7 +1259,7 @@ void UpdateSprite(SpriteClass* sprite){
 						  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 
 			if (sprite->ammo2 != nullptr) {
-				Sprites_add_ammo(sprite->ammo2,sprite->x, sprite->y, sprite);
+				Game->spritesHandler.addSpriteAmmo(sprite->ammo2,sprite->x, sprite->y, sprite);
 
 		//		if (Level_Prototypes_List[sprite->ammo2].sounds[SOUND_ATTACK1] > -1)
 		//			Play_GameSFX(Level_Prototypes_List[sprite->ammo2].sounds[SOUND_ATTACK1],100, (int)sprite->x, (int)sprite->y,
@@ -1277,6 +1278,8 @@ void UpdateSprite(SpriteClass* sprite){
 }
 
 void UpdateBonusSprite(SpriteClass* sprite){
+
+	SpriteClass* Player_Sprite = Game->spritesHandler.Player_Sprite;
 
 	sprite_width  = sprite->prototype->width;
 	sprite_height = sprite->prototype->height;
@@ -1343,7 +1346,7 @@ void UpdateBonusSprite(SpriteClass* sprite){
 
 		PK2BLOCK spritepalikka; 
 
-		for (SpriteClass* sprite2 : Sprites_List) {
+		for (SpriteClass* sprite2 : Game->spritesHandler.Sprites_List) {
 			if (sprite2 != sprite && !sprite2->removed && sprite->respawn_timer==0) {
 				if (sprite2->prototype->is_wall && sprite->prototype->check_tiles) {
 					if (sprite->x-sprite_width/2 +sprite->a <= sprite2->x + sprite2->prototype->width /2 &&
