@@ -96,23 +96,23 @@ PrototypeClass* PrototypesHandler::loadPrototype(const std::string& filename_in,
 		}
 
 		//Load transformation
-		if(!protot->transformation_sprite.empty()){
-			protot->transformation = this->loadPrototype(protot->transformation_sprite);
+		if(!protot->transformation_str.empty()){
+			protot->transformation = this->loadPrototype(protot->transformation_str);
 		}
 
 		//Load bunus
-		if(!protot->bonus_sprite.empty()){
-			protot->bonus = this->loadPrototype(protot->bonus_sprite);
+		if(!protot->bonus_str.empty()){
+			protot->bonus = this->loadPrototype(protot->bonus_str);
 		}
 
 		//Load ammo1
-		if(!protot->ammo1_sprite.empty()){
-			protot->ammo1 = this->loadPrototype(protot->ammo1_sprite);
+		if(!protot->ammo1_str.empty()){
+			protot->ammo1 = this->loadPrototype(protot->ammo1_str);
 		}
 
 		//Load ammo2
-		if(!protot->ammo2_sprite.empty()){
-			protot->ammo2 = this->loadPrototype(protot->ammo2_sprite);
+		if(!protot->ammo2_str.empty()){
+			protot->ammo2 = this->loadPrototype(protot->ammo2_str);
 		}
 
 		return protot;

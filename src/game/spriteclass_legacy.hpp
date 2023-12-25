@@ -57,10 +57,10 @@ struct PrototypeClass10{
     bool    is_wall;
     u32     how_destroyed;
 
-    char    transformation_sprite[13];
-    char    bonus_sprite[13];
-    char    ammo1_sprite[13];
-    char    ammo2_sprite[13];
+    char    transformation_str[13];
+    char    bonus_str[13];
+    char    ammo1_str[13];
+    char    ammo2_str[13];
     bool    can_open_locks;
 };
 struct PrototypeClass11{
@@ -106,10 +106,10 @@ struct PrototypeClass11{
     u32     attack2_time;
     u32     parallax_type;
 
-    char    transformation_sprite[13];
-    char    bonus_sprite[13];
-    char    ammo1_sprite[13];
-    char    ammo2_sprite[13];
+    char    transformation_str[13];
+    char    bonus_str[13];
+    char    ammo1_str[13];
+    char    ammo2_str[13];
 
 };
 struct PrototypeClass12{
@@ -155,10 +155,10 @@ struct PrototypeClass12{
     u32     attack2_time;
     u32     parallax_type;
 
-    char    transformation_sprite[13];
-    char    bonus_sprite[13];
-    char    ammo1_sprite[13];
-    char    ammo2_sprite[13];
+    char    transformation_str[13];
+    char    bonus_str[13];
+    char    ammo1_str[13];
+    char    ammo2_str[13];
 
     bool    check_tiles;
     u32     sound_frequency;
@@ -232,10 +232,10 @@ struct PrototypeClass13{
     u32     parallax_type;                    // parallax type (just to TYPE_BACKGROUND)
 
 
-    char    transformation_sprite[100];                 // another sprite that this sprite may change
-    char    bonus_sprite[100];                  // bonus that this sprite gives
-    char    ammo1_sprite[100];                 // ammo 1 sprite
-    char    ammo2_sprite[100];                 // ammo 2 sprite
+    char    transformation_str[100];                 // another sprite that this sprite may change
+    char    bonus_str[100];                  // bonus that this sprite gives
+    char    ammo1_str[100];                 // ammo 1 sprite
+    char    ammo2_str[100];                 // ammo 2 sprite
 
 
     bool    check_tiles;                      //?make sounds?

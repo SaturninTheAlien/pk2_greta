@@ -218,13 +218,13 @@ void PlayingScreen::Draw_InGame_DebugInfo() {
 			PDraw::font_write(fontti1,proto->filename,430,10+i*10);
 
 			if (degree < 90)
-				PDraw::font_write(fontti1,proto->transformation_sprite,545,10+i*10);
+				PDraw::font_write(fontti1,proto->transformation_str,545,10+i*10);
 			else if (degree < 180)
-				PDraw::font_write(fontti1,proto->bonus_sprite,545,10+i*10);
+				PDraw::font_write(fontti1,proto->bonus_str,545,10+i*10);
 			else if (degree < 270)
-				PDraw::font_write(fontti1,proto->ammo1_sprite,545,10+i*10);
+				PDraw::font_write(fontti1,proto->ammo1_str,545,10+i*10);
 			else
-				PDraw::font_write(fontti1,proto->ammo2_sprite,545,10+i*10);
+				PDraw::font_write(fontti1,proto->ammo2_str,545,10+i*10);
 		}
 	}
 

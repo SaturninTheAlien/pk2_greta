@@ -56,10 +56,10 @@ void PrototypeClass::SetProto10(PrototypeClass10 &proto){
 	this->picture_filename = proto.picture;
 	this->name = proto.name;
 
-	this->transformation_sprite = proto.transformation_sprite;
-	this->bonus_sprite = proto.bonus_sprite;
-	this->ammo1_sprite = proto.ammo1_sprite;
-	this->ammo2_sprite = proto.ammo2_sprite;
+	this->transformation_str = proto.transformation_str;
+	this->bonus_str = proto.bonus_str;
+	this->ammo1_str = proto.ammo1_str;
+	this->ammo2_str = proto.ammo2_str;
 
 	for (int i=0;i<SPRITE_SOUNDS_NUMBER;i++) {
 		this->sound_files[i] = proto.sound_files[i];
@@ -105,10 +105,10 @@ void PrototypeClass::SetProto11(PrototypeClass11 &proto){
 	this->picture_filename = proto.picture;
 	this->name = proto.name;
 
-	this->transformation_sprite = proto.transformation_sprite;
-	this->bonus_sprite = proto.bonus_sprite;
-	this->ammo1_sprite = proto.ammo1_sprite;
-	this->ammo2_sprite = proto.ammo2_sprite;
+	this->transformation_str = proto.transformation_str;
+	this->bonus_str = proto.bonus_str;
+	this->ammo1_str = proto.ammo1_str;
+	this->ammo2_str = proto.ammo2_str;
 
 	for (int i=0;i<SPRITE_SOUNDS_NUMBER;i++) {
 		this->sound_files[i] = proto.sound_files[i];
@@ -167,10 +167,10 @@ void PrototypeClass::SetProto12(PrototypeClass12 &proto){
 	this->picture_filename = proto.picture;
 	this->name = proto.name;
 
-	this->transformation_sprite = proto.transformation_sprite;
-	this->bonus_sprite = proto.bonus_sprite;
-	this->ammo1_sprite = proto.ammo1_sprite;
-	this->ammo2_sprite = proto.ammo2_sprite;
+	this->transformation_str = proto.transformation_str;
+	this->bonus_str = proto.bonus_str;
+	this->ammo1_str = proto.ammo1_str;
+	this->ammo2_str = proto.ammo2_str;
 
 	for (int i=0;i<SPRITE_SOUNDS_NUMBER;i++) {
 		//strncpy(sound_files[aani], proto.sound_files[aani], 13);
@@ -237,10 +237,10 @@ void PrototypeClass::SetProto13(PrototypeClass13 &proto){
 	this->picture_filename = proto.picture;
 	this->name = proto.name;
 
-	this->transformation_sprite = proto.transformation_sprite;
-	this->bonus_sprite = proto.bonus_sprite;
-	this->ammo1_sprite = proto.ammo1_sprite;
-	this->ammo2_sprite = proto.ammo2_sprite;
+	this->transformation_str = proto.transformation_str;
+	this->bonus_str = proto.bonus_str;
+	this->ammo1_str = proto.ammo1_str;
+	this->ammo2_str = proto.ammo2_str;
 
 	for (int i=0;i<SPRITE_SOUNDS_NUMBER;i++) {
 		this->sound_files[i] = proto.sound_files[i];
@@ -352,10 +352,10 @@ void PrototypeClass::SetProto20(const nlohmann::json& j){
 		this->AI_v = j["ai"].get<std::vector<int>>();
 	}
 
-	jsonReadString(j, "ammo1", this->ammo1_sprite);
+	jsonReadString(j, "ammo1", this->ammo1_str);
 
 
-	jsonReadString(j, "ammo2", this->ammo2_sprite);
+	jsonReadString(j, "ammo2", this->ammo2_str);
 
 	if(j.contains("animations")){
 		const nlohmann::json& j_animations = j["animations"]; 
@@ -374,7 +374,7 @@ void PrototypeClass::SetProto20(const nlohmann::json& j){
 
 	jsonReadBool(j, "bonus_always", this->bonus_always);
 
-	jsonReadString(j, "bonus", this->bonus_sprite);
+	jsonReadString(j, "bonus", this->bonus_str);
 
 	jsonReadInt(j, "bonuses_number", this->bonuses_number);
 
@@ -462,7 +462,7 @@ void PrototypeClass::SetProto20(const nlohmann::json& j){
 		}
 	}
 
-	jsonReadString(j, "transformation", this->transformation_sprite);
+	jsonReadString(j, "transformation", this->transformation_str);
 
 	jsonReadInt(j, "type", this->type);
 
@@ -471,7 +471,7 @@ void PrototypeClass::SetProto20(const nlohmann::json& j){
 	jsonReadDouble(j, "weight", this->weight);
 
 	if(j.contains("commands")){
-		SpriteCommands::Parse_Commands(j["commands"], this->commands, this->width, this->height);
+		this->commands_json = j["commands"];
 	}
 
 	if(j.contains("dead_weight") && j["dead_weight"].is_number()){
@@ -640,9 +640,7 @@ void PrototypeClass::LoadAssets(EpisodeClass*episode){
 	for (int i = 0; i < SPRITE_SOUNDS_NUMBER; i++) {
 
 		if(!this->sound_files[i].empty()){
-			PFile::Path sound = image;
-			sound.SetFile(this->sound_files[i]);
-
+			PFile::Path sound = episode->Get_Dir(this->sound_files[i]);
 			if (FindAsset(&sound, "sprites" PE_SEP)) {
 
 				this->sounds[i] = PSound::load_sfx(sound);
@@ -655,6 +653,10 @@ void PrototypeClass::LoadAssets(EpisodeClass*episode){
 	}
 
 	SpriteAI::AI_Table::INSTANCE.InitSpriteAIs(this->AI_f, this->AI_v);
+
+	if(!this->commands_json.is_null()){
+		SpriteCommands::Parse_Commands(this->commands_json, this->commands, this->width, this->height);
+	}
 }
 
 void PrototypeClass::UnloadAssets(){

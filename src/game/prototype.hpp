@@ -103,10 +103,10 @@ public:
 
     int     parallax_type = 0;
 
-    std::string transformation_sprite;
-    std::string bonus_sprite;
-    std::string ammo1_sprite;
-    std::string ammo2_sprite;
+    std::string transformation_str;
+    std::string bonus_str;
+    std::string ammo1_str;
+    std::string ammo2_str;
 
 
     PrototypeClass* transformation     = nullptr;
@@ -198,6 +198,7 @@ public:
     bool    HasAI(int AI)const;
 
     std::vector<SpriteCommands::Command*>commands;
+    nlohmann::json commands_json;
 private:
     void    SetProto10(PrototypeClass10 &proto);
     void    SetProto11(PrototypeClass11 &proto);
