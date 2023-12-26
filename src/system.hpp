@@ -67,7 +67,7 @@ float Screen_Alpha();
 bool Is_Fading();
 void Update_Colors();
 
-void Do_Thunder();
+void StartLightningEffect();
 
 void Id_To_String(u32 id, char* string, std::size_t n);
 
@@ -79,6 +79,6 @@ void Draw_Cursor(int x, int y);
 
 void Prepare_DataPath();
 
-bool FindAsset(PFile::Path* path, const char* default_dir);
+bool FindAsset(PFile::Path* path, const char* default_dir, bool try_outside_zip=true);
 
 int Set_Screen_Mode(int mode);

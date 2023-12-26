@@ -4,6 +4,9 @@
 //#########################
 #include "game/spriteclass.hpp"
 
+#include "sfx.hpp"
+#include "episode/episodeclass.hpp"
+
 #include "system.hpp"
 #include "gfx/effect.hpp"
 
@@ -150,8 +153,9 @@ void SpriteClass::HandleEffects() {
 		Effect_Points(x - 5, y - 5, prototype->width, prototype->height, prototype->color);
 
 	if (prototype->effect == EFFECT_THUNDER && prototype->charge_time > 0)
-		if (rand() % prototype->charge_time == 0) Do_Thunder();
-
+		if (rand() % prototype->charge_time == 0){
+			this->StartThunder();
+		}
 }
 
 bool SpriteClass::CanDamageOnCollision(const SpriteClass* target)const{
@@ -355,4 +359,9 @@ bool SpriteClass::Transform(){
 	}
 
 	return false;
+}
+
+void SpriteClass::StartThunder(){
+	StartLightningEffect();
+	Play_GameSFX(Episode->sfx.thunder_sound, 100, (int)this->x, (int)this->y, SOUND_SAMPLERATE, true);
 }

@@ -85,7 +85,7 @@ void Fade_in(float speed){
     alpha = 0;
     fade_speed = speed;
 }
-void Do_Thunder() {
+void StartLightningEffect() {
 	thunder_index = 0;
 }
 
@@ -173,7 +173,7 @@ void Prepare_DataPath() {
 }
 
 //TODO - Receive Episode, organize this
-bool FindAsset(PFile::Path* path, const char* default_dir) {
+bool FindAsset(PFile::Path* path, const char* default_dir, bool try_outside_zip) {
 
 	if (!path->Find()) {
 
@@ -186,7 +186,7 @@ bool FindAsset(PFile::Path* path, const char* default_dir) {
 			
 			PLog::Write(PLog::INFO, "PK2", "Can't find %s", path->c_str());
 
-			if (path->Is_Zip()) {
+			if (try_outside_zip && path->Is_Zip()) {
 
 				PLog::Write(PLog::INFO, "PK2", "Trying outsize zip");
 

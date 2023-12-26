@@ -15,11 +15,20 @@ class SfxHandler{
 public:
     static const std::map<std::string, int SfxHandler::*> soundFilenames;
 
-    SfxHandler(){};
-    SfxHandler(const SfxHandler& src, EpisodeClass*episode=nullptr);
+    SfxHandler()=default;
     ~SfxHandler(){
         free();
     }
+
+    /**
+     * @brief Construct a new Sfx Handler object
+     * Do not copy objects!
+     */
+    SfxHandler(const SfxHandler& src)=delete;
+    SfxHandler(SfxHandler&& src)=delete;
+    SfxHandler& operator=(const SfxHandler& src)=delete;    
+    SfxHandler& operator=(SfxHandler&&src)=delete;
+
 
     int switch_sound = -1;
     int jump_sound = -1;
@@ -34,6 +43,7 @@ public:
     int thunder_sound = -1;
 
     void loadAll();
+    void loadAllForEpisode(const SfxHandler& src, EpisodeClass*episode=nullptr);
     void free();
 private:
     int mLoadSound(const std::string& name);

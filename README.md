@@ -83,6 +83,8 @@ This example starts the level13.map (the robot boss fight) on dev mode:
 # New features
 * A new sprite format .spr2 based on JSON. The legacy .spr format is still supported for compatibility reasons. All the obsolete c-style arrays in PrototypeClass have been replaced by std::vector, std::string and so there are no limits like max number of AIs and so on. There is still 12 character length limit of the sprite filename length due to the map format. Currently sprite filenames are stored as "name.spr". During the level loading, firstly "name.spr2" is searched for, then "name.spr". If the sprite name is stored as "name", only "name.spr2" is searched for.
 
+* Support for custom SFX sounds (such as jump, splash, map sounds and so on) in zip episodes.
+
 * New Fields in SPR2:
     * "always_active" - if true, the sprite won't deactivate when off-screen.
     * "dead_weight" - weight of the sprite corpse, if not defined the default legacy behaviour,
@@ -103,7 +105,7 @@ This example starts the level13.map (the robot boss fight) on dev mode:
     * AI_RETURN_TO_ORIG_Y_FIXED (85) - similar to legacy AI_RETURN_TO_ORIG_Y (29) but without oscillations,
     * AI_TRANSFORM_IF_DAMAGED (129) - this AI was implemented, but not working due to a bug before,
 
-    * AI_INFINITE_ENERGY (141) - sprite has infinite energy, it can "receive" damage but it never dies. Only DAMAGE_TYPE_ALL (like falling into the void can really kill it)
+    * AI_INFINITE_ENERGY (141) - sprite has infinite energy, it can "receive" damage but it never dies. Only DAMAGE_TYPE_ALL (like falling into the void or die command can really kill it)
 
 * Sprite inheritance / "parent" field.
 
@@ -117,7 +119,8 @@ Currently available commands:
 > make_sound \<sound_type\>, \
 > die, \
 > transform, \
-> wait, \<ticks\> 
+> wait, \<ticks\>
+> thunder
 
 Commands / waypoints are executed by the sprite in a loop unless there is "die" or "transform" command.
 
@@ -162,7 +165,7 @@ Also the hedgehog from the box used to move nearly always left at the beginning 
 * New map format, bigger maps and more tiles.
 
 # Known bugs
-* Incorrect edges calculation around BLOCK_BARRIER_DOWN (legacy bug)
+* Sprites sometimes don't detect edges near BLOCK_BARRIER_DOWN (legacy bug)
 
 
 # Used libraries

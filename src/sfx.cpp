@@ -3,6 +3,8 @@
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
 #include "sfx.hpp"
+#include "episode/episodeclass.hpp"
+
 #include "exceptions.hpp"
 
 #include "system.hpp"
@@ -13,6 +15,7 @@
 #include "engine/PSound.hpp"
 
 #include <cmath>
+#include <sstream>
 
 struct GameSFX {
 
@@ -38,11 +41,6 @@ const std::map<std::string, int SfxHandler::*> SfxHandler::soundFilenames = {
     {"thunder.wav", &SfxHandler::thunder_sound}
 };
 
-SfxHandler::SfxHandler(const SfxHandler& src, EpisodeClass*episode){
-    for(auto p: SfxHandler::soundFilenames){
-        this->*p.second = this->mLoadSoundEpisode(src.*p.second, p.first, episode);
-    }
-}
 
 int SfxHandler::mLoadSound(const std::string& name){
     PFile::Path path("sfx" PE_SEP);
@@ -56,12 +54,25 @@ int SfxHandler::mLoadSound(const std::string& name){
 }
 
 int SfxHandler::mLoadSoundEpisode(int prev, const std::string&name, EpisodeClass*episode){
+    if(episode!=nullptr && episode->entry.is_zip){
+        PFile::Path path = episode->Get_Dir(name);
+        if(FindAsset(&path, "sfx" PE_SEP, false)){
+            int res = PSound::load_sfx(path);
+            if(res!=-1){
+                this->mSounds.push_back(res);
+                return res;
+            }
+            else{
+                std::ostringstream os;
+                os<<"Unable to load SFX \""<<name<<"\" from ZIP episode";
+                PLog::Write(PLog::ERR, "PK2", os.str().c_str());                
+            }
+        }
+    }
     return prev; //TODO episode SFX
 }
 
 void SfxHandler::loadAll(){
-    PFile::Path path("sfx" PE_SEP);
-
     for(auto p: SfxHandler::soundFilenames){
         this->*p.second = this->mLoadSound(p.first);
     }
@@ -70,6 +81,11 @@ void SfxHandler::loadAll(){
         sfx_list[i].used = false;
 }
 
+void SfxHandler::loadAllForEpisode(const SfxHandler& src, EpisodeClass*episode){
+    for(auto p: SfxHandler::soundFilenames){
+        this->*p.second = this->mLoadSoundEpisode(src.*p.second, p.first, episode);
+    }
+}
 
 void SfxHandler::free(){
     for(int index:this->mSounds){

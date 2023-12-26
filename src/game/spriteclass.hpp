@@ -92,6 +92,7 @@ public:
     void AI_Move_Y(double liike);
 
     bool Transform();
+    void StartThunder();
 
 private:
     void Animation_Basic();

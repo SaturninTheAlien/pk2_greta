@@ -227,6 +227,18 @@ double getCommandYPos(const nlohmann::json& j, int prototypeHeight){
     return j.get<double>() * 32 + ((double)prototypeHeight)/2;
 }
 
+class ThunderCommand:public Command{
+public:
+    ThunderCommand()=default;
+    bool execute(SpriteClass*sprite, SpriteClass*);
+};
+
+
+bool ThunderCommand::execute(SpriteClass*sprite, SpriteClass*){
+    sprite->StartThunder();
+    return true;
+};
+
 void Parse_Commands(const nlohmann::json& j_in, std::vector<Command*>& commands_v, int prototypeWidth, int prototypeHeight){
     if(!j_in.is_array()){
         throw PExcept::PException("Commands field has to be an array!");
@@ -266,6 +278,9 @@ void Parse_Commands(const nlohmann::json& j_in, std::vector<Command*>& commands_
                 }
                 else if(command_name=="wait"){
                     state = 6;
+                }
+                else if(command_name=="thunder"){
+                    commands_v.push_back(new ThunderCommand());
                 }
             }
             break;
