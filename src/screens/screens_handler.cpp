@@ -127,7 +127,8 @@ ScreensHandler::ScreensHandler():
 
 	PSound::load_overlay_music(PFile::Path("music" PE_SEP "super.xm"));
 
-	Load_SFX();
+	sfx_global.loadAll();
+	//Load_SFX();
 
 	Load_SaveFile();
 
@@ -144,6 +145,7 @@ ScreensHandler::~ScreensHandler(){
 		}	
 	}
 	this->screens_map.clear();
+	sfx_global.free();
 }
 
 

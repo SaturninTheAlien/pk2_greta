@@ -10,6 +10,8 @@
 #include "engine/PFile.hpp"
 #include "engine/PLang.hpp"
 
+#include "sfx.hpp"
+
 const int EPISODI_MAX_LEVELS = 100; //50;
 
 struct PK2LEVEL {
@@ -103,6 +105,8 @@ class EpisodeClass {
 		int  Save_Scores();
 
 		void Update_NextLevel();
+
+		SfxHandler sfx;
 
 	private:
 		int  Open_Scores();

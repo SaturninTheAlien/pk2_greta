@@ -171,11 +171,11 @@ void MapScreen::Draw() {
 					going_to_game = true;
 					Fade_out(FADE_SLOW);
 					PSound::set_musicvolume(0);
-					Play_MenuSFX(doodle_sound,90);
+					Play_MenuSFX(Episode->sfx.doodle_sound,90);
 				
 				} else {
 
-					Play_MenuSFX(moo_sound,100);
+					Play_MenuSFX(Episode->sfx.moo_sound,100);
 
 				}
 			}

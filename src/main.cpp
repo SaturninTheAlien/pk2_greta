@@ -148,14 +148,20 @@ static void quit() {
 	if (PUtils::Is_Mobile())
 		GUI_Exit();
 
-	if (Game)
+	if (Game!=nullptr){
 		delete Game;
+		Game = nullptr;
+	}
 	
-	if (Episode)
+	if (Episode!=nullptr){
 		delete Episode;
+		Episode = nullptr;
+	}
 	
-	if(tekstit)
+	if(tekstit!=nullptr){
 		delete tekstit;
+		tekstit = nullptr;
+	}
 
 	Piste::terminate();
 	PLog::Write(PLog::DEBUG, "PK2", "Terminated");

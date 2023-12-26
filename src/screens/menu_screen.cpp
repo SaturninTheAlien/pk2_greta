@@ -124,7 +124,7 @@ bool MenuScreen::Draw_BoolBox(int x, int y, bool muuttuja, bool active) {
 	if (PInput::mouse_x > x && PInput::mouse_x < x+30 && PInput::mouse_y > y && PInput::mouse_y < y+31){
 		if (Clicked()){
 
-			Play_MenuSFX(menu_sound, 100);
+			Play_MenuSFX(sfx_global.menu_sound, 100);
 			key_delay = 20;
 			return true;
 		}
@@ -164,13 +164,13 @@ int MenuScreen::Draw_BackNext(int x, int y) {
 	int c = Clicked();
 	if ((c == 1 && mouse_on1) || (c > 1 && chosen_menu_id == selected_menu_id)) {
 	
-		Play_MenuSFX(menu_sound, 100);
+		Play_MenuSFX(sfx_global.menu_sound, 100);
 		key_delay = 7;
 		ret = 1;
 	
 	} else if ((c == 1 && mouse_on2) || (c > 1 && chosen_menu_id == selected_menu_id + 1)) {
 	
-		Play_MenuSFX(menu_sound, 100);
+		Play_MenuSFX(sfx_global.menu_sound, 100);
 		key_delay = 7;
 		ret = 2;
 	
@@ -215,7 +215,7 @@ int MenuScreen::Draw_Radio(int x, int y, int num, int sel) {
 
 		if ((c == 1 && mouse_on) || (c > 1 && chosen_menu_id == selected_menu_id + i)) {
 
-			Play_MenuSFX(menu_sound, 100);
+			Play_MenuSFX(sfx_global.menu_sound, 100);
 			key_delay = 10;
 			sel = i;
 			ret = i;
@@ -1158,7 +1158,7 @@ void MenuScreen::Draw_Menu_Controls() {
 					case 6 : Input->attack1   = k; break;
 					case 7 : Input->attack2   = k; break;
 					case 8 : Input->open_gift = k; break;
-					default: Play_MenuSFX(moo_sound,100); break;
+					default: Play_MenuSFX(sfx_global.moo_sound,100); break;
 				}
 
 				key_delay = 20;

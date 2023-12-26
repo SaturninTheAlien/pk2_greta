@@ -337,7 +337,7 @@ void ScoreScreen::Loop() {
 			bonus_score += 10;
 
 			if (degree%7==1)
-				Play_MenuSFX(score_sound, 70);
+				Play_MenuSFX(Episode->sfx.score_sound, 70);
 
 			if (bonus_score >= Game->score){
 				bonus_score = Game->score;
@@ -351,7 +351,7 @@ void ScoreScreen::Loop() {
 			time_score += 5;
 
 			if (degree%10==1)
-				Play_MenuSFX(score_sound, 70);
+				Play_MenuSFX(Episode->sfx.score_sound, 70);
 
 			if (time_score >= Game->timeout / 12) {
 				time_score = Game->timeout / 12;
@@ -365,7 +365,7 @@ void ScoreScreen::Loop() {
 			energy_score+=300;
 			Game->spritesHandler.Player_Sprite->energy--;
 
-			Play_MenuSFX(score_sound, 70);
+			Play_MenuSFX(Episode->sfx.score_sound, 70);
 
 		} else if (Gifts_Count() > 0) {
 			
@@ -373,7 +373,7 @@ void ScoreScreen::Loop() {
 			counting_delay = 30;
 			gifts_score += Gifts_Get(0)->score + 500;
 			Gifts_Remove(0); 
-			Play_MenuSFX(jump_sound, 100);
+			Play_MenuSFX(Episode->sfx.jump_sound, 100);
 
 		} else if (apples_not_counted > 0) {
 
@@ -382,7 +382,7 @@ void ScoreScreen::Loop() {
 
 			apples_counted++;
 			apples_not_counted--;
-			Play_MenuSFX(apple_sound, 70);
+			Play_MenuSFX(Episode->sfx.apple_sound, 70);
 
 			if (apples_not_counted == 0)
 				counting_delay = 20;

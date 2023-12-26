@@ -53,6 +53,10 @@ filename(filename), type(type){
         os<<"Language file";        
     }
     break;
+    case MISSING_SFX:{
+        os<<"SFX";        
+    }
+    break;
 
     default:
         os<<"Unknown";

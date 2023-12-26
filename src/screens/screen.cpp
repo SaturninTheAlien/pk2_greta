@@ -35,7 +35,7 @@ bool Screen::Draw_Menu_Text(const char *teksti, int x, int y, char end) {
 		int c = Clicked();
 		if ( (c == 1 && mouse_on) || (c > 1) ) {
 
-			Play_MenuSFX(menu_sound, 100);
+			Play_MenuSFX(sfx_global.menu_sound, 100);
 			key_delay = 20;
 			selected_menu_id++;
 			

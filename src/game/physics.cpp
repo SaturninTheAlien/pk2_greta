@@ -253,7 +253,7 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 			}
 
 			Effect_Explosion(block.left+16, block.top+10, 0);
-			Play_GameSFX(open_locks_sound,100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, false);
+			Play_GameSFX(Episode->sfx.open_locks_sound,100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, false);
 		}
 
 		/**********************************************************************/
@@ -329,21 +329,21 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 						if (block.id == BLOCK_BUTTON1 && Game->button1 == 0) {
 							Game->button1 = Game->map.button1_time;
 							Game->button_vibration = 64;
-							Play_GameSFX(switch_sound, 100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, false);
+							Play_GameSFX(Episode->sfx.switch_sound, 100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, false);
 							PInput::Vibrate(1000);
 						}
 
 						if (block.id == BLOCK_BUTTON2 && Game->button2 == 0) {
 							Game->button2 = Game->map.button2_time;
 							Game->button_vibration = 64;
-							Play_GameSFX(switch_sound, 100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, false);
+							Play_GameSFX(Episode->sfx.switch_sound, 100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, false);
 							PInput::Vibrate(1000);
 						}
 
 						if (block.id == BLOCK_BUTTON3 && Game->button3 == 0) {
 							Game->button3 = Game->map.button3_time;
 							Game->button_vibration = 64;
-							Play_GameSFX(switch_sound, 100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, false);
+							Play_GameSFX(Episode->sfx.switch_sound, 100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, false);
 							PInput::Vibrate(1000);
 						}
 					}
@@ -618,7 +618,7 @@ void UpdateSprite(SpriteClass* sprite){
 			if (PInput::Keydown(Input->jump) || Gui_up) {
 				if (!sprite->crouched) {
 					if (sprite->jump_timer == 0)
-						Play_GameSFX(jump_sound, 100, (int)sprite->x, (int)sprite->y,
+						Play_GameSFX(Episode->sfx.jump_sound, 100, (int)sprite->x, (int)sprite->y,
 									  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 
 					if (sprite->jump_timer <= 0)
@@ -802,7 +802,7 @@ void UpdateSprite(SpriteClass* sprite){
 
 	if (in_water != sprite->in_water&&!sprite->initial_update) { // Sprite comes in or out from water
 		Effect_Splash(sprite->x, sprite->y, 32);
-		Play_GameSFX(splash_sound, 100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, true);
+		Play_GameSFX(Episode->sfx.splash_sound, 100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, true);
 	}
 
 	/*****************************************************************************************/
@@ -1071,7 +1071,7 @@ void UpdateSprite(SpriteClass* sprite){
 		if (sprite->b >= 0){ //If sprite is falling
 			if (sprite->jump_timer > 0){
 				if (sprite->jump_timer >= 90+10){
-					Play_GameSFX(pump_sound,30,(int)sprite->x, (int)sprite->y,
+					Play_GameSFX(Episode->sfx.pump_sound,30,(int)sprite->x, (int)sprite->y,
 				                  int(25050-sprite->weight*3000),true);
 
 					//Particles_New(	PARTICLE_DUST_CLOUDS,sprite->x+rand()%5-rand()%5-10,sprite_bottom+rand()%3-rand()%3,
@@ -1457,7 +1457,7 @@ void UpdateBonusSprite(SpriteClass* sprite){
 
 		if (in_water != sprite->in_water && !sprite->initial_update) {
 			Effect_Splash((int)sprite->x,(int)sprite->y,32);
-			Play_GameSFX(splash_sound, 100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, true);
+			Play_GameSFX(Episode->sfx.splash_sound, 100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, true);
 		}
 
 

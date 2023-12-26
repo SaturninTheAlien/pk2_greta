@@ -293,6 +293,8 @@ void EpisodeClass::Load() {
 	
 	}
 
+	this->sfx = SfxHandler(sfx_global, this);
+
 	this->Open_Scores();
 	this->Load_Info();
 
