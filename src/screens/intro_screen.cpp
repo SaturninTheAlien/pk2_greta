@@ -10,6 +10,7 @@
 #include "language.hpp"
 #include "system.hpp"
 #include "settings.hpp"
+#include "exceptions.hpp"
 
 #include "engine/PDraw.hpp"
 #include "engine/PInput.hpp"
@@ -95,7 +96,7 @@ void IntroScreen::Init() {
 	bg_screen = PDraw::image_load(PFile::Path("gfx" PE_SEP "intro.bmp"), true);
 
 	if (PSound::start_music(PFile::Path("music" PE_SEP "intro.xm")) == -1)
-		PK2_Error("Can't load intro.xm");
+		throw PExcept::PException("Can't load intro.xm");
 
 	PSound::set_musicvolume(Settings.music_max_volume);
 

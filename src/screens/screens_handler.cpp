@@ -186,25 +186,12 @@ void ScreensHandler::Loop() {
 
 		this->current_screen->Init();
 	}
-
-	if (PK2_error){
-		std::ostringstream os;
-		os<<"Main loop interruption due to error (1): "<<PK2_error_msg;
-		throw PExcept::PException(os.str());
-	}
-
 	PInput::UpdateMouse(this->current_screen->keys_move, Settings.isFullScreen);
 	
 	if (PUtils::Is_Mobile())
 		GUI_Update();
 
 	this->current_screen->Loop();
-
-	if (PK2_error){
-		std::ostringstream os;
-		os<<"Main loop interruption due to error (2): "<<PK2_error_msg;
-		throw PExcept::PException(os.str());
-	}
 
 	if (key_delay > 0)
 		key_delay--;

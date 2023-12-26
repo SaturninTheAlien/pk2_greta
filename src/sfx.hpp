@@ -17,7 +17,7 @@ extern int pump_sound;
 extern int score_sound;
 extern int apple_sound;
 
-int Load_SFX();
+void Load_SFX();
 
 void Update_GameSFX();
 void Play_GameSFX(int aani, int voimakkuus, int x, int y, int freq, bool random_freq);

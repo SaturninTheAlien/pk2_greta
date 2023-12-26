@@ -491,6 +491,107 @@ void PrototypeClass::SetProto20(const nlohmann::json& j){
 	}
 }
 
+void to_json(nlohmann::json& j, const PrototypeClass& c){
+	using json = nlohmann::json;
+
+    j["version"] = PK2SPRITE_CURRENT_VERSION;
+
+    j["type"] = c.type;
+    j["picture"] = c.picture_filename;
+
+    json sounds;
+    for(std::pair<std::string, int> p: PrototypeClass::SoundTypesDict){
+        sounds[p.first] = c.sound_files[p.second];        
+    }
+
+    j["sounds"] = sounds;
+    j["frames_number"] = c.frames_number;
+    j["frame_rate"] = c.frame_rate;
+
+    json animations;
+    for(std::pair<std::string, int> p :PrototypeClass::AnimationsDict){
+        animations[p.first] = c.animations[p.second];
+    }
+
+    j["animations"] = animations;
+
+
+    json frame;
+    frame["pos_x"] = c.picture_frame_x;
+    frame["pos_y"] = c.picture_frame_y;
+    frame["width"] = c.picture_frame_width;
+    frame["height"] = c.picture_frame_height;
+
+    j["frame"] = frame;
+
+    j["name"] = c.name;
+    json size;
+	size["width"]  = c.width;
+	size["height"] = c.height;
+
+	j["size"] = size;
+    j["weight"] = c.weight;
+    j["enemy"] = c.enemy;
+    j["energy"] = c.energy;
+    j["damage"] = c.damage;
+    j["damage_type"] = c.damage_type;
+    j["immunity_type"] = c.immunity_type;
+    j["score"] = c.score;
+
+    j["ai"] = c.AI_v;
+    j["max_jump"] = c.max_jump;
+    j["max_speed"] = c.max_speed;
+    j["charge_time"] = c.charge_time;
+
+	j["color"] = c.color;
+
+	for(std::pair<std::string, u8> p:PrototypeClass::ColorsDict){
+		if(p.second==c.color){
+			j["color"] = p.first;
+			break;
+		}
+	}
+
+    j["is_wall"] = c.is_wall;
+    j["how_destroyed"] = c.how_destroyed;
+    j["can_open_locks"] = c.can_open_locks;
+    j["vibrates"] = c.vibrates;
+    j["bonuses_number"] = c.bonuses_number;
+    j["attack1_time"] = c.attack1_time;
+    j["attack2_time"] = c.attack2_time;
+    j["parallax_type"] = c.parallax_type;
+    j["transformation"] = c.transformation_str;
+    j["bonus"] = c.bonus_str;
+    j["ammo1"] = c.ammo1_str;
+    j["ammo2"] = c.ammo2_str;
+    j["check_tiles"] = c.check_tiles;
+    j["sound_frequency"] = c.sound_frequency;
+    j["random_sound_frequency"] = c.random_sound_frequency;
+    j["is_wall_up"] = c.is_wall_up;
+    j["is_wall_down"] = c.is_wall_down;
+    j["is_wall_right"] = c.is_wall_right;
+    j["is_wall_left"] = c.is_wall_left;
+
+    j["effect"] = c.effect;
+    j["is_transparent"] = c.is_transparent;
+
+    j["projectile_charge_time"] = c.projectile_charge_time;
+
+    j["can_glide"] = c.can_glide;
+    //j["boss"] = c.boss;
+    j["bonus_always"] = c.bonus_always;
+    j["can_swim"] = c.can_swim;
+
+	j["always_active"] = c.always_active;
+
+	if(!c.commands_json.is_null()){
+		j["commands"] = c.commands_json;
+	}
+	if(c.has_dead_weight){
+		j["dead_weight"] = c.dead_weight;
+	}
+}
+
 void PrototypeClass::LoadPrototypeJSON(PFile::Path path,
 	std::function<PrototypeClass*(const std::string&)> fn_loadPrototype){
 

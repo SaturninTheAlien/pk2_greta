@@ -141,13 +141,6 @@ static void start_test(const char* arg) {
 // Clean memory (needed?)
 static void quit() {
 
-	if(PK2_error) {
-
-		PLog::Write(PLog::ERR, "PK2", PK2_error_msg);
-		PUtils::Show_Error(PK2_error_msg);
-		
-	}
-
 	//Settings_Save();
 
 	PSound::stop_music();

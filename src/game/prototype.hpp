@@ -199,6 +199,8 @@ public:
 
     std::vector<SpriteCommands::Command*>commands;
     nlohmann::json commands_json;
+
+    friend void to_json(nlohmann::json& j, const PrototypeClass& c);
 private:
     void    SetProto10(PrototypeClass10 &proto);
     void    SetProto11(PrototypeClass11 &proto);

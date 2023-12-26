@@ -13,6 +13,7 @@
 #include "settings.hpp"
 #include "gui.hpp"
 #include "language.hpp"
+#include "exceptions.hpp"
 
 #include "engine/PLog.hpp"
 #include "engine/PSound.hpp"
@@ -47,7 +48,7 @@ GameClass::GameClass(std::string map_file) {
 
 	if (!found) {
 		PLog::Write(PLog::FATAL, "PK2", "Couldn't find %s on episode", map_file.c_str());
-		PK2_Error("Couldn't find test map on episode");
+		throw PExcept::PException("Couldn't find test map on episode");
 	}
 
 }
@@ -66,7 +67,7 @@ int GameClass::Start() {
 	GUI_Reset(); //Reset GUI
 
 	if (this->Open_Map() == 1)
-		PK2_Error("Can't load map");
+		throw PExcept::PException("Can't load map");
 
 	this->Calculate_Tiles();
 
@@ -86,7 +87,7 @@ int GameClass::Finnish() {
 	this->level_clear = true;
 
 	if (PSound::start_music(PFile::Path("music" PE_SEP "hiscore.xm")) == -1)
-		PK2_Error("Can't find hiscore.xm");	
+		throw PExcept::PException("Can't find hiscore.xm");	
 	
 	Episode->level_status[this->level_id] |= LEVEL_PASSED;
 	

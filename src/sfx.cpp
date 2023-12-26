@@ -3,6 +3,7 @@
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
 #include "sfx.hpp"
+#include "exceptions.hpp"
 
 #include "system.hpp"
 #include "settings.hpp"
@@ -34,67 +35,76 @@ int pump_sound = -1;
 int score_sound = -1;
 int apple_sound = -1;
 
-int Load_SFX() {
+void Load_SFX() {
     
     PFile::Path path("sfx" PE_SEP);
 
     path.SetFile("switch3.wav");
     switch_sound = PSound::load_sfx(path);
-    if (switch_sound == -1)
-        PK2_Error("Can't find switch3.wav");
+    if (switch_sound == -1){
 
+        throw PExcept::PException("Can't find switch3.wav");
+        
+    }
     path.SetFile("jump4.wav");
     jump_sound = PSound::load_sfx(path);
-    if (jump_sound == -1)
-        PK2_Error("Can't find jump4.wav");
+    if (jump_sound == -1){
+        throw PExcept::PException("Can't find jump4.wav");
+    }
 
     path.SetFile("splash.wav");
     splash_sound = PSound::load_sfx(path);
-    if (splash_sound == -1)
-        PK2_Error("Can't find splash.wav");
+    if (splash_sound == -1){
+        throw PExcept::PException("Can't find splash.wav");
+    }
 
     path.SetFile("openlock.wav");
     open_locks_sound = PSound::load_sfx(path);
     if (open_locks_sound == -1) {
-        PK2_Error("Can't find openlock.wav");
+        throw PExcept::PException("Can't find openlock.wav");
     }
 
     path.SetFile("menu2.wav");
     menu_sound = PSound::load_sfx(path);
-    if (menu_sound == -1)
-        PK2_Error("Can't find menu2.wav");
+    if (menu_sound == -1){
+        throw PExcept::PException("Can't find menu2.wav");
+    }
+        
 
     path.SetFile("moo.wav");
     moo_sound = PSound::load_sfx(path);
-    if (moo_sound == -1)
-        PK2_Error("Can't find moo.wav");
+    if (moo_sound == -1){
+        throw PExcept::PException("Can't find moo.wav");
+    }
+        
 
     path.SetFile("doodle.wav");
     doodle_sound = PSound::load_sfx(path);
-    if (doodle_sound == -1)
-        PK2_Error("Can't find doodle.wav");
+    if (doodle_sound == -1){
+        throw PExcept::PException("Can't find doodle.wav");
+    }
+        
 
     path.SetFile("pump.wav");
     pump_sound = PSound::load_sfx(path);
-    if (pump_sound == -1)
-        PK2_Error("Can't find pump.wav");
+    if (pump_sound == -1){
+        throw PExcept::PException("Can't find pump.wav");
+    }
 
     path.SetFile("counter.wav");
     score_sound = PSound::load_sfx(path);
     if (score_sound == -1) {
-        PK2_Error("Can't find counter.wav");
+        throw PExcept::PException("Can't find counter.wav");
     }
 
     path.SetFile("app_bite.wav");
     apple_sound = PSound::load_sfx(path);
     if (apple_sound == -1) {
-        PK2_Error("Can't find app_bite.wav");
+        throw PExcept::PException("Can't find app_bite.wav");
     }
 
     for (int i = 0; i < PSound::CHANNELS; i++)
         sfx_list[i].used = false;
-
-    return 0;
 }
 
 int get_pan(int x, int y) {

@@ -520,7 +520,12 @@ void Transform_If_Player_Above(SpriteClass*s){
 		if ((player->x - s->x < s->prototype->width && player->x - s->x > -s->prototype->width) &&
 			(player->y < s->y && s->y - player->y < 350))
 		{
-			Self_Transformation(s);
+			if(s->prototype->charge_time==0){
+				s->Transform();
+			}
+			else{
+				Self_Transformation(s);
+			}
 		}
 	}
 }
@@ -530,7 +535,12 @@ void Transform_If_Player_Bellow(SpriteClass*s){
 		if ((player->x - s->x < s->prototype->width && player->x - s->x > -s->prototype->width) &&
 			(player->y > s->y && player->y - s->y < 350))
 		{
-			Self_Transformation(s);
+			if(s->prototype->charge_time==0){
+				s->Transform();
+			}
+			else{
+				Self_Transformation(s);
+			}
 		}
 	}
 }

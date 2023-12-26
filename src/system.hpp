@@ -54,8 +54,8 @@ extern float fps;
 extern bool show_fps;
 extern bool speedrun_mode;
 
-extern bool PK2_error;
-extern const char* PK2_error_msg;
+//extern bool PK2_error;
+//extern const char* PK2_error_msg;
 
 #define FADE_FAST   0.05
 #define FADE_NORMAL 0.02
@@ -72,7 +72,6 @@ void Do_Thunder();
 void Id_To_String(u32 id, char* string, std::size_t n);
 
 void Calculate_SinCos();
-int  PK2_Error(const char* msg);
 
 int Clicked();
 

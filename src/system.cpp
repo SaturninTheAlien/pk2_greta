@@ -54,9 +54,6 @@ bool dev_mode = false;
 bool show_fps = false;
 bool speedrun_mode = false;
 
-bool PK2_error = false;
-const char* PK2_error_msg = nullptr;
-
 static float alpha = 1;
 static float fade_speed = 0;
 
@@ -125,14 +122,6 @@ void Update_Colors() {
 
     PDraw::set_rgb(alpha * thunder, alpha * thunder, alpha * thunder);
 
-}
-
-int PK2_Error(const char* msg) {
-	
-	PK2_error = true;
-	PK2_error_msg = msg;
-
-	return 0;
 }
 
 void Id_To_String(u32 id, char* string, std::size_t n) {

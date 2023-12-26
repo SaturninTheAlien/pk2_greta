@@ -11,6 +11,7 @@
 #include "language.hpp"
 #include "system.hpp"
 #include "settings.hpp"
+#include "exceptions.hpp"
 
 #include "engine/PLog.hpp"
 #include "engine/PDraw.hpp"
@@ -130,7 +131,7 @@ void EndingScreen::Init() {
 	}
 
 	if (PSound::start_music(PFile::Path("music" PE_SEP "intro.xm")) == -1)
-		PK2_Error("Can't load intro.xm");
+		throw PExcept::PException("Can't load intro.xm");
 
 	PSound::set_musicvolume(Settings.music_max_volume);
 
