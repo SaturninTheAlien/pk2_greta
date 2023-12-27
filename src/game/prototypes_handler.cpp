@@ -16,8 +16,11 @@ void PrototypesHandler::clear(){
 	mPrototypes.clear();
 }
 
+PFile::Path PrototypesHandler::mGetDir(const std::string& filename)const{
+	return this->mEpisode!=nullptr ? this->mEpisode->Get_Dir(filename) : PFile::Path(filename);
+}
 
-PrototypeClass* PrototypesHandler::loadPrototype(const std::string& filename_in, EpisodeClass*episode){
+PrototypeClass* PrototypesHandler::loadPrototype(const std::string& filename_in){
     bool legacy_spr = true; //try to load legacy .spr file
 	std::string filename_clean; //filename without .spr
 
@@ -53,8 +56,9 @@ PrototypeClass* PrototypesHandler::loadPrototype(const std::string& filename_in,
 	PrototypeClass* protot = nullptr;
 
 	try{
+		
 		std::string filename_j = filename_clean + ".spr2";
-		PFile::Path path_j = Episode->Get_Dir(filename_j);
+		PFile::Path path_j = this->mGetDir(filename_j);
 		if(FindAsset(&path_j,"sprites" PE_SEP)){
 			protot = new PrototypeClass();
             /**
@@ -62,10 +66,10 @@ PrototypeClass* PrototypesHandler::loadPrototype(const std::string& filename_in,
              * TO DO Redesign it 
              */
             protot->LoadPrototypeJSON(path_j,
-                [&](const std::string& filename_in){return this->loadPrototype(filename_in, episode);});
+                [&](const std::string& filename_in){return this->loadPrototype(filename_in);});
 		}
 		else if(legacy_spr){
-			PFile::Path path = Episode->Get_Dir(filename_in);
+			PFile::Path path = this->mGetDir(filename_in);
 			if (!FindAsset(&path, "sprites" PE_SEP)) {
 				throw PExcept::FileNotFoundException(filename_clean, PExcept::MISSING_SPRITE_PROTOTYPE);
 			}
@@ -83,38 +87,44 @@ PrototypeClass* PrototypesHandler::loadPrototype(const std::string& filename_in,
 
 		mPrototypes.push_back(protot);
 
-		if(!Episode->ignore_collectable){
-			const std::string& collectable_name = Episode->collectable_name;
+		if(this->mEpisode!=nullptr && !this->mEpisode->ignore_collectable){
+			const std::string& collectable_name = this->mEpisode->collectable_name;
 			if(protot->name.compare(0, collectable_name.size(), collectable_name)==0){
 				protot->big_apple = true;
 			}
 		}
 
-		//Check if ambient
-		if(protot->how_destroyed==FX_DESTRUCT_EI_TUHOUDU && protot->damage==0){
-			protot->ambient=true;
-		}
+		/**
+		 * @brief 
+		 * Load dependecies
+		 */
 
-		//Load transformation
-		if(!protot->transformation_str.empty()){
-			protot->transformation = this->loadPrototype(protot->transformation_str);
-		}
+		if(this->mShouldLoadDependencies){
+			//Check if ambient
+			if(protot->how_destroyed==FX_DESTRUCT_EI_TUHOUDU && protot->damage==0){
+				protot->ambient=true;
+			}
 
-		//Load bunus
-		if(!protot->bonus_str.empty()){
-			protot->bonus = this->loadPrototype(protot->bonus_str);
-		}
+			//Load transformation
+			if(!protot->transformation_str.empty()){
+				protot->transformation = this->loadPrototype(protot->transformation_str);
+			}
 
-		//Load ammo1
-		if(!protot->ammo1_str.empty()){
-			protot->ammo1 = this->loadPrototype(protot->ammo1_str);
-		}
+			//Load bunus
+			if(!protot->bonus_str.empty()){
+				protot->bonus = this->loadPrototype(protot->bonus_str);
+			}
 
-		//Load ammo2
-		if(!protot->ammo2_str.empty()){
-			protot->ammo2 = this->loadPrototype(protot->ammo2_str);
-		}
+			//Load ammo1
+			if(!protot->ammo1_str.empty()){
+				protot->ammo1 = this->loadPrototype(protot->ammo1_str);
+			}
 
+			//Load ammo2
+			if(!protot->ammo2_str.empty()){
+				protot->ammo2 = this->loadPrototype(protot->ammo2_str);
+			}
+		}
 		return protot;
 
 	}
@@ -145,9 +155,13 @@ PrototypeClass* PrototypesHandler::get(int index){
 	return nullptr;
 }
 
-void PrototypesHandler::loadSpriteAssets(EpisodeClass* episode){
+void PrototypesHandler::loadSpriteAssets(){
+	if(this->mEpisode==nullptr){
+		throw PExcept::PException("Cannot load sprite assets if the episode pointer is null");
+	}
+
     for(PrototypeClass* prototype: this->mPrototypes){
-		prototype->LoadAssets(episode);
+		prototype->LoadAssets(this->mEpisode);
 	}
 }
 void PrototypesHandler::unloadSpriteAssets(){

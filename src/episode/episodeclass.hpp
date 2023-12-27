@@ -100,7 +100,7 @@ class EpisodeClass {
 		void Load_Info();
 		void Load_Assets();
 
-		PFile::Path Get_Dir(std::string file);
+		PFile::Path Get_Dir(const std::string& file)const;
 
 		int  Save_Scores();
 

@@ -15,8 +15,8 @@
 #include "language.hpp"
 #include "exceptions.hpp"
 
-#include "engine/PLog.hpp"
 #include "engine/PSound.hpp"
+#include "engine/PLog.hpp"
 #include "engine/PDraw.hpp"
 #include "engine/PInput.hpp"
 
@@ -53,7 +53,8 @@ GameClass::GameClass(std::string map_file) {
 
 }
 
-GameClass::~GameClass(){ }
+GameClass::~GameClass(){
+}
 
 int GameClass::Start() {
 
@@ -352,7 +353,7 @@ int GameClass::Open_Map() {
 
 	spritesHandler.loadAllLevelPrototypes(this->map);
 
-	spritesHandler.prototypesHandler.loadSpriteAssets(Episode);
+	spritesHandler.prototypesHandler.loadSpriteAssets();
 
 	Calculete_TileMasks();
 

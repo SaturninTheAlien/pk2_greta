@@ -23,6 +23,9 @@
 #include "language.hpp"
 #include "settings.hpp"
 #include <filesystem>
+#include <fstream>
+
+#include "game/prototypes_handler.hpp"
 
 #include <cstring>
 #include <algorithm>
@@ -53,7 +56,6 @@ static const char default_config[] =
 
 static std::string test_path = "";
 static bool path_set = false;
-static bool editor = false;
 
 static void read_config() {
 
@@ -169,77 +171,146 @@ static void quit() {
 
 }
 
-static void read_args(int argc, char *argv[]) {
 
-	for (int i = 1; i < argc; i++) {
+void convertToSpr2(const std::string& filename_in, const std::string& filename_out){
+	PrototypesHandler handler(false, false, nullptr);
+	try{
+		PrototypeClass* prototype = handler.loadPrototype(filename_in);
+		nlohmann::json j = *prototype;
+
+		std::ofstream out(filename_out);
+		out<<j;
+		out.close();
+	}
+	catch(const std::exception&e){
+		printf("%s\n", e.what());
+	}
+}
+
+static void read_args(int argc, char **argv) {
+	int state = 0;
+
+	bool converting_sprite = false;
+	std::string filename1;
+	std::string filename2;
+
+	for(int i=1;i<argc;++i){
 		std::string arg = argv[i];
-		if(arg=="--help" || arg=="-h"){
-			printf("Pekka Kana 2 (Pekka the Rooster 2) is a jump 'n run game made "
-			"in the spirit of classic platformers such as Super Mario, SuperTux, Sonic the Hedgehog,"
-			" Jazz Jackrabbit, Super Frog and so on.\n"
-			"Available command arguments are:\n"
-			"-h / --help -> print help,\n"
-			"-v / --version -> print version string,\n"
-			"-t / --test \"episode/level\" -> test/play particular level\n"
-			"(e.g ./pekka-kana-2 --test \"rooster island 2/level13.map\"),\n"
-			"-d / --dev -> enable the cheats and the debug tools,\n"
-			"--fps -> enable the FPS counter.\n"
-			);
-			exit(0);
-		}
-		else if(arg=="--version" || arg=="-v"){
-			printf(PK2_VERSION_STR "\n");
-			exit(0);
-		}
-		else if(arg=="--dev" || arg=="-d" || arg=="dev"){
-			dev_mode = true;
-			Piste::set_debug(true);
-		}
-		else if(arg=="--test" || arg=="-t" || arg=="test"){
-			if (argc <= i + 1) {
-				printf("Please set a level to test\n");
-				exit(1);
+		switch (state)
+		{
+		case 0:{
+			if(arg=="--help" || arg=="-h"){
+				printf("Pekka Kana 2 (Pekka the Rooster 2) is a jump 'n run game made "
+				"in the spirit of classic platformers such as Super Mario, SuperTux, Sonic the Hedgehog,"
+				" Jazz Jackrabbit, Super Frog and so on.\n"
+				"Available command arguments are:\n"
+				"-h / --help -> print help,\n"
+				"-v / --version -> print version string,\n"
+				"-t / --test \"episode/level\" -> test/play particular level\n"
+				"(e.g ./pekka-kana-2 --test \"rooster island 2/level13.map\"),\n"
+				"-d / --dev -> enable the cheats and the debug tools,\n"
+				"--fps -> enable the FPS counter.\n"
+				);
+				exit(0);
 			}
-			else {
-				i++;
-				test_path = argv[i];
-				test_level = true;
+			else if(arg=="--version" || arg=="-v"){
+				printf(PK2_VERSION_STR "\n");
+				exit(0);
+			}
+			else if(arg=="--dev" || arg=="-d" || arg=="dev"){
+				dev_mode = true;
+				Piste::set_debug(true);
+			}
+			else if(arg=="--test" || arg=="-t" || arg=="test"){
+				state = 1;				
+			}
+			else if(arg=="--path" || arg=="-p"){
+				state = 2;
+			}
+			else if(arg=="--fps"){
+				show_fps=true;
+			}
+			/**
+			 * @brief 
+			 * ???
+			 * TEST IT
+			 */
+			/*else if (arg=="--speedrun") {
+				speedrun_mode = true;
 				continue;
 			}
-		}
-		else if (arg=="--path" || arg=="-p") {
-			if (argc <= i + 1) {
-				printf("Please set a path\n");
-				exit(1);
+			else if (arg=="--editor") {
+				editor = true;
+			}
+			*/
+
+			else if (arg=="--mobile") {
+				PUtils::Force_Mobile();
+			}
+			else if	(arg=="--convert"){
+				printf("Converting sprite\n");
+				filename1 = "";
+				filename2 = "";
+				state=3;
+				converting_sprite = true;
 			}
 			else {
-				i++;
-				if (chdir(argv[i]) != 0) {
-					printf("Invalid path\n");
-					exit(1);
-				}
-				path_set = true;
-				continue;
+				printf("Invalid arg\n");
+				exit(1);
 			}
 		}
-		else if (arg=="--fps"){
-			show_fps = true;
-			continue;
+		break;
+		case 1:{
+			test_path = arg;
+			test_level = true;
+			state = 0;
 		}
-		else if (arg=="--speedrun") {
-			speedrun_mode = true;
-			continue;
+		break;
+		case 2:{
+			if (chdir(arg.c_str()) != 0) {
+				printf("Invalid path\n");
+				exit(1);
+			}
+
+			path_set = true;
+			state = 0;
 		}
-		else if (arg=="--mobile") {
-			PUtils::Force_Mobile();
+		break;
+		case 3:{
+			filename1 = arg;
+			state = 4;			
 		}
-		else if (arg=="--editor") {
-			editor = true;
+		break;
+		case 4:{
+			filename2 = arg;
+			state = 0;
 		}
-		else {
+		break;
+
+		default:
 			printf("Invalid arg\n");
 			exit(1);
+			break;
 		}
+	}
+
+	if(converting_sprite){
+		if(filename1.empty()){
+			printf("You have to specify the sprite to convert!");
+			exit(2);
+		}
+	
+		else if(filename2.empty()){
+			if(filename1.size()>4 && filename1.substr(filename1.size()-4,4)==".spr"){
+				filename2 = filename1.substr(0, filename1.size() -4);
+			}
+			else{
+				filename2 = filename1 + ".spr2";
+			}
+		}
+		convertToSpr2(filename1, filename2);
+		printf("Sprite %s converted to %s", filename1.c_str(), filename2.c_str());
+		exit(0);
 	}
 }
 
@@ -362,12 +433,9 @@ static void log_data() {
 
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char **argv) {
 
 	read_args(argc, argv);
-	
-	PLog::Init(PLog::ALL, PFile::Path(""));
-	
 	set_paths();
 	
 	PLog::Init(PLog::ALL, PFile::Path(data_path + "log.txt"));

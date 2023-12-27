@@ -119,7 +119,8 @@ Currently available commands:
 > make_sound \<sound_type\>, \
 > die, \
 > transform, \
-> wait, \<ticks\>
+> wait, \<ticks\>, \
+> wait_random, \<ticks_min\>, \<ticks_max\>, \
 > thunder
 
 Commands / waypoints are executed by the sprite in a loop unless there is "die" or "transform" command.

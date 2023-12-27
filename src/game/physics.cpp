@@ -458,9 +458,12 @@ void SpriteOnDeath(SpriteClass* sprite){
 
 
 	for(SpriteClass* sprite2: Game->spritesHandler.Sprites_List){
-		if(sprite2->parent_sprite==sprite && sprite2->HasAI(AI_DIE_WITH_MOTHER_SPPRITE)){
-			sprite2->damage_taken = sprite2->energy;
-			sprite2->damage_taken_type = DAMAGE_ALL;
+		if(sprite2->parent_sprite==sprite){
+			sprite2->parent_sprite=nullptr;
+			if(sprite2->HasAI(AI_DIE_WITH_MOTHER_SPPRITE)){
+				sprite2->damage_taken = sprite2->energy;
+				sprite2->damage_taken_type = DAMAGE_ALL;
+			}
 		}
 	}
 }

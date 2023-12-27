@@ -355,7 +355,7 @@ EpisodeClass::~EpisodeClass() {
 
 }
 
-PFile::Path EpisodeClass::Get_Dir(std::string file) {
+PFile::Path EpisodeClass::Get_Dir(const std::string& file)const {
 
 	std::string path("episodes" PE_SEP);
 	path += entry.name + PE_SEP + file;

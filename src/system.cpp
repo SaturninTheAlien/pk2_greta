@@ -173,7 +173,7 @@ void Prepare_DataPath() {
 }
 
 //TODO - Receive Episode, organize this
-bool FindAsset(PFile::Path* path, const char* default_dir, bool try_outside_zip) {
+bool FindAsset(PFile::Path* path, const char* default_dir) {
 
 	if (!path->Find()) {
 
@@ -186,7 +186,7 @@ bool FindAsset(PFile::Path* path, const char* default_dir, bool try_outside_zip)
 			
 			PLog::Write(PLog::INFO, "PK2", "Can't find %s", path->c_str());
 
-			if (try_outside_zip && path->Is_Zip()) {
+			if (path->Is_Zip()) {
 
 				PLog::Write(PLog::INFO, "PK2", "Trying outsize zip");
 

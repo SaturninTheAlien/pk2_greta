@@ -56,7 +56,8 @@ int SfxHandler::mLoadSound(const std::string& name){
 int SfxHandler::mLoadSoundEpisode(int prev, const std::string&name, EpisodeClass*episode){
     if(episode!=nullptr && episode->entry.is_zip){
         PFile::Path path = episode->Get_Dir(name);
-        if(FindAsset(&path, "sfx" PE_SEP, false)){
+        path.SetPath("sfx" PE_SEP);
+        if(path.Find()){
             int res = PSound::load_sfx(path);
             if(res!=-1){
                 this->mSounds.push_back(res);
@@ -69,7 +70,7 @@ int SfxHandler::mLoadSoundEpisode(int prev, const std::string&name, EpisodeClass
             }
         }
     }
-    return prev; //TODO episode SFX
+    return prev;
 }
 
 void SfxHandler::loadAll(){

@@ -501,7 +501,7 @@ void set_musicvolume_now(u8 volume) {
 }
 
 void stop_music(){
-
+	clear_channels();
 	Mix_HaltMusic();
 	overlay_playing = false;
 	playingMusic = PFile::Path("");

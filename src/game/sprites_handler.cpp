@@ -4,6 +4,13 @@
 #include "mapclass.hpp"
 #include "physics.hpp"
 #include "game.hpp"
+#include "episode/episodeclass.hpp"
+
+SpritesHandler::SpritesHandler()
+:prototypesHandler(true, true, Episode){
+	
+}
+
 
 void SpritesHandler::clearAll(){
     for (int i = 0; i < MAX_PROTOTYYPPEJA; i++) {

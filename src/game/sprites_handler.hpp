@@ -8,7 +8,7 @@ class MapClass;
 
 class SpritesHandler{
 public:
-    SpritesHandler(){};
+    SpritesHandler();
     ~SpritesHandler(){
         clearAll();
     };

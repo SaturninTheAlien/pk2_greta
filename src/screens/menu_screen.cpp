@@ -308,6 +308,8 @@ void MenuScreen::Draw_Menu_Main() {
 	if (PUtils::Is_Mobile() && Game) {
 		if (Draw_Menu_Text("map",180,my)) {
 			next_screen = SCREEN_MAP;
+
+			PSound::stop_music();
 			delete Game;
 			Game = nullptr;
 		}
@@ -508,6 +510,9 @@ void MenuScreen::Draw_Menu_Load() {
 
 		if (Draw_Menu_Text(number.c_str(),100,150+my)) {
 			if (!saves_list[i].empty) {
+
+				PSound::stop_music();
+
 				if (Game) {
 					delete Game;
 					Game = nullptr;
@@ -517,7 +522,6 @@ void MenuScreen::Draw_Menu_Load() {
 					Episode = nullptr;
 				}
 
-				PSound::stop_music();
 				Episode = new EpisodeClass(i);
 				next_screen = SCREEN_MAP;
 			}
@@ -1216,7 +1220,9 @@ void MenuScreen::Draw_Menu_Episodes() {
 			break;
 		
 		if (Draw_Menu_Text( episodes[i].name.c_str(), 110, 90+my)) {
-			
+
+			PSound::stop_music();
+
 			if (Game) {
 				delete Game;
 				Game = nullptr;
@@ -1225,8 +1231,6 @@ void MenuScreen::Draw_Menu_Episodes() {
 				delete Episode;
 				Episode = nullptr;
 			}
-
-			PSound::stop_music();
 			Episode = new EpisodeClass(menu_name, episodes[i]);
 			next_screen = SCREEN_MAP;
 		}

@@ -219,6 +219,34 @@ bool WaitCommand::execute(SpriteClass*sprite, SpriteClass*){
     }
 }
 
+class WaitRandomCommand: public Command{
+public:
+    WaitRandomCommand(int timer_min, int timer_max):
+        timer_min(timer_min), timer_max(timer_max){
+
+        }
+    bool execute(SpriteClass*sprite, SpriteClass*);
+private:
+    int timer_min;
+    int timer_max;
+};
+
+bool WaitRandomCommand::execute(SpriteClass*sprite, SpriteClass*){
+    if(sprite->command_timer==-1){
+        int t = this->timer_max+1 - this->timer_min;
+        sprite->command_timer = rand()%t + this->timer_min;
+    }
+
+    if(sprite->command_timer==0){
+        sprite->command_timer=-1;
+        return true;
+    }
+    else{
+        --sprite->command_timer;
+        return false;
+    }    
+}
+
 double getCommandXPos(const nlohmann::json& j, int prototypeWidth){
     return j.get<double>() * 32 + ((double)prototypeWidth)/2;
 }
@@ -245,6 +273,7 @@ void Parse_Commands(const nlohmann::json& j_in, std::vector<Command*>& commands_
     }
 
     int state = 0;
+    int timer1 = 0;
     double target_x = 0., target_y = 0.;
     for(const nlohmann::json& j: j_in){
         switch (state)
@@ -278,6 +307,9 @@ void Parse_Commands(const nlohmann::json& j_in, std::vector<Command*>& commands_
                 }
                 else if(command_name=="wait"){
                     state = 6;
+                }
+                else if(command_name=="wait_random"){
+                    state = 7;
                 }
                 else if(command_name=="thunder"){
                     commands_v.push_back(new ThunderCommand());
@@ -337,6 +369,29 @@ void Parse_Commands(const nlohmann::json& j_in, std::vector<Command*>& commands_
                 commands_v.push_back(new WaitCommand(wait_time));
             }
             state=0;
+            break;
+
+        case 7:
+            if(j.is_number_integer()){
+                timer1 = j.get<int>();
+                if(timer1<0){
+                    throw PExcept::PException("\"wait_random\", negative waiting time is not allowed!");
+                }
+                state = 8;
+            }
+            else{
+                state = 0;
+            }
+            break;
+        case 8:
+            if(j.is_number_integer()){
+                int timer2 = j.get<int>();
+                if(timer2<timer1){
+                    throw PExcept::PException("\"wait_random\", timer2 has to be greater than timer1!");
+                }
+                commands_v.push_back(new WaitRandomCommand(timer1,timer2));
+            }
+            state = 0;
             break;
         default:
             break;
