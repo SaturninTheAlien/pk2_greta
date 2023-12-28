@@ -174,8 +174,8 @@ AI_Table::AI_Table(){
 
     Init_AI(AI_TURN_BACK_IF_DAMAGED, AI_TRIGGER_ALIVE, AI_Functions::Turn_Back_If_Damaged);
 
-    Init_AI(AI_RETURN_TO_ORIG_X_FIXED, AI_TRIGGER_ALIVE, AI_Functions::Return_To_Orig_X_Fixed);
-    Init_AI(AI_RETURN_TO_ORIG_Y_FIXED, AI_TRIGGER_ALIVE, AI_Functions::Return_To_Orig_Y_Fixed);
+    Init_AI(AI_RETURN_TO_ORIG_X_CONSTANT, AI_TRIGGER_ALIVE, AI_Functions::Return_To_Orig_X_Constant);
+    Init_AI(AI_RETURN_TO_ORIG_Y_CONSTANT, AI_TRIGGER_ALIVE, AI_Functions::Return_To_Orig_Y_Constant);
 
     /**
      * @brief 

@@ -847,7 +847,7 @@ void Turn_Back_If_Damaged(SpriteClass*s) {
 }
 
 
-void Return_To_Orig_X_Fixed(SpriteClass*s){
+void Return_To_Orig_X_Constant(SpriteClass*s){
 
 	if(s->seen_player_x == -1){
 		double max_speed = s->prototype->max_speed / 3.5;
@@ -867,7 +867,7 @@ void Return_To_Orig_X_Fixed(SpriteClass*s){
 		}
 	}	
 }
-void Return_To_Orig_Y_Fixed(SpriteClass*s){
+void Return_To_Orig_Y_Constant(SpriteClass*s){
 	if(s->seen_player_y==-1){
 		double max_speed = s->prototype->max_speed / 3.5;
 		double dy = s->y - s->orig_y;

@@ -1,5 +1,6 @@
 #include "prototypes_handler.hpp"
 
+#include <fstream>
 #include "engine/PLog.hpp"
 #include "episode/episodeclass.hpp"
 #include "exceptions.hpp"
@@ -18,6 +19,10 @@ void PrototypesHandler::clear(){
 
 PFile::Path PrototypesHandler::mGetDir(const std::string& filename)const{
 	return this->mEpisode!=nullptr ? this->mEpisode->Get_Dir(filename) : PFile::Path(filename);
+}
+
+bool PrototypesHandler::mFindSprite(PFile::Path& path)const{
+	return FindAsset(&path, "sprites" PE_SEP);
 }
 
 PrototypeClass* PrototypesHandler::loadPrototype(const std::string& filename_in){
@@ -42,6 +47,16 @@ PrototypeClass* PrototypesHandler::loadPrototype(const std::string& filename_in)
 	else{
 		return nullptr;
 	}
+	
+
+	if(!this->mJsonPriority){
+		if(legacy_spr){
+			filename_clean+=".spr";
+		}
+		else{
+			filename_clean+=".spr2";
+		}
+	}
 
 	/**
 	 * @brief Verify if the sprite is already loaded.
@@ -56,33 +71,58 @@ PrototypeClass* PrototypesHandler::loadPrototype(const std::string& filename_in)
 	PrototypeClass* protot = nullptr;
 
 	try{
-		
-		std::string filename_j = filename_clean + ".spr2";
-		PFile::Path path_j = this->mGetDir(filename_j);
-		if(FindAsset(&path_j,"sprites" PE_SEP)){
-			protot = new PrototypeClass();
-            /**
-             * @brief 
-             * TO DO Redesign it 
-             */
-            protot->LoadPrototypeJSON(path_j,
-                [&](const std::string& filename_in){return this->loadPrototype(filename_in);});
+
+		if(this->mJsonPriority){
+			std::string filename_j = filename_clean + ".spr2";
+			PFile::Path path_j = this->mGetDir(filename_j);
+			if(this->mFindSprite(path_j)){
+				protot = new PrototypeClass();
+				/**
+				 * @brief 
+				 * TO DO Redesign it 
+				 */
+				protot->LoadPrototypeJSON(path_j,
+					[&](const std::string& filename_in){return this->loadPrototype(filename_in);});
+			}
+			else if(legacy_spr){
+				PFile::Path path = this->mGetDir(filename_in);
+				if (!this->mFindSprite(path)) {
+					throw PExcept::FileNotFoundException(filename_clean, PExcept::MISSING_SPRITE_PROTOTYPE);
+				}
+				path_j = path;
+				protot = new PrototypeClass();
+				protot->LoadPrototypeLegacy(path);
+			}
+			else{
+				throw PExcept::FileNotFoundException(filename_j, PExcept::MISSING_SPRITE_PROTOTYPE);
+			}
 		}
 		else if(legacy_spr){
-			PFile::Path path = this->mGetDir(filename_in);
-			if (!FindAsset(&path, "sprites" PE_SEP)) {
+			PFile::Path path = this->mGetDir(filename_clean);
+			if(this->mFindSprite(path)){
+				protot = new PrototypeClass();
+				protot->LoadPrototypeLegacy(path);
+			}
+			else{
 				throw PExcept::FileNotFoundException(filename_clean, PExcept::MISSING_SPRITE_PROTOTYPE);
 			}
-			path_j = path;
-			protot = new PrototypeClass();
-			protot->LoadPrototypeLegacy(path);
 		}
 		else{
-			throw PExcept::FileNotFoundException(filename_j, PExcept::MISSING_SPRITE_PROTOTYPE);
+			PFile::Path path = this->mGetDir(filename_clean);
+			if(this->mFindSprite(path)){
+				protot = new PrototypeClass();
+				/**
+				 * @brief 
+				 * TO DO Redesign it 
+				 */
+				protot->LoadPrototypeJSON(path,
+					[&](const std::string& filename_in){return this->loadPrototype(filename_in);});
+			}
+			else{
+				throw PExcept::FileNotFoundException(filename_clean, PExcept::MISSING_SPRITE_PROTOTYPE);
+			}
 		}
 
-
-		//protot->LoadAssets(path_j);
 		protot->filename = filename_clean;
 
 		mPrototypes.push_back(protot);
@@ -147,6 +187,25 @@ PrototypeClass* PrototypesHandler::loadPrototype(const std::string& filename_in)
 
 	return nullptr;
 }
+
+void PrototypesHandler::savePrototype(PrototypeClass*prototype, const std::string& filename)const{
+
+	std::string filename2;
+	if(filename.size()>5 && filename.substr(filename.size()-5,5)==".spr2"){
+		filename2 = filename;
+	}
+	else{
+		filename2 = filename+".spr2";
+	}
+	nlohmann::json j = *prototype;
+	std::ofstream out(filename2.c_str());
+	if(!out.good()){	
+		throw std::runtime_error("Cannot save the file!");
+	}
+	out<<j.dump(4);
+	out.close();
+}
+
 
 PrototypeClass* PrototypesHandler::get(int index){
     if(index<mPrototypes.size()){

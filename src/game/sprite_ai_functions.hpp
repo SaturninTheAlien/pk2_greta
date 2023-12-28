@@ -64,8 +64,8 @@ void Move_If_Switch_Pressed(SpriteClass*s, int game_button, int ak, int bk);
 void Teleporter(SpriteClass*s);
 void Turn_Back_If_Damaged(SpriteClass* s);
 
-void Return_To_Orig_X_Fixed(SpriteClass*s);
-void Return_To_Orig_Y_Fixed(SpriteClass*s);
+void Return_To_Orig_X_Constant(SpriteClass*s);
+void Return_To_Orig_Y_Constant(SpriteClass*s);
 
 /**
  * @brief 

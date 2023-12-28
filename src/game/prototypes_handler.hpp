@@ -8,7 +8,7 @@ class EpisodeClass;
 class PrototypesHandler{
 
 public:
-    PrototypesHandler(bool shouldLoadDependencies, bool jsonPriority, EpisodeClass* episode):
+    PrototypesHandler(bool shouldLoadDependencies, bool jsonPriority, EpisodeClass* episode=nullptr):
     mShouldLoadDependencies(shouldLoadDependencies), mJsonPriority(jsonPriority), mEpisode(episode){}
 
     ~PrototypesHandler(){
@@ -28,6 +28,12 @@ public:
      * Load sprite prototype by name
      */
     PrototypeClass* loadPrototype(const std::string& filename_in);
+    /**
+     * @brief 
+     * Save prototype to file
+     */
+    void savePrototype(PrototypeClass*prototype, const std::string& filename)const;
+
     /**
      * @brief 
      * Get sprite prototype by index for the purpose of debugging.
@@ -54,5 +60,7 @@ private:
     class EpisodeClass*mEpisode = nullptr;
 
     std::vector<PrototypeClass*>mPrototypes;
+
     PFile::Path mGetDir(const std::string& filename)const;
+    bool mFindSprite(PFile::Path& path)const;
 };

@@ -460,31 +460,37 @@ std::vector<std::string> scan_file(const char* dir, const char* type){
 
 bool Path::Find() {
 
-	// Scan dir on ZIP
-	if (this->zip_file != nullptr)
-		return this->NoCaseFind();
-	
-	#ifdef __ANDROID__
+	try{
+			// Scan dir on ZIP
+		if (this->zip_file != nullptr)
+			return this->NoCaseFind();
+		
+		#ifdef __ANDROID__
 
-	if (this->path[0] != '/')
-		return this->NoCaseFind();
+		if (this->path[0] != '/')
+			return this->NoCaseFind();
 
-	#endif
+		#endif
 
-	const char* cstr = this->path.c_str();
+		const char* cstr = this->path.c_str();
 
-	PLog::Write(PLog::DEBUG, "PFile", "Find %s", cstr);
-	if(fs::exists(this->path)&&fs::is_regular_file(this->path)){
-		PLog::Write(PLog::DEBUG, "PFile", "Found on %s", cstr);
-		return true;
+		PLog::Write(PLog::DEBUG, "PFile", "Find %s", cstr);
+		if(fs::exists(this->path)&&fs::is_regular_file(this->path)){
+			PLog::Write(PLog::DEBUG, "PFile", "Found on %s", cstr);
+			return true;
+		}
+
+		#ifdef _WIN32
+			return false;
+		#else
+			PLog::Write(PLog::INFO, "PFile", "%s not found, trying different cAsE", cstr);
+			return this->NoCaseFind();
+		#endif
 	}
-
-	#ifdef _WIN32
-		return false;
-	#else
-		PLog::Write(PLog::INFO, "PFile", "%s not found, trying different cAsE", cstr);
-		return this->NoCaseFind();
-	#endif
+	catch(const std::filesystem::filesystem_error& e){
+		PLog::Write(PLog::WARN, "PFile", e.what());
+	}
+	return false;
 }
 
 
