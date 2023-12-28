@@ -27,6 +27,9 @@ public:
     void sortBg();
     void onGameStart();
     void onSkullBlocksChanged();
+    void onEvent1();
+    void onEvent2();
+
     int onTickUpdate();
 
     void addSprite(PrototypeClass* protot, int is_Player_Sprite, double x, double y, SpriteClass* parent, bool isbonus);

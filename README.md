@@ -104,6 +104,16 @@ This example starts the level13.map (the robot boss fight) on dev mode:
     * AI_RETURN_TO_ORIG_X_CONSTANT (84) - sprite returns to it's starting x position with constant speed and in comparison to the legacy AI_RETURN_TO_ORIG_X (28) there are no oscillations at the target x position,
     * AI_RETURN_TO_ORIG_Y_CONSTANT (85) - sprite returns to it's starting y position with constant speed and in comparison to the legacy AI_RETURN_TO_ORIG_Y (29) there are no oscillations at the target y position,
 
+    * AI_EMIT_EVENT1_IF_DEAD (86) - a way to interact between sprites, maybe changing another set of skull blocks in the future with bigger tilesets,
+    * AI_EMIT_EVENT1_IF_DAMAGED (87),
+    * AI_TRANSFORM_IF_EVENT1 (88),
+    * AI_DIE_IF_EVENT1 (89), 
+
+    * AI_EMIT_EVENT2_IF_DEAD (90) - similar to event1 but without shaking the screen,
+    * AI_EMIT_EVENT2_IF_DAMAGED (91),   
+    * AI_TRANSFORM_IF_EVENT2 (92)
+    * AI_DIE_IF_EVENT2 (93)
+
     * AI_TRANSFORM_IF_DAMAGED (129) - this AI was implemented, but not working due to a bug before,
 
     * AI_INFINITE_ENERGY (141) - sprite has infinite energy, it can "receive" damage but it never dies. Only DAMAGE_TYPE_ALL (like falling into the void or die command can really kill it)

@@ -94,6 +94,30 @@ void SpritesHandler::onSkullBlocksChanged(){
 	}
 }
 
+void SpritesHandler::onEvent1(){
+	for(SpriteClass* sprite: Sprites_List){
+		if(sprite==nullptr||sprite->energy<=0)continue;
+
+		for(const SpriteAI::AI_Class& ai: sprite->prototype->AI_f){
+			if(ai.trigger==AI_TRIGGER_EVENT1){
+				ai.func(sprite);
+			}
+		}
+	}
+}
+
+void SpritesHandler::onEvent2(){
+	for(SpriteClass* sprite: Sprites_List){
+		if(sprite==nullptr||sprite->energy<=0)continue;
+
+		for(const SpriteAI::AI_Class& ai: sprite->prototype->AI_f){
+			if(ai.trigger==AI_TRIGGER_EVENT2){
+				ai.func(sprite);
+			}
+		}
+	}
+}
+
 int SpritesHandler::onTickUpdate(){
     if(Player_Sprite!=nullptr && Player_Sprite->energy>0){
 		AI_Functions::player_invisible = Player_Sprite;

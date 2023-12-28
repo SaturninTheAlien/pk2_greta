@@ -205,7 +205,15 @@ AI_Table::AI_Table(){
     Init_AI(AI_REBORN, AI_TRIGGER_DEATH, AI_Functions::Reborn);
     Init_AI(AI_CHICK, AI_TRIGGER_DEATH, AI_Functions::Chick);
     Init_AI(AI_CHANGE_SKULL_BLOCKS_IF_DEAD, AI_TRIGGER_DEATH, [](SpriteClass*s){
-        Game->Change_SkullBlocks();
+        Game->change_skulls=true;
+    });
+
+    Init_AI(AI_EMIT_EVENT1_IF_DEAD, AI_TRIGGER_DEATH, [](SpriteClass*s){
+        Game->event1=true;
+    });
+
+    Init_AI(AI_EMIT_EVENT2_IF_DEAD, AI_TRIGGER_DEATH, [](SpriteClass*s){
+        Game->event2=true;
     });
 
     /**
@@ -215,7 +223,15 @@ AI_Table::AI_Table(){
      */
 
     Init_AI(AI_CHANGE_SKULL_BLOCKS_IF_DAMAGED, AI_TRIGGER_DAMAGE, [](SpriteClass*s){
-        Game->Change_SkullBlocks();
+        Game->change_skulls=true;
+    });
+
+    Init_AI(AI_EMIT_EVENT1_IF_DAMAGED, AI_TRIGGER_DAMAGE, [](SpriteClass*s){
+        Game->event1=true;
+    });
+
+    Init_AI(AI_EMIT_EVENT2_IF_DAMAGED, AI_TRIGGER_DAMAGE, [](SpriteClass*s){
+        Game->event2=true;
     });
 
     Init_AI(AI_ATTACK_1_IF_DAMAGED, AI_TRIGGER_DAMAGE, AI_Functions::Attack_1_If_Damaged);
@@ -237,12 +253,28 @@ AI_Table::AI_Table(){
 
     /**
      * @brief 
-     * Ais triggered when skull blocks changed
+     * AIs triggered when skull blocks changed
      * 
      */
 
-    Init_AI(AI_DIE_IF_SKULL_BLOCKS_CHANGED, AI_TRIGGER_SKULLS_CHANGED, AI_Functions::DieIfSkullBlocksChanged);
+    Init_AI(AI_DIE_IF_SKULL_BLOCKS_CHANGED, AI_TRIGGER_SKULLS_CHANGED, AI_Functions::DieIfSkullBlocksChanged, true, true, true, true);
     Init_AI(AI_TRANSFORM_IF_SKULL_BLOCKS_CHANGED, AI_TRIGGER_SKULLS_CHANGED, [](SpriteClass*s){s->Transform();}, true, true, true, true);
+
+    /**
+     * @brief 
+     * AIs triggered when event1
+     */
+
+    Init_AI(AI_DIE_IF_EVENT1, AI_TRIGGER_EVENT1, AI_Functions::DieIfSkullBlocksChanged, true, true, true, true);
+    Init_AI(AI_TRANSFORM_IF_EVENT1, AI_TRIGGER_EVENT1, [](SpriteClass*s){s->Transform();}, true, true, true, true);
+
+    /**
+     * @brief 
+     * AIs triggered when event2
+     */
+
+    Init_AI(AI_DIE_IF_EVENT2, AI_TRIGGER_EVENT2, AI_Functions::DieIfSkullBlocksChanged, true, true, true, true);
+    Init_AI(AI_TRANSFORM_IF_EVENT2, AI_TRIGGER_EVENT2, [](SpriteClass*s){s->Transform();}, true, true, true, true);
 }
 
 }

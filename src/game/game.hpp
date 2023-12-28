@@ -82,12 +82,16 @@ class GameClass {
 		void Place_Sprites();
 		void Select_Start();
 		int Count_Keys();
-		void Change_SkullBlocks();
 		void Open_Locks();
 
+		bool change_skulls=false;
+		bool event1 = false;
+		bool event2 = false;
+
 		SpritesHandler spritesHandler;
-	private:
-		
+
+		void Change_SkullBlocks();
+	private:		
 		bool started = false;
 		
 		int Calculete_TileMasks();

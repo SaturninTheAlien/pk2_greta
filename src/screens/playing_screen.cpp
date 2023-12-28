@@ -678,7 +678,6 @@ void PlayingScreen::Update_Camera(){
 }
 
 void PlayingScreen::Loop(){
-
 	if (!Game->level_clear && (!Game->has_time || Game->timeout > 0)) {
 		Game->map.SetTilesAnimations(degree, Game->palikka_animaatio/7, Game->button1, Game->button2, Game->button3);
 		Game->palikka_animaatio = 1 + Game->palikka_animaatio % 34;
@@ -894,6 +893,24 @@ void PlayingScreen::Loop(){
 			key_delay = 30;
 		}
 
+	}
+
+	if(Game->change_skulls){
+		Game->Change_SkullBlocks();
+		Game->change_skulls = false;
+	}
+
+	if(Game->event1){
+		Game->vibration = 90;
+		PInput::Vibrate(1000);
+
+		Game->spritesHandler.onEvent1();
+		Game->event1 = false;
+	}
+
+	if(Game->event2){
+		Game->spritesHandler.onEvent2();
+		Game->event2 = false;
 	}
 
 	if (Game->exit_timer == 1 && !Is_Fading()) {
