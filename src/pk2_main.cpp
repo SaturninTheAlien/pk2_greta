@@ -310,10 +310,11 @@ std::string pk2_get_version(){
 	return PK2_VERSION_STR;
 }
 
-void pk2_main(bool _dev_mode, bool _show_fps, bool test_level, const std::string& test_path){
+void pk2_main(bool _dev_mode, bool _show_fps, bool _test_level, const std::string& test_path){
 	
 	dev_mode = _dev_mode;
 	show_fps = _show_fps;
+	test_level = _test_level;
 
 	set_paths();
 

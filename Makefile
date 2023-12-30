@@ -37,7 +37,7 @@ endif
 
 
 # Portable (data is stored with resorces):
-CXXFLAGS += -DPK2_PORTABLE -DPK2_VERSION=\"$(PK2_VERSION)\"
+CXXFLAGS += -DPK2_PORTABLE -DPK2_USE_JAVA -DPK2_VERSION=\"$(PK2_VERSION)\"
 
 # Commit hash
 CXXFLAGS += -DCOMMIT_HASH='"$(shell git rev-parse --short HEAD)"'
@@ -46,12 +46,16 @@ CXXFLAGS += -DCOMMIT_HASH='"$(shell git rev-parse --short HEAD)"'
 UNAME_S = $(shell uname -s)
 ifeq ($(UNAME_S),Darwin)
 # Support MAC OS
+	JAVA_INCLUDE= $(shell /usr/libexec/java_home)/include
+	CXXFLAGS += -I$(JAVA_INCLUDE)  -I$(JAVA_INCLUDE)/darwin
 	CXXFLAGS += -I/opt/homebrew/include
+
 	COMPILE_COMMAND = $(CXX) $(CXXFLAGS)
 else
+	JAVA_INCLUDE = $(shell dirname $$(dirname $$(readlink -f $$(which java))))/include
+	CXXFLAGS += -I$(JAVA_INCLUDE)  -I$(JAVA_INCLUDE)/linux
+
 	COMPILE_COMMAND = $(CXX)
-# Uncomment this to support OpenGL rendering
-#	CXXFLAGS += -DPK2_USE_GL
 endif
 
 

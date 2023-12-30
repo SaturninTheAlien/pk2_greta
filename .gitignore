@@ -23,8 +23,12 @@ res/sprites/ghostwtf.spr
 *.pdb
 *.exe
 *.dll
+*.log
 
+*.class
 *.DS_Store
+
+/bindings/java/*.h
 
 /mingw/i686/build/
 /mingw/i686/PK2/
