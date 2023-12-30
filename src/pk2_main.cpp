@@ -318,6 +318,8 @@ void pk2_main(bool _dev_mode, bool _show_fps, bool _test_level, const std::strin
 
 	set_paths();
 
+	PLog::Init(PLog::ALL, PFile::Path(data_path + "log.txt"));
+
 	log_data();
 	
 	Prepare_DataPath();
