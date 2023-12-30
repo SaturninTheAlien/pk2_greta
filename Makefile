@@ -16,7 +16,7 @@ CXXFLAGS += -O3
 CXXFLAGS += -Wall
 
 # Standart:
-CXXFLAGS += --std=c++17 
+CXXFLAGS += --std=c++17 -fPIC
 
 # Compiling to dll
 LDFLAGS += -shared
