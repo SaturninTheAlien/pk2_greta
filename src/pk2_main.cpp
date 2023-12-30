@@ -9,6 +9,7 @@
 //	"./pekka-kana-2 dev test rooster\ island\ 2/level13.map"
 //	Starts the level13.map on dev mode
 //#########################
+#include "pk2_main.hpp"
 #include "engine/Piste.hpp"
 #include "version.hpp"
 
@@ -292,149 +293,30 @@ static void log_data() {
 
 	PLog::Write(PLog::DEBUG, "PK2", "Pekka Kana 2 started!");
 	PLog::Write(PLog::DEBUG, "PK2", "Game version: %s", PK2_VERSION_STR);
-	//PLog::Write(PLog::DEBUG, "PK2", "Number: 0x%x", PK2_VERNUM);
-
-	/*#ifdef COMMIT_HASH
-	PLog::Write(PLog::DEBUG, "PK2", "Cammit hash: " COMMIT_HASH);
-	#else
-	PLog::Write(PLog::DEBUG, "PK2", "Cammit hash unknown");
-	#endif*/
-
 	PLog::Write(PLog::DEBUG, "PK2", "Data path - %s", data_path.c_str());
 
 }
 
-int main(int argc, char **argv) {
-
-	bool converting_sprite = false;
-	std::string filename_in;
-	std::string filename_out;
-	std::string test_path;
-
-	int state = 0;
-	for(int i=1;i<argc;++i){
-		std::string arg = argv[i];
-		switch (state)
-		{
-		case 0:{
-			if(arg=="--help" || arg=="-h"){
-				printf("Pekka Kana 2 (Pekka the Rooster 2) is a jump 'n run game made "
-				"in the spirit of classic platformers such as Super Mario, SuperTux, Sonic the Hedgehog,"
-				" Jazz Jackrabbit, Super Frog and so on.\n"
-				"Available command arguments are:\n"
-				"-h / --help -> print help,\n"
-				"-v / --version -> print version string,\n"
-				"-t / --test \"episode/level\" -> test/play particular level\n"
-				"(e.g ./pekka-kana-2 --test \"rooster island 2/level13.map\"),\n"
-				"-d / --dev -> enable the cheats and the debug tools,\n"
-				"--fps -> enable the FPS counter.\n"
-				);
-				exit(0);
-			}
-			else if(arg=="--version" || arg=="-v"){
-				printf(PK2_VERSION_STR "\n");
-				exit(0);
-			}
-			else if(arg=="--dev" || arg=="-d" || arg=="dev"){
-				dev_mode = true;
-				Piste::set_debug(true);
-			}
-			else if(arg=="--test" || arg=="-t" || arg=="test"){
-				state = 1;				
-			}
-			else if(arg=="--path" || arg=="-p"){
-				state = 2;
-			}
-			else if(arg=="--fps"){
-				show_fps=true;
-			}
-			/**
-			 * @brief 
-			 * ???
-			 * TEST IT
-			 */
-			/*else if (arg=="--speedrun") {
-				speedrun_mode = true;
-				continue;
-			}
-			else if (arg=="--editor") {
-				editor = true;
-			}
-			*/
-
-			else if (arg=="--mobile") {
-				PUtils::Force_Mobile();
-			}
-			else if	(arg=="--convert"){
-				printf("Converting sprite\n");
-				filename_in = "";
-				filename_out = "";
-				state=3;
-				converting_sprite = true;
-			}
-			else {
-				printf("Invalid arg\n");
-				exit(1);
-			}
-		}
-		break;
-		case 1:{
-			test_path = arg;
-			test_level = true;
-			state = 0;
-		}
-		break;
-		case 2:{
-			if (chdir(arg.c_str()) != 0) {
-				printf("Invalid path\n");
-				exit(1);
-			}
-
-			path_set = true;
-			state = 0;
-		}
-		break;
-		case 3:{
-			filename_in = arg;
-			state = 4;			
-		}
-		break;
-		case 4:{
-			filename_out = arg;
-			state = 0;
-		}
-		break;
-
-		default:
-			printf("Invalid arg\n");
-			exit(1);
-			break;
-		}
+bool pk2_setAssetsPath(const std::string& path){
+	if (chdir(path.c_str()) != 0) {
+		printf("Cannot set the path\n");
+		return false;
 	}
+	path_set = true;
+	return true;
+}
+
+std::string pk2_get_version(){
+	return PK2_VERSION_STR;
+}
+
+void pk2_main(bool _dev_mode, bool _show_fps, bool test_level, const std::string& test_path){
+	
+	dev_mode = _dev_mode;
+	show_fps = _show_fps;
 
 	set_paths();
-	
-	PLog::Init(PLog::ALL, PFile::Path(data_path + "log.txt"));
 
-	if(converting_sprite){
-		set_paths();
-		if(filename_in.empty()){
-			printf("You have to specify the sprite to convert!");
-			exit(2);
-		}
-	
-		else if(filename_out.empty()){
-			if(filename_in.size()>4 && filename_in.substr(filename_in.size()-4,4)==".spr"){
-				filename_out = filename_in.substr(0, filename_in.size() -4) + ".spr2";
-			}
-			else{
-				filename_out = filename_out + ".spr2";
-			}
-		}
-		convertToSpr2(filename_in, filename_out);
-		exit(0);
-	}
-	
 	log_data();
 	
 	Prepare_DataPath();
@@ -448,8 +330,6 @@ int main(int argc, char **argv) {
 
 		PLog::Write(PLog::FATAL, "PK2", "Failed to init PisteEngine");
 		quit();
-		return 1;
-
 	}
 
 	ScreensHandler *handler = nullptr;
@@ -478,5 +358,25 @@ int main(int argc, char **argv) {
 	}
 
 	quit();
-	return 0;
+}
+
+bool pk2_convertToSpr2(const std::string& filename_in, const std::string& filename_out){
+
+	std::string filename_out2;
+	PLog::Init(PLog::ALL, PFile::Path(data_path + "log.txt"));
+	if(filename_in.empty()){
+		printf("You have to specify the sprite to convert!");
+		return false;
+	}
+
+	else if(filename_out.empty()){
+		if(filename_in.size()>4 && filename_in.substr(filename_in.size()-4,4)==".spr"){
+			filename_out2 = filename_in.substr(0, filename_in.size() -4) + ".spr2";
+		}
+		else{
+			filename_out2 = filename_out + ".spr2";
+		}
+	}
+	convertToSpr2(filename_in, filename_out2);
+	return true;
 }

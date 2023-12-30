@@ -18,6 +18,9 @@ CXXFLAGS += -Wall
 # Standart:
 CXXFLAGS += --std=c++17 
 
+# Compiling to dll
+LDFLAGS += -shared
+
 # SDL2:
 CXXFLAGS += $(shell pkg-config sdl2 --cflags)
 LDFLAGS += $(shell pkg-config sdl2 --libs) -lSDL2_mixer -lSDL2_image
@@ -76,16 +79,28 @@ DEPENDENCIES := $(basename $(DEPENDENCIES))
 DEPENDENCIES := $(addsuffix .d, $(DEPENDENCIES))
 
 # Binary output:
-PK2_BIN = $(BIN_DIR)pekka-kana-2
+PK2_BIN = $(BIN_DIR)pk2.so
+PK2_BIN_LAUNCHER = $(BIN_DIR)pekka-kana-2
+
+LAUNCHER_SRC = launcher/launcher.cpp
+
+all: pk2 launcher
 
 pk2: $(PK2_BIN)
+
+launcher: $(PK2_BIN_LAUNCHER)
 
 ###########################
 $(PK2_BIN): $(PK2_OBJ)
 	@echo -Linking Pekka Kana 2
 	@mkdir -p $(dir $@) >/dev/null
 	@$(CXX) $^ $(LDFLAGS) -o $@
+
 ###########################
+$(PK2_BIN_LAUNCHER): $(PK2_BIN) $(LAUNCHER_SRC)
+	@echo -Compiling launcher.cpp
+	@mkdir -p $(dir $@) >/dev/null
+	@$(CXX) --std=c++17 -I$(SRC_DIR) $(LAUNCHER_SRC) $(PK2_BIN) -o $@
 
 ###########################
 -include $(DEPENDENCIES)
@@ -97,7 +112,7 @@ $(BUILD_DIR)%.o: $(SRC_DIR)%.cpp
 	@$(COMPILE_COMMAND) -MM -MT $@ -I$(SRC_DIR) $< > $(BUILD_DIR)$*.d
 ###########################
 
-all: pk2
+
 
 clean:
 	@rm -rf $(BIN_DIR)
