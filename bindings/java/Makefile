@@ -1,3 +1,12 @@
+
+
+#Fix MacOS threading
+UNAME_S = $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+	JAVA_ARG+=-XstartOnFirstThread
+endif
+
+
 all: compile headers
 
 compile:
@@ -10,7 +19,7 @@ headers:
 	javac -h . pk2/Prototype.java
 
 run: compile
-	java -XstartOnFirstThread pk2.PekkaKana2
+	java $(JAVA_ARG) pk2.PekkaKana2
 
 clean:
 	rm pk2/*.class
