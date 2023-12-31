@@ -40,11 +40,15 @@ public:
      * If out of range, nullptr is returned.
      */
     PrototypeClass* get(int index);
-    
+
+    void setSearchingDir(const std::string& dir){
+        this->mSearchingDirectory = dir;
+    }
 
     void loadSpriteAssets();
     void unloadSpriteAssets();
 private:
+    std::string mSearchingDirectory = "";
 
     /**
      * @brief 

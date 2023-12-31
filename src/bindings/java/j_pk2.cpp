@@ -90,13 +90,18 @@ jint Java_pk2_sprite_PrototypesHandler_mLoadSprite(JNIEnv * env, jobject o, jstr
         std::string name = env->GetStringUTFChars(j_name, nullptr);
 
         std::cout<<"Loading sprite: "<<name<<std::endl;
-        
-        PrototypeClass * prototype = handler->loadPrototype(name);
 
-        int sprite_id = jSpritePrototypes.size();
-        jSpritePrototypes.push_back(prototype);
+        try{
+            PrototypeClass * prototype = handler->loadPrototype(name);
+            int sprite_id = jSpritePrototypes.size();
+            jSpritePrototypes.push_back(prototype);
 
-        return sprite_id;
+            return sprite_id;
+
+        }
+        catch(const std::exception& e){
+            PLog::Write(PLog::ERR, "JPK2", "%s", e.what());
+        }
     }
 
     return -1;
@@ -106,6 +111,14 @@ void Java_pk2_sprite_PrototypesHandler_clear(JNIEnv *env, jobject o){
     PrototypesHandler * handler = getPrototypeHandlerByID(env, o);
     if(handler!=nullptr){
         handler->clear();
+    }
+}
+
+void Java_pk2_sprite_PrototypesHandler_setSearchingDir(JNIEnv *env, jobject o, jstring jstr){
+    PrototypesHandler * handler = getPrototypeHandlerByID(env, o);
+    if(handler!=nullptr){
+        std::string s = env->GetStringUTFChars(jstr, nullptr);
+        handler->setSearchingDir(s);
     }
 }
 

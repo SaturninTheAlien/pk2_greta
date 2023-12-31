@@ -21,6 +21,8 @@ PK2_EXPORT jint Java_pk2_sprite_PrototypesHandler_mLoadSprite(JNIEnv *, jobject,
 
 PK2_EXPORT void Java_pk2_sprite_PrototypesHandler_clear(JNIEnv *, jobject);
 
+PK2_EXPORT void Java_pk2_sprite_PrototypesHandler_setSearchingDir(JNIEnv *, jobject, jstring);
+
 #ifdef __cplusplus
 }
 #endif
