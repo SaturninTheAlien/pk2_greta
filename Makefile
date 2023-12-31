@@ -37,29 +37,33 @@ endif
 
 
 # Portable (data is stored with resorces):
-CXXFLAGS += -DPK2_PORTABLE -DPK2_USE_JAVA -DPK2_VERSION=\"$(PK2_VERSION)\"
+CXXFLAGS += -DPK2_PORTABLE -DPK2_VERSION=\"$(PK2_VERSION)\"
 
 # Commit hash
 CXXFLAGS += -DCOMMIT_HASH='"$(shell git rev-parse --short HEAD)"'
 
-
+# Detecting operating system (both MacOS and Linux supported)
 UNAME_S = $(shell uname -s)
-ifeq ($(UNAME_S),Darwin)
-# Support MAC OS
-	JAVA_INCLUDE= $(shell /usr/libexec/java_home)/include
-	CXXFLAGS += -I$(JAVA_INCLUDE)  -I$(JAVA_INCLUDE)/darwin
-	CXXFLAGS += -I/opt/homebrew/include
 
-	COMPILE_COMMAND = $(CXX) $(CXXFLAGS)
-else
-	JAVA_INCLUDE = $(shell dirname $$(dirname $$(readlink -f $$(which java))))/include
-	CXXFLAGS += -I$(JAVA_INCLUDE)  -I$(JAVA_INCLUDE)/linux
+# Add java (optional), PekaEDS support
+JAVA = $(shell command -v java 2> /dev/null)
 
-	COMPILE_COMMAND = $(CXX)
+ifneq ($(strip $(JAVA)),)
+	ifeq ($(UNAME_S),Darwin)
+		JAVA_INCLUDE= $(shell /usr/libexec/java_home)/include
+		JAVA_INCLUDE_SYSTEM = $(JAVA_INCLUDE)/darwin
+	else
+		JAVA_INCLUDE = $(shell dirname $$(dirname $$(readlink -f $$(which java))))/include
+		JAVA_INCLUDE_SYSTEM = $(JAVA_INCLUDE)/linux
+	endif
+
+	ifneq ($(wildcard $(JAVA_INCLUDE)/jni.h),)
+		CXXFLAGS += -DPK2_USE_JAVA -I$(JAVA_INCLUDE) -I$(JAVA_INCLUDE_SYSTEM)
+	endif
 endif
 
-
-
+#Compile command CXX and CXXFLAGS
+COMPILE_COMMAND = $(CXX) $(CXXFLAGS)
 
 # Directories:
 SRC_DIR = src/
@@ -87,6 +91,7 @@ PK2_BIN = $(BIN_DIR)pk2.so
 PK2_BIN_LAUNCHER = $(BIN_DIR)pekka-kana-2
 
 LAUNCHER_SRC = launcher/launcher.cpp
+LAUNCHER_OBJ = launcher/launcher.o
 
 all: pk2 launcher
 
@@ -101,10 +106,14 @@ $(PK2_BIN): $(PK2_OBJ)
 	@$(CXX) $^ $(LDFLAGS) -o $@
 
 ###########################
-$(PK2_BIN_LAUNCHER): $(PK2_BIN) $(LAUNCHER_SRC)
-	@echo -Compiling launcher.cpp
+$(LAUNCHER_OBJ): $(LAUNCHER_SRC)
+	@echo -Compiling $<
+	@$(CXX) --std=c++17 -I$(SRC_DIR) $(LAUNCHER_SRC) -c -o $@
+
+$(PK2_BIN_LAUNCHER): $(LAUNCHER_OBJ) $(PK2_BIN)
+	@echo -Linking launcher
 	@mkdir -p $(dir $@) >/dev/null
-	@$(CXX) --std=c++17 -I$(SRC_DIR) $(LAUNCHER_SRC) $(PK2_BIN) -o $@
+	@$(CXX) $(LAUNCHER_OBJ) $(PK2_BIN) -o $@
 
 ###########################
 -include $(DEPENDENCIES)
@@ -112,17 +121,18 @@ $(PK2_BIN_LAUNCHER): $(PK2_BIN) $(LAUNCHER_SRC)
 $(BUILD_DIR)%.o: $(SRC_DIR)%.cpp
 	@echo -Compiling $<
 	@mkdir -p $(dir $@) >/dev/null
-	@$(COMPILE_COMMAND) $(CXXFLAGS) -I$(SRC_DIR) -o $@ -c $<
+	@$(COMPILE_COMMAND) -I$(SRC_DIR) -o $@ -c $<
 	@$(COMPILE_COMMAND) -MM -MT $@ -I$(SRC_DIR) $< > $(BUILD_DIR)$*.d
 ###########################
 
 
 
 clean:
+	@rm -rf $(LAUNCHER_OBJ)
 	@rm -rf $(BIN_DIR)
 	@rm -rf $(BUILD_DIR)
 
-version_test:
-	echo $(PK2_VERSION)
+test:
+	@echo $(CXXFLAGS)
 
-.PHONY: pk2 clean all version_test
+.PHONY: pk2 launcher clean all test

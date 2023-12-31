@@ -25,6 +25,8 @@ res/sprites/ghostwtf.spr
 *.dll
 *.log
 
+launcher/*.o
+
 *.class
 *.DS_Store
 
