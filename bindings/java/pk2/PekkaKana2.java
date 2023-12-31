@@ -3,6 +3,9 @@ package pk2;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import pk2.sprite.Prototype;
+import pk2.sprite.PrototypesHandler;
+
 public class PekkaKana2{
     public static void main(String args[]){
         System.out.println("Hello Java!");

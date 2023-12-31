@@ -1,7 +1,6 @@
-#ifdef PK2_USE_JAVA
-
 #include "j_prototype.hpp"
 
+#ifdef PK2_USE_JAVA
 std::vector<PrototypeClass*> jSpritePrototypes;
 
 
@@ -21,7 +20,7 @@ PrototypeClass* jGetPrototypeById(JNIEnv *env, jobject o){
 
 
 
-jint Java_pk2_Prototype_getType(JNIEnv * env, jobject o){
+jint Java_pk2_sprite_Prototype_getType(JNIEnv * env, jobject o){
     PrototypeClass* p = jGetPrototypeById(env, o);
     if(p!=nullptr){
         return p->type;
@@ -29,7 +28,7 @@ jint Java_pk2_Prototype_getType(JNIEnv * env, jobject o){
     return 0;
 }
 
-jstring Java_pk2_Prototype_getFilename(JNIEnv * env, jobject o){
+jstring Java_pk2_sprite_Prototype_getFilename(JNIEnv * env, jobject o){
     PrototypeClass* p = jGetPrototypeById(env, o);
     if(p!=nullptr){
         return env->NewStringUTF(p->filename.c_str());
@@ -37,7 +36,7 @@ jstring Java_pk2_Prototype_getFilename(JNIEnv * env, jobject o){
     return 0;
 }
 
-jstring Java_pk2_Prototype_getName(JNIEnv *env, jobject o){
+jstring Java_pk2_sprite_Prototype_getName(JNIEnv *env, jobject o){
 
     PrototypeClass* p = jGetPrototypeById(env, o);
     if(p!=nullptr){
@@ -46,7 +45,7 @@ jstring Java_pk2_Prototype_getName(JNIEnv *env, jobject o){
     return nullptr;
 }
 
-jint Java_pk2_Prototype_getWidth(JNIEnv *env, jobject o){
+jint Java_pk2_sprite_Prototype_getWidth(JNIEnv *env, jobject o){
     PrototypeClass* p = jGetPrototypeById(env, o);
     if(p!=nullptr){
         return p->width;
@@ -55,7 +54,7 @@ jint Java_pk2_Prototype_getWidth(JNIEnv *env, jobject o){
     return 0;
 }
 
-jint Java_pk2_Prototype_getHeight(JNIEnv *env, jobject o){
+jint Java_pk2_sprite_Prototype_getHeight(JNIEnv *env, jobject o){
     PrototypeClass* p = jGetPrototypeById(env, o);
     if(p!=nullptr){
         return p->height;
@@ -64,7 +63,7 @@ jint Java_pk2_Prototype_getHeight(JNIEnv *env, jobject o){
     return 0;
 }
 
-jstring Java_pk2_Prototype_getTextureName(JNIEnv *env, jobject o){
+jstring Java_pk2_sprite_Prototype_getTextureName(JNIEnv *env, jobject o){
     PrototypeClass* p = jGetPrototypeById(env, o);
     if(p!=nullptr){
         return env->NewStringUTF(p->picture_filename.c_str());
@@ -72,7 +71,7 @@ jstring Java_pk2_Prototype_getTextureName(JNIEnv *env, jobject o){
     return nullptr;
 }
 
-jint Java_pk2_Prototype_getColor(JNIEnv *env, jobject o){
+jint Java_pk2_sprite_Prototype_getColor(JNIEnv *env, jobject o){
     PrototypeClass* p = jGetPrototypeById(env, o);
     if(p!=nullptr){
         return p->color;
@@ -81,7 +80,7 @@ jint Java_pk2_Prototype_getColor(JNIEnv *env, jobject o){
     return 0;
 }
 
-jint Java_pk2_Prototype_getFrameX(JNIEnv *env, jobject o){
+jint Java_pk2_sprite_Prototype_getFrameX(JNIEnv *env, jobject o){
     PrototypeClass* p = jGetPrototypeById(env, o);
     if(p!=nullptr){
         return p->picture_frame_x;
@@ -90,7 +89,7 @@ jint Java_pk2_Prototype_getFrameX(JNIEnv *env, jobject o){
     return 0;
 }
 
-jint Java_pk2_Prototype_getFrameY(JNIEnv *env, jobject o){
+jint Java_pk2_sprite_Prototype_getFrameY(JNIEnv *env, jobject o){
     PrototypeClass* p = jGetPrototypeById(env, o);
     if(p!=nullptr){
         return p->picture_frame_y;
@@ -99,7 +98,7 @@ jint Java_pk2_Prototype_getFrameY(JNIEnv *env, jobject o){
     return 0;
 }
 
-jint Java_pk2_Prototype_getFrameWidth(JNIEnv *env, jobject o){
+jint Java_pk2_sprite_Prototype_getFrameWidth(JNIEnv *env, jobject o){
     PrototypeClass* p = jGetPrototypeById(env, o);
     if(p!=nullptr){
         return p->picture_frame_width;
@@ -108,7 +107,7 @@ jint Java_pk2_Prototype_getFrameWidth(JNIEnv *env, jobject o){
     return 0;
 }
 
-jint Java_pk2_Prototype_getFrameHeight(JNIEnv *env, jobject o){
+jint Java_pk2_sprite_Prototype_getFrameHeight(JNIEnv *env, jobject o){
     PrototypeClass* p = jGetPrototypeById(env, o);
     if(p!=nullptr){
         return p->picture_frame_height;

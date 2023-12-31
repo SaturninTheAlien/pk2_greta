@@ -1,4 +1,4 @@
-package pk2;
+package pk2.sprite;
 
 public class PrototypesHandler{
 

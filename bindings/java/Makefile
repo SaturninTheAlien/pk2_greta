@@ -11,12 +11,11 @@ all: compile headers
 
 compile:
 	javac pk2/PekkaKana2.java
-	javac pk2/PrototypesHandler.java
-
+	
 headers:
 	javac -h . pk2/PekkaKana2.java
-	javac -h . pk2/PrototypesHandler.java
-	javac -h . pk2/Prototype.java
+	javac -h . pk2/sprite/PrototypesHandler.java
+	javac -h . pk2/sprite/Prototype.java
 
 run: compile
 	java $(JAVA_ARG) pk2.PekkaKana2

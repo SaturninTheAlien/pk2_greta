@@ -36,7 +36,7 @@ PK2_EXPORT jboolean Java_pk2_PekkaKana2_testLevel(JNIEnv *, jclass, jstring, jbo
  * Method:    mCreate
  * Signature: ()V
  */
-PK2_EXPORT void Java_pk2_PrototypesHandler_mCreate(JNIEnv *env, jobject o,
+PK2_EXPORT void Java_pk2_sprite_PrototypesHandler_mCreate(JNIEnv *env, jobject o,
     jboolean shouldLoadDependencies, jboolean jsonPriority);
 
 /*
@@ -44,7 +44,7 @@ PK2_EXPORT void Java_pk2_PrototypesHandler_mCreate(JNIEnv *env, jobject o,
  * Method:    mLoadSprite
  * Signature: (Ljava/lang/String;)I
  */
-PK2_EXPORT jint Java_pk2_PrototypesHandler_mLoadSprite
+PK2_EXPORT jint Java_pk2_sprite_PrototypesHandler_mLoadSprite
   (JNIEnv *, jobject, jstring);
 
 

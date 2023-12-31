@@ -51,7 +51,7 @@ jboolean Java_pk2_PekkaKana2_testLevel
 
 
 
-void Java_pk2_PrototypesHandler_mCreate(JNIEnv *env, jobject o,
+void Java_pk2_sprite_PrototypesHandler_mCreate(JNIEnv *env, jobject o,
     jboolean shouldLoadDependencies, jboolean jsonPriority){
     jclass c = env->GetObjectClass(o);
     jfieldID fid = env->GetFieldID(c, "id", "I");
@@ -61,7 +61,7 @@ void Java_pk2_PrototypesHandler_mCreate(JNIEnv *env, jobject o,
     env->SetIntField(o, fid, id);    
 }
 
-PK2_EXPORT jint Java_pk2_PrototypesHandler_mLoadSprite(JNIEnv * env, jobject o, jstring j_name){
+PK2_EXPORT jint Java_pk2_sprite_PrototypesHandler_mLoadSprite(JNIEnv * env, jobject o, jstring j_name){
     jclass c = env->GetObjectClass(o);
     jfieldID fid = env->GetFieldID(c, "id", "I");
 

@@ -1,6 +1,6 @@
-package pk2;
+package pk2.sprite;
 
-public class Prototype{    
+public class Prototype implements IPrototype{    
     protected Prototype(int sprite_id){
         this.sprite_id = sprite_id;
     }
