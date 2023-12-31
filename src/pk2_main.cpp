@@ -310,19 +310,20 @@ std::string pk2_get_version(){
 	return PK2_VERSION_STR;
 }
 
+void pk2_init(){
+
+	set_paths();
+	PLog::Init(PLog::ALL, PFile::Path(data_path + "log.txt"));
+	Prepare_DataPath();
+}
+
 void pk2_main(bool _dev_mode, bool _show_fps, bool _test_level, const std::string& test_path){
 	
 	dev_mode = _dev_mode;
 	show_fps = _show_fps;
 	test_level = _test_level;
 
-	set_paths();
-
-	PLog::Init(PLog::ALL, PFile::Path(data_path + "log.txt"));
-
 	log_data();
-	
-	Prepare_DataPath();
 	
 	Settings_Open();
 	

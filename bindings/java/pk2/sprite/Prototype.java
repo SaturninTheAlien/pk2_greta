@@ -5,7 +5,7 @@ public class Prototype implements IPrototype{
         this.sprite_id = sprite_id;
     }
 
-    private int sprite_id = -1;
+    private final int sprite_id;
 
     public native int getType();
     public native String getFilename();

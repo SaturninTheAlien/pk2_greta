@@ -87,7 +87,7 @@ DEPENDENCIES := $(basename $(DEPENDENCIES))
 DEPENDENCIES := $(addsuffix .d, $(DEPENDENCIES))
 
 # Binary output:
-PK2_BIN = $(BIN_DIR)pk2.so
+PK2_BIN = $(BIN_DIR)pk2_greta.so
 PK2_BIN_LAUNCHER = $(BIN_DIR)pekka-kana-2
 
 LAUNCHER_SRC = launcher/launcher.cpp

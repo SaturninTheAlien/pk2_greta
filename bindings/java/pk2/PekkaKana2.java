@@ -15,7 +15,7 @@ public class PekkaKana2{
         //testLevel("Debug Island/debug.map", true);
 
         PrototypesHandler handler = new PrototypesHandler(false, false);
-        Prototype apple = handler.loadPrototype("sprites/apple.spr2"); //handler.loadPrototype("episodes/Debug Island/evilkey.spr");
+        Prototype apple = handler.loadPrototype("apple.spr2"); //handler.loadPrototype("episodes/Debug Island/evilkey.spr");
 
         System.out.println("Filename: "+apple.getFilename());
         System.out.println("Name: "+apple.getName());
@@ -37,7 +37,7 @@ public class PekkaKana2{
 
     public static void init(){
         Path rootPath = Paths.get("").toAbsolutePath().getParent().getParent();
-        Path libPath = Paths.get(rootPath.toString(),"bin", "pk2");
+        Path libPath = Paths.get(rootPath.toString(),"bin", "pk2_greta");
         Path resPath = Paths.get(rootPath.toString(), "res");
         init(libPath.toString(), resPath.toString());
     }

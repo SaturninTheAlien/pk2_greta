@@ -522,16 +522,20 @@ void Path::SetPath(std::string path) {
 
 std::string Path::GetDirectory() {
 
-	int dif = this->path.find_last_of(PE_SEP);
-	return this->path.substr(0, dif);
-
+	std::size_t dif = this->path.find_last_of(PE_SEP);
+	if(dif<this->path.size()){
+		return this->path.substr(0, dif);
+	}
+	return "";
 }
 
 std::string Path::GetFileName() {
 
-	int dif = this->path.find_last_of(PE_SEP);
-	return this->path.substr(dif + 1);
-
+	std::size_t dif = this->path.find_last_of(PE_SEP);
+	if(dif<this->path.size()){
+		return this->path.substr(dif + 1);
+	}
+	return this->path;
 }
 
 #ifdef PK2_USE_ZIP
@@ -843,7 +847,11 @@ std::vector<std::string> Path::scandir(const char* type) {
     
 	std::vector<std::string> ret;
 
-	std::string dir = this->path.substr(0, this->path.find_last_of(PE_SEP));
+	std::string dir = this->GetDirectory(); //this->path.substr(0, this->path.find_last_of(PE_SEP));
+	if(dir.empty()){
+		dir = ".";
+	}
+
 	std::string cache_entry(dir + type);
 	
 	const char* cstr = dir.c_str();

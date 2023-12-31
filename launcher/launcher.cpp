@@ -101,6 +101,7 @@ int main(int argc, char **argv) {
 		}
 	}
 
+	pk2_init();
 	pk2_main(dev_mode, show_fps, test_level, test_path);
 
 	return 0;

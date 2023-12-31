@@ -21,6 +21,6 @@ run: compile
 	java $(JAVA_ARG) pk2.PekkaKana2
 
 clean:
-	rm pk2/*.class
+	rm *.class
 
 .PHONY: headers clean compile all run

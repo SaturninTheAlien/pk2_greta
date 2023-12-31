@@ -18,5 +18,6 @@ public class PrototypesHandler{
 
     private native void mCreate(boolean shouldLoadDependencies, boolean jsonPriority);
     private native int mLoadSprite(String path);
+    private native void clear();
     private int id = -1;
 };
