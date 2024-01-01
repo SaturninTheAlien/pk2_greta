@@ -1,7 +1,5 @@
 #ifdef PK2_USE_JAVA
 
-#include <iostream>
-
 #include "j_pk2.hpp"
 #include "j_prototype.hpp"
 
@@ -16,11 +14,12 @@ std::vector<PrototypesHandler*> jPrototypeHandlers;
 void Java_pk2_PekkaKana2_mInit(JNIEnv *env, jclass cls, jstring jpath){
 
     std::string path = env->GetStringUTFChars(jpath, nullptr);
-    
-    std::cout<<"Setting the assets path to "<<path<<std::endl;
+
 
     pk2_setAssetsPath(path);
     pk2_init();
+
+    PLog::Write(PLog::INFO, "JPK2", "The assets path set to: %s", path.c_str());
 }
 
 void Java_pk2_PekkaKana2_quit(JNIEnv *, jclass){
@@ -88,8 +87,6 @@ jint Java_pk2_sprite_PrototypesHandler_mLoadSprite(JNIEnv * env, jobject o, jstr
     PrototypesHandler * handler = getPrototypeHandlerByID(env, o);
     if(handler!=nullptr){
         std::string name = env->GetStringUTFChars(j_name, nullptr);
-
-        std::cout<<"Loading sprite: "<<name<<std::endl;
 
         try{
             PrototypeClass * prototype = handler->loadPrototype(name);
