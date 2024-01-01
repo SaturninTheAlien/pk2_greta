@@ -25,6 +25,8 @@ res/sprites/ghostwtf.spr
 *.exe
 *.dll
 *.log
+*.lib
+*.exp
 
 launcher/*.o
 

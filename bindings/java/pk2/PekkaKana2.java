@@ -1,5 +1,8 @@
 package pk2;
 
+import java.io.File;
+import java.io.FilenameFilter;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -7,12 +10,18 @@ import pk2.sprite.Prototype;
 import pk2.sprite.PrototypesHandler;
 
 public class PekkaKana2{
+
+    private static boolean isWindows(){
+        String osname = System.getProperty("os.name").toLowerCase();
+        return osname.contains("win");
+    }
+
     public static void main(String args[]){
         System.out.println("Hello Java!");
 
         init();
 
-        //testLevel("Debug Island/debug.map", true);
+        testLevel("Debug Island/tile_debug.map", true);
 
         PrototypesHandler handler = new PrototypesHandler(false, false);
         Prototype sprite = handler.loadPrototype("bat.spr2"); //handler.loadPrototype("episodes/Debug Island/evilkey.spr");
@@ -37,7 +46,10 @@ public class PekkaKana2{
 
     public static void init(){
         Path rootPath = Paths.get("").toAbsolutePath().getParent().getParent();
-        Path libPath = Paths.get(rootPath.toString(),"bin", "pk2_greta");
+
+        String s1 = isWindows()?"res":"bin";
+        
+        Path libPath = Paths.get(rootPath.toString(), s1, "pk2_greta");
         Path resPath = Paths.get(rootPath.toString(), "res");
         init(libPath.toString(), resPath.toString());
     }
@@ -46,11 +58,33 @@ public class PekkaKana2{
         
         String dllPathLowerCase = dll_path.toLowerCase();
         if(!dllPathLowerCase.endsWith(".so") && !dllPathLowerCase.endsWith(".dll")){
-            
-            String osname = System.getProperty("os.name").toLowerCase();
-            System.out.println(osname);
-            if(osname.contains("win")){
+            if(isWindows()){
                 dll_path+=".dll";
+
+                File dir = new File(dll_path).getParentFile();
+
+                /**
+                 * Load dependent DLLs
+                 */
+
+                FilenameFilter dllFilter = new FilenameFilter() {
+                    @Override
+                    public boolean accept(File dir, String name) {
+                        String s = name.toLowerCase();
+
+                        return s.endsWith(".dll") && !name.startsWith("pk2");
+                    }
+                };
+
+
+                File[] files = dir.listFiles(dllFilter);
+                if(files!=null){
+                    for (File dllFile : files){
+                        String s = dllFile.getAbsolutePath();
+                        System.out.println("Loading: "+s);
+                        System.load(s);
+                    }
+                }               
             }
             else{
                 dll_path+=".so";
