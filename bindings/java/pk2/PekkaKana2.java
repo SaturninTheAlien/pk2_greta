@@ -21,9 +21,12 @@ public class PekkaKana2{
 
         init();
 
-        testLevel("Debug Island/tile_debug.map", true);
+        //testLevel("Debug Island/tile_debug.map", true);
 
         PrototypesHandler handler = new PrototypesHandler(false, false);
+        handler.clear();
+        handler.setSearchingDir(".");
+        
         Prototype sprite = handler.loadPrototype("bat.spr2"); //handler.loadPrototype("episodes/Debug Island/evilkey.spr");
 
         System.out.println("Filename: "+sprite.getFilename());
@@ -54,42 +57,48 @@ public class PekkaKana2{
         init(libPath.toString(), resPath.toString());
     }
 
+    private static void loadDependentDLLs(String dll_path){
+        File dir = new File(dll_path).getParentFile();
+
+        /**
+         * Load dependent DLLs
+         */
+
+        FilenameFilter dllFilter = new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                String s = name.toLowerCase();
+
+                return s.endsWith(".dll") && !name.startsWith("pk2");
+            }
+        };
+
+
+        File[] files = dir.listFiles(dllFilter);
+        if(files!=null){
+            for (File dllFile : files){
+                String s = dllFile.getAbsolutePath();
+                System.out.println("Loading: "+s);
+                System.load(s);
+            }
+        }   
+    }
+
     public static void init(String dll_path, String assetsPath){
         
         String dllPathLowerCase = dll_path.toLowerCase();
         if(!dllPathLowerCase.endsWith(".so") && !dllPathLowerCase.endsWith(".dll")){
             if(isWindows()){
-                dll_path+=".dll";
-
-                File dir = new File(dll_path).getParentFile();
-
-                /**
-                 * Load dependent DLLs
-                 */
-
-                FilenameFilter dllFilter = new FilenameFilter() {
-                    @Override
-                    public boolean accept(File dir, String name) {
-                        String s = name.toLowerCase();
-
-                        return s.endsWith(".dll") && !name.startsWith("pk2");
-                    }
-                };
-
-
-                File[] files = dir.listFiles(dllFilter);
-                if(files!=null){
-                    for (File dllFile : files){
-                        String s = dllFile.getAbsolutePath();
-                        System.out.println("Loading: "+s);
-                        System.load(s);
-                    }
-                }               
+                dll_path+=".dll";                            
             }
             else{
                 dll_path+=".so";
             }
         }
+        if(isWindows()){
+            loadDependentDLLs(dll_path);
+        }
+
         System.load(dll_path);
         mInit(assetsPath);
     }
