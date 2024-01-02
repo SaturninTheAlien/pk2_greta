@@ -202,7 +202,7 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 		/**********************************************************************/
 		if (block.id == BLOCK_EXIT && sprite->energy>0) {
 			if ((!Game->chick_mode && sprite->player != 0) || sprite->HasAI(AI_CHICK))
-				Game->Finnish();
+				Game->Finish();
 		}
 	}
 

@@ -869,7 +869,7 @@ void PlayingScreen::Loop(){
 			}
 			if (PInput::Keydown(PInput::END)) {
 				key_delay = 20;
-				Game->Finnish();
+				Game->Finish();
 			}
 			if (PInput::Keydown(PInput::A)/* && key_delay == 0*/) {
 				//key_delay = 20;
