@@ -54,8 +54,6 @@ static const char default_config[] =
 "\r\n*audio_multi_thread:    yes"
 "\r\n";
 
-static bool path_set = false;
-
 
 static void read_config() {
 
@@ -187,15 +185,14 @@ void convertToSpr2(const std::string& filename_in, const std::string& filename_o
 
 static void set_paths() {
 
-	if(!path_set)
-		PUtils::Setcwd();
+	PFile::SetDefaultAssetsPath();
 	
 	#ifndef __ANDROID__
 
 	#ifdef PK2_PORTABLE
 
-	data_path = "." PE_SEP "data" PE_SEP;
-	std::filesystem::create_directory(data_path);
+	data_path = "data" PE_SEP;
+	PFile::CreateDirectory(data_path);
 
 	#else
 
@@ -296,13 +293,8 @@ static void log_data() {
 	PLog::Write(PLog::DEBUG, "PK2", "Data path - %s", data_path.c_str());
 
 }
-
 bool pk2_setAssetsPath(const std::string& path){
-	if (chdir(path.c_str()) != 0) {
-		printf("Cannot set the path\n");
-		return false;
-	}
-	path_set = true;
+	PFile::SetAssetsPath(path);
 	return true;
 }
 

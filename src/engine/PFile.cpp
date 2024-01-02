@@ -32,6 +32,72 @@
 #endif
 namespace PFile {
 
+std::string mAssetsPath;
+bool mAssetsPathSet = false;
+
+void SetAssetsPath(const std::string& _assetsPath){
+	mAssetsPath = _assetsPath;
+	mAssetsPathSet = true;
+
+	if(!mAssetsPath.empty())
+	{
+		char c1 = mAssetsPath[mAssetsPath.size()-1];
+		if(c1=='/'||c1=='\\'){
+			mAssetsPath = mAssetsPath.substr(mAssetsPath.size()-1);
+		}
+	}
+}
+
+void CreateDirectory(const std::string& path){
+	std::string pathFixed = mAssetsPath + PE_SEP + path;
+	if(!std::filesystem::exists(pathFixed) || !std::filesystem::is_directory(pathFixed)){
+		std::filesystem::create_directory(pathFixed);
+	}
+}
+
+bool mIsAbsolute(const std::string& path){
+	#ifdef _WIN32
+		return path.size()>2 && path[1] == ':' && path[2] == '\\';		
+		
+	#else
+		return path.size()>0 && path[0] == '/';
+	#endif
+}
+
+std::string mGetAssetPath(const std::string& path){
+	if(mIsAbsolute(path))return path;
+	else{
+		return mAssetsPath +PE_SEP + path;
+	}
+}
+
+void SetDefaultAssetsPath() {
+	if(mAssetsPathSet)return;
+
+	char* c_path = SDL_GetBasePath();
+	if(c_path==nullptr){
+		PLog::Write(PLog::ERR, "PK2", "Cannot set the default assets path");
+		PLog::Write(PLog::ERR, "SDL2", SDL_GetError());
+		return;
+	}
+
+	#ifndef _WIN32
+
+	std::filesystem::path p(c_path);
+	std::filesystem::path p1 = p.parent_path();
+
+	if(std::string(p.parent_path().filename())=="bin"){
+		std::string s1 = p1.parent_path();
+		SetAssetsPath(s1 + PE_SEP "res");
+	}
+
+	#else
+
+	SetAssetsPath(c_path);
+
+	#endif
+}
+
 #ifdef PK2_USE_ZIP
 struct Zip {
 	std::string name;
@@ -52,11 +118,13 @@ void CloseZip(Zip* zp) {
 }
 
 Zip* OpenZip(std::string path) {
+
+	std::string path_a = mGetAssetPath(path);
 	
-	SDL_RWops* rw = SDL_RWFromFile(path.c_str(), "r");
+	SDL_RWops* rw = SDL_RWFromFile(path_a.c_str(), "r");
 	if (rw == NULL) {
 
-        PLog::Write(PLog::ERR, "PFile", "Can't open %s", path.c_str());
+        PLog::Write(PLog::ERR, "PFile", "Can't open %s", path_a.c_str());
 		return nullptr;
 
     }
@@ -93,7 +161,6 @@ void Path::FixSep() {
 	const char* nosep = PE_NOSEP;
 	const char* sep = PE_SEP;
 	std::replace(this->path.begin(), this->path.end(), nosep[0], sep[0]);
-
 }
 
 Path::Path(std::string path) {
@@ -319,7 +386,11 @@ bool Path::NoCaseFind() {
 }
 
 #ifdef __ANDROID__
-
+/**
+ * Is it necessary?
+ * Why can't apk be handled as a regular zip.
+ * Perhaps we don't need Java to do it.
+ */
 std::vector<std::string> scan_apk(const char* dir, const char* type) {
 
 	JNIEnv* env = (JNIEnv*)SDL_AndroidGetJNIEnv();
@@ -380,42 +451,6 @@ std::vector<std::string> scan_apk(const char* dir, const char* type) {
 }
 
 #endif
-
-//#define PK2_OLD_FILESYSTEM
-/*
-bool Path::Find() {
-
-	// Scan dir on ZIP
-	if (this->zip_file != nullptr)
-		return this->NoCaseFind();
-	
-	#ifdef __ANDROID__
-
-	// Scan dir on APK
-	if (c_str()[0] != '/')
-		return this->NoCaseFind();
-
-	#endif
-
-	const char* cstr = this->path.c_str();
-
-	PLog::Write(PLog::DEBUG, "PFile", "Find %s", cstr);
-
-	struct stat buffer;
-	if(stat(cstr, &buffer) == 0) {
-
-		PLog::Write(PLog::DEBUG, "PFile", "Found on %s", cstr);
-		return true;
-
-	}
-
-	PLog::Write(PLog::INFO, "PFile", "%s not found, trying different cAsE", cstr);
-	
-	return this->NoCaseFind();
-	
-}*/
-
-
 
 
 namespace fs = std::filesystem;
@@ -494,10 +529,8 @@ bool Path::Find() {
 }
 
 
-bool Path::Is_Zip() {
-
-	return this->zip_file != nullptr;
-
+bool Path::Is_Absolute()const{
+	return mIsAbsolute(this->path);
 }
 
 void Path::SetFile(std::string file) {
@@ -522,20 +555,26 @@ void Path::SetPath(std::string path) {
 
 std::string Path::GetDirectory() {
 
-	std::size_t dif = this->path.find_last_of(PE_SEP);
+	std::filesystem::path p(this->path);
+	return p.parent_path();
+
+	/*std::size_t dif = this->path.find_last_of(PE_SEP);
 	if(dif<this->path.size()){
 		return this->path.substr(0, dif);
 	}
-	return "";
+	return "";*/
 }
 
 std::string Path::GetFileName() {
 
-	std::size_t dif = this->path.find_last_of(PE_SEP);
+	std::filesystem::path p(this->path);
+	return p.filename();
+
+	/*std::size_t dif = this->path.find_last_of(PE_SEP);
 	if(dif<this->path.size()){
 		return this->path.substr(dif + 1);
 	}
-	return this->path;
+	return this->path;*/
 }
 
 #ifdef PK2_USE_ZIP
@@ -569,7 +608,6 @@ zip_file_t* mOpenZipFile(Zip* zip_file, const char*filename, int&size){
 #endif
 
 RW Path::GetRW2(const char* mode)const {
-
 	SDL_RWops* ret;
 	if (this->zip_file != nullptr) {
 
@@ -592,11 +630,14 @@ RW Path::GetRW2(const char* mode)const {
 		
 	}
 	else{
-		ret = SDL_RWFromFile(this->path.c_str(), mode);
+
+		std::string a_path = mGetAssetPath(this->path);
+
+		ret = SDL_RWFromFile(a_path.c_str(), mode);
 		if (!ret) {
 
 			std::ostringstream os;
-			os<<"Can't get RW from file\""<<this->path<<"\"";
+			os<<"Can't get RW from file\""<<a_path<<"\"";
 			std::string s = os.str();
 			//PLog::Write(PLog::ERR, "PFile", s.c_str());
 			throw PFileException(s);
@@ -631,7 +672,8 @@ nlohmann::json Path::GetJSON()const{
 		#endif
 
 	}else{
-		std::ifstream in(this->path.c_str());
+		std::string a_path = mGetAssetPath(this->path);
+		std::ifstream in(a_path.c_str());
 		nlohmann::json res = nlohmann::json::parse(in);
 		return res;
 	}
@@ -848,6 +890,11 @@ std::vector<std::string> Path::scandir(const char* type) {
 	std::vector<std::string> ret;
 
 	std::string dir = this->GetDirectory(); //this->path.substr(0, this->path.find_last_of(PE_SEP));
+
+	if(!this->Is_Zip()){
+		dir = mGetAssetPath(dir);
+	}
+
 	if(dir.empty()){
 		dir = ".";
 	}

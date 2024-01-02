@@ -23,42 +23,6 @@ namespace PUtils {
 
 bool force_mobile = false;
 
-void Setcwd() {
-
-	#ifdef __ANDROID__
-	return;
-	#else
-
-	char* path = SDL_GetBasePath();
-	if (path) {
-		
-		if(chdir(path)!=0){
-			PLog::Write(PLog::ERR,"PK2","Cannot change the working directory to \"%s\"", path);
-		}
-		SDL_free(path);
-	
-	}
-
-	#ifndef _WIN32
-	if(chdir(".." PE_SEP "res")!=0){
-		PLog::Write(PLog::ERR,"PK2","Cannot change the working directory to \"res\"");
-	}
-	#endif
-
-	path = getcwd(NULL, 0);
-	if (path) {
-		
-		PLog::Write(PLog::DEBUG, "PUtils", "Working directory: %s", path);
-		free(path);
-
-	}
-
-	#endif
-
-}
-
-
-
 void Lower(char* string) {
 
 	for(; *string != '\0'; string++)
@@ -143,13 +107,6 @@ void GetLanguage(char* lang) {
 	lang[0] = SDL_tolower(locale[0]);
 	lang[1] = SDL_tolower(locale[1]);     // there should be a better way to do this but meh,
 	lang[2] = '\0';
-}
-
-void Show_Error(const char* txt) {
-	
-	// TODO
-	// SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERR, "Error", txt, NULL);
-
 }
 
 void Force_Mobile() {

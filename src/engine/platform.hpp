@@ -18,10 +18,7 @@
 
         #include <windows.h>
     #endif
-    #include <direct.h>
-	#include <direct.h>
 #else
-	#include <dirent.h>
 	#include <unistd.h>
 	#include <limits.h>
 #endif
