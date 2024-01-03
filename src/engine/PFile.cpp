@@ -607,6 +607,47 @@ zip_file_t* mOpenZipFile(Zip* zip_file, const char*filename, int&size){
 
 #endif
 
+void Path::getBuffer(std::vector<char>& bytes)const{
+	if(this->zip_file != nullptr){
+		#ifdef PK2_USE_ZIP
+
+		int size = 0;
+		zip_file_t* zfile = mOpenZipFile(this->zip_file, this->path.c_str(), size);
+		bytes.resize(size);
+		zip_fread(zfile, bytes.data(), size);
+		zip_fclose(zfile);	
+
+		#else
+		throw PFileException("Zip is not supported in this PK2 version!");
+		#endif
+	}
+	else{
+		std::string path_a = mGetAssetPath(this->path);
+
+		std::ifstream file(path_a.c_str(), std::ios::binary | std::ios::ate);
+		bool success = file.good();
+		if(success){
+			std::streamsize size = file.tellg();
+			file.seekg(0, std::ios::beg);
+
+			bytes.resize(size);
+			if (!file.read(bytes.data(), size)){
+				success = false;
+				bytes.clear();
+			}
+
+		}
+
+		if(!success){
+			std::ostringstream os;
+			os<<"Cannot get raw buffer from the file: \""<<path_a<<"\"";
+			std::string s = os.str();
+			throw PFileException(s);
+		}
+	}
+
+}
+
 RW Path::GetRW2(const char* mode)const {
 	SDL_RWops* ret;
 	if (this->zip_file != nullptr) {
@@ -631,15 +672,14 @@ RW Path::GetRW2(const char* mode)const {
 	}
 	else{
 
-		std::string a_path = mGetAssetPath(this->path);
+		std::string path_a = mGetAssetPath(this->path);
 
-		ret = SDL_RWFromFile(a_path.c_str(), mode);
+		ret = SDL_RWFromFile(path_a.c_str(), mode);
 		if (!ret) {
 
 			std::ostringstream os;
-			os<<"Can't get RW from file\""<<a_path<<"\"";
+			os<<"Can't get RW from the file: \""<<path_a<<"\"";
 			std::string s = os.str();
-			//PLog::Write(PLog::ERR, "PFile", s.c_str());
 			throw PFileException(s);
 		}
 
@@ -672,8 +712,8 @@ nlohmann::json Path::GetJSON()const{
 		#endif
 
 	}else{
-		std::string a_path = mGetAssetPath(this->path);
-		std::ifstream in(a_path.c_str());
+		std::string path_a = mGetAssetPath(this->path);
+		std::ifstream in(path_a.c_str());
 		nlohmann::json res = nlohmann::json::parse(in);
 		return res;
 	}
@@ -831,7 +871,7 @@ size_t RW::size() {
 	return SDL_RWsize(rwops);
 
 }
-
+/*
 size_t RW::to_buffer(void** buffer) {
 
 	SDL_RWops* rwops = (SDL_RWops*)(this->_rwops);
@@ -859,7 +899,7 @@ size_t RW::to_buffer(void** buffer) {
 
 	}
 
-}
+}*/
 
 void RW::close() {
 

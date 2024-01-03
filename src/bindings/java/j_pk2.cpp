@@ -4,9 +4,12 @@
 #include "j_prototype.hpp"
 
 #include "engine/PLog.hpp"
+#include "engine/PFile.hpp"
+
 #include "game/prototypes_handler.hpp"
 
 #include "pk2_main.hpp"
+#include "system.hpp"
 #include <vector>
 
 std::vector<PrototypesHandler*> jPrototypeHandlers;
@@ -81,6 +84,23 @@ PrototypesHandler* getPrototypeHandlerByID(JNIEnv * env, jobject o){
     return jPrototypeHandlers[handler_id];
 }
 
+jstring Java_pk2_PekkaKana2_findAsset(JNIEnv *env, jclass, jstring j_episode_name,jstring j_default_dir, jstring j_name){
+    std::string episode_name = env->GetStringUTFChars(j_episode_name, nullptr);
+    std::string default_dir = env->GetStringUTFChars(j_default_dir, nullptr);
+    std::string name = env->GetStringUTFChars(j_name, nullptr);
+
+    std::string path_str("episodes" PE_SEP);
+	path_str += episode_name + PE_SEP + name;
+
+    PFile::Path path(path_str);
+
+    if(FindAsset(&path, default_dir.c_str())){
+        return env->NewStringUTF(path.c_str());
+    }    
+
+    return nullptr;
+}
+
 
 jint Java_pk2_sprite_PrototypesHandler_mLoadSprite(JNIEnv * env, jobject o, jstring j_name){
     
@@ -118,5 +138,6 @@ void Java_pk2_sprite_PrototypesHandler_setSearchingDir(JNIEnv *env, jobject o, j
         handler->setSearchingDir(s);
     }
 }
+
 
 #endif

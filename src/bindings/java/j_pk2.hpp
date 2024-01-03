@@ -14,6 +14,8 @@ PK2_EXPORT void Java_pk2_PekkaKana2_quit(JNIEnv *, jclass);
 
 PK2_EXPORT jboolean Java_pk2_PekkaKana2_testLevel(JNIEnv *, jclass, jstring, jboolean);
 
+PK2_EXPORT jstring Java_pk2_PekkaKana2_findAsset(JNIEnv *, jclass, jstring, jstring, jstring);
+
 PK2_EXPORT void Java_pk2_sprite_PrototypesHandler_mCreate(JNIEnv *env, jobject o,
 jboolean shouldLoadDependencies, jboolean jsonPriority);
 

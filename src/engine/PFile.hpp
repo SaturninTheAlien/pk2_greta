@@ -45,7 +45,7 @@ public:
     }
 
     size_t size();
-    size_t to_buffer(void** buffer);
+    //size_t to_buffer(void** buffer);
 
     int read(void* val, size_t size);
     int read(bool& val);
@@ -126,6 +126,8 @@ class Path {
 
     RW GetRW2(const char* mode)const;
     nlohmann::json GetJSON()const;
+
+    void getBuffer(std::vector<char>& bytes)const;
 
 private:   
     std::string path;
