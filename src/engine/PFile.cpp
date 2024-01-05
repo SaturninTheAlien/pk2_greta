@@ -96,6 +96,8 @@ void SetDefaultAssetsPath() {
 	SetAssetsPath(c_path);
 
 	#endif
+
+	SDL_free(c_path);
 }
 
 #ifdef PK2_USE_ZIP

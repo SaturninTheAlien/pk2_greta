@@ -44,7 +44,7 @@ public class PekkaKana2{
         System.out.println("Frame height: "+sprite.getFrameHeight());
         System.out.println("Frame width: "+sprite.getFrameWidth());
 
-        System.out.println(findAsset("Debug Island", "sprites", "apple.spr2"));
+        System.out.println(findAsset("episodes/Debug Island/apple.spr2", "sprites"));
 
         quit();
     }
@@ -109,5 +109,5 @@ public class PekkaKana2{
     public static native void quit();
     public static native boolean testLevel(String name, boolean dev_mode);
 
-    public static native String findAsset(String episode_name, String default_dir, String name);
+    public static native String findAsset(String name, String default_dir);
 }
