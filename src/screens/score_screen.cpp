@@ -301,19 +301,21 @@ void ScoreScreen::Init() {
 	energy_score = 0;
 	gifts_score = 0;
 
-	/* Check if broken level score and time record */
-	int episode_result = EpisodeScore_Compare(Episode->player_score);
-	int level_result = 
-		LevelScore_Compare(Game->level_id, temp_score, Game->apples_got, Game->map.map_time * TIME_FPS - Game->timeout);
-	
-	if (episode_result > 0 || level_result > 0) {
+	if(!test_level){
+		/* Check if broken level score and time record */
+		int episode_result = EpisodeScore_Compare(Episode->player_score);
+		int level_result = 
+			LevelScore_Compare(Game->level_id, temp_score, Game->apples_got, Game->map.map_time * TIME_FPS - Game->timeout);
+		
+		if (episode_result > 0 || level_result > 0) {
 
-		Episode->Save_Scores();
+			Episode->Save_Scores();
 
+		}
+
+		// Save backup when finishing a level
+		Save_Record(10);
 	}
-
-	// Save backup when finishing a level
-	Save_Record(10);
 
 	PSound::set_musicvolume(Settings.music_max_volume);
 

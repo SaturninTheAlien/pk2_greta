@@ -14,6 +14,10 @@
 
 namespace PFile {
 
+void SetAssetsPath(const std::string& _assetsPath);
+void SetDefaultAssetsPath();
+void CreateDirectory(const std::string& path);
+
 class PFileException:public std::exception{
 public:
     PFileException(const std::string& message):message(message){}
@@ -41,7 +45,7 @@ public:
     }
 
     size_t size();
-    size_t to_buffer(void** buffer);
+    //size_t to_buffer(void** buffer);
 
     int read(void* val, size_t size);
     int read(bool& val);
@@ -108,7 +112,10 @@ class Path {
     bool NoCaseFind();
     bool Find();
 
-    bool Is_Zip();
+    bool Is_Zip()const{
+        return this->zip_file!=nullptr;
+    };
+    bool Is_Absolute()const;
 
     void SetFile(std::string file);
     void SetPath(std::string path);
@@ -120,8 +127,9 @@ class Path {
     RW GetRW2(const char* mode)const;
     nlohmann::json GetJSON()const;
 
-    private:
-    
+    void getBuffer(std::vector<char>& bytes)const;
+
+private:   
     std::string path;
     Zip* zip_file;
 

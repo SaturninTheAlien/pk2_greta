@@ -3,7 +3,6 @@
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
 #include "system.hpp"
-#include <filesystem>
 
 #include "engine/PLog.hpp"
 #include "engine/PUtils.hpp"
@@ -167,9 +166,10 @@ void Draw_Cursor(int x, int y) {
 }
 
 void Prepare_DataPath() {
-	std::filesystem::create_directory(data_path);
-	std::filesystem::create_directory(data_path + "scores" PE_SEP);
-	std::filesystem::create_directory(data_path + "mapstore" PE_SEP);
+
+	PFile::CreateDirectory(data_path);
+	PFile::CreateDirectory(data_path + "scores" PE_SEP);
+	PFile::CreateDirectory(data_path + "mapstore" PE_SEP);
 }
 
 //TODO - Receive Episode, organize this

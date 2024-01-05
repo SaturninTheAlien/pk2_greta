@@ -72,7 +72,7 @@ class GameClass {
 		~GameClass();
 
 		int Start();
-		int Finnish();
+		int Finish();
 
 		int Move_Blocks();
 		void Show_Info(const char *text);

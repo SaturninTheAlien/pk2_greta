@@ -80,7 +80,7 @@ int GameClass::Start() {
 	
 }
 
-int GameClass::Finnish() {
+int GameClass::Finish() {
 
 	if (this->level_clear)
 		return -1;
@@ -88,15 +88,17 @@ int GameClass::Finnish() {
 	this->level_clear = true;
 
 	if (PSound::start_music(PFile::Path("music" PE_SEP "hiscore.xm")) == -1)
-		throw PExcept::PException("Can't find hiscore.xm");	
-	
-	Episode->level_status[this->level_id] |= LEVEL_PASSED;
-	
-	if (this->apples_count > 0)
-		if (this->apples_got >= this->apples_count)
-			Episode->level_status[this->level_id] |= LEVEL_ALLAPPLES;
+		throw PExcept::PException("Can't find hiscore.xm");
 
-	Episode->Update_NextLevel();
+	if(!test_level){
+		Episode->level_status[this->level_id] |= LEVEL_PASSED;
+	
+		if (this->apples_count > 0)
+			if (this->apples_got >= this->apples_count)
+				Episode->level_status[this->level_id] |= LEVEL_ALLAPPLES;
+
+		Episode->Update_NextLevel();
+	}
 	
 	PSound::set_musicvolume_now(Settings.music_max_volume);
 

@@ -9,6 +9,7 @@
 /res/data/
 /res/editor/settings.dat
 /res/episodes/*/scores.dat
+/res/last.session
 
 .vscode/
 .directory
@@ -23,8 +24,16 @@ res/sprites/ghostwtf.spr
 *.pdb
 *.exe
 *.dll
+*.log
+*.lib
+*.exp
 
+launcher/*.o
+
+*.class
 *.DS_Store
+
+/bindings/java/*.h
 
 /mingw/i686/build/
 /mingw/i686/PK2/

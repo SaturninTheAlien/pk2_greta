@@ -18,7 +18,16 @@ void PrototypesHandler::clear(){
 }
 
 PFile::Path PrototypesHandler::mGetDir(const std::string& filename)const{
-	return this->mEpisode!=nullptr ? this->mEpisode->Get_Dir(filename) : PFile::Path(filename);
+	if(this->mEpisode!=nullptr){
+		return this->mEpisode->Get_Dir(filename);
+	}
+	else if(this->mSearchingDirectory.empty()){
+		return PFile::Path(filename);
+	}
+	else{
+		std::string path(this->mSearchingDirectory + PE_SEP + filename);
+		return PFile::Path(path);
+	} 
 }
 
 bool PrototypesHandler::mFindSprite(PFile::Path& path)const{

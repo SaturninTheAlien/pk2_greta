@@ -11,11 +11,8 @@
 
 namespace PUtils {
 
-void Setcwd();
 void Lower(char* string);
 void RemoveSpace(char* string);
-
-void Show_Error(const char* txt);
 
 void GetLanguage(char* lang);
 
