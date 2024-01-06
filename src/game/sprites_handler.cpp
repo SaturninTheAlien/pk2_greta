@@ -242,61 +242,30 @@ void SpritesHandler::addSprite(PrototypeClass* protot, int is_Player_Sprite, dou
 	}
 }
 
-void SpritesHandler::addSpriteAmmo(PrototypeClass* protot, double x, double y, SpriteClass* emo) {
+void SpritesHandler::addSpriteAmmo(PrototypeClass* protot, double x, double y, SpriteClass* shooter) {
 
 	//SpriteClass(proto, is_Player_Sprite,false,x-proto->width/2,y);
 	SpriteClass* sprite = new SpriteClass(protot, false, x, y);
 	Sprites_List.push_back(sprite);
 
-	//sprite->x += sprite->prototype->width;
-	//sprite->y += sprite->prototype->height/2;
-
-	if (protot->HasAI(AI_THROWABLE_WEAPON)){
-		if ((int)emo->a == 0){
-			// If the "shooter" is a player or the speed of the projectile is zero
-			if (emo->player == 1 || sprite->prototype->max_speed == 0){
-				if (!emo->flip_x)
-					sprite->a = sprite->prototype->max_speed;
-				else
-					sprite->a = -sprite->prototype->max_speed;
-			}
-			else { // or, in the case of an enemy
-				if (!emo->flip_x)
-					sprite->a = 1 + rand()%(int)sprite->prototype->max_speed;
-				else
-					sprite->a = -1 - rand()%-(int)sprite->prototype->max_speed;
-			}
-		}
-		else{
-			if (!emo->flip_x)
-				sprite->a = sprite->prototype->max_speed + emo->a;
-			else
-				sprite->a = -sprite->prototype->max_speed + emo->a;
-
-			//sprite->a = emo->a * 1.5;
-
-		}
-
-		sprite->jump_timer = 1;
+	if(shooter==nullptr){
+		PLog::Write(PLog::WARN, "PK2", "Adding ammo sprite with null shooter!");
+		return;
 	}
-	else
-	if (protot->HasAI(AI_EGG) || protot->HasAI(AI_EGG2)){
-		sprite->y = emo->y+10;
-		sprite->a = emo->a / 1.5;
-	}
-	else{
-		if (!emo->flip_x)
+
+	sprite->parent_sprite = shooter;
+	sprite->enemy = shooter->enemy;
+
+	if(protot->AI_p.empty()){ // No other projectile AIs, default behaviour
+		if (!shooter->flip_x)
 			sprite->a = sprite->prototype->max_speed;
 		else
 			sprite->a = -sprite->prototype->max_speed;
 	}
-
-	if (emo != nullptr){
-		sprite->parent_sprite = emo;
-		sprite->enemy = emo->enemy;
-	}
 	else{
-		sprite->parent_sprite = nullptr;
+		for(const SpriteAI::ProjectileAIClass& ai: protot->AI_p){
+			ai.func(sprite, shooter);
+		}
 	}
 
 	if (protot->type == TYPE_BACKGROUND){

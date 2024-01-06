@@ -49,7 +49,7 @@ public:
     AI_Class() = default;
     int id = AI_NONE;
     int trigger = AI_TRIGGER_NONE;
-    std::function<void(SpriteClass* sprite)> func;
+    void (*func)(SpriteClass*sprite) = nullptr;
 
     bool apply_to_player = false;
     bool apply_to_creatures = false;
@@ -57,6 +57,18 @@ public:
     bool apply_to_backgrounds = false;
 
     int info_id = -1;
+};
+
+/**
+ * @brief 
+ * AI functions for projectiles
+ */
+
+class ProjectileAIClass{
+public:
+    ProjectileAIClass() = default;
+    void (*func)(SpriteClass*sprite, SpriteClass*shooter) = nullptr;
+    int id = AI_NONE;
 };
 
 /*
@@ -67,6 +79,7 @@ public:
     static AI_Table INSTANCE;
 
     void InitSpriteAIs(std::vector<AI_Class>& ai_vec, const std::vector<int>& ai_indices)const;
+    void InitSpriteProjectileAIs(std::vector<ProjectileAIClass>& ai_vec, const std::vector<int>& ai_indices)const;
 
     AI_Table(const AI_Table& src) = delete;
     AI_Table& operator=(const AI_Table& src) = delete;
@@ -80,9 +93,11 @@ private:
         bool bonuses=false,
         bool backgrounds=false);
 
+    void Init_AI_Projectile(int id, void (*func)(SpriteClass*, SpriteClass*));
 
-    std::map<int, AI_Class> mTable;
+
+    std::map<int, AI_Class> mAIsDict;
+    std::map<int, ProjectileAIClass> mProjectileAIsDict;
 };
-//extern std::map<int, AI_Class> sprite_ai_table;
 
 }

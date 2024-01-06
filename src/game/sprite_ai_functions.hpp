@@ -104,4 +104,15 @@ void DieIfSkullBlocksChanged(SpriteClass*s);
 void InfiniteEnergy(SpriteClass*s);
 //void TransformIfSkullBlocksChanged(SpriteClass*s);
 
+/**
+ * @brief 
+ * AIs for projectiles
+ */
+
+void ThrowableWeapon(SpriteClass*sprite, SpriteClass*shooter);
+void ThrowableWeapon2(SpriteClass*sprite, SpriteClass*shooter);
+void ProjectileEgg(SpriteClass*sprite, SpriteClass*shooter);
+void StaticProjectile(SpriteClass*sprite, SpriteClass*shooter);
+
+
 }

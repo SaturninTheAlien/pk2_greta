@@ -18,12 +18,23 @@ void AI_Table::InitSpriteAIs(std::vector<AI_Class>& ai_vec, const std::vector<in
 
     for(const int& index: ai_indices){
 
-        auto it = this->mTable.find(index);
-        if(it!=this->mTable.end()){
+        auto it = this->mAIsDict.find(index);
+        if(it!=this->mAIsDict.end()){
             ai_vec.push_back(it->second);
         }
     }
 };
+
+void AI_Table::InitSpriteProjectileAIs(std::vector<ProjectileAIClass>& ai_vec, const std::vector<int>& ai_indices)const{
+    if(ai_vec.size() > 0)ai_vec.clear();
+
+    for(const int& index: ai_indices){
+        auto it = this->mProjectileAIsDict.find(index);
+        if(it!=this->mProjectileAIsDict.end()){
+            ai_vec.push_back(it->second);
+        }
+    }
+}
 
 
 void AI_Table::Init_AI(int id,
@@ -44,8 +55,17 @@ void AI_Table::Init_AI(int id,
     ai.apply_to_bonuses = bonuses;
     ai.apply_to_backgrounds = backgrounds;
 
-    this->mTable[id] = ai;
+    this->mAIsDict[id] = ai;
     //sprite_ai_table[id] = ai;    
+}
+
+void AI_Table::Init_AI_Projectile(int id, void (*func)(SpriteClass*, SpriteClass*)){
+    ProjectileAIClass aip;
+
+    aip.id = id;
+    aip.func = func;
+
+    this->mProjectileAIsDict[id] = aip;
 }
 
 
@@ -191,7 +211,7 @@ AI_Table::AI_Table(){
         ai.apply_to_backgrounds = false;
         ai.apply_to_player = false;
 
-        this->mTable[id] = ai;
+        this->mAIsDict[id] = ai;
     }
 
     /**
@@ -275,6 +295,18 @@ AI_Table::AI_Table(){
 
     Init_AI(AI_DIE_IF_EVENT2, AI_TRIGGER_EVENT2, AI_Functions::DieIfSkullBlocksChanged, true, true, true, true);
     Init_AI(AI_TRANSFORM_IF_EVENT2, AI_TRIGGER_EVENT2, [](SpriteClass*s){s->Transform();}, true, true, true, true);
+
+    /**
+     * @brief 
+     * AIs for projectiles
+     */
+    Init_AI_Projectile(AI_THROWABLE_WEAPON, AI_Functions::ThrowableWeapon);
+    Init_AI_Projectile(AI_THROWABLE_WEAPON2, AI_Functions::ThrowableWeapon2);
+    Init_AI_Projectile(AI_STATIC_PROJECTILE, AI_Functions::StaticProjectile);
+
+    Init_AI_Projectile(AI_EGG, AI_Functions::ProjectileEgg);
+    Init_AI_Projectile(AI_EGG2, AI_Functions::ProjectileEgg);
+
 }
 
 }

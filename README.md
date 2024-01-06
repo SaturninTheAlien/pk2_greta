@@ -118,6 +118,10 @@ This example starts the level13.map (the robot boss fight) on dev mode:
 
     * AI_INFINITE_ENERGY (141) - sprite has infinite energy, it can "receive" damage but it never dies. Only DAMAGE_TYPE_ALL (like falling into the void or die command can really kill it)
 
+    * AI_THROWABLE_WEAPON2 (142) - similar to AI_THROWABLE_WEAPON (35) but initial speed is max_speed/3.5 and the x speed of the shooter is added to the projectile speed.
+    
+    * AI_STATIC_PROJECTILE (143) - sprite has no initial speed if spawned as projectile (ammo1 or ammo2)
+
 * Sprite inheritance / "parent" field.
 
 * AI_FOLLOW_COMMANDS (40) and "commands" field in the new sprite format:

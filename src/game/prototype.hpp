@@ -84,6 +84,7 @@ public:
 
     std::vector<int> AI_v;
     std::vector<SpriteAI::AI_Class> AI_f;
+    std::vector<SpriteAI::ProjectileAIClass> AI_p;
 
     int first_ai()const{
         return AI_v.empty()? 0 : AI_v[0];

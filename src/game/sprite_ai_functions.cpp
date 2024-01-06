@@ -973,4 +973,67 @@ void DieIfSkullBlocksChanged(SpriteClass*sprite){
 	sprite->damage_taken_type = DAMAGE_ALL;
 }
 
+/**
+ * @brief 
+ * 
+ */
+void ThrowableWeapon(SpriteClass*sprite, SpriteClass*shooter){
+	if ((int)shooter->a == 0){
+		// If the "shooter" is a player or the speed of the projectile is zero
+		if (shooter->player == 1 || sprite->prototype->max_speed == 0){
+			if (!shooter->flip_x)
+				sprite->a = sprite->prototype->max_speed;
+			else
+				sprite->a = -sprite->prototype->max_speed;
+		}
+		else { // or, in the case of an enemy
+			if (!shooter->flip_x)
+				sprite->a = 1 + rand()%(int)sprite->prototype->max_speed;
+			else
+				sprite->a = -1 - rand()%-(int)sprite->prototype->max_speed;
+		}
+	}
+	else{
+		/**
+		 * @brief 
+		 * Adding the shooter speed has no effect in this case,
+		 * beacuse the projectile speed is decreased to max_speed in physics.cpp
+		 */
+		if (!shooter->flip_x)
+			sprite->a = sprite->prototype->max_speed + shooter->a;
+		else
+			sprite->a = -sprite->prototype->max_speed + shooter->a;
+
+		//sprite->a = emo->a * 1.5;
+
+	}
+
+	sprite->jump_timer = 1;
+}
+
+void ThrowableWeapon2(SpriteClass*sprite, SpriteClass*shooter){
+
+	double speed = sprite->prototype->max_speed/3.5;
+
+	if (!shooter->flip_x){
+		sprite->a = speed;
+	}
+	else{
+		sprite->a = -speed;
+	}
+	
+	sprite->a += shooter->a;
+	sprite->jump_timer = 1;
+}
+
+void ProjectileEgg(SpriteClass*sprite, SpriteClass*shooter){
+	sprite->y = shooter->y+10;
+	sprite->a = shooter->a / 1.5;
+}
+
+void StaticProjectile(SpriteClass*sprite, SpriteClass*shooter){
+	sprite->a = 0;
+	sprite->b = 0;
+}
+
 }
