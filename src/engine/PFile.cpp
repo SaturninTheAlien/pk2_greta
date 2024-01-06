@@ -43,7 +43,7 @@ void SetAssetsPath(const std::string& _assetsPath){
 	{
 		char c1 = mAssetsPath[mAssetsPath.size()-1];
 		if(c1=='/'||c1=='\\'){
-			mAssetsPath = mAssetsPath.substr(mAssetsPath.size()-1);
+			mAssetsPath = mAssetsPath.substr(0, mAssetsPath.size()-1);
 		}
 	}
 }
@@ -509,10 +509,12 @@ bool Path::Find() {
 
 		#endif
 
-		const char* cstr = this->path.c_str();
+		std::string path_a  = mGetAssetPath(this->path);
+
+		const char* cstr = path_a.c_str();
 
 		PLog::Write(PLog::DEBUG, "PFile", "Find %s", cstr);
-		if(fs::exists(this->path)&&fs::is_regular_file(this->path)){
+		if(fs::exists(path_a)&&fs::is_regular_file(path_a)){
 			PLog::Write(PLog::DEBUG, "PFile", "Found on %s", cstr);
 			return true;
 		}
@@ -558,7 +560,7 @@ void Path::SetPath(std::string path) {
 std::string Path::GetDirectory() {
 
 	std::filesystem::path p(this->path);
-	return p.parent_path();
+	return p.parent_path().u8string();
 
 	/*std::size_t dif = this->path.find_last_of(PE_SEP);
 	if(dif<this->path.size()){
@@ -570,7 +572,7 @@ std::string Path::GetDirectory() {
 std::string Path::GetFileName() {
 
 	std::filesystem::path p(this->path);
-	return p.filename();
+	return p.filename().u8string();
 
 	/*std::size_t dif = this->path.find_last_of(PE_SEP);
 	if(dif<this->path.size()){

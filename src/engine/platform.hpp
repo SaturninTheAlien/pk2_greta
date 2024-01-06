@@ -7,17 +7,7 @@
 #include "engine/types.hpp"
 
 #ifdef _WIN32
-	#include <io.h>
-	#ifndef WIN32_LEAN_AND_MEAN
-        #define WIN32_LEAN_AND_MEAN
 
-        #define NOWINRES
-        #define NOSERVICE
-        #define NOMCX
-        #define NOIME
-
-        #include <windows.h>
-    #endif
 #else
 	#include <unistd.h>
 	#include <limits.h>
