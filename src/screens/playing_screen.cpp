@@ -747,9 +747,9 @@ void PlayingScreen::Loop(){
 
 	SpriteClass * Player_Sprite = Game->spritesHandler.Player_Sprite;
 
-	if (Player_Sprite->energy < 1 && !Game->game_over) {
+	if (Player_Sprite->energy < 1) {
 		Game->game_over = true;
-		SpriteOnDeath(Player_Sprite);
+		//SpriteOnDeath(Player_Sprite);
 	}
 
 	if (Game->level_clear || Game->game_over) {
@@ -788,7 +788,8 @@ void PlayingScreen::Loop(){
 			}
 			
 			if (PInput::Keydown(PInput::DEL)) {
-				Player_Sprite->energy = 0;
+				Player_Sprite->damage_taken = Player_Sprite->energy;
+				Player_Sprite->damage_taken_type = DAMAGE_ALL;
 				Player_Sprite->self_destruction = true;
 			}
 
