@@ -22,8 +22,10 @@ enum {
 };
 
 void Init(u8 level, PFile::Path file);
-void Write(const char* txt);
-void Write(u8 level, const char* origin, const char* format, ...);
+void Write(const char* format, ...);                                    // generic logger for use by developers, with default level of 'DEBUG' and origin "PLog"
+void Write(u8 level, const char* format, ...);                           // custom level, default origin "PLog"
+void Write(const char* origin, const char* format, ...);                 // custom origin, default level 'DEBUG'
+void Write(u8 level, const char* origin, const char* format, ...);      // fully customizable logger
 void Exit();
 
 }
