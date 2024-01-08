@@ -133,7 +133,7 @@ void MapScreen::Draw() {
 				int sinx = (int)(sin_table(degree)/2);
 				int cosy = (int)(cos_table(degree)/2);
 				int pekkaframe = 28*((degree%360)/120);
-				PDraw::image_cutclip(game_assets,x+sinx-12,y-17+cosy,157+pekkaframe,46,182+pekkaframe,79);
+				PDraw::image_cutclip(game_assets,x+sinx-12,y-17+cosy,157+pekkaframe,46,182+pekkaframe,80);
 			}
 
 			int paluu = PK_Draw_Map_Button(x-5, y-10, type);
