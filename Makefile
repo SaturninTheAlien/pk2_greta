@@ -10,11 +10,11 @@ CXX = c++
 
 # Optimization:  run "make -j4 pk2 DEBUG=1" to enable debug symbols or else compile normally
 ifdef DEBUG
-$(info --Debugging symbols enabled) 
-CXXFLAGS += -g
+$(info ->Debugging symbols enabled) 
+	CXXFLAGS += -g
 else
-$(info --Release mode)
-CXXFLAGS += -O3
+$(info ->Release mode)
+	CXXFLAGS += -O3
 endif
 
 #CXXFLAGS += -g
@@ -48,14 +48,12 @@ CXXFLAGS += -DCOMMIT_HASH='"$(shell git rev-parse --short HEAD)"'
 
 
 UNAME_S = $(shell uname -s)
-ifeq ($(UNAME_S),Darwin)
-# Support MAC OS
-#@echo ->Compiling for Mac OS
+ifeq ($(UNAME_S),Darwin)                            # Support MAC OS
+$(info ->Compiling for Mac OS)
 	CXXFLAGS += -I/opt/homebrew/include
 	COMPILE_COMMAND = $(CXX) $(CXXFLAGS)
-else
-# Support Linux
-#@echo ->Compiling for Windows MSYS2/Linux
+else                                                # Support Linux
+$(info ->Compiling for Windows MSYS2/Linux) 
 	COMPILE_COMMAND = $(CXX)
 # Uncomment this to support OpenGL rendering
 #	CXXFLAGS += -DPK2_USE_GL
@@ -112,7 +110,7 @@ all: pk2
 clean:
 	@rm -rf $(BIN_DIR)
 	@rm -rf $(BUILD_DIR)
-	@echo -Cleaned
+	@echo \#\#\#\# Cleaned \#\#\#\#
 
 version_test:
 	echo $(PK2_VERSION)
