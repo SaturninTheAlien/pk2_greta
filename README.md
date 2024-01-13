@@ -128,7 +128,12 @@ This example starts the level13.map (the robot boss fight) on dev mode:
 Currently available commands:
 > waypoint_x, \<tile_x\>\
 > waypoint_y, \<tile_y\>\
-> waypoint_xy, \<tile_x\>, \<tile_y\>\
+> waypoint_xy, \<tile_x\>, \<tile_y\>
+
+> waypoint_rx, \<tiles_offset_x\>\
+> waypoint_ry, \<tiles_offset_y\>\
+> waypoint_rxy, \<tiles_offset_x\>, \<tiles_offset_y\> 
+
 > waypoint_orig_xy, \
 > waypoint_seen_player, \
 > make_sound \<sound_type\>, \
@@ -136,7 +141,8 @@ Currently available commands:
 > transform, \
 > wait, \<ticks\>, \
 > wait_random, \<ticks_min\>, \<ticks_max\>, \
-> thunder
+> thunder \
+> chase_player, \<ticks\>, 
 
 Commands / waypoints are executed by the sprite in a loop unless there is "die" or "transform" command.
 

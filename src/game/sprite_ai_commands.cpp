@@ -11,6 +11,7 @@
 #include "sprite_ai_commands.hpp"
 #include "sprite_ai_table.hpp"
 
+#include "engine/PLog.hpp"
 #include "exceptions.hpp"
 #include "sfx.hpp"
 #include "spriteclass.hpp"
@@ -102,6 +103,20 @@ bool WaypointX::execute(SpriteClass*sprite){
     return waypoint_x_helper(sprite, this->target_x);
 }
 
+
+class WaypointRX:public Command{
+public:
+    WaypointRX(double target_x):target_x(target_x){};
+    ~WaypointRX()=default;
+    bool execute(SpriteClass*sprite);
+private:
+    double target_x;
+};
+
+bool WaypointRX::execute(SpriteClass*sprite){
+    return waypoint_x_helper(sprite, this->target_x + sprite->orig_x);
+}
+
 class WaypointY:public Command{
 public:
     WaypointY(double target_y):target_y(target_y){};
@@ -115,6 +130,21 @@ bool WaypointY::execute(SpriteClass*sprite){
     return waypoint_y_helper(sprite, this->target_y);
 }
 
+
+class WaypointRY:public Command{
+public:
+    WaypointRY(double target_y):target_y(target_y){};
+    ~WaypointRY()=default;
+    bool execute(SpriteClass*sprite);
+private:
+    double target_y;
+};
+
+bool WaypointRY::execute(SpriteClass*sprite){
+    return waypoint_y_helper(sprite, this->target_y + sprite->orig_y);
+}
+
+
 class Waypoint: public Command{
 public:
     Waypoint(double target_x, double target_y):target_x(target_x), target_y(target_y){};
@@ -127,6 +157,21 @@ private:
 bool Waypoint::execute(SpriteClass*sprite){
     return waypoint_xy_helper(sprite, this->target_x, this->target_y);
 }
+
+
+class WaypointR: public Command{
+public:
+    WaypointR(double target_x, double target_y):target_x(target_x), target_y(target_y){};
+    ~WaypointR()=default;
+    bool execute(SpriteClass*sprite);
+private:
+    double target_x, target_y;
+};
+
+bool WaypointR::execute(SpriteClass*sprite){
+    return waypoint_xy_helper(sprite, this->target_x + sprite->orig_x, this->target_y + sprite->orig_y);
+}
+
 
 class WaypointSeenPlayer: public Command{
 public:
@@ -171,7 +216,7 @@ public:
 
 
 bool TransformationCommand::execute(SpriteClass*sprite){
-    return sprite->Transform();
+    return !sprite->Transform();
 };
 
 class SelfDestructionCommand: public Command{
@@ -273,6 +318,66 @@ bool ThunderCommand::execute(SpriteClass*sprite){
     return true;
 };
 
+/**
+ * @brief 
+ * Run script command placeholder
+ */
+
+class ScriptCommand: public Command{
+public:
+    ScriptCommand(const std::string & scriptName);
+    bool execute(SpriteClass*sprite);
+private:
+    std::string mScriptName;
+};
+
+ScriptCommand::ScriptCommand(const std::string & scriptName) :mScriptName(scriptName){
+    PLog::Write(PLog::INFO, "PK2", "Loading the script \"%s\" (placeholder)!", mScriptName.c_str());
+}
+
+bool ScriptCommand::execute(SpriteClass*sprite){
+    PLog::Write(PLog::INFO, "PK2", "Executing the script \"%s\" (placeholder)!", mScriptName.c_str());
+    return true;
+}
+/**
+ * @brief 
+ *
+ */
+class ChasePlayerCommand: public Command{
+public:
+    ChasePlayerCommand(int timer):mTimer(timer){}
+    bool execute(SpriteClass*sprite);
+private:
+    int mTimer;
+};
+
+bool ChasePlayerCommand::execute(SpriteClass*sprite){
+
+    if(AI_Functions::player!=nullptr){
+
+        waypoint_xy_helper(sprite, AI_Functions::player->x, AI_Functions::player->y);
+
+        if(sprite->command_timer==-1){
+            sprite->command_timer = this->mTimer;
+        }
+
+        if(sprite->command_timer==0){
+            sprite->command_timer=-1;
+            return true;
+        }
+        else{
+            --sprite->command_timer;
+            return false;
+        }
+
+    }
+    else{
+        sprite->command_timer = 0;
+        return true;
+    }
+}
+
+
 void Parse_Commands(const nlohmann::json& j_in, std::vector<Command*>& commands_v, int prototypeWidth, int prototypeHeight){
     if(!j_in.is_array()){
         throw PExcept::PException("Commands field has to be an array!");
@@ -319,6 +424,22 @@ void Parse_Commands(const nlohmann::json& j_in, std::vector<Command*>& commands_
                 }
                 else if(command_name=="thunder"){
                     commands_v.push_back(new ThunderCommand());
+                }
+
+                else if(command_name=="waypoint_rx"){
+                    state = 9;
+                }
+                else if(command_name=="waypoint_ry"){
+                    state = 10;
+                }
+                else if(command_name=="waypoint_rxy"){
+                    state = 11;
+                }
+                else if(command_name=="run_script"){
+                    state = 13;
+                }
+                else if(command_name=="chase_player"){
+                    state = 14;
                 }
             }
             break;
@@ -397,6 +518,53 @@ void Parse_Commands(const nlohmann::json& j_in, std::vector<Command*>& commands_
                 }
                 commands_v.push_back(new WaitRandomCommand(timer1,timer2));
             }
+            state = 0;
+            break;
+
+        case 9:
+            if(j.is_number()){
+                target_x = j.get<double>() * 32;
+                commands_v.push_back(new WaypointRX(target_x));
+            }
+            state=0;
+            break;
+        
+        case 10:
+            if(j.is_number()){
+                target_y = j.get<double>() * 32;
+                commands_v.push_back(new WaypointRY(target_y));
+            }
+            state=0;
+            break;
+        
+        case 11:
+            if(j.is_number()){
+                target_x = j.get<double>() * 32;
+                state = 12;   
+            }
+            else{
+                state = 0;
+            }
+            break;
+        case 12:
+            if(j.is_number()){
+                target_y = j.get<double>() * 32;
+                commands_v.push_back(new WaypointR(target_x, target_y));
+            }
+            state = 0;
+            break;
+
+        case 13:
+            commands_v.push_back(new ScriptCommand(j.get<std::string>()));
+            state = 0;
+            break;
+
+        case 14:
+            if(j.is_number_integer()){
+                int chasing_time = j.get<int>();
+                commands_v.push_back(new ChasePlayerCommand(chasing_time));
+            }
+
             state = 0;
             break;
         default:
