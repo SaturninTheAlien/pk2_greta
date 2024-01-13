@@ -189,18 +189,22 @@ void ScreensHandler::Loop() {
 		this->current_screen->Init();
 	}
 
+	if(PInput::Keydown(PInput::F11)){
+		if(this->mFullScreenKeyDelay==0){
+			Settings.isFullScreen = !Settings.isFullScreen;
+			PRender::set_fullscreen(Settings.isFullScreen);
+			this->mFullScreenKeyDelay = 20;			
+		}
+	}
+	else if(this->mFullScreenKeyDelay>0){
+		--this->mFullScreenKeyDelay;
+	}
 	
 
 	PInput::UpdateMouse(this->current_screen->keys_move, Settings.isFullScreen);
 	
 	if (PUtils::Is_Mobile())
 		GUI_Update();
-
-	if(PInput::Keydown(PInput::F11)){
-		Settings.isFullScreen = !Settings.isFullScreen;
-		PRender::set_fullscreen(Settings.isFullScreen);
-		key_delay = 20;
-	}
 
 	this->current_screen->Loop();
 

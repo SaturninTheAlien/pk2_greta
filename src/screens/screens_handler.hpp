@@ -18,6 +18,7 @@ public:
 private:
 	Screen* current_screen = nullptr;
 	int current_screen_index = SCREEN_NOT_SET;
+	int mFullScreenKeyDelay = 0;
 
 	std::map<int, Screen*> screens_map;
 };
