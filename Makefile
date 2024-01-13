@@ -9,8 +9,13 @@
 CXX = c++
 
 # Optimization:
-CXXFLAGS += -O3
-#CXXFLAGS += -g
+ifdef DEBUG
+$(info ->Debugging symbols enabled) 
+    CXXFLAGS += -g
+else
+$(info ->Release mode)
+    CXXFLAGS += -O3
+endif
 
 # Warnings:
 CXXFLAGS += -Wall

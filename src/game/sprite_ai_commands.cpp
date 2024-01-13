@@ -8,67 +8,50 @@
  */
 
 #include <sstream>
-#include "spriteclass_commands.hpp"
-#include "spriteclass.hpp"
+#include "sprite_ai_commands.hpp"
+#include "sprite_ai_table.hpp"
+
 #include "exceptions.hpp"
 #include "sfx.hpp"
+#include "spriteclass.hpp"
 
 namespace SpriteCommands{
 
 
-class WaypointX:public Command{
-public:
-    WaypointX(double target_x):target_x(target_x){};
-    ~WaypointX()=default;
-    bool execute(SpriteClass*sprite, SpriteClass*);
-private:
-    double target_x;
-};
-
-bool WaypointX::execute(SpriteClass*sprite, SpriteClass*){
-
+bool waypoint_x_helper(SpriteClass*sprite, double target_x){
     double max_speed = sprite->prototype->max_speed / 3.5;
-    double dx = sprite->x - this->target_x;
+    double dx = sprite->x - target_x;
     
     
     if(dx*dx <= max_speed*max_speed){
         //Waypoint reached, align
         sprite->a = 0;
-        sprite->x = this->target_x;
+        sprite->x = target_x;
         return true;
     }
-    else if(sprite->x > this->target_x){
-        sprite->flip_x = true;
+    else if(sprite->x > target_x){
+        //sprite->flip_x = true;
         sprite->a = -max_speed;
     }
     else{
-        sprite->flip_x = false;
+        //sprite->flip_x = false;
         sprite->a = max_speed;
     }
 
     return false;
 }
 
-class WaypointY:public Command{
-public:
-    WaypointY(double target_y):target_y(target_y){};
-    ~WaypointY()=default;
-    bool execute(SpriteClass*sprite, SpriteClass*);
-private:
-    double target_y;
-};
-
-bool WaypointY::execute(SpriteClass*sprite, SpriteClass*){
+bool waypoint_y_helper(SpriteClass*sprite, double target_y){
     double max_speed = sprite->prototype->max_speed / 3.5;
-    double dy = sprite->y - this->target_y;
+    double dy = sprite->y - target_y;
 
     if(dy*dy <= max_speed*max_speed){
         //Waypoint reached, align
         sprite->b = 0;
-        sprite->y = this->target_y;
+        sprite->y = target_y;
         return true;
     }
-    else if(sprite->y > this->target_y){
+    else if(sprite->y > target_y){
         sprite->b = -max_speed;
     }
     else{
@@ -78,15 +61,6 @@ bool WaypointY::execute(SpriteClass*sprite, SpriteClass*){
 
     return false;
 }
-
-class Waypoint: public Command{
-public:
-    Waypoint(double target_x, double target_y):target_x(target_x), target_y(target_y){};
-    ~Waypoint()=default;
-    bool execute(SpriteClass*sprite, SpriteClass*);
-private:
-    double target_x, target_y;
-};
 
 
 bool waypoint_xy_helper(SpriteClass*sprite, double target_x, double target_y){
@@ -108,31 +82,63 @@ bool waypoint_xy_helper(SpriteClass*sprite, double target_x, double target_y){
         double z = sqrt(eps2);
         sprite->a = -velocity * dx / z;
         sprite->b = -velocity * dy / z;
-        sprite->flip_x = dx>0;
+        //sprite->flip_x = dx>0;
     }
 
     return false;
 }
 
 
-bool Waypoint::execute(SpriteClass*sprite, SpriteClass*){
+class WaypointX:public Command{
+public:
+    WaypointX(double target_x):target_x(target_x){};
+    ~WaypointX()=default;
+    bool execute(SpriteClass*sprite);
+private:
+    double target_x;
+};
+
+bool WaypointX::execute(SpriteClass*sprite){
+    return waypoint_x_helper(sprite, this->target_x);
+}
+
+class WaypointY:public Command{
+public:
+    WaypointY(double target_y):target_y(target_y){};
+    ~WaypointY()=default;
+    bool execute(SpriteClass*sprite);
+private:
+    double target_y;
+};
+
+bool WaypointY::execute(SpriteClass*sprite){
+    return waypoint_y_helper(sprite, this->target_y);
+}
+
+class Waypoint: public Command{
+public:
+    Waypoint(double target_x, double target_y):target_x(target_x), target_y(target_y){};
+    ~Waypoint()=default;
+    bool execute(SpriteClass*sprite);
+private:
+    double target_x, target_y;
+};
+
+bool Waypoint::execute(SpriteClass*sprite){
     return waypoint_xy_helper(sprite, this->target_x, this->target_y);
 }
 
-
 class WaypointSeenPlayer: public Command{
 public:
-    bool execute(SpriteClass*sprite, SpriteClass*);
+    bool execute(SpriteClass*sprite);
 };
 
-bool WaypointSeenPlayer::execute(SpriteClass*sprite, SpriteClass*player){
-    //if(player==nullptr)return true;
-
+bool WaypointSeenPlayer::execute(SpriteClass*sprite){
     bool success = true;
-    if(player!=nullptr){
+    if(AI_Functions::player!=nullptr){
         if(sprite->seen_player_x==-1){
-            sprite->seen_player_x = player->x;
-            sprite->seen_player_y = player->y;
+            sprite->seen_player_x = AI_Functions::player->x;
+            sprite->seen_player_y = AI_Functions::player->y;
         }
 
         success = waypoint_xy_helper(sprite, sprite->seen_player_x, sprite->seen_player_y);
@@ -149,31 +155,31 @@ bool WaypointSeenPlayer::execute(SpriteClass*sprite, SpriteClass*player){
 
 class WaypointOrigXY: public Command{
 public:
-    bool execute(SpriteClass*sprite, SpriteClass*);
+    bool execute(SpriteClass*sprite);
 };
 
 
-bool WaypointOrigXY::execute(SpriteClass*sprite, SpriteClass*){
+bool WaypointOrigXY::execute(SpriteClass*sprite){
     return waypoint_xy_helper(sprite, sprite->orig_x, sprite->orig_y);
 }
 
 
 class TransformationCommand: public Command{
 public:
-    bool execute(SpriteClass*sprite, SpriteClass*);
+    bool execute(SpriteClass*sprite);
 };
 
 
-bool TransformationCommand::execute(SpriteClass*sprite, SpriteClass*){
+bool TransformationCommand::execute(SpriteClass*sprite){
     return sprite->Transform();
 };
 
 class SelfDestructionCommand: public Command{
 public:
-    bool execute(SpriteClass*sprite, SpriteClass*);
+    bool execute(SpriteClass*sprite);
 };
 
-bool SelfDestructionCommand::execute(SpriteClass*sprite, SpriteClass*){
+bool SelfDestructionCommand::execute(SpriteClass*sprite){
     sprite->damage_taken = sprite->energy;
 	sprite->damage_taken_type = DAMAGE_ALL;
     sprite->self_destruction = true;
@@ -184,12 +190,12 @@ bool SelfDestructionCommand::execute(SpriteClass*sprite, SpriteClass*){
 class MakeSoundCommand: public Command{
 public:
     MakeSoundCommand(int sound_index):sound_index(sound_index){}
-    bool execute(SpriteClass*sprite, SpriteClass*);
+    bool execute(SpriteClass*sprite);
 private:
     int sound_index = -1;
 };
 
-bool MakeSoundCommand::execute(SpriteClass*sprite, SpriteClass*){
+bool MakeSoundCommand::execute(SpriteClass*sprite){
     Play_GameSFX(sprite->prototype->sounds[this->sound_index],100, (int)sprite->x, (int)sprite->y,
     sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
     return true;
@@ -199,12 +205,12 @@ bool MakeSoundCommand::execute(SpriteClass*sprite, SpriteClass*){
 class WaitCommand: public Command{
 public:
     WaitCommand(int wait_time): wait_time(wait_time){};
-    bool execute(SpriteClass*sprite, SpriteClass*);
+    bool execute(SpriteClass*sprite);
 private:
     int wait_time = 0;
 };
 
-bool WaitCommand::execute(SpriteClass*sprite, SpriteClass*){
+bool WaitCommand::execute(SpriteClass*sprite){
     if(sprite->command_timer==-1){
         sprite->command_timer = this->wait_time;
     }
@@ -225,13 +231,13 @@ public:
         timer_min(timer_min), timer_max(timer_max){
 
         }
-    bool execute(SpriteClass*sprite, SpriteClass*);
+    bool execute(SpriteClass*sprite);
 private:
     int timer_min;
     int timer_max;
 };
 
-bool WaitRandomCommand::execute(SpriteClass*sprite, SpriteClass*){
+bool WaitRandomCommand::execute(SpriteClass*sprite){
     if(sprite->command_timer==-1){
         int t = this->timer_max+1 - this->timer_min;
         sprite->command_timer = rand()%t + this->timer_min;
@@ -258,11 +264,11 @@ double getCommandYPos(const nlohmann::json& j, int prototypeHeight){
 class ThunderCommand:public Command{
 public:
     ThunderCommand()=default;
-    bool execute(SpriteClass*sprite, SpriteClass*);
+    bool execute(SpriteClass*sprite);
 };
 
 
-bool ThunderCommand::execute(SpriteClass*sprite, SpriteClass*){
+bool ThunderCommand::execute(SpriteClass*sprite){
     sprite->StartThunder();
     return true;
 };

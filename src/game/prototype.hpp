@@ -11,7 +11,7 @@
 #include <functional>
 
 #include "spriteclass_constants.hpp"
-#include "spriteclass_commands.hpp"
+#include "sprite_ai_commands.hpp"
 #include "sprite_ai_table.hpp"
 
 /**

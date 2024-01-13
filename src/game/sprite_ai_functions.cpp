@@ -617,7 +617,7 @@ void Follow_Commands(SpriteClass* s) {
 	}
 
 	SpriteCommands::Command* c = s->prototype->commands[s->current_command];
-	if(c->execute(s, player)){
+	if(c->execute(s)){
 		// next command
 		s->current_command++;
 	}
