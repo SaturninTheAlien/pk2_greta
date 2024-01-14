@@ -125,7 +125,8 @@ ScreensHandler::ScreensHandler():
 	PDraw::image_load(game_assets, PFile::Path("gfx" PE_SEP "pk2stuff.bmp"), false);
 	PDraw::image_load(game_assets2, PFile::Path("gfx" PE_SEP "pk2stuff2.bmp"), false);
 
-	PSound::load_overlay_music(PFile::Path("music" PE_SEP "super.xm"));
+	//PSound::load_overlay_music(PFile::Path("music" PE_SEP "super.xm"));  // why? what is so special about this one xm that it needs to be loaded at runtime?
+	// I propose that we resort to start_music() for powerups that require special effects.	
 
 	sfx_global.loadAll();
 	//Load_SFX();

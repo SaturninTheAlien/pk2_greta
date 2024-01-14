@@ -725,7 +725,9 @@ void UpdateSprite(SpriteClass* sprite){
 
 		sprite->super_mode_timer--;
 		if (Player_Sprite->super_mode_timer == 0)
-			PSound::resume_music();
+			//PSound::resume_music();
+			PSound::start_music(PFile::Path("music" PE_SEP "song01.xm"));   // the problem is we dont have the music that was playing previously, fixlater
+			
 	
 	}
 
@@ -1588,7 +1590,8 @@ void UpdateBonusSprite(SpriteClass* sprite){
 
 			if (sprite->HasAI(AI_BONUS_SUPERMODE)) {
 				Player_Sprite->super_mode_timer = sprite->prototype->charge_time;
-				PSound::play_overlay_music();
+				//PSound::play_overlay_music();
+				PSound::start_music(PFile::Path("music" PE_SEP "super.xm"));   // the problem is this will most likely overwrite the current music, fixlater
 			}
 
 			//Game->map.spritet[(int)(sprite->orig_x/32) + (int)(sprite->orig_y/32)*PK2MAP_MAP_WIDTH] = 255;
