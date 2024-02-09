@@ -659,6 +659,7 @@ void Self_Transformation(SpriteClass* s){
 		{
 			s->Transform();
 
+			s->charging_timer = 0;
 			s->animation_index = -1;
 			s->Animaatio(ANIMATION_IDLE,true);
 		}

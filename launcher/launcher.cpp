@@ -102,7 +102,12 @@ int main(int argc, char **argv) {
 	}
 
 	pk2_init();
-	pk2_main(dev_mode, show_fps, test_level, test_path);
 
+	if(converting_sprite){
+		pk2_convertToSpr2(filename_in, filename_out);
+	}
+	else{
+		pk2_main(dev_mode, show_fps, test_level, test_path);
+	}
 	return 0;
 }
