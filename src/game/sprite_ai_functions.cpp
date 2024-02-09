@@ -817,8 +817,8 @@ void Teleporter(SpriteClass*s){
 			// arvotaan kohdeportti
 			SpriteClass* dst = portit[rand()%portit.size()];
 			
-			player->x = dst->x;
-			player->y = dst->y;
+			player_invisible->x = dst->x;
+			player_invisible->y = dst->y;
 			//charging_timer    = prototype->charge_time;
 			//attack1_timer = prototype->attack1_time;
 			//spritet[i].charging_timer    = spritet[i].prototype->charge_time;

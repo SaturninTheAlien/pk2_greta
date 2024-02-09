@@ -920,9 +920,13 @@ void PlayingScreen::Loop(){
 			Piste::stop();
 		}
 		else {
+
+			PLog::Write(PLog::DEBUG, "PK2", "Deleting the global game object after GAME OVER.");
 			
 			delete Game;
 			Game = nullptr;
+
+			PLog::Write(PLog::DEBUG, "PK2", "Global game object deleted.");
 
 			next_screen = SCREEN_MAP;
 		
