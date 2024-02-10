@@ -147,29 +147,29 @@ void Effect_Stars(double x, double y, u8 color) {
 
 void Effect_Destruction(u8 tehoste, double x, double y) {
 	switch (tehoste){
-		case FX_DESTRUCT_HOYHENET          : Effect_Feathers(x, y); break;
-		case FX_DESTRUCT_TAHDET_HARMAA     : Effect_Stars(x,y,0); break;
-		case FX_DESTRUCT_TAHDET_SININEN	   : Effect_Stars(x,y,32); break;
-		case FX_DESTRUCT_TAHDET_PUNAINEN   : Effect_Stars(x,y,64); break;
-		case FX_DESTRUCT_TAHDET_VIHREA     : Effect_Stars(x,y,96); break;
-		case FX_DESTRUCT_TAHDET_ORANSSI    : Effect_Stars(x,y,128); break;
-		case FX_DESTRUCT_TAHDET_VIOLETTI   : Effect_Stars(x,y,160); break;
-		case FX_DESTRUCT_TAHDET_TURKOOSI   : Effect_Stars(x,y,192); break;
-		case FX_DESTRUCT_RAJAHDYS_HARMAA   : Effect_Explosion(x,y,0); break;
-		case FX_DESTRUCT_RAJAHDYS_SININEN  : Effect_Explosion(x,y,32); break;
-		case FX_DESTRUCT_RAJAHDYS_PUNAINEN : Effect_Explosion(x,y,64); break;
-		case FX_DESTRUCT_RAJAHDYS_VIHREA   : Effect_Explosion(x,y,96); break;
-		case FX_DESTRUCT_RAJAHDYS_ORANSSI  : Effect_Explosion(x,y,128); break;
-		case FX_DESTRUCT_RAJAHDYS_VIOLETTI : Effect_Explosion(x,y,160); break;
-		case FX_DESTRUCT_RAJAHDYS_TURKOOSI : Effect_Explosion(x,y,192); break;
-		case FX_DESTRUCT_SAVU_HARMAA       : Effect_Smoke(x,y,0); break;
-		case FX_DESTRUCT_SAVU_SININEN      : Effect_Smoke(x,y,32); break;
-		case FX_DESTRUCT_SAVU_PUNAINEN     : Effect_Smoke(x,y,64); break;
-		case FX_DESTRUCT_SAVU_VIHREA       : Effect_Smoke(x,y,96); break;
-		case FX_DESTRUCT_SAVU_ORANSSI      : Effect_Smoke(x,y,128); break;
-		case FX_DESTRUCT_SAVU_VIOLETTI     : Effect_Smoke(x,y,160); break;
-		case FX_DESTRUCT_SAVU_TURKOOSI     : Effect_Smoke(x,y,192); break;
-		case FX_DESTRUCT_SAVUPILVET        : Effect_SmokeClouds(x,y); break;
+		case FX_DESTRUCT_FEATHERS          : Effect_Feathers(x, y); break;
+		case FX_DESTRUCT_STARS_GRAY     : Effect_Stars(x,y,0); break;
+		case FX_DESTRUCT_STARS_BLUE	   : Effect_Stars(x,y,32); break;
+		case FX_DESTRUCT_STARS_RED   : Effect_Stars(x,y,64); break;
+		case FX_DESTRUCT_STARS_GREEN     : Effect_Stars(x,y,96); break;
+		case FX_DESTRUCT_STARS_ORANGE    : Effect_Stars(x,y,128); break;
+		case FX_DESTRUCT_STARS_VIOLET   : Effect_Stars(x,y,160); break;
+		case FX_DESTRUCT_STARS_TURQUOISE   : Effect_Stars(x,y,192); break;
+		case FX_DESTRUCT_EXPLOSION_GRAY   : Effect_Explosion(x,y,0); break;
+		case FX_DESTRUCT_EXPLOSION_BLUE  : Effect_Explosion(x,y,32); break;
+		case FX_DESTRUCT_EXPLOSION_RED : Effect_Explosion(x,y,64); break;
+		case FX_DESTRUCT_EXPLOSION_GREEN   : Effect_Explosion(x,y,96); break;
+		case FX_DESTRUCT_EXPLOSION_ORANGE  : Effect_Explosion(x,y,128); break;
+		case FX_DESTRUCT_EXPLOSION_VIOLET : Effect_Explosion(x,y,160); break;
+		case FX_DESTRUCT_EXPLOSION_TURQUOISE : Effect_Explosion(x,y,192); break;
+		case FX_DESTRUCT_SMOKE_GRAY       : Effect_Smoke(x,y,0); break;
+		case FX_DESTRUCT_SMOKE_BLUE      : Effect_Smoke(x,y,32); break;
+		case FX_DESTRUCT_SMOKE_RED     : Effect_Smoke(x,y,64); break;
+		case FX_DESTRUCT_SMOKE_GREEN       : Effect_Smoke(x,y,96); break;
+		case FX_DESTRUCT_SMOKE_ORANGE      : Effect_Smoke(x,y,128); break;
+		case FX_DESTRUCT_SMOKE_VIOLET     : Effect_Smoke(x,y,160); break;
+		case FX_DESTRUCT_SMOKE_TURQUOISE     : Effect_Smoke(x,y,192); break;
+		case FX_DESTRUCT_SMOKECLOUDS        : Effect_SmokeClouds(x,y); break;
 		default	: break;
 	}
 }

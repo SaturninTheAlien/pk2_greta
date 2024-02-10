@@ -95,7 +95,7 @@ public:
     int     charge_time  = 0;
     u8      color         = COLOR_NORMAL;
     bool    is_wall         = false;
-    int     how_destroyed = FX_DESTRUCT_ANIMAATIO;
+    int     how_destroyed = FX_DESTRUCT_ANIMATED;
     bool    can_open_locks        = false;
     bool    vibrates      = false;
     int      bonuses_number = 1;

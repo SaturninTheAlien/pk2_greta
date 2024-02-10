@@ -246,7 +246,7 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 
 			sprite->removed = true;
 
-			if (sprite->prototype->how_destroyed != FX_DESTRUCT_EI_TUHOUDU) {
+			if (sprite->prototype->how_destroyed != FX_DESTRUCT_INDESTRUCTIBLE) {
 				Game->keys--;
 				if (Game->keys < 1)
 					Game->Open_Locks();
@@ -385,8 +385,8 @@ void SpriteOnDamage(SpriteClass* sprite){
 	Play_GameSFX(sprite->prototype->sounds[SOUND_DAMAGE], 100, (int)sprite->x, (int)sprite->y,
 					sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 
-	if (sprite->prototype->how_destroyed%100 == FX_DESTRUCT_HOYHENET)
-		Effect_Destruction(FX_DESTRUCT_HOYHENET, (u32)sprite->x, (u32)sprite->y);
+	if (sprite->prototype->how_destroyed%100 == FX_DESTRUCT_FEATHERS)
+		Effect_Destruction(FX_DESTRUCT_FEATHERS, (u32)sprite->x, (u32)sprite->y);
 
 	if (sprite->prototype->type != TYPE_PROJECTILE){
 		Particles_New(PARTICLE_STAR,sprite->x,sprite->y,-1,-1,60,0.01,128);
@@ -442,8 +442,8 @@ void SpriteOnDeath(SpriteClass* sprite){
 		}
 	}
 
-	if (how_destroyed >= FX_DESTRUCT_ANIMAATIO)
-		how_destroyed -= FX_DESTRUCT_ANIMAATIO;
+	if (how_destroyed >= FX_DESTRUCT_ANIMATED)
+		how_destroyed -= FX_DESTRUCT_ANIMATED;
 	else
 		sprite->removed = true;
 
@@ -959,7 +959,7 @@ void UpdateSprite(SpriteClass* sprite){
 						//Bounce on the sprite head
 						if (sprite2->b > 2 && sprite2->weight >= 0.5 &&
 							sprite2->y < sprite->y && !sprite->prototype->is_wall &&
-							sprite->prototype->how_destroyed != FX_DESTRUCT_EI_TUHOUDU &&
+							sprite->prototype->how_destroyed != FX_DESTRUCT_INDESTRUCTIBLE &&
 							sprite2->CanDamageOnCollision(sprite))
 						{
 							if (sprite2->super_mode_timer)
@@ -1016,7 +1016,7 @@ void UpdateSprite(SpriteClass* sprite){
 		
 		if ((sprite->prototype->immunity_type != sprite->damage_taken_type
 		|| sprite->prototype->immunity_type == DAMAGE_NONE)
-		&& sprite->prototype->how_destroyed != FX_DESTRUCT_EI_TUHOUDU){
+		&& sprite->prototype->how_destroyed != FX_DESTRUCT_INDESTRUCTIBLE){
 			SpriteOnDamage(sprite);
 		}
 
@@ -1031,7 +1031,7 @@ void UpdateSprite(SpriteClass* sprite){
 		if (sprite->energy < 1) {
 			how_destroyed = sprite->prototype->how_destroyed;
 
-			if (how_destroyed != FX_DESTRUCT_EI_TUHOUDU) {
+			if (how_destroyed != FX_DESTRUCT_INDESTRUCTIBLE) {
 				SpriteOnDeath(sprite);
 			} else
 				sprite->energy = 1;
@@ -1401,7 +1401,7 @@ void UpdateBonusSprite(SpriteClass* sprite){
 					sprite->damage_timer == 0)
 				{
 					if (sprite2->prototype->type != TYPE_BONUS &&
-						!(sprite2 == Player_Sprite && sprite->prototype->how_destroyed != FX_DESTRUCT_EI_TUHOUDU))
+						!(sprite2 == Player_Sprite && sprite->prototype->how_destroyed != FX_DESTRUCT_INDESTRUCTIBLE))
 						sprite->a += sprite2->a*(rand()%4);
 
 					// lis�t��n spriten painoon sit� koskettavan toisen spriten weight
@@ -1596,15 +1596,15 @@ void UpdateBonusSprite(SpriteClass* sprite){
 
 			//Game->map.spritet[(int)(sprite->orig_x/32) + (int)(sprite->orig_y/32)*PK2MAP_MAP_WIDTH] = 255;
 
-			if (sprite->prototype->how_destroyed != FX_DESTRUCT_EI_TUHOUDU)
+			if (sprite->prototype->how_destroyed != FX_DESTRUCT_INDESTRUCTIBLE)
 				Player_Sprite->energy -= sprite->prototype->damage;
 
 			how_destroyed = sprite->prototype->how_destroyed;
 
-			if (how_destroyed != FX_DESTRUCT_EI_TUHOUDU)
+			if (how_destroyed != FX_DESTRUCT_INDESTRUCTIBLE)
 			{
-				if (how_destroyed >= FX_DESTRUCT_ANIMAATIO)
-					how_destroyed -= FX_DESTRUCT_ANIMAATIO;
+				if (how_destroyed >= FX_DESTRUCT_ANIMATED)
+					how_destroyed -= FX_DESTRUCT_ANIMATED;
 				else
 				{
 					if (sprite->prototype->can_open_locks)

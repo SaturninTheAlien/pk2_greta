@@ -640,7 +640,7 @@ void Transform_When_Energy_Over_1(SpriteClass* s){
 	if (transformation!=nullptr && s->energy > 1 && transformation != s->prototype) {
 		s->prototype = transformation;
 		s->initial_weight = s->prototype->weight;
-		Effect_Destruction(FX_DESTRUCT_SAVU_HARMAA, (u32)s->x, (u32)s->y);
+		Effect_Destruction(FX_DESTRUCT_SMOKE_GRAY, (u32)s->x, (u32)s->y);
 		//return true;
 	}
 
