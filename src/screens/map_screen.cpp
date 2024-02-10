@@ -45,11 +45,11 @@ int MapScreen::PK_Draw_Map_Button(int x, int y, int type){
 		}
 
 		if (type == 0)
-			PDraw::image_cutcliptransparent(game_assets, 247, 1, 25, 25, x-4, y-4, 60, 32);
+			PDraw::image_cutcliptransparent(game_assets, 247, 1, 25, 25, x-3, y-3, 60, 32);
 		if (type == 1)
-			PDraw::image_cutcliptransparent(game_assets, 247, 1, 25, 25, x-2, y-2, 60, 96);
+			PDraw::image_cutcliptransparent(game_assets, 247, 1, 25, 25, x-3, y-3, 60, 96);
 		if (type == 2)
-			PDraw::image_cutcliptransparent(game_assets, 247, 1, 25, 25, x-4, y-4, 60, 64);
+			PDraw::image_cutcliptransparent(game_assets, 247, 1, 25, 25, x-3, y-3, 60, 64);
 
 		ret = 1;
 	}
@@ -190,7 +190,7 @@ void MapScreen::Draw() {
 
 				int info_x = 489+3, info_y = 341-26;
 
-				PDraw::image_cutclip(game_assets,info_x-3,info_y+26,473,0,607,121);
+				PDraw::image_cutclip(game_assets,info_x-3,info_y+26,473,0,608,122);
 				PDraw::font_write(fontti1,Episode->levels_list[i].nimi,info_x,info_y+30);
 
 				if (Episode->scores.has_score[i]) { 

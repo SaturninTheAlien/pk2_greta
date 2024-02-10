@@ -274,7 +274,6 @@ void PlayingScreen::Draw_InGame_DevKeys() {
 		"k: open skull blocks",
 		"t: toggle speed",
 		"g: toggle transparency",
-		"w: toggle window mode",
 		"i: toggle debug info",
 		"u: go up",
 		"y: ghost mode",
