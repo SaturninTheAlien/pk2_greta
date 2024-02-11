@@ -896,6 +896,12 @@ void SwimInWaterMaxSpeed(SpriteClass*s){
 	}
 }
 
+void DieIfTouchesWall(SpriteClass*s){
+	if(!s->can_move_right || !s->can_move_left || !s->can_move_up || !s->can_move_down ){
+		s->damage_taken = s->energy;
+	}
+}
+
 /**
  * @brief 
  * AIs triggered on death
