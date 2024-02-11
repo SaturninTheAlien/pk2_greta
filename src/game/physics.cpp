@@ -40,10 +40,6 @@ static bool vasemmalle;
 static bool ylos;
 static bool alas;
 
-//static bool in_water;
-
-//static double max_speed;
-
 static PK2BLOCK Block_Get(u32 x, u32 y) {
 
 	PK2BLOCK block;
@@ -542,9 +538,9 @@ void UpdateSprite(SpriteClass* sprite){
 	bool add_speed = true;
 	bool gliding = false;
 
-	bool max_speed_available = sprite->HasAI(AI_MAX_SPEED_PLAYER) ||
+	/*bool max_speed_available = sprite->HasAI(AI_MAX_SPEED_PLAYER) ||
 		(sprite->swimming && sprite->HasAI(AI_MAX_SPEED_SWIMMING)) ||
-		(sprite->super_mode_timer > 0 && sprite->HasAI(AI_MAX_SPEED_PLAYER_ON_SUPER));
+		(sprite->super_mode_timer > 0 && sprite->HasAI(AI_MAX_SPEED_PLAYER_ON_SUPER));*/
 
 	if (sprite->player != 0 && sprite->energy > 0){
 		/* SLOW WALK */
@@ -598,7 +594,7 @@ void UpdateSprite(SpriteClass* sprite){
 
 		a_lisays *= double(navigation) / 100;
 
-		if (max_speed_available)
+		if (sprite->max_speed_available)
 			a_lisays *= max_speed;
 				
 		if (navigation > 0)
@@ -637,7 +633,7 @@ void UpdateSprite(SpriteClass* sprite){
 		else { // if the player sprite-weight is 0 - like birds
 
 			double speed = 0.15;
-			if (max_speed_available)
+			if (sprite->max_speed_available)
 				speed *= max_speed;
 
 			if (PInput::Keydown(Input->jump) || Gui_up)

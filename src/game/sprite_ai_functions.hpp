@@ -70,6 +70,13 @@ void Return_To_Orig_Y_Constant(SpriteClass*s);
 
 void SwimInWater(SpriteClass*s);
 void SwimInWaterMaxSpeed(SpriteClass*s);
+
+
+void MaxSpeedPlayer(SpriteClass*s);
+void MaxSpeedSwimming(SpriteClass*s);
+void MaxSpeedOnSuper(SpriteClass*s);
+
+
 void DieIfTouchesWall(SpriteClass*s);
 
 

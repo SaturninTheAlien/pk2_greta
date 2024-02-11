@@ -628,8 +628,10 @@ void Transform_When_Energy_Under_2(SpriteClass* s){
 	PrototypeClass* transformation = s->prototype->transformation;
 
 	if (transformation!=nullptr&& s->energy < 2 && transformation != s->prototype) {
-		s->prototype = transformation;
-		s->initial_weight = s->prototype->weight;
+		if(s->energy == 1 || !s->HasAI(AI_ROOSTER)){
+			s->prototype = transformation;
+			s->initial_weight = s->prototype->weight;
+		}
 	}
 }
 
@@ -894,6 +896,19 @@ void SwimInWaterMaxSpeed(SpriteClass*s){
 		s->swimming = s->in_water;
 		s->max_speed_available = s->in_water;
 	}
+}
+
+
+void MaxSpeedPlayer(SpriteClass*s){
+	s->max_speed_available = true;
+}
+
+void MaxSpeedOnSuper(SpriteClass*s){
+	s->max_speed_available = s->super_mode_timer>0;
+}
+
+void MaxSpeedSwimming(SpriteClass*s){
+	s->max_speed_available = s->swimming;
 }
 
 void DieIfTouchesWall(SpriteClass*s){
