@@ -116,7 +116,7 @@ static void sdl_show_version() {
 }
 
 
-void init(int width, int height, const char* name, const char* icon, int render_method, int audio_buffer_size, bool audio_multi_thread) {
+void init(int width, int height, const char* name, const char* icon, int audio_buffer_size, bool audio_multi_thread) {
 	
 	u32 flags = SDL_INIT_TIMER | SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_EVENTS | \
                 SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC | SDL_INIT_GAMECONTROLLER /*| SDL_INIT_SENSOR*/;
@@ -131,7 +131,7 @@ void init(int width, int height, const char* name, const char* icon, int render_
 	sdl_show_version();
 	
 	PDraw::init(width, height);
-	PRender::init(width, height, name, icon, render_method);
+	PRender::init(width, height, name, icon);
 	PInput::init();
 	PSound::init(audio_buffer_size, audio_multi_thread);
 

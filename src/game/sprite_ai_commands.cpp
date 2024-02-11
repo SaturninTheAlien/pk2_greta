@@ -18,7 +18,7 @@
 
 namespace SpriteCommands{
 
-
+/*
 bool waypoint_x_helper(SpriteClass*sprite, double target_x){
     double max_speed = sprite->prototype->max_speed / 3.5;
     double dx = sprite->x - target_x;
@@ -87,7 +87,7 @@ bool waypoint_xy_helper(SpriteClass*sprite, double target_x, double target_y){
     }
 
     return false;
-}
+}*/
 
 
 class WaypointX:public Command{
@@ -100,7 +100,7 @@ private:
 };
 
 bool WaypointX::execute(SpriteClass*sprite){
-    return waypoint_x_helper(sprite, this->target_x);
+    return sprite->FlyToWaypointX(this->target_x);
 }
 
 
@@ -114,7 +114,7 @@ private:
 };
 
 bool WaypointRX::execute(SpriteClass*sprite){
-    return waypoint_x_helper(sprite, this->target_x + sprite->orig_x);
+    return sprite->FlyToWaypointX(this->target_x + sprite->orig_x);
 }
 
 class WaypointY:public Command{
@@ -127,7 +127,7 @@ private:
 };
 
 bool WaypointY::execute(SpriteClass*sprite){
-    return waypoint_y_helper(sprite, this->target_y);
+    return sprite->FlyToWaypointY(this->target_y);
 }
 
 
@@ -141,7 +141,7 @@ private:
 };
 
 bool WaypointRY::execute(SpriteClass*sprite){
-    return waypoint_y_helper(sprite, this->target_y + sprite->orig_y);
+    return sprite->FlyToWaypointY(this->target_y + sprite->orig_y);
 }
 
 
@@ -155,7 +155,7 @@ private:
 };
 
 bool Waypoint::execute(SpriteClass*sprite){
-    return waypoint_xy_helper(sprite, this->target_x, this->target_y);
+    return sprite->FlyToWaypointXY(this->target_x, this->target_y);
 }
 
 
@@ -169,7 +169,7 @@ private:
 };
 
 bool WaypointR::execute(SpriteClass*sprite){
-    return waypoint_xy_helper(sprite, this->target_x + sprite->orig_x, this->target_y + sprite->orig_y);
+    return sprite->FlyToWaypointXY(this->target_x + sprite->orig_x, this->target_y + sprite->orig_y);
 }
 
 
@@ -186,7 +186,7 @@ bool WaypointSeenPlayer::execute(SpriteClass*sprite){
             sprite->seen_player_y = AI_Functions::player->y;
         }
 
-        success = waypoint_xy_helper(sprite, sprite->seen_player_x, sprite->seen_player_y);
+        success = sprite->FlyToWaypointXY(sprite->seen_player_x, sprite->seen_player_y);
     }
 
     if(success){
@@ -205,7 +205,7 @@ public:
 
 
 bool WaypointOrigXY::execute(SpriteClass*sprite){
-    return waypoint_xy_helper(sprite, sprite->orig_x, sprite->orig_y);
+    return sprite->FlyToWaypointXY(sprite->orig_x, sprite->orig_y);
 }
 
 
@@ -355,7 +355,7 @@ bool ChasePlayerCommand::execute(SpriteClass*sprite){
 
     if(AI_Functions::player!=nullptr){
 
-        waypoint_xy_helper(sprite, AI_Functions::player->x, AI_Functions::player->y);
+        sprite->FlyToWaypointXY(AI_Functions::player->x, AI_Functions::player->y);
 
         if(sprite->command_timer==-1){
             sprite->command_timer = this->mTimer;

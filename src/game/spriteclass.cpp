@@ -355,6 +355,9 @@ bool SpriteClass::Transform(){
 		this->enemy = transformation->enemy;
 
 		this->current_command = 0;
+
+		this->swimming = false;
+		
 		return true;
 	}
 
@@ -364,4 +367,70 @@ bool SpriteClass::Transform(){
 void SpriteClass::StartThunder(){
 	StartLightningEffect();
 	Play_GameSFX(Episode->sfx.thunder_sound, 100, (int)this->x, (int)this->y, SOUND_SAMPLERATE, true);
+}
+
+
+bool SpriteClass::FlyToWaypointX(double target_x){
+	double max_speed = this->prototype->max_speed / 3.5;
+    double dx = this->x - target_x;
+    
+    
+    if(dx*dx <= max_speed*max_speed){
+        //Waypoint reached, align
+        this->a = 0;
+        this->x = target_x;
+        return true;
+    }
+    else if(this->x > target_x){
+        this->a = -max_speed;
+    }
+    else{
+        this->a = max_speed;
+    }
+    return false;
+}
+
+bool SpriteClass::FlyToWaypointY(double target_y){
+	double max_speed = this->prototype->max_speed / 3.5;
+    double dy = this->y - target_y;
+
+    if(dy*dy <= max_speed*max_speed){
+        //Waypoint reached, align
+        this->b = 0;
+        this->y = target_y;
+        return true;
+    }
+    else if(this->y > target_y){
+        this->b = -max_speed;
+    }
+    else{
+        this->b = max_speed;
+    }
+
+
+    return false;
+}
+
+bool SpriteClass::FlyToWaypointXY(double target_x, double target_y){
+	double velocity = this->prototype->max_speed / 3.5;
+    double dx = this->x - target_x;
+    double dy = this->y - target_y;
+
+    double eps2 = dx*dx + dy*dy; 
+
+    if(eps2 <= velocity*velocity){
+        //Waypoint reached, align
+        this->a = 0;
+        this->b = 0;
+        this->x = target_x;
+        this->y = target_y;
+        return true;
+    }
+    else{
+        double z = sqrt(eps2);
+        this->a = -velocity * dx / z;
+        this->b = -velocity * dy / z;
+    }
+
+    return false;
 }

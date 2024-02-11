@@ -187,31 +187,13 @@ bool is_vsync() {
 	
 }
 
-int init(int width, int height, const char* name, const char* icon, int render_method) {
+int init(int width, int height, const char* name, const char* icon) {
 
 	window_name = name;
 	Uint32 window_flags = SDL_WINDOW_SHOWN;
 
 	PLog::Write(PLog::DEBUG, "PRender", "Initializing graphics");
 	PLog::Write(PLog::DEBUG, "PRender", "Video driver: %s", SDL_GetCurrentVideoDriver());
-
-	// set the render method if default
-	if (render_method == RENDERER_DEFAULT) {
-
-		// TODO choose renderer
-		#ifdef __ANDROID__
-		render_method = RENDERER_SDL;
-		#else
-
-		#ifdef PK2_USE_GL
-		render_method = RENDERER_OPENGL;
-		#else
-		render_method = RENDERER_SDL;
-		#endif
-
-		#endif
-
-	}
 
     #ifdef __ANDROID__
 
@@ -228,62 +210,6 @@ int init(int width, int height, const char* name, const char* icon, int render_m
 	}
 
     #else
-
-	// create a temporary window to check if GLSL 1.4 is supported
-	// TODO 1.5 - Solve this and warn with SDL Info 
-#ifdef PK2_USE_GL
-	if (render_method == RENDERER_OPENGL) {
-
-		SDL_Window* temp_window = SDL_CreateWindow("", 0, 0, 1, 1, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
-		if (!temp_window) {
-
-			PLog::Write(PLog::FATAL, "PRender", "Couldn't create temporary window!");
-			render_method = RENDERER_SDL;
-			goto done;
-
-		}
-
-		SDL_GLContext context = SDL_GL_CreateContext(temp_window);
-		if (!context) {
-
-			SDL_DestroyWindow(temp_window);
-			PLog::Write(PLog::FATAL, "PRender", "Couldn't create OpenGL context!");
-			render_method = RENDERER_SDL;
-			goto done;
-
-		}
-
-		PLog::Write(PLog::DEBUG, "PRender", "Loading OpenGL functions");
-		PGlFuncs::load_lib();
-
-		const char* opengl_version = (const char*)glGetString(GL_VERSION);
-		const char* glsl_version = (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION);
-
-		PLog::Write(PLog::DEBUG, "PRender", "OpenGL version: %s", glsl_version);
-		PLog::Write(PLog::DEBUG, "PRender", "GLSL version: %s", opengl_version);
-
-		int major, minor;
-		sscanf(glsl_version, "%d.%d", &major, &minor);
-
-		SDL_GL_DeleteContext(context);
-		SDL_DestroyWindow(temp_window);
-
-		if (major < 1 || (major == 1 && minor < 4)) {
-
-			PLog::Write(PLog::ERR, "PRender", "GLSL version %s is not supported!", glsl_version);
-			render_method = RENDERER_SDL;
-			goto done;
-
-		}
-
-		window_flags |= SDL_WINDOW_OPENGL;
-
-	}
-	done:
-#endif
-
-	/*if (render_method == RENDERER_SDL_SOFTWARE)
-		fullscreen_mode = SDL_WINDOW_FULLSCREEN;*/
 
 	window = SDL_CreateWindow(name, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, window_flags);
 	if (!window) {
@@ -303,26 +229,7 @@ int init(int width, int height, const char* name, const char* icon, int render_m
 	
 	#endif
 
-	switch (render_method) {
-
-		case RENDERER_SDL:
-			renderer = new PSdl(width, height, window); break;
-
-#ifdef PK2_USE_GL
-	#ifndef __ANDROID__
-		case RENDERER_SDL_SOFTWARE:
-			renderer = new PSdlSoft(width, height, window); break;
-		case RENDERER_OPENGL:
-			renderer = new PGl(width, height, window); break;
-		case RENDERER_OPENGLES:
-			//renderer = new PGles(width, height, window); break;
-    #endif
-#endif
-		default:
-			renderer = new PSdl(width, height, window); break;
-		
-	}
-
+	renderer = new PSdl(width, height, window);
 	if (!renderer) {
 
 		PLog::Write(PLog::FATAL, "PRender", "Couldn't create renderer!");

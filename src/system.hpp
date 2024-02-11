@@ -15,7 +15,6 @@ extern int screen_height;
 
 extern int audio_buffer_size;
 extern bool audio_multi_thread;
-extern int render_method;
 
 #ifdef __ANDROID__
 // Variables used on data menu

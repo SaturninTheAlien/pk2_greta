@@ -197,6 +197,9 @@ AI_Table::AI_Table(){
     Init_AI(AI_RETURN_TO_ORIG_X_CONSTANT, AI_TRIGGER_ALIVE, AI_Functions::Return_To_Orig_X_Constant);
     Init_AI(AI_RETURN_TO_ORIG_Y_CONSTANT, AI_TRIGGER_ALIVE, AI_Functions::Return_To_Orig_Y_Constant);
 
+    Init_AI(AI_SWIMMING, AI_TRIGGER_ALIVE, AI_Functions::SwimInWater);
+    Init_AI(AI_MAX_SPEED_SWIMMING, AI_TRIGGER_ALIVE, AI_Functions::SwimInWaterMaxSpeed);
+
     /**
      * @brief 
      * Infos

@@ -33,13 +33,7 @@
 #include <SDL.h>
 
 static const char default_config[] = 
-"-- Render Method"
-"\r\n-- Possible options: sdl software opengl opengles default"
-"\r\n---------------"
-"\r\n*render_method:        default"
-"\r\n"
-"\r\n"
-"\r\n-- Audio Buffer Size"
+"-- Audio Buffer Size"
 "\r\n-- low value = low audio latency; high value = less cpu usage"
 "\r\n-- Default is 1024"
 "\r\n-- Prefer a power of 2: 512 1024 2048 4096 default"
@@ -71,27 +65,7 @@ static void read_config() {
 
 	PLog::Write(PLog::DEBUG, "PK2", "Found config file");
 
-	// TODO - set different render method
-	int idx = conf.Search_Id("render_method");
-	if (idx != -1) {
-		const char* txt = conf.Get_Text(idx);
-		PLog::Write(PLog::DEBUG, "PK2", "Render method set to %s", txt);
-
-		if (strcmp(txt, "default") == 0)
-			render_method = PRender::RENDERER_DEFAULT;
-		else if (strcmp(txt, "sdl") == 0)
-			render_method = PRender::RENDERER_SDL;
-		else if (strcmp(txt, "software") == 0)
-			throw std::runtime_error("Software rendering is deprecated!");
-			//render_method = PRender::RENDERER_SDL_SOFTWARE;
-		else if (strcmp(txt, "opengl") == 0)
-			render_method = PRender::RENDERER_OPENGL;
-		else if (strcmp(txt, "opengles") == 0)
-			render_method = PRender::RENDERER_OPENGLES;
-
-	}
-
-	idx = conf.Search_Id("audio_buffer_size");
+	int idx = conf.Search_Id("audio_buffer_size");
 	if (idx != -1) {
 		const char* txt = conf.Get_Text(idx);
 		int val = atoi(txt);
@@ -321,7 +295,7 @@ void pk2_main(bool _dev_mode, bool _show_fps, bool _test_level, const std::strin
 	
 	read_config();
 
-	Piste::init(screen_width, screen_height, PK2_NAME, "gfx" PE_SEP "icon_new.png", render_method, audio_buffer_size, audio_multi_thread);
+	Piste::init(screen_width, screen_height, PK2_NAME, "gfx" PE_SEP "icon_new.png", audio_buffer_size, audio_multi_thread);
 	if (!Piste::is_ready()) {
 
 		PLog::Write(PLog::FATAL, "PK2", "Failed to init PisteEngine");

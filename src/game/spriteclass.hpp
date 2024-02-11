@@ -49,6 +49,11 @@ public:
     int     attack1_timer    = 0;               // timer after attack 1
     int     attack2_timer    = 0;               // timer after attack 2
     bool    in_water          = false;           // if the sprite is inside water
+
+    bool    swimming        = false;            // if the sprite is actively swimming in the water
+    bool    max_speed_available = false;        // if the speed limit is disabled
+
+
     bool    hidden         = false;           // if the sprite is hidden
     double  initial_weight   = 0;               // sprite's original weight - the same as that of the prototype
     int     damage_taken    = 0;               // damage taken
@@ -80,7 +85,7 @@ public:
     SpriteClass(PrototypeClass *prototype, int player, double x, double y);
     ~SpriteClass();
 
-    int  Draw(int kamera_x, int kamera_y);   // animate and draw the sprite
+    int  Draw(int camera_x, int camera_y);   // animate and draw the sprite
     int  Animaatio(int anim_i, bool nollaus);  // set sprite animation
     int  Animoi();                             // animate the sprite
     void HandleEffects();                      // create sprite effects
@@ -88,8 +93,12 @@ public:
         return prototype->HasAI(AI);
     };
     
-    void AI_Move_X(double liike);
-    void AI_Move_Y(double liike);
+    void AI_Move_X(double dx);
+    void AI_Move_Y(double dy);
+
+    bool FlyToWaypointX(double target_x);
+    bool FlyToWaypointY(double target_y);
+    bool FlyToWaypointXY(double target_x, double target_y);
 
     bool Transform();
     void StartThunder();

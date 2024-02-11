@@ -885,6 +885,17 @@ void Return_To_Orig_Y_Constant(SpriteClass*s){
 	}
 }
 
+void SwimInWater(SpriteClass*s){
+	s->swimming = s->in_water;
+}
+
+void SwimInWaterMaxSpeed(SpriteClass*s){
+	if(s->swimming != s->in_water){
+		s->swimming = s->in_water;
+		s->max_speed_available = s->in_water;
+	}
+}
+
 /**
  * @brief 
  * AIs triggered on death

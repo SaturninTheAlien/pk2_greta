@@ -67,6 +67,10 @@ void Turn_Back_If_Damaged(SpriteClass* s);
 void Return_To_Orig_X_Constant(SpriteClass*s);
 void Return_To_Orig_Y_Constant(SpriteClass*s);
 
+
+void SwimInWater(SpriteClass*s);
+void SwimInWaterMaxSpeed(SpriteClass*s);
+
 /**
  * @brief 
  * AIs triggered on death

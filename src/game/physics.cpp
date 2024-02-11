@@ -189,7 +189,7 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 		}
 
 		/**********************************************************************/
-		/* Examine if block is hideway (unused)                               */
+		/* Examine if block is hideway			                              */
 		/**********************************************************************/
 		if (block.id == BLOCK_HIDEOUT)
 			sprite->hidden = true;
@@ -542,14 +542,9 @@ void UpdateSprite(SpriteClass* sprite){
 	bool add_speed = true;
 	bool gliding = false;
 
-	bool swimming = sprite->in_water && (sprite->HasAI(AI_SWIMMING) || sprite->HasAI(AI_MAX_SPEED_SWIMMING));
 	bool max_speed_available = sprite->HasAI(AI_MAX_SPEED_PLAYER) ||
-		(swimming && sprite->HasAI(AI_MAX_SPEED_SWIMMING)) ||
+		(sprite->swimming && sprite->HasAI(AI_MAX_SPEED_SWIMMING)) ||
 		(sprite->super_mode_timer > 0 && sprite->HasAI(AI_MAX_SPEED_PLAYER_ON_SUPER));
-	
-	/*swimming = sprite->in_water;
-	max_speed_available = sprite->in_water;
-	sprite->prototype->can_swim = true;*/
 
 	if (sprite->player != 0 && sprite->energy > 0){
 		/* SLOW WALK */
@@ -617,7 +612,7 @@ void UpdateSprite(SpriteClass* sprite){
 		sprite->a += a_lisays;
 
 		/* JUMPING */
-		if (sprite->prototype->weight > 0 && !swimming) {
+		if (sprite->prototype->weight > 0 && !sprite->swimming) {
 			if (PInput::Keydown(Input->jump) || Gui_up) {
 				if (!sprite->crouched) {
 					if (sprite->jump_timer == 0)
@@ -735,7 +730,7 @@ void UpdateSprite(SpriteClass* sprite){
 	/* Gravity effect                                                                        */
 	/*****************************************************************************************/
 	
-	if (sprite->weight != 0 && (sprite->jump_timer <= 0 || sprite->jump_timer >= 45) && !swimming)
+	if (sprite->weight != 0 && (sprite->jump_timer <= 0 || sprite->jump_timer >= 45) && !sprite->swimming)
 		sprite->b += sprite->weight/1.25;// + sprite->b/1.5;
 
 	if (gliding && sprite->b > 0) // If gliding
