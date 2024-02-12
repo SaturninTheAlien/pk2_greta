@@ -30,7 +30,11 @@
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
 #endif
+
+namespace fs = std::filesystem;
+
 namespace PFile {
+
 
 std::string mAssetsPath;
 bool mAssetsPathSet = false;
@@ -363,6 +367,11 @@ bool Path::NoCaseFind() {
 	std::string filename = this->GetFileName();
 	this->SetFile("");
 
+	std::string dir = mGetAssetPath(this->GetDirectory());
+	if(!fs::exists(dir) || !fs::is_directory(dir)){
+		return false;
+	}
+
 	std::vector<std::string> list = this->scandir("");
 
 	int sz = list.size();
@@ -455,7 +464,7 @@ std::vector<std::string> scan_apk(const char* dir, const char* type) {
 #endif
 
 
-namespace fs = std::filesystem;
+
 std::vector<std::string> scan_file(const char* dir, const char* type){
 	
 	std::vector<std::string> result;
@@ -538,47 +547,27 @@ bool Path::Is_Absolute()const{
 }
 
 void Path::SetFile(std::string file) {
-
-	int dif = this->path.find_last_of(PE_SEP);
-
-	file = file.substr(0, file.find_last_not_of(" ") + 1);
-
-	this->path = this->path.substr(0, dif + 1) + file;
+	this->path = this->GetDirectory() + PE_SEP  + file;
 }
 
 void Path::SetPath(std::string path) {
-
-	int s = path.size();
-	if (s > 0)
-		if (path[s-1] != PE_SEP[0] && path[s-1] != PE_NOSEP[0])
-			path += PE_SEP;
-
 	this->path = path + this->GetFileName();
-	this->FixSep();
 }
 
-std::string Path::GetDirectory() {
+void Path::SetSubpath(std::string subpath){
+	this->path = this->GetDirectory() + PE_SEP + subpath + this->GetFileName();
+}
 
+
+std::string Path::GetDirectory()const {
 	std::filesystem::path p(this->path);
 	return p.parent_path().u8string();
 
-	/*std::size_t dif = this->path.find_last_of(PE_SEP);
-	if(dif<this->path.size()){
-		return this->path.substr(0, dif);
-	}
-	return "";*/
 }
 
-std::string Path::GetFileName() {
-
+std::string Path::GetFileName()const {
 	std::filesystem::path p(this->path);
 	return p.filename().u8string();
-
-	/*std::size_t dif = this->path.find_last_of(PE_SEP);
-	if(dif<this->path.size()){
-		return this->path.substr(dif + 1);
-	}
-	return this->path;*/
 }
 
 #ifdef PK2_USE_ZIP

@@ -119,10 +119,13 @@ class Path {
 
     void SetFile(std::string file);
     void SetPath(std::string path);
+
+    void SetSubpath(std::string sub_path);
+
     void FixSep();
 
-    std::string GetDirectory();
-    std::string GetFileName();
+    std::string GetDirectory()const;
+    std::string GetFileName()const;
 
     RW GetRW2(const char* mode)const;
     nlohmann::json GetJSON()const;

@@ -174,44 +174,43 @@ void Prepare_DataPath() {
 //TODO - Receive Episode, organize this
 bool FindAsset(PFile::Path* path, const char* default_dir) {
 
-	if (!path->Find()) {
+	const std::string filename = path->GetFileName();
 
-		PLog::Write(PLog::INFO, "PK2", "Can't find %s", path->c_str());
-
-		path->SetPath(default_dir);
-		PLog::Write(PLog::INFO, "PK2", "Trying %s", path->c_str());
-		
-		if (!path->Find()) {
-			
-			PLog::Write(PLog::INFO, "PK2", "Can't find %s", path->c_str());
-
-			if (path->Is_Zip()) {
-
-				PLog::Write(PLog::INFO, "PK2", "Trying outsize zip");
-
-				std::string filename = path->GetFileName();
-
-				*path = PFile::Path(default_dir);
-				path->SetFile(filename);
-				if (!path->Find()) {
-
-					//PLog::Write(PLog::ERR, "PK2", "Can't find %s", path->c_str());
-					return false;
-
-				}
-
-			} else {
-
-				return false;
-
-			}
-		
-		}
-		
+	if(path->Find()){
+		return true;
 	}
 
-	return true;
+	path->SetSubpath(default_dir);
 
+	//PLog::Write(PLog::INFO, "PK2", "Trying %s", path->c_str());
+
+	if(path->Find()){
+		return true;
+	}
+
+	path->SetPath(default_dir);
+	path->SetFile(filename);
+
+	//PLog::Write(PLog::INFO, "PK2", "Trying %s", path->c_str());
+
+	if(path->Find()){
+		return true;
+	}
+
+	if(path->Is_Zip()){
+
+		*path = PFile::Path(default_dir + filename);
+		//PLog::Write(PLog::INFO, "PK2", "Trying %s", path->c_str());
+		PLog::Write(PLog::INFO, "PK2", "Trying %s", path->c_str());
+		if (path->Find()) {
+			return true;
+
+		}
+
+	}
+
+	PLog::Write(PLog::INFO, "PK2", "Can't find %s", path->c_str());
+	return false;
 }
 
 int Set_Screen_Size(int w, int h) {
