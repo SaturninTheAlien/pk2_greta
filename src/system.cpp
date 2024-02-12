@@ -201,7 +201,6 @@ bool FindAsset(PFile::Path* path, const char* default_dir) {
 
 		*path = PFile::Path(default_dir + filename);
 		//PLog::Write(PLog::INFO, "PK2", "Trying %s", path->c_str());
-		PLog::Write(PLog::INFO, "PK2", "Trying %s", path->c_str());
 		if (path->Find()) {
 			return true;
 
