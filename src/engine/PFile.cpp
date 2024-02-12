@@ -550,11 +550,19 @@ void Path::SetFile(std::string file) {
 	this->path = this->GetDirectory() + PE_SEP  + file;
 }
 
-void Path::SetPath(std::string path) {
-	this->path = path + this->GetFileName();
+void Path::SetPath(std::string newpath) {
+
+	if(newpath[newpath.length()-1]!=PE_SEP[0]){
+		newpath+=PE_SEP;
+	}
+
+	this->path = newpath + this->GetFileName();
 }
 
 void Path::SetSubpath(std::string subpath){
+	if(subpath[subpath.length()-1]!=PE_SEP[0]){
+		path+=PE_SEP;
+	}
 	this->path = this->GetDirectory() + PE_SEP + subpath + this->GetFileName();
 }
 
