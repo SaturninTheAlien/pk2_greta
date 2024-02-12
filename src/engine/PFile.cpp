@@ -561,7 +561,7 @@ void Path::SetPath(std::string newpath) {
 
 void Path::SetSubpath(std::string subpath){
 	if(subpath[subpath.length()-1]!=PE_SEP[0]){
-		path+=PE_SEP;
+		subpath+=PE_SEP;
 	}
 	this->path = this->GetDirectory() + PE_SEP + subpath + this->GetFileName();
 }
