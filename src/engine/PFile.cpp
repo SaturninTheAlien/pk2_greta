@@ -720,6 +720,36 @@ nlohmann::json Path::GetJSON()const{
 	}
 }
 
+std::string Path::GetContentAsString()const{
+	if(this->zip_file!=nullptr){
+		#ifdef PK2_USE_ZIP
+
+		int size = 0;
+		zip_file_t* zfile = mOpenZipFile(this->zip_file, this->path.c_str(), size);
+		char* buffer = new char[size+1];
+		buffer[size] = '\0';
+		
+		zip_fread(zfile, buffer, size);
+		zip_fclose(zfile);
+
+		std::string res = buffer;
+
+		delete[] buffer;
+		return res;
+
+		#else
+
+		throw PFileException("Zip is not supported in this PK2 version!");
+		
+		#endif
+	}
+	else{
+		std::string path_a = mGetAssetPath(this->path);
+		std::ifstream in(path_a.c_str());
+		return std::string((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+	}
+}
+
 RW::RW(RW&& source){
 	this->_rwops = source._rwops;
 	this->_mem_buffer = source._mem_buffer;

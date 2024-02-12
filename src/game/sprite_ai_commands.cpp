@@ -15,6 +15,9 @@
 #include "exceptions.hpp"
 #include "sfx.hpp"
 #include "spriteclass.hpp"
+#include "lua/pk2_lua.hpp"
+#include "episode/episodeclass.hpp"
+
 
 namespace SpriteCommands{
 
@@ -318,26 +321,41 @@ bool ThunderCommand::execute(SpriteClass*sprite){
     return true;
 };
 
-/**
- * @brief 
- * Run script command placeholder
- */
 
-class ScriptCommand: public Command{
+class LuaCommand: public Command{
 public:
-    ScriptCommand(const std::string & scriptName);
+    LuaCommand(const std::string & funcName);
     bool execute(SpriteClass*sprite);
+
 private:
-    std::string mScriptName;
+    sol::protected_function l_function;
 };
 
-ScriptCommand::ScriptCommand(const std::string & scriptName) :mScriptName(scriptName){
-    PLog::Write(PLog::INFO, "PK2", "Loading the script \"%s\" (placeholder)!", mScriptName.c_str());
+LuaCommand::LuaCommand(const std::string & funcName){
+    if(Episode->lua == nullptr){
+        throw std::runtime_error("Lua is disabled in this episode, cannot execute \"lua\" command");
+    }
+
+    sol::state& lua = *Episode->lua;
+    sol::object o = lua[funcName];
+    if(o.is<std::function<bool(SpriteClass*s)>>()){
+        this->l_function = sol::protected_function(o);
+    }
+    else{
+        std::ostringstream os;
+        os<<"Global Lua function: \""<<funcName<<"\" not defined!";
+        throw std::runtime_error(os.str());
+    }
 }
 
-bool ScriptCommand::execute(SpriteClass*sprite){
-    PLog::Write(PLog::INFO, "PK2", "Executing the script \"%s\" (placeholder)!", mScriptName.c_str());
-    return true;
+bool LuaCommand::execute(SpriteClass*sprite){
+    sol::protected_function_result res = this->l_function(sprite);
+    if(res.valid()){
+        return res;
+    }
+    else{
+        throw sol::error(res);
+    }
 }
 /**
  * @brief 
@@ -435,7 +453,7 @@ void Parse_Commands(const nlohmann::json& j_in, std::vector<Command*>& commands_
                 else if(command_name=="waypoint_rxy"){
                     state = 11;
                 }
-                else if(command_name=="run_script"){
+                else if(command_name=="lua"){
                     state = 13;
                 }
                 else if(command_name=="chase_player"){
@@ -555,7 +573,7 @@ void Parse_Commands(const nlohmann::json& j_in, std::vector<Command*>& commands_
             break;
 
         case 13:
-            commands_v.push_back(new ScriptCommand(j.get<std::string>()));
+            commands_v.push_back(new LuaCommand(j.get<std::string>()));
             state = 0;
             break;
 

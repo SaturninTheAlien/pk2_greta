@@ -26,13 +26,9 @@ CXXFLAGS += --std=c++17 -fPIC
 # Compiling to dll
 LDFLAGS += -shared
 
-# SDL2:
-CXXFLAGS += $(shell pkg-config sdl2 --cflags)
-LDFLAGS += $(shell pkg-config sdl2 --libs) -lSDL2_mixer -lSDL2_image
-
-# LibZip (read episodes on zip files):
-CXXFLAGS += -DPK2_USE_ZIP $(shell pkg-config libzip --cflags)
-LDFLAGS += $(shell pkg-config libzip --libs)
+# SDL2, libzip and lua
+CXXFLAGS += -DPK2_USE_ZIP -DPK2_USE_LUA $(shell pkg-config sdl2 libzip lua --cflags)
+LDFLAGS += $(shell pkg-config sdl2 libzip lua --libs) -lSDL2_mixer -lSDL2_image
 
 # Version string
 PK2_VERSION = $(shell git log -1 --pretty=format:"%s" | grep -o 'v[0-9]\+\.[0-9]\+')

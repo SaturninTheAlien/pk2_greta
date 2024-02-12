@@ -14,15 +14,14 @@ https://github.com/danilolc/pk2
 
 Hard fork by SaturninTheAlien (2023-present)
 
-"Pekka Kana 2 (Pekka the Rooster 2) is a jump 'n run game made in the spirit of classic platformers such as Super Mario, SuperTux, Sonic the Hedgehog, Jazz Jackrabbit, Super Frog and so on."
+"Pekka Kana 2 (Pekka the Rooster 2) is a 2D platformer game where you control a rooster, made in the spirit of classic platformers such as Super Mario, SuperTux, Jazz Jackrabbit, Super Frog and so on."
 http://kiwi.mbnet.fi/pistegamez/pk2/
 
 This repository contains the source code and resource files for the game Pekka Kana 2 created by Janne Kivilahti in 2003.
 The source code was released by the original author on a forum
 [thread](http://pistegamez.proboards.com/thread/543/level-editor-source-codes-available).
 
-Since then a lot of things changed, including an initial SDL port by Samuli Tuomola in 2010 and then the SDL2 port, bug fixes,
-code redesign by Danilo Lemos (2016-2023),
+Since then a lot of things changed, including an initial SDL port by Samuli Tuomola in 2010 and then the SDL2 port, bug fixes, code redesign by Danilo Lemos (2016-2023),
 code redesign, bug fixes and new features by SaturninTheAlien (2023 - present)
 
 This game was tested on Windows, GNU/Linux, Mac OS (Apple Silicon).
@@ -39,10 +38,10 @@ https://aka.ms/vs/17/release/vc_redist.x64.exe
 
 ### Ubuntu / Debian
 To compile **Pekka Kana 2** into Debian GNU/Linux based distributions,
-you need the **SDL2**, **SDL2_image**, **SDL2_mixer** and **Zip** libraries installed on
+you need the **SDL2**, **SDL2_image**, **SDL2_mixer**, **Zip** and **Lua** libraries installed on
 the system. To get everything you need, just run the following command on the terminal:
 
-    $ apt install build-essential libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libzip-dev
+    $ apt install build-essential libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libzip-dev liblua5.4-dev
 
 Then run the "**make**" command inside the "**Pekka Kana 2**" directory.
 
@@ -59,7 +58,7 @@ To make the removal, within the compiled directory, execute this command:
 ### macOS
 Use [Homebrew](https://brew.sh/) to install SDL2 packages:
 ```
-brew install sdl2 sdl2_gfx sdl2_image sdl2_mixer libzip
+brew install sdl2 sdl2_gfx sdl2_image sdl2_mixer libzip lua
 ```
 Now just clone the code and run `make` on pk2 directory and run `/bin/pekka-kana-2`, just like on Ubuntu/Debian.
 
@@ -197,3 +196,5 @@ https://github.com/nlohmann/json
 https://www.libsdl.org/
 * libzip\
 https://libzip.org/
+* sol2\
+https://github.com/ThePhD/sol2

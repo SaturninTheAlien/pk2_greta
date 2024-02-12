@@ -62,6 +62,10 @@ struct PK2EPISODESCORES10 {
 	
 };
 
+namespace sol{
+	class state;
+}
+
 class EpisodeClass {
 
 	public:
@@ -107,6 +111,8 @@ class EpisodeClass {
 		void Update_NextLevel();
 
 		SfxHandler sfx;
+
+		sol::state * lua = nullptr;
 
 	private:
 		int  Open_Scores();
