@@ -15,6 +15,12 @@ namespace PK2lua{
 
 
 void ExposePrototypeClass(sol::state& lua){
+
+    /**
+     * @brief 
+     * Prototypes should be read-only not to change them during the gameplay.
+     */
+
     lua.new_usertype<PrototypeClass>(
         "Prototype",
         sol::no_constructor,
@@ -41,6 +47,7 @@ void ExposeSpriteClass(sol::state& lua){
          */
 
         "transform", &SpriteClass::Transform,
+        "die", &SpriteClass::Die,
         "fly_to_target_x", &SpriteClass::FlyToWaypointX,
         "fly_to_target_y", &SpriteClass::FlyToWaypointY,
         "fly_to_target_xy", &SpriteClass::FlyToWaypointXY,
@@ -56,8 +63,8 @@ void ExposeSpriteClass(sol::state& lua){
         "x", &SpriteClass::x,
         "y", &SpriteClass::y,
 
-        "a", &SpriteClass::a,
-        "b", &SpriteClass::b,
+        "a", &SpriteClass::a, // x velocity
+        "b", &SpriteClass::b, // y velocity
 
         "flip_x", &SpriteClass::flip_x,
         "flip_y", &SpriteClass::flip_y,
@@ -79,8 +86,10 @@ void ExposeSpriteClass(sol::state& lua){
         /**
          * @brief 
          * Read-only fields
-         * Shouldn't be changed in scripts because they are handled by physics.cpp
+         * Shouldn't be changed in scripts because they are handled by physics.cpp and so on
          */
+
+        "player", sol::readonly(&SpriteClass::player),
 
         "orig_x", sol::readonly(&SpriteClass::orig_x),
         "orig_y", sol::readonly(&SpriteClass::orig_y),

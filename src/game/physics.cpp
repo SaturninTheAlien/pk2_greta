@@ -197,8 +197,14 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 		/* Examine if block is the exit                                       */
 		/**********************************************************************/
 		if (block.id == BLOCK_EXIT && sprite->energy>0) {
-			if ((!Game->chick_mode && sprite->player != 0) || sprite->HasAI(AI_CHICK))
+			if(Game->chick_mode){
+				if(sprite->HasAI(AI_CHICK)){
+					Game->Finish();
+				}
+			}
+			else if(sprite->player){
 				Game->Finish();
+			}
 		}
 	}
 
@@ -542,7 +548,7 @@ void UpdateSprite(SpriteClass* sprite){
 		(sprite->swimming && sprite->HasAI(AI_MAX_SPEED_SWIMMING)) ||
 		(sprite->super_mode_timer > 0 && sprite->HasAI(AI_MAX_SPEED_PLAYER_ON_SUPER));*/
 
-	if (sprite->player != 0 && sprite->energy > 0){
+	if (sprite->player && sprite->energy > 0){
 		/* SLOW WALK */
 		if (PInput::Keydown(Input->walk_slow)
 		|| Gui_pad_button == 1 || Gui_pad_button == 3)
@@ -1115,7 +1121,7 @@ void UpdateSprite(SpriteClass* sprite){
 	if (sprite->energy > sprite->prototype->energy)
 		sprite->energy = sprite->prototype->energy;
 
-	if (sprite->damage_timer == 0 || sprite->player == 1) {
+	if (sprite->damage_timer == 0 || sprite->player) {
 		sprite->x += sprite->a;
 		sprite->y += sprite->b;
 	}
@@ -1157,7 +1163,7 @@ void UpdateSprite(SpriteClass* sprite){
 	/* AI                                                                                    */
 	/*****************************************************************************************/
 	
-	if (sprite->player == 0) {
+	if (!sprite->player) {
 
 		for(SpriteAI::AI_Class& ai : sprite->prototype->AI_f){
 			if(!ai.apply_to_creatures)continue;
@@ -1686,7 +1692,7 @@ void UpdateBonusSprite(SpriteClass* sprite){
 	}
 
 	/* The energy doesn't matter that the player is a bonus item */
-	if (sprite->player != 0)
+	if (sprite->player)
 		sprite->energy = 0;
 
 	sprite->initial_update = false;

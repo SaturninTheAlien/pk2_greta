@@ -186,8 +186,8 @@ int SpritesHandler::onTickUpdate(){
 	}
 
 	// Clean destructed sprites
-	fgSprites_List.remove_if([](SpriteClass*s){return s->removed;});
-	bgSprites_List.remove_if([](SpriteClass*s){return s->removed;});
+	fgSprites_List.remove_if([](SpriteClass*s){return s->removed || s->prototype->type!=TYPE_FOREGROUND;});
+	bgSprites_List.remove_if([](SpriteClass*s){return s->removed || s->prototype->type!=TYPE_BACKGROUND;});
 	Sprites_List.remove_if([&](SpriteClass*s){return this->spriteDestructed(s);});
 
 

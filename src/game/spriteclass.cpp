@@ -23,7 +23,7 @@
 /* -------- SpriteClass  ------------------------------------------------------------------ */
 
 SpriteClass::SpriteClass(){}
-SpriteClass::SpriteClass(PrototypeClass *prototype, int player, double x, double y){
+SpriteClass::SpriteClass(PrototypeClass *prototype, bool player, double x, double y){
 	if (prototype) {
 
 		this->prototype         = prototype;
@@ -362,6 +362,11 @@ bool SpriteClass::Transform(){
 	}
 
 	return false;
+}
+
+void SpriteClass::Die(){
+	this->damage_taken = this->energy + 1;
+	this->damage_taken_type = DAMAGE_ALL;
 }
 
 void SpriteClass::StartThunder(){

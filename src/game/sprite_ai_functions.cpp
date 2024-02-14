@@ -1013,7 +1013,7 @@ void DieIfSkullBlocksChanged(SpriteClass*sprite){
 void ThrowableWeapon(SpriteClass*sprite, SpriteClass*shooter){
 	if ((int)shooter->a == 0){
 		// If the "shooter" is a player or the speed of the projectile is zero
-		if (shooter->player == 1 || sprite->prototype->max_speed == 0){
+		if (shooter->player || sprite->prototype->max_speed == 0){
 			if (!shooter->flip_x)
 				sprite->a = sprite->prototype->max_speed;
 			else
