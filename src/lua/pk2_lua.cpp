@@ -8,7 +8,6 @@
  * Lua utils by SaturninTheAlien
  */
 
-#include <iostream>
 #include "pk2_lua.hpp"
 #include <string>
 
@@ -86,8 +85,8 @@ sol::state* CreateGameLuaVM(EpisodeClass* episode){
             sol::lib::table,
             sol::lib::math,
             sol::lib::coroutine,
-            sol::lib::package,
-            sol::lib::utf8);
+            sol::lib::utf8,
+            sol::lib::package);
 
     OverrideLuaRequire(*lua);
 
