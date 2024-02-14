@@ -2,10 +2,15 @@
 //Pekka Kana 2
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
+
+/**
+ * @brief
+ * Lua utils by SaturninTheAlien
+ */
+
 #include "lua_sprites.hpp"
 #include "game/prototype.hpp"
 #include "game/spriteclass.hpp"
-
 namespace PK2lua{
 
 
