@@ -301,12 +301,6 @@ void EpisodeClass::Load() {
 	this->Load_Info();
 
 	this->Update_NextLevel();
-
-	/**
-	 * @brief 
-	 * Load lua
-	 */
-	this->lua = PK2lua::CreateEpisodeLuaVM(this);
 }
 
 EpisodeClass::EpisodeClass(int save) {
@@ -360,10 +354,6 @@ EpisodeClass::~EpisodeClass() {
 		PFile::CloseZip(this->source_zip);
 #endif
 
-	if(this->lua != nullptr){
-		delete this->lua;
-		this->lua = nullptr;
-	}
 }
 
 PFile::Path EpisodeClass::Get_Dir(const std::string& file)const {

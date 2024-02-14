@@ -7,91 +7,20 @@
  * Experimental commands/waypoints AI by SaturninTheAlien
  */
 
-#include <sstream>
 #include "sprite_ai_commands.hpp"
 #include "sprite_ai_table.hpp"
+
+#include <sstream>
 
 #include "engine/PLog.hpp"
 #include "exceptions.hpp"
 #include "sfx.hpp"
 #include "spriteclass.hpp"
-#include "lua/pk2_lua.hpp"
-#include "episode/episodeclass.hpp"
 
+#include "game/game.hpp"
+#include "3rd_party/sol.hpp"
 
 namespace SpriteCommands{
-
-/*
-bool waypoint_x_helper(SpriteClass*sprite, double target_x){
-    double max_speed = sprite->prototype->max_speed / 3.5;
-    double dx = sprite->x - target_x;
-    
-    
-    if(dx*dx <= max_speed*max_speed){
-        //Waypoint reached, align
-        sprite->a = 0;
-        sprite->x = target_x;
-        return true;
-    }
-    else if(sprite->x > target_x){
-        //sprite->flip_x = true;
-        sprite->a = -max_speed;
-    }
-    else{
-        //sprite->flip_x = false;
-        sprite->a = max_speed;
-    }
-
-    return false;
-}
-
-bool waypoint_y_helper(SpriteClass*sprite, double target_y){
-    double max_speed = sprite->prototype->max_speed / 3.5;
-    double dy = sprite->y - target_y;
-
-    if(dy*dy <= max_speed*max_speed){
-        //Waypoint reached, align
-        sprite->b = 0;
-        sprite->y = target_y;
-        return true;
-    }
-    else if(sprite->y > target_y){
-        sprite->b = -max_speed;
-    }
-    else{
-        sprite->b = max_speed;
-    }
-
-
-    return false;
-}
-
-
-bool waypoint_xy_helper(SpriteClass*sprite, double target_x, double target_y){
-    double velocity = sprite->prototype->max_speed / 3.5;
-    double dx = sprite->x - target_x;
-    double dy = sprite->y - target_y;
-
-    double eps2 = dx*dx + dy*dy; 
-
-    if(eps2 <= velocity*velocity){
-        //Waypoint reached, align
-        sprite->a = 0;
-        sprite->b = 0;
-        sprite->x = target_x;
-        sprite->y = target_y;
-        return true;
-    }
-    else{
-        double z = sqrt(eps2);
-        sprite->a = -velocity * dx / z;
-        sprite->b = -velocity * dy / z;
-        //sprite->flip_x = dx>0;
-    }
-
-    return false;
-}*/
-
 
 class WaypointX:public Command{
 public:
@@ -332,11 +261,11 @@ private:
 };
 
 LuaCommand::LuaCommand(const std::string & funcName){
-    if(Episode->lua == nullptr){
+    if(Game->lua == nullptr){
         throw std::runtime_error("Lua is disabled in this episode, cannot execute \"lua\" command");
     }
 
-    sol::state& lua = *Episode->lua;
+    sol::state& lua = *Game->lua;
     sol::object o = lua[funcName];
     if(o.is<std::function<bool(SpriteClass*s)>>()){
         this->l_function = sol::protected_function(o);

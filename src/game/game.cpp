@@ -19,6 +19,7 @@
 #include "engine/PLog.hpp"
 #include "engine/PDraw.hpp"
 #include "engine/PInput.hpp"
+#include "lua/pk2_lua.hpp"
 
 #include <cstring>
 
@@ -54,6 +55,12 @@ GameClass::GameClass(std::string map_file) {
 }
 
 GameClass::~GameClass(){
+	this->spritesHandler.clearAll();
+
+	if(this->lua!=nullptr){
+		delete this->lua;
+		this->lua = nullptr;
+	}
 }
 
 int GameClass::Start() {
@@ -62,6 +69,17 @@ int GameClass::Start() {
 		return 1;
 	
 	this->spritesHandler.clearAll(); //Reset prototypes and sprites
+
+	if(this->lua!=nullptr){
+		delete this->lua;
+		this->lua = nullptr;
+	}
+
+	/**
+	 * @brief 
+	 * Load lua
+	 */
+	this->lua = PK2lua::CreateGameLuaVM(Episode);
 
 	Gifts_Clean(); //Reset gifts
 	Fadetext_Init(); //Reset fade text
@@ -75,7 +93,7 @@ int GameClass::Start() {
 	PSound::set_musicvolume(Settings.music_max_volume);
 
 	this->started = true;
-
+	
 	return 0;
 	
 }

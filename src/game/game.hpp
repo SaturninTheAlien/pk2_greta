@@ -12,6 +12,10 @@
 const int TIME_FPS = 100; //(dec)conds * TIME_FPS = FRAMES
 const int INFO_TIME = 700;
 
+namespace sol{
+	class state;
+}
+
 class GameClass {
 
 	public:
@@ -91,6 +95,8 @@ class GameClass {
 		SpritesHandler spritesHandler;
 
 		void Change_SkullBlocks();
+		
+		sol::state * lua = nullptr;
 	private:		
 		bool started = false;
 		

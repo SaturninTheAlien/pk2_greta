@@ -6,14 +6,10 @@
 #pragma once
 
 #include "3rd_party/sol.hpp"
-#include "engine/PFile.hpp"
-
-
-
-class EpisodeClass;
 
 namespace PK2lua{
 
-sol::state* CreateGameLuaVM(EpisodeClass* episode);
+void ExposePrototypeClass(sol::state& lua);
+void ExposeSpriteClass(sol::state& lua);
 
 }

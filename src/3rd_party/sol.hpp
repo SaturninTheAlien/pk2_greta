@@ -14538,7 +14538,11 @@ namespace sol { namespace stack {
 
 #if SOL_IS_ON(SOL_COMPILER_GCC)
 #pragma GCC diagnostic push
-//#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+
+#ifndef __clang__
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
+
 #endif
 
 	namespace stack_detail {
@@ -17291,7 +17295,11 @@ namespace sol {
 
 #if SOL_IS_ON(SOL_COMPILER_GCC)
 #pragma GCC diagnostic push
-//#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+
+#ifndef __clang__
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
+
 #endif
 
 		template <typename T>

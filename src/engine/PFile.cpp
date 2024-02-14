@@ -354,7 +354,7 @@ std::vector<std::string> scan_zip(Zip* zip_file, const char* path, const char* t
 
     }
 
-    PLog::Write(PLog::DEBUG, "PFile", "Scanned zip \"%s\" on \"%s\" for \"%s\". Found %i matches", zip_file->name.c_str(), path, type, (int)result.size());
+    //PLog::Write(PLog::DEBUG, "PFile", "Scanned zip \"%s\" on \"%s\" for \"%s\". Found %i matches", zip_file->name.c_str(), path, type, (int)result.size());
     return result;
 
 }
@@ -390,7 +390,7 @@ bool Path::NoCaseFind() {
 	}
 
 	this->SetFile(filename);
-	PLog::Write(PLog::INFO, "PFile", "%s not found", this->path.c_str());
+	//PLog::Write(PLog::INFO, "PFile", "%s not found", this->path.c_str());
 
 	return false;
 
@@ -499,7 +499,7 @@ std::vector<std::string> scan_file(const char* dir, const char* type){
 		}
 	}
 	std::sort(result.begin(), result.end());
-	PLog::Write(PLog::DEBUG, "PFile", "Scanned on \"%s\" for \"%s\". Found %i matches", dir, type, (int)result.size());
+	//PLog::Write(PLog::DEBUG, "PFile", "Scanned on \"%s\" for \"%s\". Found %i matches", dir, type, (int)result.size());
 
 	return result;
 }
@@ -522,7 +522,7 @@ bool Path::Find() {
 
 		const char* cstr = path_a.c_str();
 
-		PLog::Write(PLog::DEBUG, "PFile", "Find %s", cstr);
+		//PLog::Write(PLog::DEBUG, "PFile", "Find %s", cstr);
 		if(fs::exists(path_a)&&fs::is_regular_file(path_a)){
 			PLog::Write(PLog::DEBUG, "PFile", "Found on %s", cstr);
 			return true;
@@ -531,7 +531,7 @@ bool Path::Find() {
 		#ifdef _WIN32
 			return false;
 		#else
-			PLog::Write(PLog::INFO, "PFile", "%s not found, trying different cAsE", cstr);
+			//PLog::Write(PLog::INFO, "PFile", "%s not found, trying different cAsE", cstr);
 			return this->NoCaseFind();
 		#endif
 	}
@@ -992,7 +992,7 @@ std::vector<std::string> Path::scandir(const char* type) {
 	auto it = scan_cache.find(cache_entry);
 	if (it != scan_cache.end()) {
 
-		PLog::Write(PLog::DEBUG, "PFile", "Got cache on \"%s\" for \"%s\"", cstr, type);
+		//PLog::Write(PLog::DEBUG, "PFile", "Got cache on \"%s\" for \"%s\"", cstr, type);
 		return it->second;
 
 	}
