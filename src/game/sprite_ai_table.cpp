@@ -223,6 +223,8 @@ AI_Table::AI_Table(){
         this->mAIsDict[id] = ai;
     }
 
+    Init_AI(AI_BACKGROUND_MOON, AI_TRIGGER_NONE, nullptr, false, false, false, true);
+
     /**
      * @brief
      * AIs triggered on death

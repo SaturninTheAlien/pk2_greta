@@ -69,46 +69,11 @@ void PlayingScreen::Draw_InGame_BGSprites() {
 
 		}
 
-		switch(sprite->prototype->first_ai()) {
-		case AI_BACKGROUND_MOON					:	yl += screen_height/3+50; break;
-		/*case AI_TAUSTA_LIIKKUU_LEFT	:	if (sprite->a == 0)
-													sprite->a = rand()%3;
-												sprite->orig_x -= sprite->a;
-												if (sprite->hidden && sprite->orig_x < Game->camera_x)
-												{
-														sprite->orig_x = Game->camera_x+screen_width+sprite->prototype->width*2;
-														sprite->a = rand()%3;
-												}
-												break;*/
-		case AI_MOVE_X_COS:			sprite->AI_Move_X(cos_table(degree));
-										orig_x = sprite->x;
-										orig_y = sprite->y;
-										break;
-		case AI_MOVE_Y_COS:			sprite->AI_Move_Y(cos_table(degree));
-										orig_x = sprite->x;
-										orig_y = sprite->y;
-										break;
-		case AI_MOVE_X_SIN:			sprite->AI_Move_X(sin_table(degree));
-										orig_x = sprite->x;
-										orig_y = sprite->y;
-										break;
-		case AI_MOVE_Y_SIN:			sprite->AI_Move_Y(sin_table(degree));
-										orig_x = sprite->x;
-										orig_y = sprite->y;
-										break;
-		/*case AI_SELF_DESTRUCTION:	sprite->AI_SelfDestruction();
-										break;
-		
-		case AI_SELF_TRANSFORMATION:
-									sprite->AI_Self_Transformation();
-									break;*/
-								
-		default: break;
-		}
+		UpdateBackgroundSprite(sprite, yl);
 
 		sprite->x = orig_x-xl;
 		sprite->y = orig_y-yl;
-		//Check whether the sprite is on the screen
+
 		if (Is_Sprite_Visible(sprite)) {
 			sprite->Draw(Game->camera_x,Game->camera_y);
 
@@ -128,6 +93,11 @@ void PlayingScreen::Draw_InGame_BGSprites() {
 void PlayingScreen::Draw_InGame_FGSprites(){
 
 	for(SpriteClass* sprite : Game->spritesHandler.fgSprites_List){
+
+		double yl = 0;
+		UpdateBackgroundSprite(sprite, yl);
+
+		sprite->y = sprite->orig_y - yl;
 
 		if(Is_Sprite_Visible(sprite)) {
 

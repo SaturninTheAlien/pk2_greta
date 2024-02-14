@@ -1698,3 +1698,27 @@ void UpdateBonusSprite(SpriteClass* sprite){
 	sprite->initial_update = false;
 }
 
+void UpdateBackgroundSprite(SpriteClass* sprite, double &yl){
+	
+	for(const SpriteAI::AI_Class& ai: sprite->prototype->AI_f){
+		if(!ai.apply_to_backgrounds)continue;
+
+		if(ai.id == AI_BACKGROUND_MOON){
+			yl += screen_height/3+50; break;
+		}
+		else if((ai.trigger == AI_TRIGGER_ALIVE && sprite->energy>0)||ai.trigger == AI_TRIGGER_ANYWAY){
+			ai.func(sprite);
+		}
+	}
+
+	/**
+	 * @brief 
+	 * To allow self destruction
+	 */
+	if(sprite->damage_taken_type == DAMAGE_ALL){
+		sprite->damage_taken = 0;
+		sprite->damage_taken_type = DAMAGE_NONE;
+		sprite->energy = 0;
+		SpriteOnDeath(sprite);
+	}
+}
