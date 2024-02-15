@@ -283,7 +283,7 @@ bool LuaCommand::execute(SpriteClass*sprite){
         return res;
     }
     else{
-        throw sol::error(res);
+        throw res.get<sol::error>(); // sol::error(res.status);
     }
 }
 /**
