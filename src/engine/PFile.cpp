@@ -367,11 +367,6 @@ bool Path::NoCaseFind() {
 	std::string filename = this->GetFileName();
 	this->SetFile("");
 
-	std::string dir = mGetAssetPath(this->GetDirectory());
-	if(!fs::exists(dir) || !fs::is_directory(dir)){
-		return false;
-	}
-
 	std::vector<std::string> list = this->scandir("");
 
 	int sz = list.size();
@@ -523,7 +518,7 @@ bool Path::Find() {
 		const char* cstr = path_a.c_str();
 
 		//PLog::Write(PLog::DEBUG, "PFile", "Find %s", cstr);
-		if(fs::exists(path_a)&&fs::is_regular_file(path_a)){
+		if(fs::exists(path_a)&&!fs::is_directory(path_a)){
 			PLog::Write(PLog::DEBUG, "PFile", "Found on %s", cstr);
 			return true;
 		}
@@ -964,6 +959,9 @@ std::vector<std::string> Path::scandir(const char* type) {
 
 	if(!this->Is_Zip()){
 		dir = mGetAssetPath(dir);
+		if(!fs::exists(dir) || !fs::is_directory(dir)){
+			return ret;
+		}
 	}
 
 	if(dir.empty()){
