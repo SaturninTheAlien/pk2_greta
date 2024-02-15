@@ -62,6 +62,7 @@ struct PK2EPISODESCORES10 {
 	
 };
 
+
 class EpisodeClass {
 
 	public:
@@ -107,7 +108,6 @@ class EpisodeClass {
 		void Update_NextLevel();
 
 		SfxHandler sfx;
-
 	private:
 		int  Open_Scores();
 

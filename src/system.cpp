@@ -174,8 +174,6 @@ void Prepare_DataPath() {
 //TODO - Receive Episode, organize this
 bool FindAsset(PFile::Path* path, const char* default_dir) {
 
-	const std::string filename = path->GetFileName();
-
 	if(path->Find()){
 		return true;
 	}
@@ -189,7 +187,6 @@ bool FindAsset(PFile::Path* path, const char* default_dir) {
 	}
 
 	path->SetPath(default_dir);
-	path->SetFile(filename);
 
 	//PLog::Write(PLog::INFO, "PK2", "Trying %s", path->c_str());
 
@@ -199,7 +196,7 @@ bool FindAsset(PFile::Path* path, const char* default_dir) {
 
 	if(path->Is_Zip()){
 
-		*path = PFile::Path(default_dir + filename);
+		*path = PFile::Path(default_dir + path->GetFileName());
 		//PLog::Write(PLog::INFO, "PK2", "Trying %s", path->c_str());
 		if (path->Find()) {
 			return true;

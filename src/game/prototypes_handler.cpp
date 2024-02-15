@@ -216,7 +216,7 @@ void PrototypesHandler::savePrototype(PrototypeClass*prototype, const std::strin
 }
 
 
-PrototypeClass* PrototypesHandler::get(int index){
+PrototypeClass* PrototypesHandler::get(std::size_t index)const{
     if(index<mPrototypes.size()){
 		return mPrototypes[index];
 	}

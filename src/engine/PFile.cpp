@@ -354,7 +354,7 @@ std::vector<std::string> scan_zip(Zip* zip_file, const char* path, const char* t
 
     }
 
-    PLog::Write(PLog::DEBUG, "PFile", "Scanned zip \"%s\" on \"%s\" for \"%s\". Found %i matches", zip_file->name.c_str(), path, type, (int)result.size());
+    //PLog::Write(PLog::DEBUG, "PFile", "Scanned zip \"%s\" on \"%s\" for \"%s\". Found %i matches", zip_file->name.c_str(), path, type, (int)result.size());
     return result;
 
 }
@@ -366,11 +366,6 @@ bool Path::NoCaseFind() {
 
 	std::string filename = this->GetFileName();
 	this->SetFile("");
-
-	std::string dir = mGetAssetPath(this->GetDirectory());
-	if(!fs::exists(dir) || !fs::is_directory(dir)){
-		return false;
-	}
 
 	std::vector<std::string> list = this->scandir("");
 
@@ -390,7 +385,7 @@ bool Path::NoCaseFind() {
 	}
 
 	this->SetFile(filename);
-	PLog::Write(PLog::INFO, "PFile", "%s not found", this->path.c_str());
+	//PLog::Write(PLog::INFO, "PFile", "%s not found", this->path.c_str());
 
 	return false;
 
@@ -499,7 +494,7 @@ std::vector<std::string> scan_file(const char* dir, const char* type){
 		}
 	}
 	std::sort(result.begin(), result.end());
-	PLog::Write(PLog::DEBUG, "PFile", "Scanned on \"%s\" for \"%s\". Found %i matches", dir, type, (int)result.size());
+	//PLog::Write(PLog::DEBUG, "PFile", "Scanned on \"%s\" for \"%s\". Found %i matches", dir, type, (int)result.size());
 
 	return result;
 }
@@ -522,8 +517,8 @@ bool Path::Find() {
 
 		const char* cstr = path_a.c_str();
 
-		PLog::Write(PLog::DEBUG, "PFile", "Find %s", cstr);
-		if(fs::exists(path_a)&&fs::is_regular_file(path_a)){
+		//PLog::Write(PLog::DEBUG, "PFile", "Find %s", cstr);
+		if(fs::exists(path_a)&&!fs::is_directory(path_a)){
 			PLog::Write(PLog::DEBUG, "PFile", "Found on %s", cstr);
 			return true;
 		}
@@ -531,7 +526,7 @@ bool Path::Find() {
 		#ifdef _WIN32
 			return false;
 		#else
-			PLog::Write(PLog::INFO, "PFile", "%s not found, trying different cAsE", cstr);
+			//PLog::Write(PLog::INFO, "PFile", "%s not found, trying different cAsE", cstr);
 			return this->NoCaseFind();
 		#endif
 	}
@@ -717,6 +712,36 @@ nlohmann::json Path::GetJSON()const{
 		std::ifstream in(path_a.c_str());
 		nlohmann::json res = nlohmann::json::parse(in);
 		return res;
+	}
+}
+
+std::string Path::GetContentAsString()const{
+	if(this->zip_file!=nullptr){
+		#ifdef PK2_USE_ZIP
+
+		int size = 0;
+		zip_file_t* zfile = mOpenZipFile(this->zip_file, this->path.c_str(), size);
+		char* buffer = new char[size+1];
+		buffer[size] = '\0';
+		
+		zip_fread(zfile, buffer, size);
+		zip_fclose(zfile);
+
+		std::string res = buffer;
+
+		delete[] buffer;
+		return res;
+
+		#else
+
+		throw PFileException("Zip is not supported in this PK2 version!");
+		
+		#endif
+	}
+	else{
+		std::string path_a = mGetAssetPath(this->path);
+		std::ifstream in(path_a.c_str());
+		return std::string((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
 	}
 }
 
@@ -934,6 +959,9 @@ std::vector<std::string> Path::scandir(const char* type) {
 
 	if(!this->Is_Zip()){
 		dir = mGetAssetPath(dir);
+		if(!fs::exists(dir) || !fs::is_directory(dir)){
+			return ret;
+		}
 	}
 
 	if(dir.empty()){
@@ -962,7 +990,7 @@ std::vector<std::string> Path::scandir(const char* type) {
 	auto it = scan_cache.find(cache_entry);
 	if (it != scan_cache.end()) {
 
-		PLog::Write(PLog::DEBUG, "PFile", "Got cache on \"%s\" for \"%s\"", cstr, type);
+		//PLog::Write(PLog::DEBUG, "PFile", "Got cache on \"%s\" for \"%s\"", cstr, type);
 		return it->second;
 
 	}

@@ -15,6 +15,8 @@
 #include "engine/PFile.hpp"
 #include "engine/PDraw.hpp"
 
+#include "lua/pk2_lua.hpp"
+
 #include <algorithm>
 #include <cstring>
 #include <string>
@@ -299,7 +301,6 @@ void EpisodeClass::Load() {
 	this->Load_Info();
 
 	this->Update_NextLevel();
-
 }
 
 EpisodeClass::EpisodeClass(int save) {

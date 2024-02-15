@@ -190,7 +190,7 @@ AI_Table::AI_Table(){
     
     Init_AI(AI_DESTRUCTED_NEXT_TO_PLAYER, AI_TRIGGER_ALIVE, AI_Functions::Destructed_Next_To_Player);
 
-    Init_AI(AI_FOLLOW_COMMANDS, AI_TRIGGER_ALIVE, AI_Functions::Follow_Commands);
+    Init_AI(AI_FOLLOW_COMMANDS, AI_TRIGGER_ALIVE, AI_Functions::Follow_Commands, true, true);
 
     Init_AI(AI_TURN_BACK_IF_DAMAGED, AI_TRIGGER_ALIVE, AI_Functions::Turn_Back_If_Damaged);
 
@@ -222,6 +222,9 @@ AI_Table::AI_Table(){
 
         this->mAIsDict[id] = ai;
     }
+
+    Init_AI(AI_BACKGROUND_MOON, AI_TRIGGER_ANYWAY, nullptr, false, false, false, true);
+    Init_AI(AI_BACKGROUND_HORIZONTAL_PARALLAX, AI_TRIGGER_ANYWAY, nullptr, false, false, false, true);
 
     /**
      * @brief

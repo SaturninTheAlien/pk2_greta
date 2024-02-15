@@ -62,7 +62,12 @@ void SpritesHandler::loadAllLevelPrototypes(const MapClass& map){
 }
 
 bool Compare_bgSprites(SpriteClass* s1, SpriteClass* s2) {
-	return (s1->prototype->parallax_type < s2->prototype->parallax_type); 
+	int parallax1 = s1->prototype->parallax_type;
+	int parallax2 = s2->prototype->parallax_type;
+
+	if(parallax1==0) return false;
+	else if(parallax2==0) return true;
+	return parallax1 < parallax2;
 }
 
 void SpritesHandler::sortBg(){
@@ -186,8 +191,8 @@ int SpritesHandler::onTickUpdate(){
 	}
 
 	// Clean destructed sprites
-	fgSprites_List.remove_if([](SpriteClass*s){return s->removed;});
-	bgSprites_List.remove_if([](SpriteClass*s){return s->removed;});
+	fgSprites_List.remove_if([](SpriteClass*s){return s->removed || s->prototype->type!=TYPE_FOREGROUND;});
+	bgSprites_List.remove_if([](SpriteClass*s){return s->removed || s->prototype->type!=TYPE_BACKGROUND;});
 	Sprites_List.remove_if([&](SpriteClass*s){return this->spriteDestructed(s);});
 
 

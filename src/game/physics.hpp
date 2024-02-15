@@ -10,3 +10,4 @@ void SpriteOnRespawn(SpriteClass* sprite);
 void SpriteOnDeath(SpriteClass* sprite);
 void UpdateSprite(SpriteClass* sprite);
 void UpdateBonusSprite(SpriteClass* sprite);
+void UpdateBackgroundSprite(SpriteClass* sprite, double &yl);

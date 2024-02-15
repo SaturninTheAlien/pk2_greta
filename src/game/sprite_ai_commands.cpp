@@ -7,88 +7,20 @@
  * Experimental commands/waypoints AI by SaturninTheAlien
  */
 
-#include <sstream>
 #include "sprite_ai_commands.hpp"
 #include "sprite_ai_table.hpp"
+
+#include <sstream>
 
 #include "engine/PLog.hpp"
 #include "exceptions.hpp"
 #include "sfx.hpp"
 #include "spriteclass.hpp"
 
+#include "game/game.hpp"
+#include "3rd_party/sol.hpp"
+
 namespace SpriteCommands{
-
-/*
-bool waypoint_x_helper(SpriteClass*sprite, double target_x){
-    double max_speed = sprite->prototype->max_speed / 3.5;
-    double dx = sprite->x - target_x;
-    
-    
-    if(dx*dx <= max_speed*max_speed){
-        //Waypoint reached, align
-        sprite->a = 0;
-        sprite->x = target_x;
-        return true;
-    }
-    else if(sprite->x > target_x){
-        //sprite->flip_x = true;
-        sprite->a = -max_speed;
-    }
-    else{
-        //sprite->flip_x = false;
-        sprite->a = max_speed;
-    }
-
-    return false;
-}
-
-bool waypoint_y_helper(SpriteClass*sprite, double target_y){
-    double max_speed = sprite->prototype->max_speed / 3.5;
-    double dy = sprite->y - target_y;
-
-    if(dy*dy <= max_speed*max_speed){
-        //Waypoint reached, align
-        sprite->b = 0;
-        sprite->y = target_y;
-        return true;
-    }
-    else if(sprite->y > target_y){
-        sprite->b = -max_speed;
-    }
-    else{
-        sprite->b = max_speed;
-    }
-
-
-    return false;
-}
-
-
-bool waypoint_xy_helper(SpriteClass*sprite, double target_x, double target_y){
-    double velocity = sprite->prototype->max_speed / 3.5;
-    double dx = sprite->x - target_x;
-    double dy = sprite->y - target_y;
-
-    double eps2 = dx*dx + dy*dy; 
-
-    if(eps2 <= velocity*velocity){
-        //Waypoint reached, align
-        sprite->a = 0;
-        sprite->b = 0;
-        sprite->x = target_x;
-        sprite->y = target_y;
-        return true;
-    }
-    else{
-        double z = sqrt(eps2);
-        sprite->a = -velocity * dx / z;
-        sprite->b = -velocity * dy / z;
-        //sprite->flip_x = dx>0;
-    }
-
-    return false;
-}*/
-
 
 class WaypointX:public Command{
 public:
@@ -318,26 +250,41 @@ bool ThunderCommand::execute(SpriteClass*sprite){
     return true;
 };
 
-/**
- * @brief 
- * Run script command placeholder
- */
 
-class ScriptCommand: public Command{
+class LuaCommand: public Command{
 public:
-    ScriptCommand(const std::string & scriptName);
+    LuaCommand(const std::string & funcName);
     bool execute(SpriteClass*sprite);
+
 private:
-    std::string mScriptName;
+    sol::protected_function l_function;
 };
 
-ScriptCommand::ScriptCommand(const std::string & scriptName) :mScriptName(scriptName){
-    PLog::Write(PLog::INFO, "PK2", "Loading the script \"%s\" (placeholder)!", mScriptName.c_str());
+LuaCommand::LuaCommand(const std::string & funcName){
+    if(Game->lua == nullptr){
+        throw std::runtime_error("Lua is disabled in this episode, cannot execute \"lua\" command");
+    }
+
+    sol::state& lua = *Game->lua;
+    sol::object o = lua[funcName];
+    if(o.is<std::function<bool(SpriteClass*s)>>()){
+        this->l_function = sol::protected_function(o);
+    }
+    else{
+        std::ostringstream os;
+        os<<"Global Lua function: \""<<funcName<<"\" not defined!";
+        throw std::runtime_error(os.str());
+    }
 }
 
-bool ScriptCommand::execute(SpriteClass*sprite){
-    PLog::Write(PLog::INFO, "PK2", "Executing the script \"%s\" (placeholder)!", mScriptName.c_str());
-    return true;
+bool LuaCommand::execute(SpriteClass*sprite){
+    sol::protected_function_result res = this->l_function(sprite);
+    if(res.valid()){
+        return res;
+    }
+    else{
+        throw sol::error(res);
+    }
 }
 /**
  * @brief 
@@ -435,7 +382,7 @@ void Parse_Commands(const nlohmann::json& j_in, std::vector<Command*>& commands_
                 else if(command_name=="waypoint_rxy"){
                     state = 11;
                 }
-                else if(command_name=="run_script"){
+                else if(command_name=="lua"){
                     state = 13;
                 }
                 else if(command_name=="chase_player"){
@@ -555,7 +502,7 @@ void Parse_Commands(const nlohmann::json& j_in, std::vector<Command*>& commands_
             break;
 
         case 13:
-            commands_v.push_back(new ScriptCommand(j.get<std::string>()));
+            commands_v.push_back(new LuaCommand(j.get<std::string>()));
             state = 0;
             break;
 

@@ -45,23 +45,19 @@ void PlayingScreen::Draw_InGame_BGSprites() {
 
 	for (SpriteClass* sprite : Game->spritesHandler.bgSprites_List) {
 
-		if (sprite->removed)
-			continue;
-
 		double orig_x = sprite->orig_x;
 		double orig_y = sprite->orig_y;
 
-		double xl, yl, yk;
+		double xl, yl;
 
 		if (sprite->prototype->parallax_type != 0) {
-			
-			xl =  orig_x - Game->camera_x-screen_width/2 - sprite->prototype->width/2;
-			xl /= sprite->prototype->parallax_type;
-			yl =  orig_y - Game->camera_y-screen_height/2 - sprite->prototype->height/2;
-			yk = sprite->prototype->parallax_type;///1.5;
-			if (yk != 0)
-				yl /= yk;
 
+			double parallax = double(sprite->prototype->parallax_type);
+
+			xl =  orig_x - Game->camera_x-screen_width/2 - sprite->prototype->width/2;
+			xl /= parallax;
+			yl =  orig_y - Game->camera_y-screen_height/2 - sprite->prototype->height/2;
+			yl /= parallax;
 		}
 		else {
 
@@ -69,46 +65,11 @@ void PlayingScreen::Draw_InGame_BGSprites() {
 
 		}
 
-		switch(sprite->prototype->first_ai()) {
-		case AI_BACKGROUND_MOON					:	yl += screen_height/3+50; break;
-		/*case AI_TAUSTA_LIIKKUU_LEFT	:	if (sprite->a == 0)
-													sprite->a = rand()%3;
-												sprite->orig_x -= sprite->a;
-												if (sprite->hidden && sprite->orig_x < Game->camera_x)
-												{
-														sprite->orig_x = Game->camera_x+screen_width+sprite->prototype->width*2;
-														sprite->a = rand()%3;
-												}
-												break;*/
-		case AI_MOVE_X_COS:			sprite->AI_Move_X(cos_table(degree));
-										orig_x = sprite->x;
-										orig_y = sprite->y;
-										break;
-		case AI_MOVE_Y_COS:			sprite->AI_Move_Y(cos_table(degree));
-										orig_x = sprite->x;
-										orig_y = sprite->y;
-										break;
-		case AI_MOVE_X_SIN:			sprite->AI_Move_X(sin_table(degree));
-										orig_x = sprite->x;
-										orig_y = sprite->y;
-										break;
-		case AI_MOVE_Y_SIN:			sprite->AI_Move_Y(sin_table(degree));
-										orig_x = sprite->x;
-										orig_y = sprite->y;
-										break;
-		/*case AI_SELF_DESTRUCTION:	sprite->AI_SelfDestruction();
-										break;
-		
-		case AI_SELF_TRANSFORMATION:
-									sprite->AI_Self_Transformation();
-									break;*/
-								
-		default: break;
-		}
+		UpdateBackgroundSprite(sprite, yl);
 
 		sprite->x = orig_x-xl;
 		sprite->y = orig_y-yl;
-		//Check whether the sprite is on the screen
+
 		if (Is_Sprite_Visible(sprite)) {
 			sprite->Draw(Game->camera_x,Game->camera_y);
 
@@ -129,12 +90,44 @@ void PlayingScreen::Draw_InGame_FGSprites(){
 
 	for(SpriteClass* sprite : Game->spritesHandler.fgSprites_List){
 
-		if(Is_Sprite_Visible(sprite)) {
+		double orig_x = sprite->orig_x;
+		double orig_y = sprite->orig_y;
+
+		double xl, yl;
+
+		if (sprite->prototype->parallax_type != 0) {
+
+			double parallax = double(-sprite->prototype->parallax_type);
+
+			xl =  orig_x - Game->camera_x-screen_width/2 - sprite->prototype->width/2;
+			xl /= parallax;
+			
+			yl =  orig_y - Game->camera_y-screen_height/2 - sprite->prototype->height/2;
+			yl /= parallax;
+		}
+		else {
+
+			xl = yl = 0;
+
+		}
+
+		UpdateBackgroundSprite(sprite, yl);
+
+		sprite->x = orig_x-xl;
+		sprite->y = orig_y-yl;
+
+
+		if (Is_Sprite_Visible(sprite)) {
+			sprite->Draw(Game->camera_x,Game->camera_y);
+
+			if (!Game->paused)
+				sprite->HandleEffects();
 
 			sprite->hidden = false;
-			sprite->Draw(Game->camera_x,Game->camera_y);
-		}
-		else{
+			debug_drawn_sprites++;
+		} else {
+			if (!Game->paused)
+				sprite->Animoi();
 			sprite->hidden = true;
 		}
 	}
@@ -160,7 +153,7 @@ void PlayingScreen::Draw_InGame_Sprites() {
 				PDraw::image_cutclip(game_assets,hit_x-Game->camera_x-28+8, hit_y-Game->camera_y-27+8,1+framex,83,1+57+framex,83+55);
 			}
 
-			if (!(sprite->player && dev_mode && PInput::Keydown(PInput::Y) && degree % 2 == 0))
+			if (!(dev_mode && sprite->player && PInput::Keydown(PInput::Y) && degree % 2 == 0))
 				sprite->Draw(Game->camera_x,Game->camera_y);
 
 			// Draw stars on dead sprite
@@ -918,17 +911,10 @@ void PlayingScreen::Loop(){
 		else if(test_level){
 			Piste::stop();
 		}
-		else {
-
-			PLog::Write(PLog::DEBUG, "PK2", "Deleting the global game object after GAME OVER.");
-			
+		else {		
 			delete Game;
 			Game = nullptr;
-
-			PLog::Write(PLog::DEBUG, "PK2", "Global game object deleted.");
-
 			next_screen = SCREEN_MAP;
-		
 		}
 
 	}

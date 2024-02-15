@@ -127,6 +127,8 @@ class Path {
     std::string GetDirectory()const;
     std::string GetFileName()const;
 
+    std::string GetContentAsString()const;
+
     RW GetRW2(const char* mode)const;
     nlohmann::json GetJSON()const;
 
