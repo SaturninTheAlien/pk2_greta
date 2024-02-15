@@ -45,7 +45,7 @@ the system. To get everything you need, just run the following command on the te
 
 Then run the "**make**" command inside the "**Pekka Kana 2**" directory.
 
-    $ make -j4 pk2
+    $ make -j4 all
 
 The PK2 binary will be in "**bin/**" directory.
 
