@@ -55,6 +55,8 @@ GameClass::GameClass(std::string map_file) {
 }
 
 GameClass::~GameClass(){
+
+	PSound::stop_music();
 	this->spritesHandler.clearAll();
 
 	if(this->lua!=nullptr){

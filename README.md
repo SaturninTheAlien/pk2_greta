@@ -149,6 +149,7 @@ Commands / waypoints are executed by the sprite in a loop unless there is "die" 
 Currently they don't have any AIs supported or parallax types.
 
 # Fixed bugs
+* Fixed the PSound-related memory leak sometimes crashing the game while returning to the map screen after player's death.
 * Fixed a potential memory leak in AI 39 (AI_DIE_WITH_MOTHER_SPPRITE)
 * Removed initial splash effect if the sprite spawns in the water
 
