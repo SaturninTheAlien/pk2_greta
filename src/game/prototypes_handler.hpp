@@ -39,7 +39,7 @@ public:
      * Get sprite prototype by index for the purpose of debugging.
      * If out of range, nullptr is returned.
      */
-    PrototypeClass* get(int index);
+    PrototypeClass* get(std::size_t index)const;
 
     void setSearchingDir(const std::string& dir){
         this->mSearchingDirectory = dir;

@@ -1703,11 +1703,24 @@ void UpdateBackgroundSprite(SpriteClass* sprite, double &yl){
 	for(const SpriteAI::AI_Class& ai: sprite->prototype->AI_f){
 		if(!ai.apply_to_backgrounds)continue;
 
-		if(ai.id == AI_BACKGROUND_MOON){
-			yl += screen_height/3+50; break;
-		}
-		else if((ai.trigger == AI_TRIGGER_ALIVE && sprite->energy>0)||ai.trigger == AI_TRIGGER_ANYWAY){
-			ai.func(sprite);
+		if((ai.trigger == AI_TRIGGER_ALIVE && sprite->energy>0)||ai.trigger == AI_TRIGGER_ANYWAY){
+
+			if(ai.func==nullptr){
+				switch (ai.id)
+				{
+				case AI_BACKGROUND_MOON:
+					yl += screen_height/3+50;
+					break;
+				case AI_BACKGROUND_HORIZONTAL_PARALLAX:
+					yl = 0;
+					break;
+				default:
+					break;
+				}
+			}
+			else{
+				ai.func(sprite);
+			}
 		}
 	}
 

@@ -45,23 +45,19 @@ void PlayingScreen::Draw_InGame_BGSprites() {
 
 	for (SpriteClass* sprite : Game->spritesHandler.bgSprites_List) {
 
-		if (sprite->removed)
-			continue;
-
 		double orig_x = sprite->orig_x;
 		double orig_y = sprite->orig_y;
 
-		double xl, yl, yk;
+		double xl, yl;
 
 		if (sprite->prototype->parallax_type != 0) {
-			
-			xl =  orig_x - Game->camera_x-screen_width/2 - sprite->prototype->width/2;
-			xl /= sprite->prototype->parallax_type;
-			yl =  orig_y - Game->camera_y-screen_height/2 - sprite->prototype->height/2;
-			yk = sprite->prototype->parallax_type;///1.5;
-			if (yk != 0)
-				yl /= yk;
 
+			double parallax = double(sprite->prototype->parallax_type);
+
+			xl =  orig_x - Game->camera_x-screen_width/2 - sprite->prototype->width/2;
+			xl /= parallax;
+			yl =  orig_y - Game->camera_y-screen_height/2 - sprite->prototype->height/2;
+			yl /= parallax;
 		}
 		else {
 
@@ -94,17 +90,44 @@ void PlayingScreen::Draw_InGame_FGSprites(){
 
 	for(SpriteClass* sprite : Game->spritesHandler.fgSprites_List){
 
-		double yl = 0;
+		double orig_x = sprite->orig_x;
+		double orig_y = sprite->orig_y;
+
+		double xl, yl;
+
+		if (sprite->prototype->parallax_type != 0) {
+
+			double parallax = double(-sprite->prototype->parallax_type);
+
+			xl =  orig_x - Game->camera_x-screen_width/2 - sprite->prototype->width/2;
+			xl /= parallax;
+			
+			yl =  orig_y - Game->camera_y-screen_height/2 - sprite->prototype->height/2;
+			yl /= parallax;
+		}
+		else {
+
+			xl = yl = 0;
+
+		}
+
 		UpdateBackgroundSprite(sprite, yl);
 
-		sprite->y = sprite->orig_y - yl;
+		sprite->x = orig_x-xl;
+		sprite->y = orig_y-yl;
 
-		if(Is_Sprite_Visible(sprite)) {
+
+		if (Is_Sprite_Visible(sprite)) {
+			sprite->Draw(Game->camera_x,Game->camera_y);
+
+			if (!Game->paused)
+				sprite->HandleEffects();
 
 			sprite->hidden = false;
-			sprite->Draw(Game->camera_x,Game->camera_y);
-		}
-		else{
+			debug_drawn_sprites++;
+		} else {
+			if (!Game->paused)
+				sprite->Animoi();
 			sprite->hidden = true;
 		}
 	}
