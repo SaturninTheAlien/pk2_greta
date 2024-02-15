@@ -123,6 +123,9 @@ This example starts the level13.map (the robot boss fight) on dev mode:
 
 * Sprite inheritance / "parent" field.
 
+* Lua scripting
+
+
 * AI_FOLLOW_COMMANDS (40) and "commands" field in the new sprite format:
 Currently available commands:
 > waypoint_x, \<tile_x\>\
@@ -141,7 +144,8 @@ Currently available commands:
 > wait, \<ticks\>, \
 > wait_random, \<ticks_min\>, \<ticks_max\>, \
 > thunder \
-> chase_player, \<ticks\>, 
+> chase_player, \<ticks\>, \
+> lua, \<global_lua_function_name>
 
 Commands / waypoints are executed by the sprite in a loop unless there is "die" or "transform" command.
 
@@ -182,9 +186,8 @@ Also the hedgehog from the box used to move nearly always left at the beginning 
 
 # Plans:
 * Translate all the Finnish variable names and comments to English.
-* Phase out obsolete c-style arrays and replace them respectively with std::string, std::vector and std::array. c-style arrays are intended to remain only where they are necessary like supporting the legacy .spr / .map format.
-* Rewrite PDraw to use SDL_Texture (hardware optimised) instead of SDL_Surface, maybe adding PNG support.
 * New map format, bigger maps and more tiles.
+* Lua scripting (in progress)
 
 # Known bugs
 * Sprites sometimes don't detect edges near BLOCK_BARRIER_DOWN (legacy bug)
