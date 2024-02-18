@@ -42,6 +42,15 @@ void from_json(const nlohmann::json&j, SpriteAnimation& a){
 	a.sequence = j["sequence"].get<std::vector<int>>();
 }
 
+/**
+ * @brief 
+ * To prevent segfault while reading malformed sprites in the legacy formats.
+ */
+inline std::string ReadLegacyString(char*arr, std::size_t n){
+	arr[n-1] = '\0';
+	return std::string(arr);
+}
+
 /* -------- SpriteClass Prototyyppi ------------------------------------------------------------------ */
 
 PrototypeClass::PrototypeClass(){}
@@ -53,16 +62,16 @@ PrototypeClass::~PrototypeClass(){
 }
 
 void PrototypeClass::SetProto10(PrototypeClass10 &proto){
-	this->picture_filename = proto.picture;
-	this->name = proto.name;
+	this->picture_filename = ReadLegacyString(proto.picture, 13);
+	this->name = ReadLegacyString(proto.name, 30);
 
-	this->transformation_str = proto.transformation_str;
-	this->bonus_str = proto.bonus_str;
-	this->ammo1_str = proto.ammo1_str;
-	this->ammo2_str = proto.ammo2_str;
+	this->transformation_str = ReadLegacyString(proto.transformation_str, 13);
+	this->bonus_str = ReadLegacyString(proto.bonus_str, 13);
+	this->ammo1_str = ReadLegacyString(proto.ammo1_str, 13);
+	this->ammo2_str = ReadLegacyString(proto.ammo2_str, 13);
 
 	for (int i=0;i<SPRITE_SOUNDS_NUMBER;i++) {
-		this->sound_files[i] = proto.sound_files[i];
+		this->sound_files[i] = ReadLegacyString(proto.sound_files[i], 13);
 		this->sounds[i] = proto.sounds[i];
 	}
 
@@ -102,16 +111,16 @@ void PrototypeClass::SetProto10(PrototypeClass10 &proto){
 	}
 }
 void PrototypeClass::SetProto11(PrototypeClass11 &proto){
-	this->picture_filename = proto.picture;
-	this->name = proto.name;
+	this->picture_filename = ReadLegacyString(proto.picture, 13);
+	this->name = ReadLegacyString(proto.name, 30);
 
-	this->transformation_str = proto.transformation_str;
-	this->bonus_str = proto.bonus_str;
-	this->ammo1_str = proto.ammo1_str;
-	this->ammo2_str = proto.ammo2_str;
+	this->transformation_str = ReadLegacyString(proto.transformation_str, 13);
+	this->bonus_str = ReadLegacyString(proto.bonus_str, 13);
+	this->ammo1_str = ReadLegacyString(proto.ammo1_str, 13);
+	this->ammo2_str = ReadLegacyString(proto.ammo2_str, 13);
 
 	for (int i=0;i<SPRITE_SOUNDS_NUMBER;i++) {
-		this->sound_files[i] = proto.sound_files[i];
+		this->sound_files[i] = ReadLegacyString(proto.sound_files[i], 13);
 		this->sounds[i] = proto.sounds[i];
 	}
 
@@ -164,17 +173,16 @@ void PrototypeClass::SetProto11(PrototypeClass11 &proto){
 }
 void PrototypeClass::SetProto12(PrototypeClass12 &proto){
 
-	this->picture_filename = proto.picture;
-	this->name = proto.name;
+	this->picture_filename = ReadLegacyString(proto.picture, 13);
+	this->name = ReadLegacyString(proto.name, 30);
 
-	this->transformation_str = proto.transformation_str;
-	this->bonus_str = proto.bonus_str;
-	this->ammo1_str = proto.ammo1_str;
-	this->ammo2_str = proto.ammo2_str;
+	this->transformation_str = ReadLegacyString(proto.transformation_str, 13);
+	this->bonus_str = ReadLegacyString(proto.bonus_str, 13);
+	this->ammo1_str = ReadLegacyString(proto.ammo1_str, 13);
+	this->ammo2_str = ReadLegacyString(proto.ammo2_str, 13);
 
 	for (int i=0;i<SPRITE_SOUNDS_NUMBER;i++) {
-		//strncpy(sound_files[aani], proto.sound_files[aani], 13);
-		this->sound_files[i] = proto.sound_files[i];
+		this->sound_files[i] = ReadLegacyString(proto.sound_files[i], 13);
 		this->sounds[i] = proto.sounds[i];
 	}
 
@@ -233,17 +241,20 @@ void PrototypeClass::SetProto12(PrototypeClass12 &proto){
 		this->animations[i] = proto.animaatiot[i];
 	}
 }
-void PrototypeClass::SetProto13(PrototypeClass13 &proto){
-	this->picture_filename = proto.picture;
-	this->name = proto.name;
 
-	this->transformation_str = proto.transformation_str;
-	this->bonus_str = proto.bonus_str;
-	this->ammo1_str = proto.ammo1_str;
-	this->ammo2_str = proto.ammo2_str;
+
+
+void PrototypeClass::SetProto13(PrototypeClass13 &proto){
+	this->picture_filename = ReadLegacyString(proto.picture, 100); //proto.picture;
+	this->name = ReadLegacyString(proto.name, 30); //proto.name;
+
+	this->transformation_str = ReadLegacyString(proto.transformation_str, 100); //proto.transformation_str;
+	this->bonus_str = ReadLegacyString(proto.bonus_str, 100);  //proto.bonus_str;
+	this->ammo1_str = ReadLegacyString(proto.ammo1_str, 100); //proto.ammo1_str;
+	this->ammo2_str = ReadLegacyString(proto.ammo2_str, 100);  //proto.ammo2_str;
 
 	for (int i=0;i<SPRITE_SOUNDS_NUMBER;i++) {
-		this->sound_files[i] = proto.sound_files[i];
+		this->sound_files[i] = ReadLegacyString(proto.sound_files[i], 100);
 		this->sounds[i] = proto.sounds[i];
 	}
 
@@ -680,6 +691,9 @@ void PrototypeClass::LoadAssets(EpisodeClass*episode){
 	if(this->frames_number>0){
 		this->frames.resize(this->frames_number);
 		this->frames_mirror.resize(this->frames_number);
+	}
+	else{
+		throw std::runtime_error("The 0 value of frames_number is not allowed");
 	}
 
 	PFile::Path image = episode->Get_Dir(this->picture_filename);

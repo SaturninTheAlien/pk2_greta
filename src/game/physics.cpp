@@ -1723,6 +1723,12 @@ void UpdateBackgroundSprite(SpriteClass* sprite, double &yl){
 		}
 	}
 
+	if (sprite->charging_timer > 0)
+		sprite->charging_timer--;
+
+	if (sprite->mutation_timer > 0)	// aika muutokseen
+		sprite->mutation_timer --;
+
 	/**
 	 * @brief 
 	 * To allow self destruction
