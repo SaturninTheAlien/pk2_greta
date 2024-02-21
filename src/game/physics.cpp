@@ -34,11 +34,6 @@ static double sprite_bottom;
 static int sprite_width;
 static int sprite_height;
 
-static bool oikealle;
-static bool vasemmalle;
-static bool ylos;
-static bool alas;
-
 static PK2BLOCK Block_Get(u32 x, u32 y) {
 
 	PK2BLOCK block;
@@ -111,7 +106,7 @@ static void Check_SpriteBlock(SpriteClass* sprite, const PK2BLOCK &block) {
 			if (sprite_right+sprite->a < block.right){
 				// Onko block sein�?
 				if (block.right_side == BLOCK_WALL){
-					oikealle = false;
+					sprite->can_move_right = false;
 					if (block.id == BLOCK_LIFT_HORI)
 						sprite->x = block.left - sprite_width/2;
 				}
@@ -119,7 +114,7 @@ static void Check_SpriteBlock(SpriteClass* sprite, const PK2BLOCK &block) {
 
 			if (sprite_left+sprite->a > block.left){
 				if (block.left_side == BLOCK_WALL){
-					vasemmalle = false;
+					sprite->can_move_left = false;
 
 					if (block.id == BLOCK_LIFT_HORI)
 						sprite->x = block.right + sprite_width/2;
@@ -138,7 +133,7 @@ static void Check_SpriteBlock(SpriteClass* sprite, const PK2BLOCK &block) {
 		if (sprite_bottom+sprite->b-1 >= block.top && sprite_upper+sprite->b <= block.bottom){
 			if (sprite_bottom+sprite->b-1 <= block.bottom){
 				if (block.bottom_side == BLOCK_WALL){
-					alas = false;
+					sprite->can_move_down = false;
 
 					if (block.id == BLOCK_LIFT_VERT)
 						sprite->y = block.top - sprite_height /2;
@@ -151,7 +146,7 @@ static void Check_SpriteBlock(SpriteClass* sprite, const PK2BLOCK &block) {
 
 			if (sprite_upper+sprite->b > block.top){
 				if (block.top_side == BLOCK_WALL){
-					ylos = false;
+					sprite->can_move_up = false;
 
 					if (sprite_upper < block.bottom)
 						if (block.id != BLOCK_LIFT_HORI)
@@ -260,10 +255,10 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 		/**********************************************************************/
 		/* Make wind effects                                                  */
 		/**********************************************************************/
-		if (block.id == BLOCK_DRIFT_LEFT && vasemmalle)
+		if (block.id == BLOCK_DRIFT_LEFT && sprite->can_move_left)
 			sprite->a -= 0.02;
 
-		if (block.id == BLOCK_DRIFT_RIGHT && oikealle)
+		if (block.id == BLOCK_DRIFT_RIGHT && sprite->can_move_right)
 			sprite->a += 0.02;	//0.05
 
 		/*********************************************************************/
@@ -287,7 +282,7 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 			if (sprite_right+sprite->a < block.right) {
 				// Onko block sein�?
 				if (block.right_side == BLOCK_WALL) {
-					oikealle = false;
+					sprite->can_move_right = false;
 
 					if (block.id == BLOCK_LIFT_HORI)
 						sprite->x = block.left - sprite_width/2;
@@ -296,7 +291,7 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 			// Examine whether the sprite going in the left side of the block.
 			if (sprite_left+sprite->a > block.left) {
 				if (block.left_side == BLOCK_WALL) {
-					vasemmalle = false;
+					sprite->can_move_left = false;
 
 					if (block.id == BLOCK_LIFT_HORI)
 						sprite->x = block.right + sprite_width/2;
@@ -315,7 +310,7 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 		if (sprite_bottom+sprite->b-1 >= block.top && sprite_upper+sprite->b <= block.bottom) { //Get the up and down blocks
 			if (sprite_bottom+sprite->b-1 <= block.bottom) { //Just in the sprite's foot
 				if (block.bottom_side == BLOCK_WALL) { //If it is a wall
-					alas = false;
+					sprite->can_move_down = false;
 					if (block.id == BLOCK_LIFT_VERT)
 						sprite->y = block.top - sprite_height /2;
 
@@ -354,7 +349,7 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 
 			if (sprite_upper+sprite->b > block.top) {
 				if (block.top_side == BLOCK_WALL) {
-					ylos = false;
+					sprite->can_move_up = false;
 
 					if (sprite_upper < block.bottom) {
 						if (block.id == BLOCK_LIFT_VERT && sprite->crouched) {
@@ -507,11 +502,6 @@ void UpdateSprite(SpriteClass* sprite){
 
 	bool in_water = sprite->in_water;
 
-	oikealle	 = true,
-	vasemmalle	 = true,
-	ylos		 = true,
-	alas		 = true;
-
 	sprite->crouched = false;
 
 	sprite->edge_on_the_left = false;
@@ -663,6 +653,12 @@ void UpdateSprite(SpriteClass* sprite){
 		if (sprite->prototype->type != TYPE_GAME_CHARACTER)
 			sprite->energy = 0;
 	}
+
+
+	sprite->can_move_right	 = true,
+	sprite->can_move_left	 = true,
+	sprite->can_move_up		 = true,
+	sprite->can_move_down		 = true;
 
 	/*****************************************************************************************/
 	/* Jump                                                                                  */
@@ -892,13 +888,13 @@ void UpdateSprite(SpriteClass* sprite){
 					sprite2->energy > 0/* && sprite->player == 0*/)
 				{
 					if (sprite->x < sprite2->x)
-						oikealle = false;
+						sprite->can_move_right = false;
 					if (sprite->x > sprite2->x)
-						vasemmalle = false;
+						sprite->can_move_left = false;
 					if (sprite->y < sprite2->y)
-						alas = false;
+						sprite->can_move_down = false;
 					if (sprite->y > sprite2->y)
-						ylos = false;
+						sprite->can_move_up = false;
 				}
 
 				if (sprite->HasAI(AI_ARROW_BARRIER)) {
@@ -1042,25 +1038,15 @@ void UpdateSprite(SpriteClass* sprite){
 	/* Revisions                                                                             */
 	/*****************************************************************************************/
 
-	/*if (&sprite == Player_Sprite && dev_mode) {
-
-		oikealle   = true;
-		vasemmalle = true;
-		ylos       = true;
-		alas       = true;
-		printf("%f\n", sprite->b);
-
-	}*/
-
-	if (!oikealle)
+	if (!sprite->can_move_right)
 		if (sprite->a > 0)
 			sprite->a = 0;
 
-	if (!vasemmalle)
+	if (!sprite->can_move_left)
 		if (sprite->a < 0)
 			sprite->a = 0;
 
-	if (!ylos){
+	if (!sprite->can_move_up){
 		if (sprite->b < 0)
 			sprite->b = 0;
 
@@ -1068,7 +1054,7 @@ void UpdateSprite(SpriteClass* sprite){
 			sprite->jump_timer = 95;//sprite->prototype->max_jump * 2;
 	}
 
-	if (!alas)
+	if (!sprite->can_move_down)
 		if (sprite->b >= 0){ //If sprite is falling
 			if (sprite->jump_timer > 0){
 				if (sprite->jump_timer >= 90+10){
@@ -1134,7 +1120,7 @@ void UpdateSprite(SpriteClass* sprite){
 		if (Game->map.weather == WEATHER_SNOW)
 			kitka = 1.01; // And even more on snow
 
-		if (!alas)
+		if (!sprite->can_move_down)
 			sprite->a /= kitka;
 		else
 			sprite->a /= 1.03;//1.02//1.05
@@ -1142,21 +1128,10 @@ void UpdateSprite(SpriteClass* sprite){
 		sprite->b /= 1.25;
 	}
 
-	sprite->can_move_right = oikealle;
-	sprite->can_move_left = vasemmalle;
-	sprite->can_move_down = alas;
-	sprite->can_move_up = ylos;
-
-	/*
-	sprite->weight = sprite->prototype->weight;
-
-	if (sprite->energy < 1 && sprite->weight == 0)
-		sprite->weight = 1;*/
 
 	if (sprite->jump_timer < 0)
 		sprite->can_move_down = false;
 
-	//sprite->crouched   = false;
 
 	/*****************************************************************************************/
 	/* AI                                                                                    */
@@ -1192,14 +1167,19 @@ void UpdateSprite(SpriteClass* sprite){
 	/* Set game area to sprite                                                               */
 	/*****************************************************************************************/
 
-	if (sprite->x < 0)
+	if (sprite->x < 0){
 		sprite->x = 0;
+		sprite->can_move_left = false;
+	}		
 
 	if (sprite->y < -sprite_height)
 		sprite->y = -sprite_height;
 
-	if (sprite->x > PK2MAP_MAP_WIDTH*32)
+	if (sprite->x > PK2MAP_MAP_WIDTH*32){
+		sprite->can_move_right = false;
 		sprite->x = PK2MAP_MAP_WIDTH*32;
+	}
+		
 
 	// If the sprite falls under the lower edge of the map
 	if (sprite->y > PK2MAP_MAP_HEIGHT*32 + sprite_height) {
@@ -1290,10 +1270,10 @@ void UpdateBonusSprite(SpriteClass* sprite){
 	sprite_upper   = sprite->y - sprite_height / 2;
 	sprite_bottom   = sprite->y + sprite_height / 2;
 
-	oikealle	= true,
-	vasemmalle	= true,
-	ylos		= true,
-	alas		= true;
+	sprite->can_move_right	= true,
+	sprite->can_move_left	= true,
+	sprite->can_move_up		= true,
+	sprite->can_move_down		= true;
 
 	bool in_water = sprite->in_water;
 	if (sprite->damage_timer > 0)
@@ -1409,11 +1389,11 @@ void UpdateBonusSprite(SpriteClass* sprite){
 					{
 						if (sprite->x < sprite2->x) {
 							sprite2->a += sprite->a / 3.0;
-							oikealle = false;
+							sprite->can_move_right = false;
 						}
 						if (sprite->x > sprite2->x) {
 							sprite2->a += sprite->a / 3.0;
-							vasemmalle = false;
+							sprite->can_move_left = false;
 						}
 					}
 
@@ -1462,19 +1442,19 @@ void UpdateBonusSprite(SpriteClass* sprite){
 		}
 
 
-		if (!oikealle)
+		if (!sprite->can_move_right)
 		{
 			if (sprite->a > 0)
 				sprite->a = -sprite->a/1.5;
 		}
 
-		if (!vasemmalle)
+		if (!sprite->can_move_left)
 		{
 			if (sprite->a < 0)
 				sprite->a = -sprite->a/1.5;
 		}
 
-		if (!ylos)
+		if (!sprite->can_move_up)
 		{
 			if (sprite->b < 0)
 				sprite->b = 0;
@@ -1482,7 +1462,7 @@ void UpdateBonusSprite(SpriteClass* sprite){
 			sprite->jump_timer = sprite->prototype->max_jump;
 		}
 
-		if (!alas)
+		if (!sprite->can_move_down)
 		{
 			if (sprite->b >= 0)
 			{
@@ -1524,11 +1504,6 @@ void UpdateBonusSprite(SpriteClass* sprite){
 		sprite->x += sprite->a;
 		sprite->y += sprite->b;
 
-
-		sprite->can_move_right = oikealle;
-		sprite->can_move_left = vasemmalle;
-		sprite->can_move_down = alas;
-		sprite->can_move_up = ylos;
 	}
 	else	// jos spriten weight on nolla, tehd��n spritest� "kelluva"
 	{

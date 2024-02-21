@@ -143,7 +143,7 @@ void Jumper(SpriteClass*s){
 }
 
 void Basic(SpriteClass*s){
-    if (s->x < 10)
+    /*if (s->x < 10)
 	{
 		s->x = 10;
 		s->can_move_left = false;
@@ -163,7 +163,7 @@ void Basic(SpriteClass*s){
 	else if (s->y < -32)
 	{
 		s->y = -32;
-	}
+	}*/
 
 	if (s->a < 0)
 		s->flip_x = true;
