@@ -100,7 +100,12 @@ public:
     bool FlyToWaypointY(double target_y);
     bool FlyToWaypointXY(double target_x, double target_y);
 
-    bool Transform();
+    bool Transform(){
+        return this->TransformTo(this->prototype->transformation);
+    }
+
+    bool TransformTo(PrototypeClass* transformation);
+
     void Die();
 
     void StartThunder();

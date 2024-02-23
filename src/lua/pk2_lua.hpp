@@ -19,6 +19,6 @@ class EpisodeClass;
 
 namespace PK2lua{
 
-sol::state* CreateGameLuaVM(EpisodeClass* episode);
+sol::state* CreateGameLuaVM(const std::string& level_name);
 
 }

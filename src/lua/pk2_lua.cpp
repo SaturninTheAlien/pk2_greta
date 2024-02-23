@@ -73,16 +73,14 @@ void OverrideLuaRequire(sol::state& lua){
     lua.safe_script(require_decorator);
 }
 
-sol::state* CreateGameLuaVM(EpisodeClass* episode){
+sol::state* CreateGameLuaVM(const std::string& level_name){
+    std::string main_lua = PK2GetLuaFile("main.lua");
 
-    PFile::Path main_lua_f = episode->Get_Dir("main.lua");
-    if(!FindAsset(&main_lua_f, "lua" PE_SEP)){
-        PLog::Write(PLog::INFO, "PK2lua", "No Lua scripting in this episode");
+    if(main_lua.empty()){
+        PLog::Write(PLog::INFO, "PK2lua", "No Lua scripting in this level");
         return nullptr;
     }
-    PLog::Write(PLog::INFO, "PK2lua", "Loading main.lua script");
-    std::string main_lua = main_lua_f.GetContentAsString();
-    
+
     PLog::Write(PLog::INFO, "PK2lua", "Creating lua VM");
     sol::state* lua = new sol::state();
     lua->open_libraries(sol::lib::base,

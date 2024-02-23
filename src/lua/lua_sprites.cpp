@@ -47,6 +47,8 @@ void ExposeSpriteClass(sol::state& lua){
          */
 
         "transform", &SpriteClass::Transform,
+        "transform_to", &SpriteClass::TransformTo,
+
         "die", &SpriteClass::Die,
         "fly_to_target_x", &SpriteClass::FlyToWaypointX,
         "fly_to_target_y", &SpriteClass::FlyToWaypointY,

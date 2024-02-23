@@ -346,9 +346,9 @@ void SpriteClass::Animation_Egg() {
 	Animaatio(uusi_animaatio, alusta);
 }
 
-bool SpriteClass::Transform(){
+bool SpriteClass::TransformTo(PrototypeClass * transformation){
 
-	PrototypeClass * transformation = this->prototype->transformation;
+	//PrototypeClass * transformation = this->prototype->transformation;
 	if(transformation!=nullptr){
 		this->prototype = transformation;
 		this->initial_weight = transformation->weight;

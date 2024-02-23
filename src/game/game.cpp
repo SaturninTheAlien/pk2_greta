@@ -81,7 +81,7 @@ int GameClass::Start() {
 	 * @brief 
 	 * Load lua
 	 */
-	this->lua = PK2lua::CreateGameLuaVM(Episode);
+	this->lua = PK2lua::CreateGameLuaVM(this->map_file);
 
 	Gifts_Clean(); //Reset gifts
 	Fadetext_Init(); //Reset fade text
