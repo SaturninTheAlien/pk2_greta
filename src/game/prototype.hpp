@@ -164,9 +164,6 @@ public:
     double  dead_weight = 0;
 
 
-    bool change_color_to_alpha = true;
-    unsigned int color_to_alpha = 255;
-
     PrototypeClass();
     ~PrototypeClass();
 

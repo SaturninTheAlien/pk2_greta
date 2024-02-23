@@ -360,6 +360,7 @@ bool SpriteClass::Transform(){
 		this->current_command = 0;
 
 		this->swimming = false;
+		this->max_speed_available = false;
 		
 		return true;
 	}

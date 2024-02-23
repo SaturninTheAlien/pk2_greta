@@ -489,17 +489,6 @@ void PrototypeClass::SetProto20(const nlohmann::json& j){
 		this->has_dead_weight = true;
 		this->dead_weight = j["dead_weight"].get<double>();
 	}
-
-	if(j.contains("color_to_alpha")){
-		const nlohmann::json& j2 = j["color_to_alpha"];
-		if(j2.is_null()){
-			this->change_color_to_alpha = false;
-		}
-		else if(j2.is_number_integer()){
-			this->change_color_to_alpha = true;
-			this->color_to_alpha = j2.get<unsigned int>();
-		}
-	}
 }
 
 void to_json(nlohmann::json& j, const PrototypeClass& c){
@@ -704,7 +693,7 @@ void PrototypeClass::LoadAssets(EpisodeClass*episode){
 
 	}
 
-	int bufferi = PDraw::image_load(image, false, this->change_color_to_alpha, this->color_to_alpha);
+	int bufferi = PDraw::image_load(image, false);
 	if (bufferi == -1) {
 		throw PExcept::FileNotFoundException(this->picture_filename, PExcept::MISSING_SPRITE_TEXTURE);
 	}
@@ -742,8 +731,8 @@ void PrototypeClass::LoadAssets(EpisodeClass*episode){
 			frame_x = picture_frame_x;
 		}
 
-		this->frames[frame_i] = PDraw::image_cut(bufferi,frame_x,frame_y,picture_frame_width,picture_frame_height, this->change_color_to_alpha, this->color_to_alpha); //frames
-		this->frames_mirror[frame_i] = PDraw::image_cut(bufferi,frame_x,frame_y,picture_frame_width,picture_frame_height, this->change_color_to_alpha, this->color_to_alpha); //flipped frames
+		this->frames[frame_i] = PDraw::image_cut(bufferi,frame_x,frame_y,picture_frame_width,picture_frame_height); //frames
+		this->frames_mirror[frame_i] = PDraw::image_cut(bufferi,frame_x,frame_y,picture_frame_width,picture_frame_height); //flipped frames
 		PDraw::image_fliphori(this->frames_mirror[frame_i]);
 
 		frame_x += this->picture_frame_width + 3;
