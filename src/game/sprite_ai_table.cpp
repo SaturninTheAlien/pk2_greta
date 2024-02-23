@@ -197,8 +197,8 @@ AI_Table::AI_Table(){
     Init_AI(AI_RETURN_TO_ORIG_X_CONSTANT, AI_TRIGGER_ALIVE, AI_Functions::Return_To_Orig_X_Constant);
     Init_AI(AI_RETURN_TO_ORIG_Y_CONSTANT, AI_TRIGGER_ALIVE, AI_Functions::Return_To_Orig_Y_Constant);
 
-    Init_AI(AI_SWIMMING, AI_TRIGGER_ALIVE, AI_Functions::SwimInWater);
-    Init_AI(AI_MAX_SPEED_SWIMMING, AI_TRIGGER_ALIVE, AI_Functions::SwimInWaterMaxSpeed);
+    Init_AI(AI_SWIMMING, AI_TRIGGER_ALIVE, AI_Functions::SwimInWater, true, true);
+    Init_AI(AI_MAX_SPEED_SWIMMING, AI_TRIGGER_ALIVE, AI_Functions::SwimInWaterMaxSpeed, true, true);
 
     Init_AI(AI_MAX_SPEED_PLAYER, AI_TRIGGER_ALIVE, AI_Functions::MaxSpeedPlayer, false, true);
     Init_AI(AI_MAX_SPEED_PLAYER_ON_SUPER, AI_TRIGGER_ALIVE, AI_Functions::MaxSpeedOnSuper, true, true);
