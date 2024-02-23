@@ -289,9 +289,10 @@ void SpritesHandler::addGiftSprite(PrototypeClass* prototype){
 	
 	SpriteClass* sprite  = this->mCreateSprite(prototype,
 		false,
-		Player_Sprite->x - prototype->width,
+		Player_Sprite->x,
 		Player_Sprite->y, parent);
 
+	sprite->y += sprite->prototype->height/2;
 }
 
 void SpritesHandler::addProjectileSprite(PrototypeClass* prototype, double x, double y, SpriteClass* shooter){
