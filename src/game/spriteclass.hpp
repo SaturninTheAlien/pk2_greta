@@ -82,7 +82,7 @@ public:
 
     
     SpriteClass();
-    SpriteClass(PrototypeClass *prototype, bool player, double x, double y);
+    SpriteClass(PrototypeClass *prototype, bool player, double x, double y, SpriteClass*parent=nullptr);
     ~SpriteClass();
 
     int  Draw(int camera_x, int camera_y);   // animate and draw the sprite

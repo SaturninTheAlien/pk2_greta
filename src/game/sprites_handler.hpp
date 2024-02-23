@@ -16,13 +16,7 @@ public:
     PrototypeClass* getLevelPrototype(int index);
     void loadAllLevelPrototypes(const MapClass& map);
 
-    void add_bg(SpriteClass* sprite) {
-        bgSprites_List.push_back(sprite);
-    }
-
-    void add_fg(SpriteClass* sprite){
-        fgSprites_List.push_back(sprite);
-    }
+    
 
     void sortBg();
     void onGameStart();
@@ -31,9 +25,43 @@ public:
     void onEvent2();
 
     int onTickUpdate();
+    
+    /**
+     * @brief 
+     * Spawning the player
+     */
+    void addPlayer(PrototypeClass*prototype, double x, double y);
 
-    void addSprite(PrototypeClass* protot, int is_Player_Sprite, double x, double y, SpriteClass* parent, bool isbonus);
-    void addSpriteAmmo(PrototypeClass* protot, double x, double y, SpriteClass* emo);
+    /**
+     * @brief 
+     * Spawn a sprite based on the level sprite tiles
+     */
+    void addLevelSprite(PrototypeClass*prototype, double x, double y);
+
+    /**
+     * @brief 
+     * Spawn a bonus sprite dropped upon another sprite's death
+     */
+    void addDroppedBonusSprite(PrototypeClass*prototype, double x, double y);
+    /**
+     * @brief 
+     * Spawn a sprite as a projectile
+     */
+    void addProjectileSprite(PrototypeClass* prototype, double x, double y, SpriteClass* shooter);
+    /**
+     * @brief 
+     * Spawn a sprite from player's gift
+     */
+    void addGiftSprite(PrototypeClass* prototype);
+    /**
+     * @brief 
+     * Spawn a sprite from lua
+     */
+
+    SpriteClass* addLuaSprite(PrototypeClass* prototype, double x, double y, SpriteClass*parent=nullptr){
+        
+        return this->mCreateSprite(prototype, false, x, y, parent);
+    }
 
     PrototypesHandler prototypesHandler;
     
@@ -41,8 +69,18 @@ public:
     std::list<SpriteClass*> bgSprites_List;
     std::list<SpriteClass*> fgSprites_List;
 
-    SpriteClass* Player_Sprite;
+    SpriteClass* Player_Sprite = nullptr;
 private:
+    SpriteClass * mCreateSprite(PrototypeClass* prototype, bool player, double x, double y, SpriteClass*parent_sprite=nullptr);
+
+    void mAddBG(SpriteClass* sprite) {
+        bgSprites_List.push_back(sprite);
+    }
+
+    void mAddFG(SpriteClass* sprite){
+        fgSprites_List.push_back(sprite);
+    }
+
     bool spriteDestructed (SpriteClass* sprite);
     void loadLevelPrototype(const std::string& name, int id);
     PrototypeClass* Level_Prototypes_List[MAX_PROTOTYYPPEJA] = {nullptr};

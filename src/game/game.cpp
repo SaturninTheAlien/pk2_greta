@@ -422,7 +422,8 @@ void GameClass::Place_Sprites() {
 		throw std::runtime_error("Null player prototype is quite serious error!");
 	}
 
-	this->spritesHandler.addSprite(proto, 1, 0, 0, nullptr, false);
+	//this->spritesHandler.addSprite(proto, 1, 0, 0, nullptr, false);
+	this->spritesHandler.addPlayer(proto, 0, 0);
 
 	for (u32 x = 0; x < PK2MAP_MAP_WIDTH; x++) {
 		for (u32 y = 0; y < PK2MAP_MAP_HEIGHT; y++) {
@@ -441,7 +442,8 @@ void GameClass::Place_Sprites() {
 				if (protot->HasAI(AI_CHICK) || protot->HasAI(AI_CHICKBOX))
 					this->chick_mode = true;
 
-				this->spritesHandler.addSprite(protot, 0, x*32, y*32 - protot->height+32, nullptr, false);
+				this->spritesHandler.addLevelSprite(protot, x*32, y*32 - protot->height+32);
+				//this->spritesHandler.addSprite(protot, 0, x*32, y*32 - protot->height+32, nullptr, false);
 			}
 		}
 	}

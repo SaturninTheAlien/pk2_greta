@@ -58,23 +58,22 @@ void Gifts_Remove(int i) {
 
 int Gifts_Use(SpritesHandler& sh) {
 	if (gifts_count > 0) {
-
-		/**
-		 * @brief 
-		 * Fix spyrooster green bee bug.
-		 */
-		SpriteClass* parent = nullptr;
-		if(sh.Player_Sprite->enemy){
-			parent = sh.Player_Sprite;
-		}
-
-		sh.addSprite(
-			gifts_list[0], 0,
-			sh.Player_Sprite->x - gifts_list[0]->width,
-			sh.Player_Sprite->y,
-			parent, false);
-
+		sh.addGiftSprite(gifts_list[0]);
 		Gifts_Remove(0);
+		// /**
+		//  * @brief 
+		//  * Fix spyrooster green bee bug.
+		//  */
+		// SpriteClass* parent = nullptr;
+		// if(sh.Player_Sprite->enemy){
+		// 	parent = sh.Player_Sprite;
+		// }
+
+		// sh.addSprite(
+		// 	gifts_list[0], 0,
+		// 	sh.Player_Sprite->x - gifts_list[0]->width,
+		// 	sh.Player_Sprite->y,
+		// 	parent, false);
 	}
 
 	return 0;

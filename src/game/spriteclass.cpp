@@ -23,7 +23,7 @@
 /* -------- SpriteClass  ------------------------------------------------------------------ */
 
 SpriteClass::SpriteClass(){}
-SpriteClass::SpriteClass(PrototypeClass *prototype, bool player, double x, double y){
+SpriteClass::SpriteClass(PrototypeClass *prototype, bool player, double x, double y, SpriteClass*parent){
 	if (prototype) {
 
 		this->prototype         = prototype;
@@ -34,6 +34,7 @@ SpriteClass::SpriteClass(PrototypeClass *prototype, bool player, double x, doubl
 
 		this->x              = x;
 		this->y              = y;
+		
 		this->orig_x         = x;
 		this->orig_y         = y;
 		
@@ -44,6 +45,8 @@ SpriteClass::SpriteClass(PrototypeClass *prototype, bool player, double x, doubl
 		this->enemy     = prototype->enemy;
 		this->ammo1         = prototype->ammo1;
 		this->ammo2         = prototype->ammo2;
+
+		this->parent_sprite = parent;
 	
 	}
 }

@@ -60,7 +60,7 @@ int MapScreen::PK_Draw_Map_Button(int x, int y, int type){
 		flash = 0;
 	
 	if (type == 1)
-		PDraw::image_cutcliptransparent(game_assets, 247, 1, 25, 25, x-2, y-2, flash, 96);
+		PDraw::image_cutcliptransparent(game_assets, 247, 1, 25, 25, x-3, y-3, flash, 96);
 
 	if (((degree/45)+1)%4==0 || type==0)
 		PDraw::image_cutclip(game_assets,x,y,1 + 25*type,58,23 + 25*type,80);
@@ -133,7 +133,7 @@ void MapScreen::Draw() {
 				int sinx = (int)(sin_table(degree)/2);
 				int cosy = (int)(cos_table(degree)/2);
 				int pekkaframe = 28*((degree%360)/120);
-				PDraw::image_cutclip(game_assets,x+sinx-12,y-17+cosy,157+pekkaframe,46,182+pekkaframe,80);
+				PDraw::image_cutclip(game_assets,x+sinx-8,y-17+cosy,157+pekkaframe,46,182+pekkaframe,80);
 			}
 
 			int paluu = PK_Draw_Map_Button(x-5, y-10, type);

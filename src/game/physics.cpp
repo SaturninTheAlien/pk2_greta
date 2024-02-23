@@ -429,11 +429,11 @@ void SpriteOnDeath(SpriteClass* sprite){
 
 			if(bonuses_number>1){
 				for(int i=0;i<bonuses_number;++i){
-					Game->spritesHandler.addSprite(bonus, 0, sprite->x+(10-rand()%21),sprite->y+(10-rand()%21), nullptr, true);
+					Game->spritesHandler.addDroppedBonusSprite(bonus, sprite->x+(10-rand()%21),sprite->y+(10-rand()%21));
 				}
 			}
 			else if(bonuses_number==1){
-				Game->spritesHandler.addSprite(bonus, 0, sprite->x,sprite->y, nullptr, true);
+				Game->spritesHandler.addDroppedBonusSprite(bonus, sprite->x,sprite->y);
 			}			
 		}
 	}
@@ -447,7 +447,7 @@ void SpriteOnDeath(SpriteClass* sprite){
 	Play_GameSFX(sprite->prototype->sounds[SOUND_DESTRUCTION],100, (int)sprite->x, (int)sprite->y,
 					sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 
-	if (sprite->prototype->type == TYPE_GAME_CHARACTER && sprite->prototype->score != 0 && sprite!=Game->spritesHandler.Player_Sprite){
+	if (sprite->prototype->type == TYPE_GAME_CHARACTER && sprite->prototype->score != 0 && !sprite->player){
 		Fadetext_New(fontti2,std::to_string(sprite->prototype->score),(int)sprite->x-8,(int)sprite->y-8,80);
 		Game->score_increment += sprite->prototype->score;
 	}
@@ -1221,7 +1221,7 @@ void UpdateSprite(SpriteClass* sprite){
 						  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 
 			if (sprite->ammo1 != nullptr) {
-				Game->spritesHandler.addSpriteAmmo(sprite->ammo1,sprite->x, sprite->y, sprite);
+				Game->spritesHandler.addProjectileSprite(sprite->ammo1,sprite->x, sprite->y, sprite);
 		//		if (Level_Prototypes_List[sprite->ammo1].sounds[SOUND_ATTACK1] > -1)
 		//			Play_GameSFX(Level_Prototypes_List[sprite->ammo1].sounds[SOUND_ATTACK1],100, (int)sprite->x, (int)sprite->y,
 		//						  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
@@ -1240,7 +1240,7 @@ void UpdateSprite(SpriteClass* sprite){
 						  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 
 			if (sprite->ammo2 != nullptr) {
-				Game->spritesHandler.addSpriteAmmo(sprite->ammo2,sprite->x, sprite->y, sprite);
+				Game->spritesHandler.addProjectileSprite(sprite->ammo2,sprite->x, sprite->y, sprite);
 
 		//		if (Level_Prototypes_List[sprite->ammo2].sounds[SOUND_ATTACK1] > -1)
 		//			Play_GameSFX(Level_Prototypes_List[sprite->ammo2].sounds[SOUND_ATTACK1],100, (int)sprite->x, (int)sprite->y,

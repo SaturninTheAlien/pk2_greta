@@ -199,85 +199,122 @@ int SpritesHandler::onTickUpdate(){
 	return active_sprites;
 }
 
-void SpritesHandler::addSprite(PrototypeClass* protot, int is_Player_Sprite, double x, double y, SpriteClass* parent, bool isbonus) {
+SpriteClass* SpritesHandler::mCreateSprite(PrototypeClass* prototype, bool player, double x, double y, SpriteClass*parent_sprite){
+	if(prototype==nullptr){
+		throw std::runtime_error("Cannot create a sprite from a null prototype");
+	}
+	
+	SpriteClass* sprite = new SpriteClass(prototype, player, x, y, parent_sprite);
+	this->Sprites_List.push_back(sprite);
 
-	SpriteClass* sprite = new SpriteClass(protot, is_Player_Sprite, x, y);
-	Sprites_List.push_back(sprite);
-
-	if (is_Player_Sprite){
-		Player_Sprite = sprite;
-		AI_Functions::player_invisible = sprite;
-		if(sprite->invisible_timer==0){
-			AI_Functions::player = sprite;
-		}
-		else{
-			AI_Functions::player = nullptr;
-		}
+	if (prototype->type == TYPE_BACKGROUND){
+		this->mAddBG(sprite);
+	}
+	else if(prototype->type == TYPE_FOREGROUND){
+		this->mAddFG(sprite);
 	}
 
-	if(isbonus) { //If it is a bonus dropped by enemy
-		sprite->orig_x = sprite->x;
-		sprite->orig_y = sprite->y;
-
-		if(sprite->weight!=0)sprite->jump_timer = 1;
-		
-		sprite->damage_timer = 35;//25
-
-		if(protot->weight==0 && protot->max_speed==0){
-			sprite->a = 0;
-			sprite->b = 0;
-		}
-		else{
-			sprite->a = 3 - rand()%7;
-		}
-	} else {
-
-		sprite->x = x + 16 + 1;
-		sprite->y += sprite->prototype->height/2;
-		sprite->orig_x = sprite->x;
-		sprite->orig_y = sprite->y;
-		sprite->parent_sprite = parent;
-	}
-
-	if (protot->type == TYPE_BACKGROUND){
-		this->add_bg(sprite);
-	}
-	else if(protot->type == TYPE_FOREGROUND){
-		this->add_fg(sprite);
-	}
+	return sprite;
 }
 
-void SpritesHandler::addSpriteAmmo(PrototypeClass* protot, double x, double y, SpriteClass* shooter) {
+void SpritesHandler::addPlayer(PrototypeClass*prototype, double x, double y){
+	SpriteClass* sprite = this->mCreateSprite(prototype, true, x, y, nullptr);
 
-	//SpriteClass(proto, is_Player_Sprite,false,x-proto->width/2,y);
-	SpriteClass* sprite = new SpriteClass(protot, false, x, y);
-	Sprites_List.push_back(sprite);
+	this->Player_Sprite = sprite;
 
+	AI_Functions::player_invisible = sprite;
+	if(sprite->invisible_timer==0){
+		AI_Functions::player = sprite;
+	}
+	else{
+		AI_Functions::player = nullptr;
+	}
+
+	/**
+	 * @brief 
+	 * Legacy feature
+	 * Why does it exist ?
+	 */
+	sprite->x = x + 16 + 1;
+	sprite->y += sprite->prototype->height/2;
+
+
+
+	sprite->orig_x = sprite->x;
+	sprite->orig_y = sprite->y;
+}
+
+void SpritesHandler::addLevelSprite(PrototypeClass*prototype, double x, double y){
+	SpriteClass* sprite  = this->mCreateSprite(prototype, false, x, y, nullptr);
+
+	/**
+	 * @brief 
+	 * Legacy feature
+	 * Why does it exist ?
+	 */
+	sprite->x = x + 16 + 1;
+	sprite->y += sprite->prototype->height/2;
+
+	sprite->orig_x = sprite->x;
+	sprite->orig_y = sprite->y;
+}
+
+void SpritesHandler::addDroppedBonusSprite(PrototypeClass*prototype, double x, double y){
+	SpriteClass* sprite  = this->mCreateSprite(prototype, false, x, y, nullptr);
+
+	if(sprite->weight>0)sprite->jump_timer = 1;
+	
+	sprite->damage_timer = 35;//25
+
+	sprite->a = 3 - rand()%7;
+
+	/*if(protot->weight==0 && protot->max_speed==0){
+		sprite->a = 0;
+		sprite->b = 0;
+	}
+	else{
+		sprite->a = 3 - rand()%7;
+	}*/
+}
+
+void SpritesHandler::addGiftSprite(PrototypeClass* prototype){
+	/**
+	 * @brief 
+	 * Fix spyrooster green bee bug.
+	 */
+	SpriteClass* parent = nullptr;
+	if(this->Player_Sprite->enemy){
+		parent = this->Player_Sprite;
+	}
+	
+	SpriteClass* sprite  = this->mCreateSprite(prototype,
+		false,
+		Player_Sprite->x - prototype->width,
+		Player_Sprite->y, parent);
+
+}
+
+void SpritesHandler::addProjectileSprite(PrototypeClass* prototype, double x, double y, SpriteClass* shooter){
 	if(shooter==nullptr){
-		PLog::Write(PLog::WARN, "PK2", "Adding ammo sprite with null shooter!");
+		PLog::Write(PLog::WARN, "PK2", "Trying to add ammo sprite with null shooter!");
 		return;
 	}
+
+	SpriteClass* sprite  = this->mCreateSprite(prototype, false, x, y, shooter);
 
 	sprite->parent_sprite = shooter;
 	sprite->enemy = shooter->enemy;
 
-	if(protot->AI_p.empty()){ // No other projectile AIs, default behaviour
+	if(prototype->AI_p.empty()){ // No other projectile AIs, default behaviour
 		if (!shooter->flip_x)
 			sprite->a = sprite->prototype->max_speed;
 		else
 			sprite->a = -sprite->prototype->max_speed;
 	}
 	else{
-		for(const SpriteAI::ProjectileAIClass& ai: protot->AI_p){
+		for(const SpriteAI::ProjectileAIClass& ai: prototype->AI_p){
 			ai.func(sprite, shooter);
 		}
-	}
-
-	if (protot->type == TYPE_BACKGROUND){
-		this->add_bg(sprite);
-	}
-	else if(protot->type == TYPE_FOREGROUND){
-		this->add_fg(sprite);
 	}
 
 }

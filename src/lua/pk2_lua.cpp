@@ -8,10 +8,12 @@
  * Lua utils by SaturninTheAlien
  */
 
+#include <iostream>
 #include "pk2_lua.hpp"
 #include <string>
 
 #include "lua_sprites.hpp"
+#include "lua_game.hpp"
 
 #include "engine/PLog.hpp"
 #include "engine/PFile.hpp"
@@ -23,20 +25,19 @@
 
 namespace PK2lua{
 
+std::string PK2GetLuaFile(const std::string&filename_in){
+    std::string name = filename_in;
+    if(name.size() > 4 && name.substr(name.size()-4, 4)!=".lua"){
+        name += ".lua";
+    }
 
-
-std::string PK2GetLuaFile(const std::string&name){
     PFile::Path file = Episode->Get_Dir(name);
     if(FindAsset(&file, "lua" PE_SEP)){
         return file.GetContentAsString();
     }
     else{
-        file = Episode->Get_Dir(name+".lua");
-        if(FindAsset(&file, "lua" PE_SEP)){
-            return file.GetContentAsString();
-        }
-    }
-    return "";
+        return "";
+    }    
 }
 
 /**
@@ -57,11 +58,15 @@ void OverrideLuaRequire(sol::state& lua){
     static const char * require_decorator = 
         "local _require = require \n"
         "require = function(mod_name) \n"
-            "tmp = _pk2_get_lua_file(mod_name) \n"
-            "if tmp ~= \"\" then \n"
-                "return _pk2_load_string(tmp) \n"
-            "elseif _require ~= nil then \n"
-                "return _require(mod_name) \n"
+            "if mod_name == \"pk2\" then \n"
+                "return _pk2_api \n"
+            "else \n"
+                "tmp = _pk2_get_lua_file(mod_name) \n"
+                "if tmp ~= \"\" then \n"
+                    "return _pk2_load_string(tmp) \n"
+                "elseif _require ~= nil then \n"
+                    "return _require(mod_name) \n"
+                "end \n"
             "end \n"
         "end \n";
 
@@ -93,6 +98,7 @@ sol::state* CreateGameLuaVM(EpisodeClass* episode){
     PLog::Write(PLog::INFO, "PK2lua", "Running main.lua");
     ExposePrototypeClass(*lua);
     ExposeSpriteClass(*lua);
+    ExposeGameAPI(*lua);
 
     lua->safe_script(main_lua);
     return lua;
