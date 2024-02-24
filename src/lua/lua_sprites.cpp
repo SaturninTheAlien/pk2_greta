@@ -24,7 +24,6 @@ void ExposePrototypeClass(sol::state& lua){
     lua.new_usertype<PrototypeClass>(
         "Prototype",
         sol::no_constructor,
-
         "name", sol::readonly(&PrototypeClass::name),
         "ammo1", sol::readonly(&PrototypeClass::ammo1),
         "ammo2", sol::readonly(&PrototypeClass::ammo2),
@@ -33,7 +32,11 @@ void ExposePrototypeClass(sol::state& lua){
         "width", sol::readonly(&PrototypeClass::width),
         "height", sol::readonly(&PrototypeClass::height),
         "weight", sol::readonly(&PrototypeClass::weight),
-        "enemy", sol::readonly(&PrototypeClass::enemy));
+        "enemy", sol::readonly(&PrototypeClass::enemy),
+
+        "color", sol::readonly(&PrototypeClass::color),
+        "energy", sol::readonly(&PrototypeClass::energy),
+        "max_speed", sol::readonly(&PrototypeClass::max_speed));
 }
 
 void ExposeSpriteClass(sol::state& lua){
