@@ -1208,7 +1208,7 @@ void UpdateSprite(SpriteClass* sprite){
 	/*****************************************************************************************/
 
 	// If the sprite is ready and isn't crouching
-	if ((sprite->charging_timer == 0 || sprite->self_destruction) && !sprite->crouched ) {
+	if (sprite->charging_timer == 0  && !sprite->crouched ) {
 		// the attack has just started
 		if (sprite->attack1_timer == sprite->prototype->attack1_time) {
 			// provides recovery time, after which the sprite can attack again
@@ -1251,6 +1251,29 @@ void UpdateSprite(SpriteClass* sprite){
 		//						  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 
 			}
+		}
+	}
+
+	/**
+	 * @brief 
+	 * Some old projectile spri
+	 */
+
+	if(sprite->self_destruction && sprite->prototype->type == TYPE_PROJECTILE){
+
+		if(sprite->ammo1!=nullptr){
+			Play_GameSFX(sprite->prototype->sounds[SOUND_ATTACK1],100, (int)sprite->x, (int)sprite->y,
+						  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
+			
+			Game->spritesHandler.addProjectileSprite(sprite->ammo1,sprite->x, sprite->y, sprite);
+			SpriteOnDeath(sprite);
+		}
+		else if(sprite->ammo2!=nullptr){
+			Play_GameSFX(sprite->prototype->sounds[SOUND_ATTACK2],100, (int)sprite->x, (int)sprite->y,
+						  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
+			
+			Game->spritesHandler.addProjectileSprite(sprite->ammo2,sprite->x, sprite->y, sprite);
+			SpriteOnDeath(sprite);
 		}
 	}
 

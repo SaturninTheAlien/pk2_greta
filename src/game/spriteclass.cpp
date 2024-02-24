@@ -348,8 +348,7 @@ void SpriteClass::Animation_Egg() {
 
 bool SpriteClass::TransformTo(PrototypeClass * transformation){
 
-	//PrototypeClass * transformation = this->prototype->transformation;
-	if(transformation!=nullptr){
+	if(transformation!=nullptr && transformation!=this->prototype){
 		this->prototype = transformation;
 		this->initial_weight = transformation->weight;
 		this->animation_index = -1;
