@@ -1132,6 +1132,37 @@ void UpdateSprite(SpriteClass* sprite){
 	if (sprite->jump_timer < 0)
 		sprite->can_move_down = false;
 
+	/*****************************************************************************************/
+	/* Set game area to sprite                                                               */
+	/*****************************************************************************************/
+
+	if (sprite->x < 0){
+		sprite->x = 0;
+		sprite->can_move_left = false;
+	}		
+
+	if (sprite->y < -sprite_height){
+		sprite->y = -sprite_height;
+		sprite->can_move_up = false;
+	}		
+
+	if (sprite->x > PK2MAP_MAP_WIDTH*32){
+		sprite->can_move_right = false;
+		sprite->x = PK2MAP_MAP_WIDTH*32;
+	}
+		
+
+	// If the sprite falls under the lower edge of the map
+	if (sprite->y > PK2MAP_MAP_HEIGHT*32 + sprite_height) {
+
+		sprite->y = PK2MAP_MAP_HEIGHT*32 + sprite_height;
+		sprite->energy = 0;
+		sprite->removed = true;
+
+		if (sprite->weight_button >= 1)
+			Game->vibration = 50;
+	}
+
 
 	/*****************************************************************************************/
 	/* AI                                                                                    */
@@ -1163,34 +1194,7 @@ void UpdateSprite(SpriteClass* sprite){
 	//				  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 
 
-	/*****************************************************************************************/
-	/* Set game area to sprite                                                               */
-	/*****************************************************************************************/
-
-	if (sprite->x < 0){
-		sprite->x = 0;
-		sprite->can_move_left = false;
-	}		
-
-	if (sprite->y < -sprite_height)
-		sprite->y = -sprite_height;
-
-	if (sprite->x > PK2MAP_MAP_WIDTH*32){
-		sprite->can_move_right = false;
-		sprite->x = PK2MAP_MAP_WIDTH*32;
-	}
-		
-
-	// If the sprite falls under the lower edge of the map
-	if (sprite->y > PK2MAP_MAP_HEIGHT*32 + sprite_height) {
-
-		sprite->y = PK2MAP_MAP_HEIGHT*32 + sprite_height;
-		sprite->energy = 0;
-		sprite->removed = true;
-
-		if (sprite->weight_button >= 1)
-			Game->vibration = 50;
-	}
+	
 
 	if (sprite->a > max_speed)
 		sprite->a = max_speed;
@@ -1274,6 +1278,30 @@ void UpdateBonusSprite(SpriteClass* sprite){
 	sprite->can_move_left	= true,
 	sprite->can_move_up		= true,
 	sprite->can_move_down		= true;
+
+	if (sprite->x < 0){
+		sprite->x = 0;
+		sprite->can_move_left = false;
+	}		
+
+	if (sprite->y < -sprite_height){
+		sprite->y = -sprite_height;
+		sprite->can_move_up = false;
+	}		
+
+	if (sprite->x > PK2MAP_MAP_WIDTH*32){
+		sprite->can_move_right = false;
+		sprite->x = PK2MAP_MAP_WIDTH*32;
+	}
+		
+
+	// If the sprite falls under the lower edge of the map
+	if (sprite->y > PK2MAP_MAP_HEIGHT*32 + sprite_height) {
+
+		sprite->y = PK2MAP_MAP_HEIGHT*32 + sprite_height;
+		sprite->energy = 0;
+		sprite->removed = true;
+	}
 
 	bool in_water = sprite->in_water;
 	if (sprite->damage_timer > 0)
