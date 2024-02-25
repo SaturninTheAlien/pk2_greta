@@ -63,7 +63,7 @@ int MapScreen::PK_Draw_Map_Button(int x, int y, int type){
 		PDraw::image_cutcliptransparent(game_assets, 247, 1, 25, 25, x-3, y-3, flash, 96);
 
 	if (((degree/45)+1)%4==0 || type==0)
-		PDraw::image_cutclip(game_assets,x,y,1 + 25*type,58,23 + 25*type,80);
+		PDraw::image_cutclip(game_assets,x-1,y-1,1 + 25*type,58,23 + 25*type,80);
 
 	return ret;
 }
@@ -158,7 +158,7 @@ void MapScreen::Draw() {
 					a = 100 - (dd - order) * 5;
 				
 				if (a > 0)
-					PDraw::image_cutcliptransparent(game_assets, 247, 1, 25, 25, x-9, y-14, a, COLOR_TURQUOISE);
+					PDraw::image_cutcliptransparent(game_assets, 247, 1, 25, 25, x-8, y-13, a, COLOR_TURQUOISE);
 
 			}
 
