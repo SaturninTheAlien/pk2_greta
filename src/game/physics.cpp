@@ -1716,6 +1716,17 @@ void UpdateBonusSprite(SpriteClass* sprite){
 		}
 	}
 
+	/**
+	 * @brief 
+	 * To allow self destruction
+	 */
+	if(sprite->damage_taken_type == DAMAGE_ALL){
+		sprite->damage_taken = 0;
+		sprite->damage_taken_type = DAMAGE_NONE;
+		sprite->energy = 0;
+		SpriteOnDeath(sprite);
+	}
+
 	/* The energy doesn't matter that the player is a bonus item */
 	if (sprite->player)
 		sprite->energy = 0;
