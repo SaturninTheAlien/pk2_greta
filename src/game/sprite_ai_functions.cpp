@@ -912,8 +912,12 @@ void MaxSpeedSwimming(SpriteClass*s){
 }
 
 void DieIfTouchesWall(SpriteClass*s){
-	if(!s->can_move_right || !s->can_move_left || !s->can_move_up || !s->can_move_down ){
+
+	if( !s->can_move_right || !s->can_move_left ||
+		(!s->can_move_down && s->b >= 0) ||
+		(!s->can_move_up && s->b <= 0 )) {
 		s->damage_taken = s->energy;
+		s->damage_taken_type = DAMAGE_ALL;
 	}
 }
 

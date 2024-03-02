@@ -121,6 +121,8 @@ This example starts the level13.map (the robot boss fight) on dev mode:
     
     * AI_STATIC_PROJECTILE (143) - sprite has no initial speed if spawned as projectile (ammo1 or ammo2)
 
+    * AI_DIE_IF_TOUCHES_WALL (144)
+
     * AI_BACKGROUND_HORIZONTAL_PARALLAX (104) -  removes Y parallax,
     * AI_BACKGROUND_BRING_TO_FRONT (105) - for sorting BG (and FG) sprites despite their parallax
     * AI_BACKGROUND_SEND_TO_BACK (106)
