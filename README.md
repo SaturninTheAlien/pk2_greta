@@ -60,7 +60,7 @@ Use [Homebrew](https://brew.sh/) to install SDL2 packages:
 ```
 brew install sdl2 sdl2_gfx sdl2_image sdl2_mixer libzip lua
 ```
-Now just clone the code and run `make` on pk2 directory and run `/bin/pekka-kana-2`, just like on Ubuntu/Debian.
+Now just clone the code and run `make all` on pk2 directory and run `/bin/pekka-kana-2`, just like on Ubuntu/Debian.
 
 # Our community
 * Discord: https://discord.gg/kqDJfYX

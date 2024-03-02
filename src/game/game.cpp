@@ -20,6 +20,7 @@
 #include "engine/PDraw.hpp"
 #include "engine/PInput.hpp"
 #include "lua/pk2_lua.hpp"
+#include "lua/lua_game.hpp"
 
 #include <cstring>
 
@@ -60,7 +61,7 @@ GameClass::~GameClass(){
 	this->spritesHandler.clearAll();
 
 	if(this->lua!=nullptr){
-		delete this->lua;
+		PK2lua::DestroyGameLuaVM(this->lua);
 		this->lua = nullptr;
 	}
 }
@@ -73,7 +74,7 @@ int GameClass::Start() {
 	this->spritesHandler.clearAll(); //Reset prototypes and sprites
 
 	if(this->lua!=nullptr){
-		delete this->lua;
+		PK2lua::DestroyGameLuaVM(this->lua);
 		this->lua = nullptr;
 	}
 
@@ -504,6 +505,32 @@ int GameClass::Count_Keys() {
 	return keys;
 }
 
+void GameClass::ExecuteEventsIfNeeded(){
+	if(this->change_skulls){
+		this->Change_SkullBlocks();
+		this->change_skulls = false;
+
+		PK2lua::TriggerEventListeners(PK2lua::LUA_EVENT_SKULL_BLOCKS_CHANGED);
+	}
+
+	if(this->event1){
+		this->vibration = 90;
+		PInput::Vibrate(1000);
+
+		this->spritesHandler.onEvent1();
+		this->event1 = false;
+
+		PK2lua::TriggerEventListeners(PK2lua::LUA_EVENT_1);
+	}
+
+	if(this->event2){
+		this->spritesHandler.onEvent2();
+		this->event2 = false;
+
+		PK2lua::TriggerEventListeners(PK2lua::LUA_EVENT_2);
+	}
+}
+
 void GameClass::Change_SkullBlocks() {
 
 	for (u32 x = 0; x < PK2MAP_MAP_WIDTH; x++)
@@ -555,7 +582,7 @@ void GameClass::Open_Locks() {
 
 }
 
-void GameClass::Show_Info(const char *text) {
+void GameClass::Show_Info(const std::string& text) {
 
 	if (info_text.compare(text) != 0 || info_timer == 0) {
 

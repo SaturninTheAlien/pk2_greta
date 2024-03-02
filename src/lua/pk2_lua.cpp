@@ -102,4 +102,9 @@ sol::state* CreateGameLuaVM(const std::string& level_name){
     return lua;
 }
 
+void DestroyGameLuaVM(sol::state * lua){
+    ClearEventListeners();
+    delete lua;
+}
+
 }

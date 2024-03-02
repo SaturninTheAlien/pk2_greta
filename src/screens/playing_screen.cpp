@@ -884,24 +884,8 @@ void PlayingScreen::Loop(){
 
 	}
 
-	if(Game->change_skulls){
-		Game->Change_SkullBlocks();
-		Game->change_skulls = false;
-	}
-
-	if(Game->event1){
-		Game->vibration = 90;
-		PInput::Vibrate(1000);
-
-		Game->spritesHandler.onEvent1();
-		Game->event1 = false;
-	}
-
-	if(Game->event2){
-		Game->spritesHandler.onEvent2();
-		Game->event2 = false;
-	}
-
+	Game->ExecuteEventsIfNeeded();
+	
 	if (Game->exit_timer == 1 && !Is_Fading()) {
 		if (Game->level_clear) {
 

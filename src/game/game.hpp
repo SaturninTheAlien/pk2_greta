@@ -79,7 +79,7 @@ class GameClass {
 		int Finish();
 
 		int Move_Blocks();
-		void Show_Info(const char *text);
+		void Show_Info(const std::string& text);
 
 		bool isStarted();
 
@@ -95,6 +95,7 @@ class GameClass {
 		SpritesHandler spritesHandler;
 
 		void Change_SkullBlocks();
+		void ExecuteEventsIfNeeded();
 		
 		sol::state * lua = nullptr;
 	private:		
