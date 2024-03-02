@@ -35,6 +35,12 @@ bool PrototypesHandler::mFindSprite(PFile::Path& path)const{
 }
 
 PrototypeClass* PrototypesHandler::loadPrototype(const std::string& filename_in){
+
+	if(this->mAssetsLoaded){
+		throw PExcept::PException("Cannot load a sprite prototype after loading sprite assets!");
+	}
+
+
     bool legacy_spr = true; //try to load legacy .spr file
 	std::string filename_clean; //filename without .spr
 
@@ -231,9 +237,13 @@ void PrototypesHandler::loadSpriteAssets(){
     for(PrototypeClass* prototype: this->mPrototypes){
 		prototype->LoadAssets(this->mEpisode);
 	}
+
+	this->mAssetsLoaded = true;
 }
 void PrototypesHandler::unloadSpriteAssets(){
 	for(PrototypeClass* prototype: this->mPrototypes){
 		prototype->UnloadAssets();
 	}
+
+	this->mAssetsLoaded = false;
 }

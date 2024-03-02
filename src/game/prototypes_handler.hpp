@@ -56,6 +56,7 @@ private:
      */
     bool mShouldLoadDependencies = true;
     bool mJsonPriority = true;    
+    bool mAssetsLoaded = false;
 
     /**
      * @brief 

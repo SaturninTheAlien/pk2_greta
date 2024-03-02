@@ -5,6 +5,7 @@
 #include "physics.hpp"
 #include "game.hpp"
 #include "episode/episodeclass.hpp"
+#include <limits.h>
 
 SpritesHandler::SpritesHandler()
 :prototypesHandler(true, true, Episode){
@@ -61,17 +62,51 @@ void SpritesHandler::loadAllLevelPrototypes(const MapClass& map){
 	}
 }
 
-bool Compare_bgSprites(SpriteClass* s1, SpriteClass* s2) {
-	int parallax1 = s1->prototype->parallax_type;
-	int parallax2 = s2->prototype->parallax_type;
+int Get_BG_Parallax_Score(SpriteClass* s){
 
-	if(parallax1==0) return false;
-	else if(parallax2==0) return true;
-	return parallax1 < parallax2;
+	PrototypeClass*prototype = s->prototype;
+	for(const int& ai:prototype->AI_v){
+		if(ai==AI_BACKGROUND_BRING_TO_FRONT){
+			return INT_MAX;
+		}
+		else if(ai==AI_BACKGROUND_SEND_TO_BACK){
+			return INT_MIN;
+		}
+	}
+
+	int parallax = prototype->parallax_type;
+
+	return parallax==0 ? INT_MAX - 1 : parallax;
+}
+
+bool Compare_bgSprites(SpriteClass* s1, SpriteClass* s2) {
+	return Get_BG_Parallax_Score(s1) < Get_BG_Parallax_Score(s2);
+}
+
+int Get_FG_Parallax_Score(SpriteClass* s){
+
+	PrototypeClass*prototype = s->prototype;
+	for(const int& ai:prototype->AI_v){
+		if(ai==AI_BACKGROUND_BRING_TO_FRONT){
+			return INT_MIN;
+		}
+		else if(ai==AI_BACKGROUND_SEND_TO_BACK){
+			return INT_MAX;
+		}
+	}
+
+	int parallax = prototype->parallax_type;
+
+	return parallax==0 ? INT_MAX - 1 : parallax;
+}
+
+bool Compare_fgSprites(SpriteClass* s1, SpriteClass * s2){
+	return Get_FG_Parallax_Score(s2) < Get_FG_Parallax_Score(s1);
 }
 
 void SpritesHandler::sortBg(){
     this->bgSprites_List.sort(Compare_bgSprites);
+	this->fgSprites_List.sort(Compare_fgSprites);
 }
 
 void SpritesHandler::onGameStart(){
