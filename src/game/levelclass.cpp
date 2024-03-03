@@ -2,7 +2,7 @@
 //Pekka Kana 2
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
-#include "game/mapclass.hpp"
+#include "levelclass.hpp"
 #include "exceptions.hpp"
 #include <sstream>
 
@@ -27,7 +27,7 @@ struct PK2KARTTA{ // Vanha version 0.1
 	u8   extrat [640*480];
 };
 
-void MapClass::SetTilesAnimations(int degree, int anim, u32 aika1, u32 aika2, u32 aika3) {
+void LevelClass::SetTilesAnimations(int degree, int anim, u32 aika1, u32 aika2, u32 aika3) {
 
 	arrows_block_degree = degree;
 	block_animation_frame = anim;
@@ -37,9 +37,9 @@ void MapClass::SetTilesAnimations(int degree, int anim, u32 aika1, u32 aika2, u3
 
 }
 
-MapClass::MapClass(){}
+LevelClass::LevelClass(){}
 
-MapClass::~MapClass(){
+LevelClass::~LevelClass(){
 	PDraw::image_delete(this->tiles_buffer);
 	PDraw::image_delete(this->bg_tiles_buffer);
 	PDraw::image_delete(this->background_buffer);
@@ -47,7 +47,7 @@ MapClass::~MapClass(){
 	PDraw::image_delete(this->bg_water_buffer);
 }
 
-void MapClass::Load(PFile::Path path){
+void LevelClass::Load(PFile::Path path){
 	this->Load_Plain_Data(path);
 	
 	path.SetFile(this->tileset_filename);
@@ -59,7 +59,7 @@ void MapClass::Load(PFile::Path path){
 	Calculate_Edges();
 }
 
-void MapClass::Load_Plain_Data(PFile::Path path) {
+void LevelClass::Load_Plain_Data(PFile::Path path) {
 	try{
 		char version[8];
 		PFile::RW file = path.GetRW2("r");
@@ -100,7 +100,7 @@ void MapClass::Load_Plain_Data(PFile::Path path) {
 	}
 }
 
-void MapClass::LoadVersion01(PFile::Path path){
+void LevelClass::LoadVersion01(PFile::Path path){
 
 	PK2KARTTA kartta;
 
@@ -128,9 +128,9 @@ void MapClass::LoadVersion01(PFile::Path path){
 
 	memset(this->sprite_tiles,255, sizeof(sprite_tiles));
 }
-void MapClass::LoadVersion10(PFile::Path path){
+void LevelClass::LoadVersion10(PFile::Path path){
 	
-	MapClass kartta;
+	LevelClass kartta;
 
 	PFile::RW file = path.GetRW2("r");
 
@@ -158,7 +158,7 @@ void MapClass::LoadVersion10(PFile::Path path){
 	for (u32 i=0; i<PK2MAP_MAP_SIZE; i++)
 		this->sprite_tiles[i] = kartta.sprite_tiles[i];
 }
-void MapClass::LoadVersion11(PFile::Path path){
+void LevelClass::LoadVersion11(PFile::Path path){
 	PFile::RW file = path.GetRW2("r");
 
 	memset(this->background_tiles, 255, sizeof(this->background_tiles));
@@ -196,7 +196,7 @@ void MapClass::LoadVersion11(PFile::Path path){
 
 	//return (virhe);
 }
-void MapClass::LoadVersion12(PFile::Path path){
+void LevelClass::LoadVersion12(PFile::Path path){
 
 	char luku[8];
 	
@@ -252,7 +252,7 @@ void MapClass::LoadVersion12(PFile::Path path){
 
 	file.close();
 }
-void MapClass::LoadVersion13(PFile::Path path){
+void LevelClass::LoadVersion13(PFile::Path path){
 
 	char luku[8];
 	u32 i;
@@ -367,7 +367,7 @@ void MapClass::LoadVersion13(PFile::Path path){
 	file.close();
 }
 
-int MapClass::Load_BG(PFile::Path path){
+int LevelClass::Load_BG(PFile::Path path){
 	
 	if (!FindAsset(&path, "gfx" PE_SEP "scenery" PE_SEP))
 		return 1;
@@ -398,7 +398,7 @@ int MapClass::Load_BG(PFile::Path path){
 	return 0;
 }
 
-void MapClass::Load_TilesImage(PFile::Path path){
+void LevelClass::Load_TilesImage(PFile::Path path){
 	
 	PFile::Path bkp = path;
 
@@ -432,12 +432,12 @@ void MapClass::Load_TilesImage(PFile::Path path){
 	}
 }
 /*
-int MapClass::Load_BGSfx(PFile::Path path){
+int LevelClass::Load_BGSfx(PFile::Path path){
 
 	return 0;
 }*/
 
-void MapClass::Calculate_Edges(){
+void LevelClass::Calculate_Edges(){
 
 	u8 tile1, tile2, tile3;
 
@@ -486,7 +486,7 @@ void MapClass::Calculate_Edges(){
 
 /* Kartanpiirtorutiineja ----------------------------------------------------------------*/
 
-void MapClass::Animate_Fire(int tiles){
+void LevelClass::Animate_Fire(int tiles){
 	u8 *buffer = NULL;
 	u32 width;
 	int x,y;
@@ -530,7 +530,7 @@ void MapClass::Animate_Fire(int tiles){
 	PDraw::drawimage_end(tiles);
 }
 
-void MapClass::Animate_Waterfall(int tiles){
+void LevelClass::Animate_Waterfall(int tiles){
 	u8 *buffer = NULL;
 	u32 width;
 	int x,y,plus;
@@ -572,7 +572,7 @@ void MapClass::Animate_Waterfall(int tiles){
 	PDraw::drawimage_end(tiles);
 }
 
-void MapClass::Animate_WaterSurface(int tiles){
+void LevelClass::Animate_WaterSurface(int tiles){
 	u8 *buffer = NULL;
 	u32 width;
 	int x,y;
@@ -598,7 +598,7 @@ void MapClass::Animate_WaterSurface(int tiles){
 	PDraw::drawimage_end(tiles);
 }
 
-void MapClass::Animate_Water(int tiles, int water_tiles){
+void LevelClass::Animate_Water(int tiles, int water_tiles){
 	u8 *buffer_lahde = NULL, *buffer_kohde = NULL;
 	u32 leveys_lahde, leveys_kohde;
 	int x, y, color1, color2;
@@ -663,7 +663,7 @@ void MapClass::Animate_Water(int tiles, int water_tiles){
 	PDraw::drawimage_end(water_tiles);
 }
 
-void MapClass::Animate_RollUp(int tiles){
+void LevelClass::Animate_RollUp(int tiles){
 	u8 *buffer = NULL;
 	u32 width;
 	int y;
@@ -682,7 +682,7 @@ void MapClass::Animate_RollUp(int tiles){
 	PDraw::drawimage_end(tiles);
 }
 
-int MapClass::DrawBackgroundTiles(int kamera_x, int kamera_y){
+int LevelClass::DrawBackgroundTiles(int kamera_x, int kamera_y){
 	
 	int kartta_x = kamera_x/32;
 	int kartta_y = kamera_y/32;
@@ -720,7 +720,7 @@ int MapClass::DrawBackgroundTiles(int kamera_x, int kamera_y){
 	return 0;
 }
 
-int MapClass::DrawForegroundTiles(int kamera_x, int kamera_y){
+int LevelClass::DrawForegroundTiles(int kamera_x, int kamera_y){
 
 	int kartta_x = kamera_x / 32;
 	int kartta_y = kamera_y / 32;

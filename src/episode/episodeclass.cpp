@@ -5,7 +5,7 @@
 #include "episode/episodeclass.hpp"
 
 #include "episode/mapstore.hpp"
-#include "game/mapclass.hpp"
+#include "game/levelclass.hpp"
 #include "language.hpp"
 #include "system.hpp"
 #include "save.hpp"
@@ -212,7 +212,7 @@ void EpisodeClass::Load() {
 	// Read levels plain data
 	for (u32 i = 0; i < this->level_count; i++) {
 
-		MapClass temp;
+		LevelClass temp;
 		char* mapname = this->levels_list[i].tiedosto;
 		strcpy(mapname, list[i].c_str());
 		temp.Load_Plain_Data(PFile::Path(path, mapname));

@@ -14,7 +14,6 @@
 #include "save.hpp"
 #include "system.hpp"
 
-#include "game/mapclass.hpp"
 #include "episode/episodeclass.hpp"
 #include "language.hpp"
 
@@ -149,27 +148,6 @@ ScreensHandler::~ScreensHandler(){
 	sfx_global.free();
 }
 
-
-//If the screen change
-/*int Screen_Change() {
-
-	Fade_in(FADE_NORMAL);
-
-	switch (next_screen) {
-		case SCREEN_INTRO   : Screen_Intro_Init();      break;
-		case SCREEN_MENU    : Screen_Menu_Init();       break;
-		case SCREEN_MAP     : Screen_Map_Init();        break;
-		case SCREEN_GAME    : Screen_InGame_Init();     break;
-		case SCREEN_SCORING : Screen_ScoreCount_Init(); break;
-		case SCREEN_END     : Screen_Ending_Init();     break;
-		case SCREEN_LEVEL_ERROR: Screen_LevelError_Init();	break;
-		default             : Fade_Quit();              break;
-	}
-
-	current_screen = next_screen;
-
-	return 0;
-}*/
 
 //Main Loop
 void ScreensHandler::Loop() {

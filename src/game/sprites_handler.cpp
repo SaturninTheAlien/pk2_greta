@@ -1,7 +1,6 @@
 #include "sprites_handler.hpp"
 #include "spriteclass.hpp"
 #include "engine/PLog.hpp"
-#include "mapclass.hpp"
 #include "physics.hpp"
 #include "game.hpp"
 #include "episode/episodeclass.hpp"
@@ -49,15 +48,11 @@ void SpritesHandler::loadLevelPrototype(const std::string& name, int id) {
 }
 
 
-void SpritesHandler::loadAllLevelPrototypes(const MapClass& map){
+void SpritesHandler::loadAllLevelPrototypes(const LevelClass& level){
 
     for (u32 i = 0; i < PK2MAP_MAP_MAX_PROTOTYPES; i++) {
-		if (strcmp(map.sprite_filenames[i], "") != 0) {
-            this->loadLevelPrototype(map.sprite_filenames[i], i);
-			/*PFile::Path path = Episode->Get_Dir(Game->map.sprite_filenames[i]);
-			if (Level_Prototypes_get(Game->map.sprite_filenames[i], i) == nullptr) {
-				PLog::Write(PLog::WARN, "PK2", "Can't load sprite %s. It will not appear", Game->map.sprite_filenames[i]);
-			}*/
+		if (strcmp(level.sprite_filenames[i], "") != 0) {
+            this->loadLevelPrototype(level.sprite_filenames[i], i);
 		}
 	}
 }

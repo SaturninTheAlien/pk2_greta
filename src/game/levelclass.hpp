@@ -101,7 +101,7 @@ struct PK2BLOCKMASK {
 
 };
 
-class MapClass {
+class LevelClass {
 	private:
 
 	int arrows_block_degree = 0;  // degree of movable blocks
@@ -151,8 +151,8 @@ class MapClass {
 
     /* Metodit --------------------------*/
 
-    MapClass();                                             // Oletusmuodostin
-    ~MapClass();                                            // Hajoitin
+    LevelClass();                                             // Oletusmuodostin
+    ~LevelClass();                                            // Hajoitin
 
     void Load(PFile::Path path);                             // Load kartta
     void Load_Plain_Data(PFile::Path path);                  // Load kartta ilman grafiikoita

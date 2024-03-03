@@ -1,10 +1,11 @@
 #pragma once
 #include "prototypes_handler.hpp"
 #include "spriteclass.hpp"
+#include "levelclass.hpp"
 
 #include <list>
 
-class MapClass;
+class LevelClass;
 
 class SpritesHandler{
 public:
@@ -14,7 +15,7 @@ public:
     };
     void clearAll();
     PrototypeClass* getLevelPrototype(int index);
-    void loadAllLevelPrototypes(const MapClass& map);
+    void loadAllLevelPrototypes(const LevelClass& map);
 
     
 
