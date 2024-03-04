@@ -164,12 +164,8 @@ class LevelClass {
 
     void Calculate_Edges();
 
-    private:
+private:
 
-    void LoadVersion01(PFile::Path path);
-    void LoadVersion10(PFile::Path path);
-    void LoadVersion11(PFile::Path path);
-    void LoadVersion12(PFile::Path path);
     void LoadVersion13(PFile::Path path);
     
     int Load_BG(PFile::Path path);
