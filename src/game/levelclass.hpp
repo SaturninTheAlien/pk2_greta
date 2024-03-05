@@ -126,8 +126,8 @@ class LevelClass {
     int      level_number          = 0;                            // level of the episode
     int      weather           = WEATHER_NORMAL;                // map climate
     int      map_time           = 0;                            // map time (in (dec)conds)
-    u8       extra          = 0;                            // extra config - not used
-    u8       background_scrolling = BACKGROUND_STATIC;            // bg movemant type
+    int       extra          = 0;                            // extra config - not used
+    int       background_scrolling = BACKGROUND_STATIC;            // bg movemant type
     u32      button1_time   = SWITCH_INITIAL_VALUE;         // button 1 time
     u32      button2_time   = SWITCH_INITIAL_VALUE;         // button 2 time
     u32      button3_time   = SWITCH_INITIAL_VALUE;         // button 3 time
@@ -145,9 +145,9 @@ class LevelClass {
     int      water_buffer      = -1;                        // index of water palette
     int      bg_water_buffer   = -1;
 
-    int      x = 0;                                         // map icon x pos
-	int      y = 0;                                         // map icon x pos
-    int      icon = 0;                                      // map icon id
+    int      icon_x = 0;                                         // map icon x pos
+	int      icon_y = 0;                                         // map icon x pos
+    int      icon_id = 0;                                      // map icon id
 
     /* Metodit --------------------------*/
 
@@ -155,7 +155,7 @@ class LevelClass {
     ~LevelClass();                                            // Hajoitin
 
     void Load(PFile::Path path);                             // Load kartta
-    void Load_Plain_Data(PFile::Path path);                  // Load kartta ilman grafiikoita
+    void Load_Plain_Data(PFile::Path path, bool headerOnly);                  // Load kartta ilman grafiikoita
 
     int DrawBackgroundTiles(int kamera_x, int kamera_y);
     int DrawForegroundTiles(int kamera_x, int kamera_y);
@@ -165,9 +165,8 @@ class LevelClass {
     void Calculate_Edges();
 
 private:
+    void LoadVersion13(PFile::Path path, bool headerOnly);
 
-    void LoadVersion13(PFile::Path path);
-    
     int Load_BG(PFile::Path path);
     void Load_TilesImage(PFile::Path path);
     //int Load_BGSfx(PFile::Path path);

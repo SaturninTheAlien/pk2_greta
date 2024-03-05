@@ -62,6 +62,9 @@ public:
     int read(u64& val);
     int read(s64& val);
 
+    int readLegacyStrInt(int& val);
+    int readLegacyStrU32(u32& val);
+
     int write(const void* val, size_t size);
     int write(bool val);
 

@@ -215,18 +215,14 @@ void EpisodeClass::Load() {
 		LevelClass temp;
 		char* mapname = this->levels_list[i].tiedosto;
 		strcpy(mapname, list[i].c_str());
-		temp.Load_Plain_Data(PFile::Path(path, mapname));
+		temp.Load_Plain_Data(PFile::Path(path, mapname), true);
 
-		//if (temp.Load_Plain_Data(PFile::Path(path, mapname)) == 0) {
-
-			strcpy(this->levels_list[i].nimi, temp.name);
-			this->levels_list[i].x = temp.x;// 142 + i*35;
-			this->levels_list[i].y = temp.y;// 270;
-			this->levels_list[i].order = temp.level_number;
-			this->levels_list[i].icon = temp.icon;
-
-		//}
-
+		strcpy(this->levels_list[i].nimi, temp.name);
+		this->levels_list[i].x = temp.icon_x;// 142 + i*35;
+		this->levels_list[i].y = temp.icon_y;// 270;
+		this->levels_list[i].order = temp.level_number;
+		this->levels_list[i].icon = temp.icon_id;
+		
 	}
 
 	// Read config

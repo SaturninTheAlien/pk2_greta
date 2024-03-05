@@ -38,7 +38,7 @@ LevelClass::~LevelClass(){
 }
 
 void LevelClass::Load(PFile::Path path){
-	this->Load_Plain_Data(path);
+	this->Load_Plain_Data(path, false);
 	
 	path.SetFile(this->tileset_filename);
 	Load_TilesImage(path);
@@ -49,7 +49,7 @@ void LevelClass::Load(PFile::Path path){
 	Calculate_Edges();
 }
 
-void LevelClass::Load_Plain_Data(PFile::Path path) {
+void LevelClass::Load_Plain_Data(PFile::Path path, bool headerOnly) {
 	try{
 		char version[5];
 		PFile::RW file = path.GetRW2("r");
@@ -62,7 +62,7 @@ void LevelClass::Load_Plain_Data(PFile::Path path) {
 		PLog::Write(PLog::DEBUG, "PK2", "Loading %s, version %s", path.c_str(), version);
 
 		if (strcmp(version,"1.3")==0) {
-			this->LoadVersion13(path);
+			this->LoadVersion13(path, headerOnly);
 		}
 		else{
 			std::ostringstream os;
@@ -77,9 +77,9 @@ void LevelClass::Load_Plain_Data(PFile::Path path) {
 	}
 }
 
-void LevelClass::LoadVersion13(PFile::Path path){
+void LevelClass::LoadVersion13(PFile::Path path, bool headerOnly){
 
-	char luku[8];
+	//char luku[8];
 	u32 i;
 
 	PFile::RW file = path.GetRW2("r");
@@ -102,88 +102,67 @@ void LevelClass::LoadVersion13(PFile::Path path){
 	
 	file.read(author,      sizeof(author));
 
-	file.read(luku, sizeof(luku));
-	this->level_number = atoi(luku);
-	memset(luku, 0, sizeof(luku));
+	file.readLegacyStrInt(this->level_number);
+	file.readLegacyStrInt(this->weather);
+	file.readLegacyStrU32(this->button1_time);
+	file.readLegacyStrU32(this->button2_time);
+	file.readLegacyStrU32(this->button3_time);
+	file.readLegacyStrInt(this->map_time);
+	file.readLegacyStrInt(this->extra);
+	file.readLegacyStrInt(this->background_scrolling);
+	file.readLegacyStrInt(this->player_sprite_index);
+	file.readLegacyStrInt(this->icon_x);
+	file.readLegacyStrInt(this->icon_y);
+	file.readLegacyStrInt(this->icon_id);
 
-	file.read(luku, sizeof(luku));
-	this->weather = atoi(luku);
-	memset(luku, 0, sizeof(luku));
+	/**
+	 * @brief
+	 * Loading only header for the map screen, it could stop now.
+	 * There's no reason to load level tiles in that case.
+	 */
+	if(headerOnly){
+		file.close();
+		return;
+	}
+	
 
-	file.read(luku, sizeof(luku));
-	this->button1_time = atoi(luku);
-	memset(luku, 0, sizeof(luku));
-
-	file.read(luku, sizeof(luku));
-	this->button2_time = atoi(luku);
-	memset(luku, 0, sizeof(luku));
-
-	file.read(luku, sizeof(luku));
-	this->button3_time = atoi(luku);
-	memset(luku, 0, sizeof(luku));
-
-	file.read(luku, sizeof(luku));
-	this->map_time = atoi(luku);
-	memset(luku, 0, sizeof(luku));
-
-	file.read(luku, sizeof(luku));
-	this->extra = atoi(luku);
-	memset(luku, 0, sizeof(luku));
-
-	file.read(luku, sizeof(luku));
-	this->background_scrolling = atoi(luku);
-	memset(luku, 0, sizeof(luku));
-
-	file.read(luku, sizeof(luku));
-	this->player_sprite_index = atoi(luku);
-	memset(luku, 0, sizeof(luku));
-
-	file.read(luku, sizeof(luku));
-	this->x = atoi(luku);
-	memset(luku, 0, sizeof(luku));
-
-	file.read(luku, sizeof(luku));
-	this->y = atoi(luku);
-	memset(luku, 0, sizeof(luku));
-
-	file.read(luku, sizeof(luku));
-	this->icon = atoi(luku);
-	memset(luku, 0, sizeof(luku));
-
-	u32 lkm;
-	file.read(luku, sizeof(luku));
-	lkm = (int)atoi(luku);
+	u32 lkm = 0;
+	file.readLegacyStrU32(lkm);
 
 	file.read(sprite_filenames, sizeof(sprite_filenames[0]) * lkm);
 
-	u32 width, height;
-	u32 offset_x, offset_y;
+	u32 width = 0, height = 0;
+	u32 offset_x = 0, offset_y = 0;
 
 	// background_tiles
-	file.read(luku, sizeof(luku)); offset_x = atol(luku); memset(luku, 0, sizeof(luku));
-	file.read(luku, sizeof(luku)); offset_y = atol(luku); memset(luku, 0, sizeof(luku));
-	file.read(luku, sizeof(luku)); width   = atol(luku); memset(luku, 0, sizeof(luku));
-	file.read(luku, sizeof(luku)); height  = atol(luku); memset(luku, 0, sizeof(luku));
+
+	file.readLegacyStrU32(offset_x);
+	file.readLegacyStrU32(offset_y);
+	file.readLegacyStrU32(width);
+	file.readLegacyStrU32(height);
+
 	for (u32 y = offset_y; y <= offset_y + height; y++) {
 		u32 x_start = offset_x + y * PK2MAP_MAP_WIDTH;
 		file.read(&background_tiles[x_start], width + 1);
 	}
 
 	// foreground_tiles
-	file.read(luku, sizeof(luku)); offset_x = atol(luku); memset(luku, 0, sizeof(luku));
-	file.read(luku, sizeof(luku)); offset_y = atol(luku); memset(luku, 0, sizeof(luku));
-	file.read(luku, sizeof(luku)); width   = atol(luku); memset(luku, 0, sizeof(luku));
-	file.read(luku, sizeof(luku)); height  = atol(luku); memset(luku, 0, sizeof(luku));
+
+	file.readLegacyStrU32(offset_x);
+	file.readLegacyStrU32(offset_y);
+	file.readLegacyStrU32(width);
+	file.readLegacyStrU32(height);
 	for (u32 y = offset_y; y <= offset_y + height; y++) {
 		u32 x_start = offset_x + y * PK2MAP_MAP_WIDTH;
 		file.read(&foreground_tiles[x_start], width + 1);
 	}
 
 	//sprite_tiles
-	file.read(luku, sizeof(luku)); offset_x = atol(luku); memset(luku, 0, sizeof(luku));
-	file.read(luku, sizeof(luku)); offset_y = atol(luku); memset(luku, 0, sizeof(luku));
-	file.read(luku, sizeof(luku)); width   = atol(luku); memset(luku, 0, sizeof(luku));
-	file.read(luku, sizeof(luku)); height  = atol(luku); memset(luku, 0, sizeof(luku));
+	file.readLegacyStrU32(offset_x);
+	file.readLegacyStrU32(offset_y);
+	file.readLegacyStrU32(width);
+	file.readLegacyStrU32(height);
+
 	for (u32 y = offset_y; y <= offset_y + height; y++) {
 		u32 x_start = offset_x + y * PK2MAP_MAP_WIDTH;
 		file.read(&sprite_tiles[x_start], width + 1);
