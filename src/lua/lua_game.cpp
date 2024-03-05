@@ -88,7 +88,7 @@ void ExposeGameAPI(sol::state& lua){
      * Get a list of all the sprites
      */
     
-    PK2_API["get_sprite_list"] = [](){return Game->spritesHandler.Sprites_List;};
+    PK2_API["get_sprites_list"] = [](){return Game->spritesHandler.Sprites_List;};
 
 
     /**
