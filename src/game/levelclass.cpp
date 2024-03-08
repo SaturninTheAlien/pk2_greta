@@ -77,6 +77,36 @@ void LevelClass::Load_Plain_Data(PFile::Path path, bool headerOnly) {
 	}
 }
 
+
+void LevelClass::ReadVersion13Tiles(PFile::RW& file, u8* tiles){
+	u32 width = 0, height = 0;
+	u32 offset_x = 0, offset_y = 0;
+
+	// background_tiles
+
+	file.readLegacyStrU32(offset_x);
+	file.readLegacyStrU32(offset_y);
+	file.readLegacyStrU32(width);
+	file.readLegacyStrU32(height);
+
+	for (u32 y = offset_y; y <= offset_y + height; y++) {
+		u32 x_start = offset_x + y * PK2MAP_MAP_WIDTH;
+
+		/**
+		 * @brief 
+		 * To prevent a memory leak
+		 */
+		if(x_start>=0 && x_start<PK2MAP_MAP_SIZE){
+			file.read(&tiles[x_start], width + 1);
+		}
+		else{
+			throw std::runtime_error("Malformed level file!");
+		}
+	}
+}
+
+
+
 void LevelClass::LoadVersion13(PFile::Path path, bool headerOnly){
 
 	//char luku[8];
@@ -129,44 +159,20 @@ void LevelClass::LoadVersion13(PFile::Path path, bool headerOnly){
 	u32 lkm = 0;
 	file.readLegacyStrU32(lkm);
 
+	// sprite prototypes
+	
 	file.read(sprite_filenames, sizeof(sprite_filenames[0]) * lkm);
-
-	u32 width = 0, height = 0;
-	u32 offset_x = 0, offset_y = 0;
 
 	// background_tiles
 
-	file.readLegacyStrU32(offset_x);
-	file.readLegacyStrU32(offset_y);
-	file.readLegacyStrU32(width);
-	file.readLegacyStrU32(height);
-
-	for (u32 y = offset_y; y <= offset_y + height; y++) {
-		u32 x_start = offset_x + y * PK2MAP_MAP_WIDTH;
-		file.read(&background_tiles[x_start], width + 1);
-	}
+	ReadVersion13Tiles(file, this->background_tiles);
 
 	// foreground_tiles
+	ReadVersion13Tiles(file, this->foreground_tiles);
 
-	file.readLegacyStrU32(offset_x);
-	file.readLegacyStrU32(offset_y);
-	file.readLegacyStrU32(width);
-	file.readLegacyStrU32(height);
-	for (u32 y = offset_y; y <= offset_y + height; y++) {
-		u32 x_start = offset_x + y * PK2MAP_MAP_WIDTH;
-		file.read(&foreground_tiles[x_start], width + 1);
-	}
-
-	//sprite_tiles
-	file.readLegacyStrU32(offset_x);
-	file.readLegacyStrU32(offset_y);
-	file.readLegacyStrU32(width);
-	file.readLegacyStrU32(height);
-
-	for (u32 y = offset_y; y <= offset_y + height; y++) {
-		u32 x_start = offset_x + y * PK2MAP_MAP_WIDTH;
-		file.read(&sprite_tiles[x_start], width + 1);
-	}
+	// sprite_tiles
+	ReadVersion13Tiles(file, this->sprite_tiles);
+	
 
 	file.close();
 }

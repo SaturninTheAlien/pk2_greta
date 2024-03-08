@@ -165,6 +165,8 @@ class LevelClass {
     void Calculate_Edges();
 
 private:
+    static void ReadVersion13Tiles(PFile::RW& file, u8* tiles); 
+
     void LoadVersion13(PFile::Path path, bool headerOnly);
 
     int Load_BG(PFile::Path path);
