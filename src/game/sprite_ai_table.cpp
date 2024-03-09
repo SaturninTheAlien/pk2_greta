@@ -87,7 +87,7 @@ AI_Table::AI_Table(){
 
     Init_AI(AI_JUMPER, AI_TRIGGER_ALIVE, AI_Functions::Jumper);
 
-    Init_AI(AI_BASIC, AI_TRIGGER_ANYWAY, AI_Functions::Basic, true, true, true, true);
+    Init_AI(AI_BASIC, AI_TRIGGER_ANYWAY, AI_Functions::Basic, true, false, true, true);
 
     Init_AI(AI_NONSTOP, AI_TRIGGER_ALIVE, AI_Functions::NonStop);
     
