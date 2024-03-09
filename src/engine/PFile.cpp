@@ -753,6 +753,7 @@ RW::RW(RW&& source){
 	source._mem_buffer = nullptr;
 }
 
+/*
 int RW::read(std::string& str) {
 
 	str.clear();
@@ -767,161 +768,149 @@ int RW::read(std::string& str) {
 	
 	}
 
-}
+}*/
 
 int RW::read(void* val, size_t size) {
 
 	return SDL_RWread((SDL_RWops*)(this->_rwops), val, 1, size);
 
 }
-int RW::read(bool& val) {
+void RW::read(bool& val) {
 
 	u8 v = SDL_ReadU8((SDL_RWops*)(this->_rwops));
 	
 	if (v == 0) val = false;
 	else val = true;
-
-	return 1;
-
 }
-int RW::read(u8& val) {
+void RW::read(u8& val) {
 
 	val = SDL_ReadU8((SDL_RWops*)(this->_rwops));
-	return 1;
 
 }
-int RW::read(s8& val) {
+void RW::read(s8& val) {
 
 	val = SDL_ReadU8((SDL_RWops*)(this->_rwops));
-	return 1;
-
 }
-int RW::read(u16& val) {
+void RW::read(u16& val) {
 
 	val = SDL_ReadLE16((SDL_RWops*)(this->_rwops));
-	return 1;
-
 }
-int RW::read(s16& val) {
+void RW::read(s16& val) {
 
 	val = SDL_ReadLE16((SDL_RWops*)(this->_rwops));
-	return 1;
-
 }
-int RW::read(u32& val) {
+void RW::read(u32& val) {
 
 	val = SDL_ReadLE32((SDL_RWops*)(this->_rwops));
-	return 1;
 
 }
-int RW::read(s32& val) {
+void RW::read(s32& val) {
 
 	val = SDL_ReadLE32((SDL_RWops*)(this->_rwops));
-	return 1;
-
 }
-int RW::read(u64& val) {
-
+void RW::read(u64& val) {
 	val = SDL_ReadLE64((SDL_RWops*)(this->_rwops));
-	return 1;
-
 }
-int RW::read(s64& val) {
-
+void RW::read(s64& val) {
 	val = SDL_ReadLE64((SDL_RWops*)(this->_rwops));
-	return 1;
-
 }
 
-int RW::readLegacyStrInt(int&val){
+void RW::readLegacyStrInt(int&val){
 	char buffer[8];
 	this->read(buffer, sizeof(buffer));
 	buffer[7] = '\0';
 
 	val = atoi(buffer);
-	return 1;
 }
 
-int RW::readLegacyStrU32(u32& val){
+void RW::readLegacyStrU32(u32& val){
 	char buffer[8];
 	this->read(buffer, sizeof(buffer));
 	buffer[7] = '\0';
 
 	val = (u32)atol(buffer);
-	return 1;
 }
 
-int RW::readLegacyStr13Chars(std::string & val){
+void RW::readLegacyStr13Chars(std::string & val){
 	char buffer[13];
 	this->read(buffer, sizeof(buffer));
 	buffer[12] = '\0';
 	val = buffer;
-	return 1;
 }
 
-int RW::readLegacyStr40Chars(std::string & val){
+void RW::readLegacyStr40Chars(std::string & val){
 	char buffer[40];
 	this->read(buffer, sizeof(buffer));
 	buffer[39] = '\0';
 	val = buffer;
-	return 1;
 }
 
+/*
 int RW::write(std::string& str) {
 
 	return SDL_RWwrite((SDL_RWops*)(this->_rwops), str.c_str(), 1, str.size() + 1);
 
-}
+}*/
 
 int RW::write(const void* val, size_t size) {
 
 	return SDL_RWwrite((SDL_RWops*)(this->_rwops), val, size, 1);
 
 }
-int RW::write(bool val) {
-
-	return SDL_WriteU8((SDL_RWops*)(this->_rwops), val);
-
-}
-int RW::write(u8 val) {
-
-	return SDL_WriteU8((SDL_RWops*)(this->_rwops), val);
+void RW::write(bool val) {
+	SDL_WriteU8((SDL_RWops*)(this->_rwops), val);
 
 }
-int RW::write(s8 val) {
-
-	return SDL_WriteU8((SDL_RWops*)(this->_rwops), val);
-
-}
-int RW::write(u16 val) {
-
-	return SDL_WriteLE16((SDL_RWops*)(this->_rwops), val);
+void RW::write(u8 val) {
+	SDL_WriteU8((SDL_RWops*)(this->_rwops), val);
 
 }
-int RW::write(s16 val) {
-
-	return SDL_WriteLE16((SDL_RWops*)(this->_rwops), val);
-
-}
-int RW::write(u32 val) {
-
-	return SDL_WriteLE32((SDL_RWops*)(this->_rwops), val);
+void RW::write(s8 val) {
+	SDL_WriteU8((SDL_RWops*)(this->_rwops), val);
 
 }
-int RW::write(s32 val) {
-
-	return SDL_WriteLE32((SDL_RWops*)(this->_rwops), val);
-
-}
-int RW::write(u64 val) {
-
-	return SDL_WriteLE64((SDL_RWops*)(this->_rwops), val);
+void RW::write(u16 val) {
+	SDL_WriteLE16((SDL_RWops*)(this->_rwops), val);
 
 }
-int RW::write(s64 val) {
+void RW::write(s16 val) {
+	SDL_WriteLE16((SDL_RWops*)(this->_rwops), val);
 
-	return SDL_WriteLE64((SDL_RWops*)(this->_rwops), val);
+}
+void RW::write(u32 val) {
+	SDL_WriteLE32((SDL_RWops*)(this->_rwops), val);
 
+}
+void RW::write(s32 val) {
+	SDL_WriteLE32((SDL_RWops*)(this->_rwops), val);
+
+}
+void RW::write(u64 val) {
+	SDL_WriteLE64((SDL_RWops*)(this->_rwops), val);
+
+}
+void RW::write(s64 val) {
+	SDL_WriteLE64((SDL_RWops*)(this->_rwops), val);
+
+}
+
+void RW::writeCBOR(const nlohmann::json& j){
+	std::vector<std::uint8_t> v_cbor = nlohmann::json::to_cbor(j);
+	u64 size = v_cbor.size();
+	this->write(size);
+	this->write(v_cbor.data(), size);
+}
+
+nlohmann::json RW::readCBOR(){
+	u64 size;
+	this->read(size);
+
+	std::vector<std::uint8_t> v_cbor;
+	v_cbor.resize(size);
+
+	this->read(v_cbor.data(), size);
+
+	return nlohmann::json::from_cbor(v_cbor);
 }
 
 size_t RW::size() {

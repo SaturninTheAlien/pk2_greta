@@ -5,6 +5,7 @@
 #include "game.hpp"
 #include "episode/episodeclass.hpp"
 #include <limits.h>
+#include <sstream>
 
 SpritesHandler::SpritesHandler()
 :prototypesHandler(true, true, Episode){
