@@ -851,6 +851,22 @@ int RW::readLegacyStrU32(u32& val){
 	return 1;
 }
 
+int RW::readLegacyStr13Chars(std::string & val){
+	char buffer[13];
+	this->read(buffer, sizeof(buffer));
+	buffer[12] = '\0';
+	val = buffer;
+	return 1;
+}
+
+int RW::readLegacyStr40Chars(std::string & val){
+	char buffer[40];
+	this->read(buffer, sizeof(buffer));
+	buffer[39] = '\0';
+	val = buffer;
+	return 1;
+}
+
 int RW::write(std::string& str) {
 
 	return SDL_RWwrite((SDL_RWops*)(this->_rwops), str.c_str(), 1, str.size() + 1);

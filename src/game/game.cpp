@@ -398,9 +398,9 @@ int GameClass::Open_Map() {
 	Particles_Clear();
 	Particles_LoadBG(&level);
 
-	if ( strcmp(level.music_filename, "") != 0 ) {
+	if (!level.music_name.empty()) {
 
-		PFile::Path music_path = Episode->Get_Dir(level.music_filename);
+		PFile::Path music_path = Episode->Get_Dir(level.music_name);
 
 		if (!FindAsset(&music_path, "music" PE_SEP)) {
 

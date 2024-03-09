@@ -64,6 +64,8 @@ public:
 
     int readLegacyStrInt(int& val);
     int readLegacyStrU32(u32& val);
+    int readLegacyStr13Chars(std::string& val);
+    int readLegacyStr40Chars(std::string& val);
 
     int write(const void* val, size_t size);
     int write(bool val);

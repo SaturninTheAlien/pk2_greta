@@ -7,6 +7,9 @@
 #include "engine/platform.hpp"
 #include "engine/PFile.hpp"
 
+#include <vector>
+#include <string>
+
 typedef struct {
     int left, top, right, bottom;
 } MAP_RECT;
@@ -116,12 +119,15 @@ class LevelClass {
     /* Atributs ------------------------*/
 
     char     version[5]       = PK2MAP_LAST_VERSION;         // map version. eg "1.3"
-    char     tileset_filename[13] = "blox.bmp";                  // path of block palette .bmp
-    char     background_filename[13]  = "default.bmp";               // path of map bg .bmp
-    char     music_filename[13]    = "default.xm";                // path of map music
 
-    char     name[40]   = "untitled";                       // map name
-    char     author[40] = "unknown";                        // map author
+    std::string tileset_name = "blox.bmp";                  // path of block palette .bmp
+    std::string background_name = "default.bmp";            // path of map bg .bmp
+    std::string music_name = "default.xm";                  // path of map music*/           
+
+    std::string name = "untitled";
+    std::string author = "unknown";
+    /*char     name[40]   = "untitled";                       // map name
+    char     author[40] = "unknown";                        // map author*/
 
     int      level_number          = 0;                            // level of the episode
     int      weather           = WEATHER_NORMAL;                // map climate
@@ -136,7 +142,10 @@ class LevelClass {
     u8       background_tiles[PK2MAP_MAP_SIZE] = {255};              // map bg tiles 256*224
     u8       foreground_tiles[PK2MAP_MAP_SIZE] = {255};              // map fg tiles 256*224
     u8       sprite_tiles[PK2MAP_MAP_SIZE] = {255};              // map sprites 256*224
-    char     sprite_filenames[PK2MAP_MAP_MAX_PROTOTYPES][13] = {""}; // map prototype list .spr
+    
+    
+    //char     sprite_filenames[PK2MAP_MAP_MAX_PROTOTYPES][13] = {""}; // map prototype list .spr
+    std::vector<std::string> sprite_prototype_names;
     bool     edges [PK2MAP_MAP_SIZE] = {false};            // map edges - calculated during game
 
     int      tiles_buffer      = -1;                        // index of block palette

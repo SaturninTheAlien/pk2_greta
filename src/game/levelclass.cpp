@@ -40,10 +40,10 @@ LevelClass::~LevelClass(){
 void LevelClass::Load(PFile::Path path){
 	this->Load_Plain_Data(path, false);
 	
-	path.SetFile(this->tileset_filename);
+	path.SetFile(this->tileset_name);
 	Load_TilesImage(path);
 
-	path.SetFile(this->background_filename);
+	path.SetFile(this->background_name);
 	Load_BG(path);
 
 	Calculate_Edges();
@@ -108,29 +108,35 @@ void LevelClass::ReadVersion13Tiles(PFile::RW& file, u8* tiles){
 
 
 void LevelClass::LoadVersion13(PFile::Path path, bool headerOnly){
-
-	//char luku[8];
-	u32 i;
-
 	PFile::RW file = path.GetRW2("r");
 
 	memset(this->background_tiles, 255, sizeof(this->background_tiles));
 	memset(this->foreground_tiles , 255, sizeof(this->foreground_tiles));
 	memset(this->sprite_tiles, 255, sizeof(this->sprite_tiles));
 
-	for (i=0;i<PK2MAP_MAP_MAX_PROTOTYPES;i++)
-		strcpy(this->sprite_filenames[i],"");
 
 	file.read(version,      sizeof(version));
-	file.read(tileset_filename, sizeof(tileset_filename));
-	file.read(background_filename,  sizeof(background_filename));
-	file.read(music_filename,    sizeof(music_filename));
-	file.read(name,        sizeof(name));
 
+	file.readLegacyStr13Chars(this->tileset_name);
+	file.readLegacyStr13Chars(this->background_name);
+	file.readLegacyStr13Chars(this->music_name);
+
+
+	char name_buffer[40];
+	file.read(name_buffer, sizeof(name_buffer));
+	name_buffer[39] = '\0';
+
+	/**
+	 * @brief 
+	 * ???
+	 * What's the purpose of this??
+	 */
 	for (int i = 38; i > 0 && (name[i] == (char)0xCD); i--)
-		name[i] = 0;
-	
-	file.read(author,      sizeof(author));
+		name_buffer[i] = 0;
+
+	this->name = name_buffer;
+
+	file.readLegacyStr40Chars(author);
 
 	file.readLegacyStrInt(this->level_number);
 	file.readLegacyStrInt(this->weather);
@@ -154,14 +160,29 @@ void LevelClass::LoadVersion13(PFile::Path path, bool headerOnly){
 		file.close();
 		return;
 	}
-	
-
-	u32 lkm = 0;
-	file.readLegacyStrU32(lkm);
 
 	// sprite prototypes
+
+	u32 prototypesNumber = 0;
+	file.readLegacyStrU32(prototypesNumber);
+	if(prototypesNumber>PK2MAP_MAP_MAX_PROTOTYPES){
+		std::ostringstream os;
+		os<<"Too many level sprite prototypes: "<<prototypesNumber<<std::endl;
+		os<<PK2MAP_MAP_MAX_PROTOTYPES<<" is the limit in the \"1.3\" level format";
+		file.close();
+		throw std::runtime_error(os.str());
+	}
+
+	char prototype_names_legacy[PK2MAP_MAP_MAX_PROTOTYPES][13] = {""};
 	
-	file.read(sprite_filenames, sizeof(sprite_filenames[0]) * lkm);
+	file.read(prototype_names_legacy, sizeof(prototype_names_legacy[0]) * prototypesNumber);
+
+	this->sprite_prototype_names.resize(prototypesNumber);
+	for(u32 i=0;i<prototypesNumber;++i){
+		char * prototype_name = prototype_names_legacy[i];
+		prototype_name[12] = '\0';
+		this->sprite_prototype_names[i] = prototype_name;
+	}
 
 	// background_tiles
 

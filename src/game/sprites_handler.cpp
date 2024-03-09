@@ -50,9 +50,22 @@ void SpritesHandler::loadLevelPrototype(const std::string& name, int id) {
 
 void SpritesHandler::loadAllLevelPrototypes(const LevelClass& level){
 
-    for (u32 i = 0; i < PK2MAP_MAP_MAX_PROTOTYPES; i++) {
-		if (strcmp(level.sprite_filenames[i], "") != 0) {
-            this->loadLevelPrototype(level.sprite_filenames[i], i);
+	std::size_t prototypes_number = level.sprite_prototype_names.size();
+	if(prototypes_number > MAX_PROTOTYYPPEJA){
+		std::ostringstream os;
+		os<<"Too many sprite prototypes: "<<prototypes_number<<std::endl;
+		os<<MAX_PROTOTYYPPEJA<<" is the current limit."<<std::endl;
+		os<< "Dependency sprites (ammo, transformation and so on)"
+		" do not count into the limit";
+
+		throw std::runtime_error(os.str());
+	}
+
+    for (u32 i = 0; i < prototypes_number; i++) {
+
+		const std::string& name = level.sprite_prototype_names[i];
+		if(!name.empty()){
+			this->loadLevelPrototype(name, i);
 		}
 	}
 }
