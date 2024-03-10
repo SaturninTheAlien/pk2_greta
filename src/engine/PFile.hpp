@@ -48,34 +48,38 @@ public:
     //size_t to_buffer(void** buffer);
 
     int read(void* val, size_t size);
-    int read(bool& val);
-
-    int read(std::string& str);
 
     // Read the value always in little endian
-    int read(u8& val);
-    int read(s8& val);
-    int read(u16& val);
-    int read(s16& val);
-    int read(u32& val);
-    int read(s32& val);
-    int read(u64& val);
-    int read(s64& val);
+    void read(bool& val);
+    void read(u8& val);
+    void read(s8& val);
+    void read(u16& val);
+    void read(s16& val);
+    void read(u32& val);
+    void read(s32& val);
+    void read(u64& val);
+    void read(s64& val);
+
+    void readLegacyStrInt(int& val);
+    void readLegacyStrU32(u32& val);
+    void readLegacyStr13Chars(std::string& val);
+    void readLegacyStr40Chars(std::string& val);
 
     int write(const void* val, size_t size);
-    int write(bool val);
+    
+    // Write the value always in little endian    
+    void write(bool val);
+    void write(u8 val);
+    void write(s8 val);
+    void write(u16 val);
+    void write(s16 val);
+    void write(u32 val);
+    void write(s32 val);
+    void write(u64 val);
+    void write(s64 val);
 
-    int write(std::string& str);
-
-    // Write the value always in little endian
-    int write(u8 val);
-    int write(s8 val);
-    int write(u16 val);
-    int write(s16 val);
-    int write(u32 val);
-    int write(s32 val);
-    int write(u64 val);
-    int write(s64 val);
+    nlohmann::json readCBOR();
+    void writeCBOR(const nlohmann::json& j);
 
     void close();
 

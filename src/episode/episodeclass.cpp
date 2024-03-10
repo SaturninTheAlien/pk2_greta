@@ -5,7 +5,7 @@
 #include "episode/episodeclass.hpp"
 
 #include "episode/mapstore.hpp"
-#include "game/mapclass.hpp"
+#include "game/levelclass.hpp"
 #include "language.hpp"
 #include "system.hpp"
 #include "save.hpp"
@@ -212,21 +212,19 @@ void EpisodeClass::Load() {
 	// Read levels plain data
 	for (u32 i = 0; i < this->level_count; i++) {
 
-		MapClass temp;
+		LevelClass temp;
 		char* mapname = this->levels_list[i].tiedosto;
 		strcpy(mapname, list[i].c_str());
-		temp.Load_Plain_Data(PFile::Path(path, mapname));
+		temp.Load_Plain_Data(PFile::Path(path, mapname), true);
 
-		//if (temp.Load_Plain_Data(PFile::Path(path, mapname)) == 0) {
+		strncpy(this->levels_list[i].nimi, temp.name.c_str(), 40);
+		this->levels_list[i].nimi[39] = '\0';
 
-			strcpy(this->levels_list[i].nimi, temp.name);
-			this->levels_list[i].x = temp.x;// 142 + i*35;
-			this->levels_list[i].y = temp.y;// 270;
-			this->levels_list[i].order = temp.level_number;
-			this->levels_list[i].icon = temp.icon;
-
-		//}
-
+		this->levels_list[i].x = temp.icon_x;// 142 + i*35;
+		this->levels_list[i].y = temp.icon_y;// 270;
+		this->levels_list[i].order = temp.level_number;
+		this->levels_list[i].icon = temp.icon_id;
+		
 	}
 
 	// Read config
@@ -338,7 +336,7 @@ EpisodeClass::EpisodeClass(int save) {
 EpisodeClass::EpisodeClass(const char* player_name, episode_entry entry) {
 
 	this->entry = entry;
-	strcpy(this->player_name, player_name);
+	strncpy(this->player_name, player_name, 20);
 
 	for (int j = 0; j < EPISODI_MAX_LEVELS; j++)
 		this->level_status[j] = 0;

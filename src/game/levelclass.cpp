@@ -2,7 +2,7 @@
 //Pekka Kana 2
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
-#include "game/mapclass.hpp"
+#include "levelclass.hpp"
 #include "exceptions.hpp"
 #include <sstream>
 
@@ -12,22 +12,13 @@
 #include "engine/PUtils.hpp"
 #include "engine/PInput.hpp"
 #include "engine/PLog.hpp"
+#include "engine/PJson.hpp"
 
 #include <cinttypes>
 #include <cstring>
 #include <cmath>
 
-struct PK2KARTTA{ // Vanha version 0.1
-	char version[8];
-	char name[40];
-	u8   taustakuva;
-	u8   musiikki;
-	u8   kartta [640*224];
-	u8   palikat[320*256];
-	u8   extrat [640*480];
-};
-
-void MapClass::SetTilesAnimations(int degree, int anim, u32 aika1, u32 aika2, u32 aika3) {
+void LevelClass::SetTilesAnimations(int degree, int anim, u32 aika1, u32 aika2, u32 aika3) {
 
 	arrows_block_degree = degree;
 	block_animation_frame = anim;
@@ -37,9 +28,9 @@ void MapClass::SetTilesAnimations(int degree, int anim, u32 aika1, u32 aika2, u3
 
 }
 
-MapClass::MapClass(){}
+LevelClass::LevelClass(){}
 
-MapClass::~MapClass(){
+LevelClass::~LevelClass(){
 	PDraw::image_delete(this->tiles_buffer);
 	PDraw::image_delete(this->bg_tiles_buffer);
 	PDraw::image_delete(this->background_buffer);
@@ -47,47 +38,41 @@ MapClass::~MapClass(){
 	PDraw::image_delete(this->bg_water_buffer);
 }
 
-void MapClass::Load(PFile::Path path){
-	this->Load_Plain_Data(path);
+void LevelClass::Load(PFile::Path path){
+	this->Load_Plain_Data(path, false);
 	
-	path.SetFile(this->tileset_filename);
+	path.SetFile(this->tileset_name);
 	Load_TilesImage(path);
 
-	path.SetFile(this->background_filename);
+	path.SetFile(this->background_name);
 	Load_BG(path);
 
 	Calculate_Edges();
 }
 
-void MapClass::Load_Plain_Data(PFile::Path path) {
+void LevelClass::Load_Plain_Data(PFile::Path path, bool headerOnly) {
 	try{
-		char version[8];
+		char version[5];
 		PFile::RW file = path.GetRW2("r");
 
-		file.read(version, sizeof(version));
+		file.read(version, 4);
+		version[4] = '\0';
+
 		file.close();
 
-		//int ok = 2;
-
-		PLog::Write(PLog::DEBUG, "PK2 Map", "Loading %s, version %s", path.c_str(), version);
+		PLog::Write(PLog::DEBUG, "PK2", "Loading %s, version %s", path.c_str(), version);
 
 		if (strcmp(version,"1.3")==0) {
-			this->LoadVersion13(path);
+			this->LoadVersion13(path, headerOnly);
 		}
-		else if (strcmp(version,"1.2")==0) {
-			this->LoadVersion12(path);
-		}
-		else if (strcmp(version,"1.1")==0) {
-			this->LoadVersion11(path);
-		}
-		else if (strcmp(version,"1.0")==0) {
-			this->LoadVersion10(path);
-		}
-		else if (strcmp(version,"0.1")==0) {
-			this->LoadVersion01(path);
+		/**
+		 * @brief 
+		 * Testing the new level format
+		 */
+		else if(strcmp(version, "2.p")==0){
+			this->LoadVersion20(path, headerOnly);
 		}
 		else{
-			version[7] = '\0';
 			std::ostringstream os;
 			os<<"Unsupported level format: \""<<version<<"\"";
 			throw PExcept::PException(os.str());
@@ -95,279 +80,230 @@ void MapClass::Load_Plain_Data(PFile::Path path) {
 
 	}
 	catch(const PFile::PFileException& e){
-		PLog::Write(PLog::ERR,"PK2 Map",e.what());
+		PLog::Write(PLog::ERR,"PK2",e.what());
 		throw PExcept::FileNotFoundException(path.c_str(), PExcept::MISSING_LEVEL);
 	}
 }
 
-void MapClass::LoadVersion01(PFile::Path path){
 
-	PK2KARTTA kartta;
-
-	PFile::RW file = path.GetRW2("r");
-
-	file.read(&kartta, sizeof(PK2KARTTA));
-	file.close();
-
-	strcpy(this->version, PK2MAP_LAST_VERSION);
-	strcpy(this->tileset_filename,"blox.bmp");
-	strcpy(this->background_filename, "default.bmp");
-	strcpy(this->music_filename,   "default.xm");
-
-	strcpy(this->name,  "v01");
-	strcpy(this->author,"unknown");
-
-	this->map_time		= 0;
-	this->extra		= 0;
-	this->background_scrolling	= kartta.taustakuva;
-
-	for (u32 i=0;i<PK2MAP_MAP_SIZE;i++)
-		this->foreground_tiles[i] = kartta.kartta[i%PK2MAP_MAP_WIDTH + (i/PK2MAP_MAP_WIDTH) * 640];
-
-	memset(this->background_tiles,255, sizeof(background_tiles));
-
-	memset(this->sprite_tiles,255, sizeof(sprite_tiles));
-}
-void MapClass::LoadVersion10(PFile::Path path){
-	
-	MapClass kartta;
-
-	PFile::RW file = path.GetRW2("r");
-
-	file.read(&kartta, sizeof(PK2KARTTA));
-	file.close();
-
-	strcpy(this->version,		kartta.version);
-	strcpy(this->tileset_filename,	kartta.tileset_filename);
-	strcpy(this->background_filename,	kartta.background_filename);
-	strcpy(this->music_filename,		kartta.music_filename);
-
-	strcpy(this->name,			kartta.name);
-	strcpy(this->author,		kartta.author);
-
-	this->map_time			= kartta.map_time;
-	this->extra			= kartta.extra;
-	this->background_scrolling		= kartta.background_scrolling;
-
-	for (u32 i=0; i<PK2MAP_MAP_SIZE; i++)
-		this->background_tiles[i] = kartta.background_tiles[i];
-
-	for (u32 i=0; i<PK2MAP_MAP_SIZE;i++)
-		this->foreground_tiles[i] = kartta.foreground_tiles[i];
-
-	for (u32 i=0; i<PK2MAP_MAP_SIZE; i++)
-		this->sprite_tiles[i] = kartta.sprite_tiles[i];
-}
-void MapClass::LoadVersion11(PFile::Path path){
-	PFile::RW file = path.GetRW2("r");
-
-	memset(this->background_tiles, 255, sizeof(this->background_tiles));
-	memset(this->foreground_tiles , 255, sizeof(this->foreground_tiles));
-	memset(this->sprite_tiles, 255, sizeof(this->sprite_tiles));
-
-	file.read(this->version,      sizeof(char) * 5);
-	file.read(this->tileset_filename, sizeof(char) * 13);
-	file.read(this->background_filename,  sizeof(char) * 13);
-	file.read(this->music_filename,    sizeof(char) * 13);
-	file.read(this->name,        sizeof(char) * 40);
-	file.read(this->author,      sizeof(char) * 40);
-	file.read(&this->map_time,       sizeof(int));
-	file.read(&this->extra,      sizeof(u8));
-	file.read(&this->background_scrolling,     sizeof(u8));
-	file.read(this->background_tiles,     sizeof(background_tiles));
-	if (file.read(this->foreground_tiles,  sizeof(foreground_tiles)) != PK2MAP_MAP_SIZE){
-		throw std::runtime_error("Incoorect size of foreground_tiles array");
-	}
-	file.read(this->sprite_tiles,     sizeof(sprite_tiles));
-
-	file.close();
-
-	for (u32 i=0;i<PK2MAP_MAP_SIZE;i++)
-		if (foreground_tiles[i] != 255)
-			foreground_tiles[i] -= 50;
-
-	for (u32 i=0;i<PK2MAP_MAP_SIZE;i++)
-		if (background_tiles[i] != 255)
-			background_tiles[i] -= 50;
-
-	for (u32 i=0;i<PK2MAP_MAP_SIZE;i++)
-		if (sprite_tiles[i] != 255)
-			sprite_tiles[i] -= 50;
-
-	//return (virhe);
-}
-void MapClass::LoadVersion12(PFile::Path path){
-
-	char luku[8];
-	
-	PFile::RW file = path.GetRW2("r");
-
-	memset(this->background_tiles, 255, sizeof(this->background_tiles));
-	memset(this->foreground_tiles , 255, sizeof(this->foreground_tiles));
-	memset(this->sprite_tiles, 255, sizeof(this->sprite_tiles));
-
-	for (u32 i=0; i<PK2MAP_MAP_MAX_PROTOTYPES; i++)
-		strcpy(this->sprite_filenames[i],"");
-
-	//tiedosto->read ((char *)this, sizeof (*this));
-	file.read(version,      sizeof(version));
-	file.read(tileset_filename, sizeof(tileset_filename));
-	file.read(background_filename,  sizeof(background_filename));
-	file.read(music_filename,    sizeof(music_filename));
-	file.read(name,        sizeof(name));
-	file.read(author,      sizeof(author));
-
-	file.read(luku, sizeof(luku));
-	this->level_number = atoi(luku);
-
-	file.read(luku, sizeof(luku));
-	this->weather = atoi(luku);
-
-	file.read(luku, sizeof(luku));
-	this->button1_time = atoi(luku);
-
-	file.read(luku, sizeof(luku));
-	this->button2_time = atoi(luku);
-
-	file.read(luku, sizeof(luku));
-	this->button3_time = atoi(luku);
-
-	file.read(luku, sizeof(luku));
-	this->map_time = atoi(luku);
-
-	file.read(luku, sizeof(luku));
-	this->extra = atoi(luku);
-
-	file.read(luku, sizeof(luku));
-	this->background_scrolling = atoi(luku);
-
-	file.read(luku, sizeof(luku));
-	this->player_sprite_index = atoi(luku);
-
-	file.read(background_tiles, sizeof(background_tiles));
-	file.read(foreground_tiles,  sizeof(foreground_tiles));
-	file.read(sprite_tiles, sizeof(sprite_tiles));
-
-	file.read(sprite_filenames, sizeof(sprite_filenames[0]) * PK2MAP_MAP_MAX_PROTOTYPES);
-
-	file.close();
-}
-void MapClass::LoadVersion13(PFile::Path path){
-
-	char luku[8];
-	u32 i;
-
-	PFile::RW file = path.GetRW2("r");
-
-	memset(this->background_tiles, 255, sizeof(this->background_tiles));
-	memset(this->foreground_tiles , 255, sizeof(this->foreground_tiles));
-	memset(this->sprite_tiles, 255, sizeof(this->sprite_tiles));
-
-	for (i=0;i<PK2MAP_MAP_MAX_PROTOTYPES;i++)
-		strcpy(this->sprite_filenames[i],"");
-
-	file.read(version,      sizeof(version));
-	file.read(tileset_filename, sizeof(tileset_filename));
-	file.read(background_filename,  sizeof(background_filename));
-	file.read(music_filename,    sizeof(music_filename));
-	file.read(name,        sizeof(name));
-
-	for (int i = 38; i > 0 && (name[i] == (char)0xCD); i--)
-		name[i] = 0;
-	
-	file.read(author,      sizeof(author));
-
-	file.read(luku, sizeof(luku));
-	this->level_number = atoi(luku);
-	memset(luku, 0, sizeof(luku));
-
-	file.read(luku, sizeof(luku));
-	this->weather = atoi(luku);
-	memset(luku, 0, sizeof(luku));
-
-	file.read(luku, sizeof(luku));
-	this->button1_time = atoi(luku);
-	memset(luku, 0, sizeof(luku));
-
-	file.read(luku, sizeof(luku));
-	this->button2_time = atoi(luku);
-	memset(luku, 0, sizeof(luku));
-
-	file.read(luku, sizeof(luku));
-	this->button3_time = atoi(luku);
-	memset(luku, 0, sizeof(luku));
-
-	file.read(luku, sizeof(luku));
-	this->map_time = atoi(luku);
-	memset(luku, 0, sizeof(luku));
-
-	file.read(luku, sizeof(luku));
-	this->extra = atoi(luku);
-	memset(luku, 0, sizeof(luku));
-
-	file.read(luku, sizeof(luku));
-	this->background_scrolling = atoi(luku);
-	memset(luku, 0, sizeof(luku));
-
-	file.read(luku, sizeof(luku));
-	this->player_sprite_index = atoi(luku);
-	memset(luku, 0, sizeof(luku));
-
-	file.read(luku, sizeof(luku));
-	this->x = atoi(luku);
-	memset(luku, 0, sizeof(luku));
-
-	file.read(luku, sizeof(luku));
-	this->y = atoi(luku);
-	memset(luku, 0, sizeof(luku));
-
-	file.read(luku, sizeof(luku));
-	this->icon = atoi(luku);
-	memset(luku, 0, sizeof(luku));
-
-	u32 lkm;
-	file.read(luku, sizeof(luku));
-	lkm = (int)atoi(luku);
-
-	file.read(sprite_filenames, sizeof(sprite_filenames[0]) * lkm);
-
-	u32 width, height;
-	u32 offset_x, offset_y;
+void LevelClass::ReadVersion13Tiles(PFile::RW& file, u8* tiles){
+	u32 width = 0, height = 0;
+	u32 offset_x = 0, offset_y = 0;
 
 	// background_tiles
-	file.read(luku, sizeof(luku)); offset_x = atol(luku); memset(luku, 0, sizeof(luku));
-	file.read(luku, sizeof(luku)); offset_y = atol(luku); memset(luku, 0, sizeof(luku));
-	file.read(luku, sizeof(luku)); width   = atol(luku); memset(luku, 0, sizeof(luku));
-	file.read(luku, sizeof(luku)); height  = atol(luku); memset(luku, 0, sizeof(luku));
+
+	file.readLegacyStrU32(offset_x);
+	file.readLegacyStrU32(offset_y);
+	file.readLegacyStrU32(width);
+	file.readLegacyStrU32(height);
+
 	for (u32 y = offset_y; y <= offset_y + height; y++) {
 		u32 x_start = offset_x + y * PK2MAP_MAP_WIDTH;
-		file.read(&background_tiles[x_start], width + 1);
+
+		/**
+		 * @brief 
+		 * To prevent a memory leak
+		 */
+		if(x_start>=0 && x_start<PK2MAP_MAP_SIZE){
+			file.read(&tiles[x_start], width + 1);
+		}
+		else{
+			throw std::runtime_error("Malformed level file!");
+		}
 	}
+}
+
+
+
+void LevelClass::LoadVersion13(PFile::Path path, bool headerOnly){
+	PFile::RW file = path.GetRW2("r");
+
+	memset(this->background_tiles, 255, sizeof(this->background_tiles));
+	memset(this->foreground_tiles , 255, sizeof(this->foreground_tiles));
+	memset(this->sprite_tiles, 255, sizeof(this->sprite_tiles));
+
+
+	file.read(version,      sizeof(version));
+
+	file.readLegacyStr13Chars(this->tileset_name);
+	file.readLegacyStr13Chars(this->background_name);
+	file.readLegacyStr13Chars(this->music_name);
+
+
+	char name_buffer[40];
+	file.read(name_buffer, sizeof(name_buffer));
+	name_buffer[39] = '\0';
+
+	/**
+	 * @brief 
+	 * ???
+	 * What's the purpose of this??
+	 */
+	for (int i = 38; i > 0 && (name[i] == (char)0xCD); i--)
+		name_buffer[i] = 0;
+
+	this->name = name_buffer;
+
+	file.readLegacyStr40Chars(author);
+
+	file.readLegacyStrInt(this->level_number);
+	file.readLegacyStrInt(this->weather);
+	file.readLegacyStrU32(this->button1_time);
+	file.readLegacyStrU32(this->button2_time);
+	file.readLegacyStrU32(this->button3_time);
+	file.readLegacyStrInt(this->map_time);
+	file.readLegacyStrInt(this->extra);
+	file.readLegacyStrInt(this->background_scrolling);
+	file.readLegacyStrInt(this->player_sprite_index);
+	file.readLegacyStrInt(this->icon_x);
+	file.readLegacyStrInt(this->icon_y);
+	file.readLegacyStrInt(this->icon_id);
+
+	/**
+	 * @brief
+	 * Loading only header for the map screen, it could stop now.
+	 * There's no reason to load level tiles in that case.
+	 */
+	if(headerOnly){
+		file.close();
+		return;
+	}
+
+	// sprite prototypes
+
+	u32 prototypesNumber = 0;
+	file.readLegacyStrU32(prototypesNumber);
+	if(prototypesNumber>PK2MAP_MAP_MAX_PROTOTYPES){
+		std::ostringstream os;
+		os<<"Too many level sprite prototypes: "<<prototypesNumber<<std::endl;
+		os<<PK2MAP_MAP_MAX_PROTOTYPES<<" is the limit in the \"1.3\" level format";
+		file.close();
+		throw std::runtime_error(os.str());
+	}
+
+	char prototype_names_legacy[PK2MAP_MAP_MAX_PROTOTYPES][13] = {""};
+	
+	file.read(prototype_names_legacy, sizeof(prototype_names_legacy[0]) * prototypesNumber);
+
+	this->sprite_prototype_names.resize(prototypesNumber);
+	for(u32 i=0;i<prototypesNumber;++i){
+		char * prototype_name = prototype_names_legacy[i];
+		prototype_name[12] = '\0';
+		this->sprite_prototype_names[i] = prototype_name;
+	}
+
+	// background_tiles
+
+	ReadVersion13Tiles(file, this->background_tiles);
 
 	// foreground_tiles
-	file.read(luku, sizeof(luku)); offset_x = atol(luku); memset(luku, 0, sizeof(luku));
-	file.read(luku, sizeof(luku)); offset_y = atol(luku); memset(luku, 0, sizeof(luku));
-	file.read(luku, sizeof(luku)); width   = atol(luku); memset(luku, 0, sizeof(luku));
-	file.read(luku, sizeof(luku)); height  = atol(luku); memset(luku, 0, sizeof(luku));
-	for (u32 y = offset_y; y <= offset_y + height; y++) {
-		u32 x_start = offset_x + y * PK2MAP_MAP_WIDTH;
-		file.read(&foreground_tiles[x_start], width + 1);
+	ReadVersion13Tiles(file, this->foreground_tiles);
+
+	// sprite_tiles
+	ReadVersion13Tiles(file, this->sprite_tiles);
+	
+
+	file.close();
+}
+// TO DO
+void LevelClass::SaveVersion20(const std::string& filename){
+	PFile::Path path(filename);
+
+	PFile::RW file = path.GetRW2("r");
+	char version[5] = "2.p";
+	file.write(version, sizeof(version));
+
+	//Write header
+	{
+		nlohmann::json header;
+		header["name"] = this->name;
+		header["author"] = this->author;
+		header["level_number"] = this->level_number;
+		header["icon_id"] = this->icon_id;
+		header["icon_x"] = this->icon_x;
+		header["icon_y"] = this->icon_y;
+
+		file.writeCBOR(header);
 	}
 
-	//sprite_tiles
-	file.read(luku, sizeof(luku)); offset_x = atol(luku); memset(luku, 0, sizeof(luku));
-	file.read(luku, sizeof(luku)); offset_y = atol(luku); memset(luku, 0, sizeof(luku));
-	file.read(luku, sizeof(luku)); width   = atol(luku); memset(luku, 0, sizeof(luku));
-	file.read(luku, sizeof(luku)); height  = atol(luku); memset(luku, 0, sizeof(luku));
-	for (u32 y = offset_y; y <= offset_y + height; y++) {
-		u32 x_start = offset_x + y * PK2MAP_MAP_WIDTH;
-		file.read(&sprite_tiles[x_start], width + 1);
+	//Write level data
+	{
+		nlohmann::json j;
+		j["background"] = this->background_name;
+		j["tileset"] = this->tileset_name;
+		j["music"] = this->music_name;
+		j["scrolling"] = this->background_scrolling;
+		j["weather"] = this->weather;
+		j["map_time"] = this->map_time;
+
+		j["button1_time"] = this->button1_time;
+		j["button2_time"] = this->button2_time;
+		j["button3_time"] = this->button3_time;
+		j["lua_script"] = this->lua_script;
+
+		file.writeCBOR(j);
 	}
+
+	//background tiles
+	file.write(this->background_tiles, sizeof(u8)* PK2MAP_MAP_SIZE);
+
+	//foreground tiles
+	file.write(this->foreground_tiles, sizeof(u8)* PK2MAP_MAP_SIZE);
+
+	//sprite tiles
+	file.write(this->sprite_tiles, sizeof(u8)* PK2MAP_MAP_SIZE);
+
+	file.close();
+}
+void LevelClass::LoadVersion20(PFile::Path path, bool headerOnly){
+
+	using namespace PJson;
+	PFile::RW file = path.GetRW2("r");
+
+	file.read(version,      sizeof(version));
+
+	//Read header
+	{
+		nlohmann::json header = file.readCBOR();
+		jsonReadString(header, "name", this->name);
+		jsonReadString(header, "author", this->author);
+		jsonReadInt(header, "level_number", this->level_number);
+
+		jsonReadInt(header, "icon_x", this->icon_x);
+		jsonReadInt(header, "icon_y", this->icon_y);
+		jsonReadInt(header, "icon_id", this->icon_id);
+	}
+
+	if(headerOnly){
+		return;
+	}
+
+	//Read level data
+	{
+		nlohmann::json j = file.readCBOR();
+		jsonReadString(j, "background", this->background_name);
+		jsonReadString(j, "tileset", this->tileset_name);
+		jsonReadString(j, "music", this->music_name);
+
+		jsonReadInt(j, "scrolling", this->background_scrolling);
+		jsonReadInt(j, "weather", this->weather);
+		jsonReadInt(j, "map_time", this->map_time);
+
+	}
+
+	//background tiles
+	file.read(this->background_tiles, sizeof(u8)* PK2MAP_MAP_SIZE);
+
+	//foreground tiles
+	file.read(this->foreground_tiles, sizeof(u8)* PK2MAP_MAP_SIZE);
+
+	//sprite tiles
+	file.read(this->sprite_tiles, sizeof(u8)* PK2MAP_MAP_SIZE);
 
 	file.close();
 }
 
-int MapClass::Load_BG(PFile::Path path){
+int LevelClass::Load_BG(PFile::Path path){
 	
 	if (!FindAsset(&path, "gfx" PE_SEP "scenery" PE_SEP))
 		return 1;
@@ -398,7 +334,7 @@ int MapClass::Load_BG(PFile::Path path){
 	return 0;
 }
 
-void MapClass::Load_TilesImage(PFile::Path path){
+void LevelClass::Load_TilesImage(PFile::Path path){
 	
 	PFile::Path bkp = path;
 
@@ -432,12 +368,12 @@ void MapClass::Load_TilesImage(PFile::Path path){
 	}
 }
 /*
-int MapClass::Load_BGSfx(PFile::Path path){
+int LevelClass::Load_BGSfx(PFile::Path path){
 
 	return 0;
 }*/
 
-void MapClass::Calculate_Edges(){
+void LevelClass::Calculate_Edges(){
 
 	u8 tile1, tile2, tile3;
 
@@ -486,7 +422,7 @@ void MapClass::Calculate_Edges(){
 
 /* Kartanpiirtorutiineja ----------------------------------------------------------------*/
 
-void MapClass::Animate_Fire(int tiles){
+void LevelClass::Animate_Fire(int tiles){
 	u8 *buffer = NULL;
 	u32 width;
 	int x,y;
@@ -530,7 +466,7 @@ void MapClass::Animate_Fire(int tiles){
 	PDraw::drawimage_end(tiles);
 }
 
-void MapClass::Animate_Waterfall(int tiles){
+void LevelClass::Animate_Waterfall(int tiles){
 	u8 *buffer = NULL;
 	u32 width;
 	int x,y,plus;
@@ -572,7 +508,7 @@ void MapClass::Animate_Waterfall(int tiles){
 	PDraw::drawimage_end(tiles);
 }
 
-void MapClass::Animate_WaterSurface(int tiles){
+void LevelClass::Animate_WaterSurface(int tiles){
 	u8 *buffer = NULL;
 	u32 width;
 	int x,y;
@@ -598,7 +534,7 @@ void MapClass::Animate_WaterSurface(int tiles){
 	PDraw::drawimage_end(tiles);
 }
 
-void MapClass::Animate_Water(int tiles, int water_tiles){
+void LevelClass::Animate_Water(int tiles, int water_tiles){
 	u8 *buffer_lahde = NULL, *buffer_kohde = NULL;
 	u32 leveys_lahde, leveys_kohde;
 	int x, y, color1, color2;
@@ -663,7 +599,7 @@ void MapClass::Animate_Water(int tiles, int water_tiles){
 	PDraw::drawimage_end(water_tiles);
 }
 
-void MapClass::Animate_RollUp(int tiles){
+void LevelClass::Animate_RollUp(int tiles){
 	u8 *buffer = NULL;
 	u32 width;
 	int y;
@@ -682,7 +618,7 @@ void MapClass::Animate_RollUp(int tiles){
 	PDraw::drawimage_end(tiles);
 }
 
-int MapClass::DrawBackgroundTiles(int kamera_x, int kamera_y){
+int LevelClass::DrawBackgroundTiles(int kamera_x, int kamera_y){
 	
 	int kartta_x = kamera_x/32;
 	int kartta_y = kamera_y/32;
@@ -720,7 +656,7 @@ int MapClass::DrawBackgroundTiles(int kamera_x, int kamera_y){
 	return 0;
 }
 
-int MapClass::DrawForegroundTiles(int kamera_x, int kamera_y){
+int LevelClass::DrawForegroundTiles(int kamera_x, int kamera_y){
 
 	int kartta_x = kamera_x / 32;
 	int kartta_y = kamera_y / 32;

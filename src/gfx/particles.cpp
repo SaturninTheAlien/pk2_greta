@@ -4,7 +4,7 @@
 //#########################
 #include "gfx/particle.hpp"
 
-#include "game/mapclass.hpp"
+#include "game/levelclass.hpp"
 #include "settings.hpp"
 #include "system.hpp"
 
@@ -54,7 +54,7 @@ void Particles_DrawBG(int cam_x, int cam_y) {
 
 }
 
-void Particles_LoadBG(MapClass* map) {
+void Particles_LoadBG(LevelClass* level) {
 	
 	for (int i = 0; i < nof_bg_particles; i++) {
 
@@ -71,15 +71,15 @@ void Particles_LoadBG(MapClass* map) {
 		
 	}
 
-	if (map->weather == WEATHER_RAIN || map->weather == WEATHER_RAIN_LEAVES)
+	if (level->weather == WEATHER_RAIN || level->weather == WEATHER_RAIN_LEAVES)
 		for( int i = 0; i < nof_bg_particles; i++)
 			BGParticles[i].set_type(BGPARTICLE_WATERDROP);
 
-	if (map->weather == WEATHER_LEAVES || map->weather == WEATHER_RAIN_LEAVES)
+	if (level->weather == WEATHER_LEAVES || level->weather == WEATHER_RAIN_LEAVES)
 		for( int i = 0; i < nof_bg_particles / 8; i++)
 			BGParticles[i].set_type(BGPARTICLE_LEAF1 + rand()%4);
 
-	if (map->weather == WEATHER_SNOW){
+	if (level->weather == WEATHER_SNOW){
 		for( int i = 0; i < nof_bg_particles / 2; i++)
 			BGParticles[i].set_type(BGPARTICLE_FLAKE4);
 		for( int i = 0; i < nof_bg_particles / 3; i++)

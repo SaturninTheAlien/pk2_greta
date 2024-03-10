@@ -60,7 +60,7 @@ static PK2BLOCK Block_Get(u32 x, u32 y) {
 
 	}
 
-	u8 i = Game->map.foreground_tiles[x+y*PK2MAP_MAP_WIDTH];
+	u8 i = Game->level.foreground_tiles[x+y*PK2MAP_MAP_WIDTH];
 
 	if (i<150) { //If it is ground
 
@@ -87,12 +87,12 @@ static PK2BLOCK Block_Get(u32 x, u32 y) {
 	
 	}
 
-	i = Game->map.background_tiles[x+y*PK2MAP_MAP_WIDTH];
+	i = Game->level.background_tiles[x+y*PK2MAP_MAP_WIDTH];
 
 	if (i > 131 && i < 140)
 		block.water = true;
 
-	block.border = Game->map.edges[x+y*PK2MAP_MAP_WIDTH];
+	block.border = Game->level.edges[x+y*PK2MAP_MAP_WIDTH];
 
 	return block;
 }
@@ -237,8 +237,8 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 		/* Examine if it is a key and touches lock wall                       */
 		/**********************************************************************/
 		if (block.id == BLOCK_LOCK && sprite->prototype->can_open_locks){
-			Game->map.foreground_tiles[block.left/32+(block.top/32)*PK2MAP_MAP_WIDTH] = 255;
-			Game->map.Calculate_Edges();
+			Game->level.foreground_tiles[block.left/32+(block.top/32)*PK2MAP_MAP_WIDTH] = 255;
+			Game->level.Calculate_Edges();
 
 			sprite->removed = true;
 
@@ -323,21 +323,21 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 
 					if (sprite->weight_button >= 1) { // Sprite can press the buttons
 						if (block.id == BLOCK_BUTTON1 && Game->button1 == 0) {
-							Game->button1 = Game->map.button1_time;
+							Game->button1 = Game->level.button1_time;
 							Game->button_vibration = 64;
 							Play_GameSFX(Episode->sfx.switch_sound, 100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, false);
 							PInput::Vibrate(1000);
 						}
 
 						if (block.id == BLOCK_BUTTON2 && Game->button2 == 0) {
-							Game->button2 = Game->map.button2_time;
+							Game->button2 = Game->level.button2_time;
 							Game->button_vibration = 64;
 							Play_GameSFX(Episode->sfx.switch_sound, 100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, false);
 							PInput::Vibrate(1000);
 						}
 
 						if (block.id == BLOCK_BUTTON3 && Game->button3 == 0) {
-							Game->button3 = Game->map.button3_time;
+							Game->button3 = Game->level.button3_time;
 							Game->button_vibration = 64;
 							Play_GameSFX(Episode->sfx.switch_sound, 100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, false);
 							PInput::Vibrate(1000);
@@ -759,7 +759,7 @@ void UpdateSprite(SpriteClass* sprite){
 		int palikat_x_lkm = (int)((sprite_width) /32)+4; //Number of blocks
 		int palikat_y_lkm = (int)((sprite_height)/32)+4;
 
-		int map_vasen = (int)(sprite_left) / 32; //Position in tile map
+		int map_vasen = (int)(sprite_left) / 32; //Position in tile level
 		int map_yla   = (int)(sprite_upper)   / 32;
 
 		/*****************************************************************************************/
@@ -1114,10 +1114,10 @@ void UpdateSprite(SpriteClass* sprite){
 	if (sprite == Player_Sprite || sprite->energy < 1) {
 		double kitka = 1.04;
 
-		if (Game->map.weather == WEATHER_RAIN || Game->map.weather == WEATHER_RAIN_LEAVES)
+		if (Game->level.weather == WEATHER_RAIN || Game->level.weather == WEATHER_RAIN_LEAVES)
 			kitka = 1.03; // Slippery ground in the rain
 
-		if (Game->map.weather == WEATHER_SNOW)
+		if (Game->level.weather == WEATHER_SNOW)
 			kitka = 1.01; // And even more on snow
 
 		if (!sprite->can_move_down)
@@ -1152,7 +1152,7 @@ void UpdateSprite(SpriteClass* sprite){
 	}
 		
 
-	// If the sprite falls under the lower edge of the map
+	// If the sprite falls under the lower edge of the level
 	if (sprite->y > PK2MAP_MAP_HEIGHT*32 + sprite_height) {
 
 		sprite->y = PK2MAP_MAP_HEIGHT*32 + sprite_height;
@@ -1318,7 +1318,7 @@ void UpdateBonusSprite(SpriteClass* sprite){
 	}
 		
 
-	// If the sprite falls under the lower edge of the map
+	// If the sprite falls under the lower edge of the level
 	if (sprite->y > PK2MAP_MAP_HEIGHT*32 + sprite_height) {
 
 		sprite->y = PK2MAP_MAP_HEIGHT*32 + sprite_height;
@@ -1616,7 +1616,7 @@ void UpdateBonusSprite(SpriteClass* sprite){
 				PSound::start_music(PFile::Path("music" PE_SEP "super.xm"));   // the problem is this will most likely overwrite the current music, fixlater
 			}
 
-			//Game->map.spritet[(int)(sprite->orig_x/32) + (int)(sprite->orig_y/32)*PK2MAP_MAP_WIDTH] = 255;
+			//Game->level.spritet[(int)(sprite->orig_x/32) + (int)(sprite->orig_y/32)*PK2MAP_MAP_WIDTH] = 255;
 
 			if (sprite->prototype->how_destroyed != FX_DESTRUCT_INDESTRUCTIBLE)
 				Player_Sprite->energy -= sprite->prototype->damage;

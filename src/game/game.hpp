@@ -7,7 +7,7 @@
 #include "engine/types.hpp"
 
 #include "sprites_handler.hpp"
-#include "mapclass.hpp"
+#include "levelclass.hpp"
 
 const int TIME_FPS = 100; //(dec)conds * TIME_FPS = FRAMES
 const int INFO_TIME = 700;
@@ -21,7 +21,7 @@ class GameClass {
 	public:
 
 		u32 level_id = -1;
-		MapClass map;
+		LevelClass level;
 		std::string map_file;
 
 		PK2BLOCK     block_types[150];//150

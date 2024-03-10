@@ -50,7 +50,7 @@ GameClass::GameClass(std::string map_file) {
 
 	if (!found) {
 		PLog::Write(PLog::FATAL, "PK2", "Couldn't find %s on episode", map_file.c_str());
-		throw PExcept::PException("Couldn't find test map on episode");
+		throw PExcept::PException("Couldn't find test level on episode");
 	}
 
 }
@@ -89,7 +89,7 @@ int GameClass::Start() {
 	GUI_Reset(); //Reset GUI
 
 	if (this->Open_Map() == 1)
-		throw PExcept::PException("Can't load map");
+		throw PExcept::PException("Can't load level");
 
 	this->Calculate_Tiles();
 
@@ -134,7 +134,7 @@ int GameClass::Calculete_TileMasks() {
 	int x, y;
 	u8 color;
 
-	PDraw::drawimage_start(map.tiles_buffer, buffer, width);
+	PDraw::drawimage_start(level.tiles_buffer, buffer, width);
 	for (int mask=0; mask<BLOCK_MAX_MASKS; mask++){
 		for (x=0; x<32; x++){
 			y=0;
@@ -152,7 +152,7 @@ int GameClass::Calculete_TileMasks() {
 			block_masks[mask].ylos[x] = 31-y;
 		}
 	}
-	PDraw::drawimage_end(map.tiles_buffer);
+	PDraw::drawimage_end(level.tiles_buffer);
 
 	return 0;
 }
@@ -165,27 +165,27 @@ int GameClass::Clean_TileBuffer() {
 	int x,y;
 
 	int w, h;
-	PDraw::image_getsize(map.tiles_buffer, w, h);
+	PDraw::image_getsize(level.tiles_buffer, w, h);
 
-	PDraw::drawimage_start(map.tiles_buffer, buffer, width);
+	PDraw::drawimage_start(level.tiles_buffer, buffer, width);
 	for (y = 0; y < h; y++)
 		for(x = 0; x < w; x++)
 			if (buffer[x+y*width] == 254)
 				buffer[x+y*width] = 255;
-	PDraw::drawimage_end(map.tiles_buffer);
+	PDraw::drawimage_end(level.tiles_buffer);
 
-	if (map.bg_tiles_buffer < 0)
+	if (level.bg_tiles_buffer < 0)
 			return 0;
 	
 	// Clan bg buffer
-	PDraw::image_getsize(map.bg_tiles_buffer, w, h);
+	PDraw::image_getsize(level.bg_tiles_buffer, w, h);
 
-	PDraw::drawimage_start(map.bg_tiles_buffer, buffer, width);
+	PDraw::drawimage_start(level.bg_tiles_buffer, buffer, width);
 	for (y = 0; y < h; y++)
 		for(x = 0; x < w; x++)
 			if (buffer[x+y*width] == 254)
 				buffer[x+y*width] = 255;
-	PDraw::drawimage_end(map.bg_tiles_buffer);
+	PDraw::drawimage_end(level.bg_tiles_buffer);
 
 	return 0;
 }
@@ -209,8 +209,8 @@ int GameClass::Move_Blocks() {
 		if (this->button1 < 64)
 			kytkin1_y = this->button1;
 
-		if (this->button1 > map.button1_time - 64)
-			kytkin1_y = map.button1_time - this->button1;
+		if (this->button1 > level.button1_time - 64)
+			kytkin1_y = level.button1_time - this->button1;
 	}
 
 	if (this->button2 > 0) {
@@ -219,8 +219,8 @@ int GameClass::Move_Blocks() {
 		if (this->button2 < 64)
 			kytkin2_y = this->button2;
 
-		if (this->button2 > map.button2_time - 64)
-			kytkin2_y = map.button2_time - this->button2;
+		if (this->button2 > level.button2_time - 64)
+			kytkin2_y = level.button2_time - this->button2;
 	}
 
 	if (this->button3 > 0) {
@@ -229,8 +229,8 @@ int GameClass::Move_Blocks() {
 		if (this->button3 < 64)
 			kytkin3_x = this->button3;
 
-		if (this->button3 > map.button3_time - 64)
-			kytkin3_x = map.button3_time - this->button3;
+		if (this->button3 > level.button3_time - 64)
+			kytkin3_x = level.button3_time - this->button3;
 	}
 
 	kytkin1_y /= 2;
@@ -349,15 +349,15 @@ int GameClass::Calculate_Tiles() {
 int GameClass::Open_Map() {
 	
 	PFile::Path path = Episode->Get_Dir(map_file);
-	map.Load(path);
-	/*if (map.Load(path) == 1) {
+	level.Load(path);
+	/*if (level.Load(path) == 1) {
 
-		PLog::Write(PLog::ERR, "PK2", "Can't load map \"%s\" at \"%s\"", map_file.c_str(), path.c_str());
+		PLog::Write(PLog::ERR, "PK2", "Can't load level \"%s\" at \"%s\"", map_file.c_str(), path.c_str());
 		return 1;
 	
 	}*/
 
-	timeout = map.map_time * TIME_FPS;
+	timeout = level.map_time * TIME_FPS;
 
 	if (timeout > 0)
 		has_time = true;
@@ -365,16 +365,16 @@ int GameClass::Open_Map() {
 		has_time = false;
 
 	if (!Episode->use_button_timer) {
-		map.button1_time = SWITCH_INITIAL_VALUE;
-		map.button2_time = SWITCH_INITIAL_VALUE;
-		map.button3_time = SWITCH_INITIAL_VALUE;
+		level.button1_time = SWITCH_INITIAL_VALUE;
+		level.button2_time = SWITCH_INITIAL_VALUE;
+		level.button3_time = SWITCH_INITIAL_VALUE;
 	}
 
-	/*if (strcmp(map.version,"1.2") == 0 || strcmp(map.version,"1.3") == 0)
+	/*if (strcmp(level.version,"1.2") == 0 || strcmp(level.version,"1.3") == 0)
 		if (Level_Prototypes_LoadAll() == 1)
 			return 1;*/
 
-	spritesHandler.loadAllLevelPrototypes(this->map);
+	spritesHandler.loadAllLevelPrototypes(this->level);
 
 	spritesHandler.prototypesHandler.loadSpriteAssets();
 
@@ -396,11 +396,11 @@ int GameClass::Open_Map() {
 	//Sprites_On_Game_Start();
 
 	Particles_Clear();
-	Particles_LoadBG(&map);
+	Particles_LoadBG(&level);
 
-	if ( strcmp(map.music_filename, "") != 0 ) {
+	if (!level.music_name.empty()) {
 
-		PFile::Path music_path = Episode->Get_Dir(map.music_filename);
+		PFile::Path music_path = Episode->Get_Dir(level.music_name);
 
 		if (!FindAsset(&music_path, "music" PE_SEP)) {
 
@@ -417,7 +417,7 @@ int GameClass::Open_Map() {
 }
 
 void GameClass::Place_Sprites() {
-	PrototypeClass * proto = this->spritesHandler.getLevelPrototype(map.player_sprite_index);
+	PrototypeClass * proto = this->spritesHandler.getLevelPrototype(level.player_sprite_index);
 
 	if(proto==nullptr){
 		throw std::runtime_error("Null player prototype is quite serious error!");
@@ -429,7 +429,7 @@ void GameClass::Place_Sprites() {
 	for (u32 x = 0; x < PK2MAP_MAP_WIDTH; x++) {
 		for (u32 y = 0; y < PK2MAP_MAP_HEIGHT; y++) {
 
-			int sprite = map.sprite_tiles[x+y*PK2MAP_MAP_WIDTH];
+			int sprite = level.sprite_tiles[x+y*PK2MAP_MAP_WIDTH];
 			if(sprite<0||sprite>=255) continue;
 
 			PrototypeClass* protot = this->spritesHandler.getLevelPrototype(sprite);
@@ -460,7 +460,7 @@ void GameClass::Select_Start() {
 	std::vector<u32> starts;
 
 	for (u32 i = 0; i < PK2MAP_MAP_SIZE; i++)
-		if (map.foreground_tiles[i] == BLOCK_START)
+		if (level.foreground_tiles[i] == BLOCK_START)
 			starts.push_back(i);
 
 	if (starts.size() > 0) {
@@ -490,7 +490,7 @@ int GameClass::Count_Keys() {
 	int keys = 0;
 
 	for (u32 x=0; x < PK2MAP_MAP_SIZE; x++){
-		u8 sprite = map.sprite_tiles[x];
+		u8 sprite = level.sprite_tiles[x];
 
 		PrototypeClass*proto = this->spritesHandler.getLevelPrototype(sprite);
 		if(proto==nullptr) continue;
@@ -536,25 +536,25 @@ void GameClass::Change_SkullBlocks() {
 	for (u32 x = 0; x < PK2MAP_MAP_WIDTH; x++)
 		for (u32 y = 0; y < PK2MAP_MAP_HEIGHT; y++){
 			
-			u8 front = map.foreground_tiles[x+y*PK2MAP_MAP_WIDTH];
-			u8 back  = map.background_tiles[x+y*PK2MAP_MAP_WIDTH];
+			u8 front = level.foreground_tiles[x+y*PK2MAP_MAP_WIDTH];
+			u8 back  = level.background_tiles[x+y*PK2MAP_MAP_WIDTH];
 
 			if (front == BLOCK_SKULL_FOREGROUND){
-				map.foreground_tiles[x+y*PK2MAP_MAP_WIDTH] = 255;
+				level.foreground_tiles[x+y*PK2MAP_MAP_WIDTH] = 255;
 				if (back != BLOCK_SKULL_FOREGROUND)
 					Effect_SmokeClouds(x*32+24,y*32+6);
 
 			}
 
 			if (back == BLOCK_SKULL_BACKGROUND && front == 255)
-				map.foreground_tiles[x+y*PK2MAP_MAP_WIDTH] = BLOCK_SKULL_FOREGROUND;
+				level.foreground_tiles[x+y*PK2MAP_MAP_WIDTH] = BLOCK_SKULL_FOREGROUND;
 		}
 
 	//Put in game
 	this->vibration = 90;//60
 	PInput::Vibrate(1000);
 
-	map.Calculate_Edges();
+	level.Calculate_Edges();
 	this->spritesHandler.onSkullBlocksChanged();
 	//Sprites_changeSkullBlocks();
 }
@@ -564,10 +564,10 @@ void GameClass::Open_Locks() {
 	for (u32 x = 0; x < PK2MAP_MAP_WIDTH; x++)
 		for (u32 y = 0; y < PK2MAP_MAP_HEIGHT; y++){
 			
-			u8 palikka = map.foreground_tiles[x+y*PK2MAP_MAP_WIDTH];
+			u8 palikka = level.foreground_tiles[x+y*PK2MAP_MAP_WIDTH];
 			
 			if (palikka == BLOCK_LOCK){
-				map.foreground_tiles[x+y*PK2MAP_MAP_WIDTH] = 255;
+				level.foreground_tiles[x+y*PK2MAP_MAP_WIDTH] = 255;
 				Effect_SmokeClouds(x*32+6,y*32+6);
 			}
 		}
@@ -578,7 +578,7 @@ void GameClass::Open_Locks() {
 
 	Show_Info(tekstit->Get_Text(PK_txt.game_locksopen));
 
-	map.Calculate_Edges();
+	level.Calculate_Edges();
 
 }
 

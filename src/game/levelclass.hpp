@@ -7,6 +7,9 @@
 #include "engine/platform.hpp"
 #include "engine/PFile.hpp"
 
+#include <vector>
+#include <string>
+
 typedef struct {
     int left, top, right, bottom;
 } MAP_RECT;
@@ -101,7 +104,7 @@ struct PK2BLOCKMASK {
 
 };
 
-class MapClass {
+class LevelClass {
 	private:
 
 	int arrows_block_degree = 0;  // degree of movable blocks
@@ -116,18 +119,21 @@ class MapClass {
     /* Atributs ------------------------*/
 
     char     version[5]       = PK2MAP_LAST_VERSION;         // map version. eg "1.3"
-    char     tileset_filename[13] = "blox.bmp";                  // path of block palette .bmp
-    char     background_filename[13]  = "default.bmp";               // path of map bg .bmp
-    char     music_filename[13]    = "default.xm";                // path of map music
 
-    char     name[40]   = "untitled";                       // map name
-    char     author[40] = "unknown";                        // map author
+    std::string tileset_name = "blox.bmp";                  // path of block palette .bmp
+    std::string background_name = "default.bmp";            // path of map bg .bmp
+    std::string music_name = "default.xm";                  // path of map music*/           
+
+    std::string name = "untitled";
+    std::string author = "unknown";
+    /*char     name[40]   = "untitled";                       // map name
+    char     author[40] = "unknown";                        // map author*/
 
     int      level_number          = 0;                            // level of the episode
     int      weather           = WEATHER_NORMAL;                // map climate
     int      map_time           = 0;                            // map time (in (dec)conds)
-    u8       extra          = 0;                            // extra config - not used
-    u8       background_scrolling = BACKGROUND_STATIC;            // bg movemant type
+    int       extra          = 0;                            // extra config - not used
+    int       background_scrolling = BACKGROUND_STATIC;            // bg movemant type
     u32      button1_time   = SWITCH_INITIAL_VALUE;         // button 1 time
     u32      button2_time   = SWITCH_INITIAL_VALUE;         // button 2 time
     u32      button3_time   = SWITCH_INITIAL_VALUE;         // button 3 time
@@ -136,7 +142,10 @@ class MapClass {
     u8       background_tiles[PK2MAP_MAP_SIZE] = {255};              // map bg tiles 256*224
     u8       foreground_tiles[PK2MAP_MAP_SIZE] = {255};              // map fg tiles 256*224
     u8       sprite_tiles[PK2MAP_MAP_SIZE] = {255};              // map sprites 256*224
-    char     sprite_filenames[PK2MAP_MAP_MAX_PROTOTYPES][13] = {""}; // map prototype list .spr
+    
+    
+    //char     sprite_filenames[PK2MAP_MAP_MAX_PROTOTYPES][13] = {""}; // map prototype list .spr
+    std::vector<std::string> sprite_prototype_names;
     bool     edges [PK2MAP_MAP_SIZE] = {false};            // map edges - calculated during game
 
     int      tiles_buffer      = -1;                        // index of block palette
@@ -145,17 +154,20 @@ class MapClass {
     int      water_buffer      = -1;                        // index of water palette
     int      bg_water_buffer   = -1;
 
-    int      x = 0;                                         // map icon x pos
-	int      y = 0;                                         // map icon x pos
-    int      icon = 0;                                      // map icon id
+    int      icon_x = 0;                                         // map icon x pos
+	int      icon_y = 0;                                         // map icon x pos
+    int      icon_id = 0;                                      // map icon id
+
+    std::string lua_script = "main.lua";                        // lua script
+
 
     /* Metodit --------------------------*/
 
-    MapClass();                                             // Oletusmuodostin
-    ~MapClass();                                            // Hajoitin
+    LevelClass();                                             // Oletusmuodostin
+    ~LevelClass();                                            // Hajoitin
 
     void Load(PFile::Path path);                             // Load kartta
-    void Load_Plain_Data(PFile::Path path);                  // Load kartta ilman grafiikoita
+    void Load_Plain_Data(PFile::Path path, bool headerOnly);                  // Load kartta ilman grafiikoita
 
     int DrawBackgroundTiles(int kamera_x, int kamera_y);
     int DrawForegroundTiles(int kamera_x, int kamera_y);
@@ -164,14 +176,14 @@ class MapClass {
 
     void Calculate_Edges();
 
-    private:
+    void SaveVersion20(const std::string & filename);
+private:
+    static void ReadVersion13Tiles(PFile::RW& file, u8* tiles); 
 
-    void LoadVersion01(PFile::Path path);
-    void LoadVersion10(PFile::Path path);
-    void LoadVersion11(PFile::Path path);
-    void LoadVersion12(PFile::Path path);
-    void LoadVersion13(PFile::Path path);
-    
+    void LoadVersion13(PFile::Path path, bool headerOnly);
+    void LoadVersion20(PFile::Path path, bool headerOnly);
+
+
     int Load_BG(PFile::Path path);
     void Load_TilesImage(PFile::Path path);
     //int Load_BGSfx(PFile::Path path);

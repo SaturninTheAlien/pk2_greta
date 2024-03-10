@@ -302,39 +302,39 @@ void PlayingScreen::Draw_InGame_BG() {
 	int pallarx = ( Game->camera_x % (640*3) ) / 3;
 	int pallary = ( Game->camera_y % (480*3) ) / 3;
 
-	if (Game->map.background_scrolling == BACKGROUND_STATIC){
+	if (Game->level.background_scrolling == BACKGROUND_STATIC){
 	
-		PDraw::image_clip(Game->map.background_buffer,0,0);
-		PDraw::image_clip(Game->map.background_buffer,640,0);
+		PDraw::image_clip(Game->level.background_buffer,0,0);
+		PDraw::image_clip(Game->level.background_buffer,640,0);
 	
-	} else if (Game->map.background_scrolling == BACKGROUND_PARALLAX_HORI){
+	} else if (Game->level.background_scrolling == BACKGROUND_PARALLAX_HORI){
 	
-		PDraw::image_clip(Game->map.background_buffer,0   - pallarx,0);
-		PDraw::image_clip(Game->map.background_buffer,640 - pallarx,0);
+		PDraw::image_clip(Game->level.background_buffer,0   - pallarx,0);
+		PDraw::image_clip(Game->level.background_buffer,640 - pallarx,0);
 
 		if (screen_width > 640)
-			PDraw::image_clip(Game->map.background_buffer,640*2 - pallarx,0);
+			PDraw::image_clip(Game->level.background_buffer,640*2 - pallarx,0);
 	
-	} else if (Game->map.background_scrolling == BACKGROUND_PARALLAX_VERT){
+	} else if (Game->level.background_scrolling == BACKGROUND_PARALLAX_VERT){
 	
-		PDraw::image_clip(Game->map.background_buffer,0,0   - pallary);
-		PDraw::image_clip(Game->map.background_buffer,0,480 - pallary);
+		PDraw::image_clip(Game->level.background_buffer,0,0   - pallary);
+		PDraw::image_clip(Game->level.background_buffer,0,480 - pallary);
 
 		if (screen_width > 640){
-			PDraw::image_clip(Game->map.background_buffer,640,0   - pallary);
-			PDraw::image_clip(Game->map.background_buffer,640,480 - pallary);
+			PDraw::image_clip(Game->level.background_buffer,640,0   - pallary);
+			PDraw::image_clip(Game->level.background_buffer,640,480 - pallary);
 		}
 	
-	} else if (Game->map.background_scrolling == BACKGROUND_PARALLAX_VERT_AND_HORI){
+	} else if (Game->level.background_scrolling == BACKGROUND_PARALLAX_VERT_AND_HORI){
 	
-		PDraw::image_clip(Game->map.background_buffer,0   - pallarx, 0-pallary);
-		PDraw::image_clip(Game->map.background_buffer,640 - pallarx, 0-pallary);
-		PDraw::image_clip(Game->map.background_buffer,0   - pallarx, 480-pallary);
-		PDraw::image_clip(Game->map.background_buffer,640 - pallarx, 480-pallary);
+		PDraw::image_clip(Game->level.background_buffer,0   - pallarx, 0-pallary);
+		PDraw::image_clip(Game->level.background_buffer,640 - pallarx, 0-pallary);
+		PDraw::image_clip(Game->level.background_buffer,0   - pallarx, 480-pallary);
+		PDraw::image_clip(Game->level.background_buffer,640 - pallarx, 480-pallary);
 
 		if (screen_width > 640){
-			PDraw::image_clip(Game->map.background_buffer,640*2 - pallarx,0-pallary);
-			PDraw::image_clip(Game->map.background_buffer,640*2 - pallarx,480-pallary);
+			PDraw::image_clip(Game->level.background_buffer,640*2 - pallarx,0-pallary);
+			PDraw::image_clip(Game->level.background_buffer,640*2 - pallarx,480-pallary);
 		}
 	
 	}
@@ -513,13 +513,13 @@ void PlayingScreen::Draw() {
 
 	Particles_DrawBG(Game->camera_x, Game->camera_y);
 
-	Game->map.DrawBackgroundTiles(Game->camera_x,Game->camera_y);
+	Game->level.DrawBackgroundTiles(Game->camera_x,Game->camera_y);
 
 	Draw_InGame_Sprites();
 
 	Particles_DrawFront(Game->camera_x, Game->camera_y);
 
-	Game->map.DrawForegroundTiles(Game->camera_x,Game->camera_y);
+	Game->level.DrawForegroundTiles(Game->camera_x,Game->camera_y);
 
 	Draw_InGame_FGSprites();
 
@@ -671,7 +671,7 @@ void PlayingScreen::Update_Camera(){
 
 void PlayingScreen::Loop(){
 	if (!Game->level_clear && (!Game->has_time || Game->timeout > 0)) {
-		Game->map.SetTilesAnimations(degree, Game->palikka_animaatio/7, Game->button1, Game->button2, Game->button3);
+		Game->level.SetTilesAnimations(degree, Game->palikka_animaatio/7, Game->button1, Game->button2, Game->button3);
 		Game->palikka_animaatio = 1 + Game->palikka_animaatio % 34;
 	}
 
@@ -817,9 +817,9 @@ void PlayingScreen::Loop(){
 				key_delay = 20;
 			}
 			if (PInput::Keydown(PInput::Z)) {
-				if (Game->button1 < Game->map.button1_time - 64) Game->button1 = Game->map.button1_time;
-				if (Game->button2 < Game->map.button2_time - 64) Game->button2 = Game->map.button2_time;
-				if (Game->button3 < Game->map.button3_time - 64) Game->button3 = Game->map.button3_time;
+				if (Game->button1 < Game->level.button1_time - 64) Game->button1 = Game->level.button1_time;
+				if (Game->button2 < Game->level.button2_time - 64) Game->button2 = Game->level.button2_time;
+				if (Game->button3 < Game->level.button3_time - 64) Game->button3 = Game->level.button3_time;
 				key_delay = 20;
 			}
 			if (PInput::Keydown(PInput::X)) {
@@ -861,7 +861,7 @@ void PlayingScreen::Loop(){
 			}
 			if (PInput::Keydown(PInput::A)/* && key_delay == 0*/) {
 				//key_delay = 20;
-				PrototypeClass*proto = Game->spritesHandler.getLevelPrototype(Game->map.player_sprite_index);
+				PrototypeClass*proto = Game->spritesHandler.getLevelPrototype(Game->level.player_sprite_index);
 				if(proto!=nullptr){
 					*Player_Sprite = SpriteClass(proto, 1, Player_Sprite->x, Player_Sprite->y);
 					Effect_Stars(Player_Sprite->x, Player_Sprite->y, COLOR_VIOLET);
