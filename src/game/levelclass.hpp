@@ -158,6 +158,9 @@ class LevelClass {
 	int      icon_y = 0;                                         // map icon x pos
     int      icon_id = 0;                                      // map icon id
 
+    std::string lua_script = "main.lua";                        // lua script
+
+
     /* Metodit --------------------------*/
 
     LevelClass();                                             // Oletusmuodostin
@@ -173,10 +176,13 @@ class LevelClass {
 
     void Calculate_Edges();
 
+    void SaveVersion20(const std::string & filename);
 private:
     static void ReadVersion13Tiles(PFile::RW& file, u8* tiles); 
 
     void LoadVersion13(PFile::Path path, bool headerOnly);
+    void LoadVersion20(PFile::Path path, bool headerOnly);
+
 
     int Load_BG(PFile::Path path);
     void Load_TilesImage(PFile::Path path);
