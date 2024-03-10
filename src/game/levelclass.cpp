@@ -209,7 +209,7 @@ void LevelClass::LoadVersion13(PFile::Path path, bool headerOnly){
 void LevelClass::SaveVersion20(const std::string& filename){
 	PFile::Path path(filename);
 
-	PFile::RW file = path.GetRW2("r");
+	PFile::RW file = path.GetRW2("w");
 	char version[5] = "2.p";
 	file.write(version, sizeof(version));
 
@@ -235,11 +235,14 @@ void LevelClass::SaveVersion20(const std::string& filename){
 		j["scrolling"] = this->background_scrolling;
 		j["weather"] = this->weather;
 		j["map_time"] = this->map_time;
+		j["player_index"] = this->player_sprite_index;
 
 		j["button1_time"] = this->button1_time;
 		j["button2_time"] = this->button2_time;
 		j["button3_time"] = this->button3_time;
+
 		j["lua_script"] = this->lua_script;
+		j["sprite_prototypes"] = this->sprite_prototype_names;
 
 		file.writeCBOR(j);
 	}
@@ -264,11 +267,10 @@ void LevelClass::LoadVersion20(PFile::Path path, bool headerOnly){
 
 	//Read header
 	{
-		nlohmann::json header = file.readCBOR();
+		const nlohmann::json header = file.readCBOR();
 		jsonReadString(header, "name", this->name);
 		jsonReadString(header, "author", this->author);
 		jsonReadInt(header, "level_number", this->level_number);
-
 		jsonReadInt(header, "icon_x", this->icon_x);
 		jsonReadInt(header, "icon_y", this->icon_y);
 		jsonReadInt(header, "icon_id", this->icon_id);
@@ -280,7 +282,7 @@ void LevelClass::LoadVersion20(PFile::Path path, bool headerOnly){
 
 	//Read level data
 	{
-		nlohmann::json j = file.readCBOR();
+		const nlohmann::json j = file.readCBOR();
 		jsonReadString(j, "background", this->background_name);
 		jsonReadString(j, "tileset", this->tileset_name);
 		jsonReadString(j, "music", this->music_name);
@@ -288,6 +290,13 @@ void LevelClass::LoadVersion20(PFile::Path path, bool headerOnly){
 		jsonReadInt(j, "scrolling", this->background_scrolling);
 		jsonReadInt(j, "weather", this->weather);
 		jsonReadInt(j, "map_time", this->map_time);
+		jsonReadInt(j, "player_index", this->player_sprite_index);
+
+		jsonReadString(j, "lua_script", this->lua_script);
+
+		if(j.contains("sprite_prototypes")){
+			this->sprite_prototype_names = j["sprite_prototypes"].get<std::vector<std::string>>();
+		}
 
 	}
 

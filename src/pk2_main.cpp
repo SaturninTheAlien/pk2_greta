@@ -145,19 +145,6 @@ static void quit() {
 }
 
 
-void convertToSpr2(const std::string& filename_in, const std::string& filename_out){
-	PrototypesHandler handler(false, false, nullptr);
-	try{
-		PrototypeClass* prototype = handler.loadPrototype(filename_in);
-		nlohmann::json j = *prototype;
-		handler.savePrototype(prototype, filename_out);
-		PLog::Write(PLog::INFO, "PK2", "Sprite %s converted to %s\n", filename_in.c_str(), filename_out.c_str());
-	}
-	catch(const std::exception&e){
-		printf("%s\n", e.what());
-	}
-}
-
 static void set_paths() {
 
 	PFile::SetDefaultAssetsPath();
@@ -331,23 +318,72 @@ void pk2_main(bool _dev_mode, bool _show_fps, bool _test_level, const std::strin
 	quit();
 }
 
-bool pk2_convertToSpr2(const std::string& filename_in, const std::string& filename_out){
+void convertToSpr2(const std::string& filename_in, const std::string& filename_out){
+	PrototypesHandler handler(false, false, nullptr);
+	try{
+		PrototypeClass* prototype = handler.loadPrototype(filename_in);
+		nlohmann::json j = *prototype;
+		handler.savePrototype(prototype, filename_out);
+		PLog::Write(PLog::INFO, "PK2", "Sprite %s converted to %s\n", filename_in.c_str(), filename_out.c_str());
+	}
+	catch(const std::exception&e){
+		printf("%s\n", e.what());
+	}
+}
 
-	std::string filename_out2;
+void convertLevel(const std::string& filename_in, const std::string& filename_out){
+	try{
+		LevelClass level;
+		level.Load_Plain_Data(PFile::Path(filename_in), false);
+		printf("Converting level \"%s\" to the new experimental format.\n", level.name.c_str());
+		level.SaveVersion20(filename_out);
+		printf("Done!\n");
+	}
+	catch(const std::exception& e){
+		printf("%s\n", e.what());
+	}
+}
+
+bool pk2_convertToNewFormat(const std::string& filename_in, const std::string& filename_out){
+
 	PLog::Init(PLog::ALL, PFile::Path(data_path + "log.txt"));
 	if(filename_in.empty()){
 		printf("You have to specify the sprite to convert!");
 		return false;
 	}
 
-	else if(filename_out.empty()){
-		if(filename_in.size()>4 && filename_in.substr(filename_in.size()-4,4)==".spr"){
-			filename_out2 = filename_in.substr(0, filename_in.size() -4) + ".spr2";
+	/**
+	 * @brief 
+	 * Sprite
+	 */
+	if(filename_in.size()>4 && filename_in.substr(filename_in.size()-4,4)==".spr"){
+		std::string filename_out2;
+		if(filename_out.empty()){
+			filename_out2 = filename_in + "2";
 		}
 		else{
-			filename_out2 = filename_out + ".spr2";
+			filename_out2 = filename_out;
 		}
+		convertToSpr2(filename_in, filename_out2);
+		return true;
 	}
-	convertToSpr2(filename_in, filename_out2);
-	return true;
+	/**
+	 * @brief 
+	 * Level
+	 */
+	else if(filename_in.size()>4 && filename_in.substr(filename_in.size()-4,4)==".map"){
+		std::string filename_out2;
+		if(filename_out.empty()){
+			filename_out2 = filename_in.substr(0,filename_in.size()-4) + ".pk2lev";
+		}
+		else{
+			filename_out2 = filename_out;
+		}
+		convertLevel(filename_in, filename_out2);
+		return true;
+	}
+
+	printf("Unsupported file format to convert");
+	
+	return false;
 }

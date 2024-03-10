@@ -104,7 +104,7 @@ int main(int argc, char **argv) {
 	pk2_init();
 
 	if(converting_sprite){
-		pk2_convertToSpr2(filename_in, filename_out);
+		pk2_convertToNewFormat(filename_in, filename_out);
 	}
 	else{
 		pk2_main(dev_mode, show_fps, test_level, test_path);
