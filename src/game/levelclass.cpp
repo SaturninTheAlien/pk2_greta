@@ -17,6 +17,7 @@
 #include <cinttypes>
 #include <cstring>
 #include <cmath>
+#include <array>
 
 void LevelClass::SetTilesAnimations(int degree, int anim, u32 aika1, u32 aika2, u32 aika3) {
 
@@ -356,10 +357,13 @@ void LevelClass::Load_TilesImage(PFile::Path path){
 		throw PExcept::FileNotFoundException(path.c_str(), PExcept::MISSING_TILESET);
 	}
 
+	this->average_water_color = CalculateSplashColor(this->tiles_buffer);
+
+
 	PDraw::image_delete(this->water_buffer); //Delete last water buffer
 	this->water_buffer = PDraw::image_cut(this->tiles_buffer,0,416,320,32);
 
-	// load bg buffer
+	/*// load bg buffer
 	{
 		// transform tiles01.bmp to tiles01_bg.bmp
 		path = bkp;
@@ -374,7 +378,7 @@ void LevelClass::Load_TilesImage(PFile::Path path){
 				this->bg_water_buffer = PDraw::image_cut(this->bg_tiles_buffer,0,416,320,32);
 			}
 		}
-	}
+	}*/
 }
 /*
 int LevelClass::Load_BGSfx(PFile::Path path){
@@ -429,7 +433,67 @@ void LevelClass::Calculate_Edges(){
 		}
 }
 
-/* Kartanpiirtorutiineja ----------------------------------------------------------------*/
+
+int LevelClass::CalculateSplashColor(int tiles){
+	u8* buffer = nullptr;
+	u32 width = 0;
+
+	PDraw::drawimage_start(tiles, buffer, width);
+
+	/**
+	 * @brief
+	 * gray 	 - 0 
+	 * blue 	 - 1
+	 * red 		 - 2
+	 * green	 - 3
+	 * orange	 - 4
+	 * violet	 - 5
+	 * turquoise - 6
+	 * unknown	 - 7
+	 */
+
+	std::array<int, 8> colorCounters = {0};
+	for(int y = 416; y < 448; ++y){
+		for(int x = 64; x < 320; ++x){
+
+			int color = buffer[x + y*width];
+			color /= 32;
+			if(color < 7){
+				colorCounters[color] += 1;
+			}
+			else{
+				colorCounters[7] += 1; //Unknown colors
+			}
+		}
+	}
+
+	PDraw::drawimage_end(tiles);
+
+	int max_val = colorCounters[0];
+	int max_index = 0;
+
+	for(int i=1; i < 8; ++i){
+		int val = colorCounters[i];
+
+		if(val > max_val){
+			max_val = val;
+			max_index = i;
+		}
+	}
+
+	if(max_index==7){
+		/**
+		 * @brief 
+		 * Fallback to the blue if unknown colors predominate.
+		 */
+		max_index = 1;
+	}
+
+	return 32* max_index;
+}
+
+
+/* Tileset animations ----------------------------------------------------------------*/
 
 void LevelClass::Animate_Fire(int tiles){
 	u8 *buffer = NULL;

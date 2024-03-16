@@ -158,6 +158,12 @@ class LevelClass {
 	int      icon_y = 0;                                         // map icon x pos
     int      icon_id = 0;                                      // map icon id
 
+    /**
+     * @brief 
+     * The average color of the water, used in splash and bubble effects.
+     */
+    int      average_water_color = 0;
+
     std::string lua_script = "main.lua";                        // lua script
 
 
@@ -187,6 +193,8 @@ private:
     int Load_BG(PFile::Path path);
     void Load_TilesImage(PFile::Path path);
     //int Load_BGSfx(PFile::Path path);
+
+    static int CalculateSplashColor(int tiles);
 
     void Animate_Fire(int tiles);
     void Animate_Waterfall(int tiles);
