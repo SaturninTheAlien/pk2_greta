@@ -950,14 +950,19 @@ void Reborn(SpriteClass*s){
  */
 
 void Attack_1_If_Damaged(SpriteClass*s){
-	s->attack1_timer = s->prototype->attack1_time;
-	s->charging_timer = 0;
+
+	if(!s->prototype->legacy_projectile){
+		s->attack1_timer = s->prototype->attack1_time;
+		s->charging_timer = 0;
+	}
 }
 
 
 void Attack_2_If_Damaged(SpriteClass*s){
-	s->attack2_timer = s->prototype->attack2_time;
-	s->charging_timer = 0;
+	if(!s->prototype->legacy_projectile){
+		s->attack2_timer = s->prototype->attack2_time;
+		s->charging_timer = 0;
+	}
 }
 
 

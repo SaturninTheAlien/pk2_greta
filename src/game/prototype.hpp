@@ -164,6 +164,13 @@ public:
     double  dead_weight = 0;
 
 
+    /**
+     * @brief
+     * To fix the bomb and legacy projectiles bugs with the new sprite system
+     */
+    bool    legacy_projectile = false;
+
+
     PrototypeClass();
     ~PrototypeClass();
 

@@ -1259,7 +1259,7 @@ void UpdateSprite(SpriteClass* sprite){
 	 * Some old projectile spri
 	 */
 
-	if(sprite->self_destruction && sprite->prototype->type == TYPE_PROJECTILE){
+	if(sprite->self_destruction && sprite->prototype->legacy_projectile){
 
 		if(sprite->ammo1!=nullptr){
 			Play_GameSFX(sprite->prototype->sounds[SOUND_ATTACK1],100, (int)sprite->x, (int)sprite->y,

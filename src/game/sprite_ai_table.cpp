@@ -13,29 +13,52 @@ namespace SpriteAI{
 AI_Table AI_Table::INSTANCE;
 
 
-void AI_Table::InitSpriteAIs(std::vector<AI_Class>& ai_vec, const std::vector<int>& ai_indices)const{
+void AI_Table::InitSpritePrototypeAIs(PrototypeClass* sprite_prototype)const{
+    
+    std::vector<AI_Class>& ai_vec = sprite_prototype->AI_f;
     if(ai_vec.size()>0)ai_vec.clear();
 
-    for(const int& index: ai_indices){
+    std::vector<ProjectileAIClass> & ai_vec_p = sprite_prototype->AI_p;
 
+    /**
+     * @brief 
+     * To fix old projectiles
+     */
+    bool hasSelfDestruction = false;
+    bool hasAttackIfDamaged = false;
+
+    for(const int& index: sprite_prototype->AI_v){
         auto it = this->mAIsDict.find(index);
         if(it!=this->mAIsDict.end()){
             ai_vec.push_back(it->second);
         }
-    }
-};
 
-void AI_Table::InitSpriteProjectileAIs(std::vector<ProjectileAIClass>& ai_vec, const std::vector<int>& ai_indices)const{
-    if(ai_vec.size() > 0)ai_vec.clear();
+        auto it2 = this->mProjectileAIsDict.find(index);
+        if(it2!=this->mProjectileAIsDict.end()){
+            ai_vec_p.push_back(it2->second);
+        }
 
-    for(const int& index: ai_indices){
-        auto it = this->mProjectileAIsDict.find(index);
-        if(it!=this->mProjectileAIsDict.end()){
-            ai_vec.push_back(it->second);
+        switch (index)
+        {
+        case AI_SELF_DESTRUCTION:
+        case AI_EGG:
+        case AI_EGG2:
+        case AI_PROJECTILE:
+            hasSelfDestruction = true;
+            break;
+
+        case AI_ATTACK_1_IF_DAMAGED:
+        case AI_ATTACK_2_IF_DAMAGED:
+            hasAttackIfDamaged = true;
+            break;
+        
+        default:
+            break;
         }
     }
-}
 
+    sprite_prototype->legacy_projectile = hasSelfDestruction && hasAttackIfDamaged;
+}
 
 void AI_Table::Init_AI(int id,
         int trigger,

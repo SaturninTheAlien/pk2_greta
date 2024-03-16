@@ -756,8 +756,10 @@ void PrototypeClass::LoadAssets(EpisodeClass*episode){
 		}
 	}
 
-	SpriteAI::AI_Table::INSTANCE.InitSpriteAIs(this->AI_f, this->AI_v);
-	SpriteAI::AI_Table::INSTANCE.InitSpriteProjectileAIs(this->AI_p, this->AI_v);
+	SpriteAI::AI_Table::INSTANCE.InitSpritePrototypeAIs(this);
+
+	/*SpriteAI::AI_Table::INSTANCE.InitSpriteAIs(this->AI_f, this->AI_v);
+	SpriteAI::AI_Table::INSTANCE.InitSpriteProjectileAIs(this->AI_p, this->AI_v);*/
 
 	if(!this->commands_json.is_null()){
 		SpriteCommands::Parse_Commands(this->commands_json, this->commands, this->width, this->height);

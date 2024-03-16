@@ -11,6 +11,7 @@
 
 
 class SpriteClass;
+class PrototypeClass;
 
 enum AI_TRIGGER{  
     AI_TRIGGER_NONE,
@@ -78,8 +79,9 @@ class AI_Table{
 public:
     static AI_Table INSTANCE;
 
-    void InitSpriteAIs(std::vector<AI_Class>& ai_vec, const std::vector<int>& ai_indices)const;
-    void InitSpriteProjectileAIs(std::vector<ProjectileAIClass>& ai_vec, const std::vector<int>& ai_indices)const;
+    /*void InitSpriteAIs(std::vector<AI_Class>& ai_vec, const std::vector<int>& ai_indices)const;
+    void InitSpriteProjectileAIs(std::vector<ProjectileAIClass>& ai_vec, const std::vector<int>& ai_indices)const;*/
+    void InitSpritePrototypeAIs(PrototypeClass* sprite_prototype)const;
 
     AI_Table(const AI_Table& src) = delete;
     AI_Table& operator=(const AI_Table& src) = delete;
