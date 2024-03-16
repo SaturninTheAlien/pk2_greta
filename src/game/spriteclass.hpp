@@ -76,7 +76,12 @@ public:
     std::size_t current_command = 0;
     int     command_timer = -1;
     bool    self_destruction = false;           // true if the sprite commits a suicide
-    bool    initial_update = true;              // true if the sprite is updated for the first time
+    
+    /**
+     * @brief 
+     * To remove the initial splash effect
+     */
+    bool    initial_update = false; 
 
     bool CanDamageOnCollision(const SpriteClass* target)const;
 

@@ -263,6 +263,7 @@ SpriteClass* SpritesHandler::mCreateSprite(PrototypeClass* prototype, bool playe
 
 void SpritesHandler::addPlayer(PrototypeClass*prototype, double x, double y){
 	SpriteClass* sprite = this->mCreateSprite(prototype, true, x, y, nullptr);
+	sprite->initial_update = true;
 
 	this->Player_Sprite = sprite;
 
@@ -290,6 +291,7 @@ void SpritesHandler::addPlayer(PrototypeClass*prototype, double x, double y){
 
 void SpritesHandler::addLevelSprite(PrototypeClass*prototype, double x, double y){
 	SpriteClass* sprite  = this->mCreateSprite(prototype, false, x, y, nullptr);
+	sprite->initial_update = true;
 
 	/**
 	 * @brief 
