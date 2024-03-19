@@ -795,11 +795,11 @@ void UpdateSprite(SpriteClass* sprite){
 
 		if (rand()%80 == 1)
 			Particles_New(PARTICLE_SPARK,sprite->x-4,sprite->y,0,-0.5-rand()%2,rand()%30+30,0,
-			Game->level.average_water_color);
+			Game->level.splash_color);
 	}
 
 	if (in_water != sprite->in_water&&!sprite->initial_update) { // Sprite comes in or out from water
-		Effect_Splash(sprite->x, sprite->y, Game->level.average_water_color);
+		Effect_Splash(sprite->x, sprite->y, Game->level.splash_color);
 		Play_GameSFX(Episode->sfx.splash_sound, 100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, true);
 	}
 
@@ -1369,7 +1369,7 @@ void UpdateBonusSprite(SpriteClass* sprite){
 
 			if (rand()%80 == 1)
 				Particles_New(PARTICLE_SPARK,sprite->x-4,sprite->y,0,-0.5-rand()%2,rand()%30+30,0,
-				Game->level.average_water_color);
+				Game->level.splash_color);
 		}
 
 		sprite->in_water = false;
@@ -1490,7 +1490,7 @@ void UpdateBonusSprite(SpriteClass* sprite){
 		}
 
 		if (in_water != sprite->in_water && !sprite->initial_update) {
-			Effect_Splash((int)sprite->x,(int)sprite->y, Game->level.average_water_color);
+			Effect_Splash((int)sprite->x,(int)sprite->y, Game->level.splash_color);
 			Play_GameSFX(Episode->sfx.splash_sound, 100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, true);
 		}
 

@@ -36,6 +36,12 @@ void jsonReadBool(const nlohmann::json& j, const std::string& name, bool& target
 	}
 }
 
+void jsonReadU32(const nlohmann::json& j, const std::string& name, u32& target){
+	if(j.contains(name)){
+		target = j[name].get<u32>();
+	}
+}
+
 void jsonReadEnumU8(const nlohmann::json& j, const std::string& name, u8& target){
 	if(j.contains(name)){
 		int res = j[name].get<int>();

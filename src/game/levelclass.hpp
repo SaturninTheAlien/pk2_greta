@@ -26,6 +26,12 @@ typedef struct {
 
 #define BLOCK_MAX_MASKS 150
 
+
+enum{
+    TILES_COMPRESSION_NONE = 0,
+    TILES_COMPRESSION_LEGACY = 1
+};
+
 enum {
 
     BLOCK_BARRIER_DOWN = 40,
@@ -162,7 +168,14 @@ class LevelClass {
      * @brief 
      * The average color of the water, used in splash and bubble effects.
      */
-    int      average_water_color = 0;
+    int      splash_color = -1;
+
+    /**
+     * @brief 
+     * Fire colors
+     */
+    int     fire_color_1 = 64;  //red
+    int     fire_color_2 = 128; //orange
 
     std::string lua_script = "main.lua";                        // lua script
 
@@ -182,12 +195,16 @@ class LevelClass {
 
     void Calculate_Edges();
 
-    void SaveVersion20(const std::string & filename);
+    void SaveVersion15(PFile::Path path)const;
 private:
-    static void ReadVersion13Tiles(PFile::RW& file, u8* tiles); 
+    static void ReadTiles(PFile::RW& file,
+        u8 compression,
+        u32 level_width,
+        std::size_t level_size,
+        u8* tiles);
 
     void LoadVersion13(PFile::Path path, bool headerOnly);
-    void LoadVersion20(PFile::Path path, bool headerOnly);
+    void LoadVersion15(PFile::Path path, bool headerOnly);
 
 
     int Load_BG(PFile::Path path);

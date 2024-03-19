@@ -336,7 +336,7 @@ void convertLevel(const std::string& filename_in, const std::string& filename_ou
 		LevelClass level;
 		level.Load_Plain_Data(PFile::Path(filename_in), false);
 		printf("Converting level \"%s\" to the new experimental format.\n", level.name.c_str());
-		level.SaveVersion20(filename_out);
+		level.SaveVersion15(PFile::Path(filename_out));
 		printf("Done!\n");
 	}
 	catch(const std::exception& e){

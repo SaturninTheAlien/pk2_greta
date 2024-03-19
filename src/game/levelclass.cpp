@@ -63,16 +63,32 @@ void LevelClass::Load_Plain_Data(PFile::Path path, bool headerOnly) {
 
 		PLog::Write(PLog::DEBUG, "PK2", "Loading %s, version %s", path.c_str(), version);
 
-		if (strcmp(version,"1.3")==0) {
-			this->LoadVersion13(path, headerOnly);
+		/**
+		 * @brief 
+		 * New GE level format.
+		 * 1.4 intentionally skipped as it was used in PK2 Community Edition
+		 */
+		if(strcmp(version, "1.5")==0){
+			this->LoadVersion15(path, headerOnly);
 		}
 		/**
 		 * @brief 
-		 * Testing the new level format
+		 * Legacy PK2 level format.
 		 */
-		else if(strcmp(version, "2.p")==0){
-			this->LoadVersion20(path, headerOnly);
+		else if (strcmp(version,"1.3")==0) {
+			this->LoadVersion13(path, headerOnly);
 		}
+
+		else if (strcmp(version,"1.4")==0 ){
+			/**
+			 * @brief 
+			 * TO DO
+			 * Support PK2 Community Edition level format
+			 */
+
+			throw PExcept::PException("PK2 CE levels not supported yet!");
+		}
+
 		else{
 			std::ostringstream os;
 			os<<"Unsupported level format: \""<<version<<"\"";
@@ -87,34 +103,49 @@ void LevelClass::Load_Plain_Data(PFile::Path path, bool headerOnly) {
 }
 
 
-void LevelClass::ReadVersion13Tiles(PFile::RW& file, u8* tiles){
-	u32 width = 0, height = 0;
-	u32 offset_x = 0, offset_y = 0;
+void LevelClass::ReadTiles(PFile::RW& file,
+        u8 compression,
+        u32 level_width,
+        std::size_t level_size,
+        u8* tiles){
 
-	// background_tiles
+	switch (compression)
+	{
+	case TILES_COMPRESSION_NONE:{
+		file.read(tiles, level_size);
+	}
+	break;
+	case TILES_COMPRESSION_LEGACY:{
+		u32 width = 0, height = 0;
+		u32 offset_x = 0, offset_y = 0;
 
-	file.readLegacyStrU32(offset_x);
-	file.readLegacyStrU32(offset_y);
-	file.readLegacyStrU32(width);
-	file.readLegacyStrU32(height);
+		file.readLegacyStrU32(offset_x);
+		file.readLegacyStrU32(offset_y);
+		file.readLegacyStrU32(width);
+		file.readLegacyStrU32(height);
 
-	for (u32 y = offset_y; y <= offset_y + height; y++) {
-		u32 x_start = offset_x + y * PK2MAP_MAP_WIDTH;
-
-		/**
-		 * @brief 
-		 * To prevent a memory leak
-		 */
-		if(x_start>=0 && x_start<PK2MAP_MAP_SIZE){
-			file.read(&tiles[x_start], width + 1);
-		}
-		else{
-			throw std::runtime_error("Malformed level file!");
+		for (u32 y = offset_y; y <= offset_y + height; y++) {
+			u32 x_start = offset_x + y * level_width;
+			/**
+			 * @brief 
+			 * To prevent a memory leak
+			 */
+			if(x_start>=0 && x_start<level_size){
+				file.read(&tiles[x_start], width + 1);
+			}
+			else{
+				throw std::runtime_error("Malformed level file!");
+			}
 		}
 	}
+	break;
+
+	default:
+		std::ostringstream os;
+		os<<"Tiles compression: "<<compression<<" not supported";
+		throw PExcept::PException(os.str());
+	}
 }
-
-
 
 void LevelClass::LoadVersion13(PFile::Path path, bool headerOnly){
 	PFile::RW file = path.GetRW2("r");
@@ -195,55 +226,152 @@ void LevelClass::LoadVersion13(PFile::Path path, bool headerOnly){
 
 	// background_tiles
 
-	ReadVersion13Tiles(file, this->background_tiles);
+	ReadTiles(file, TILES_COMPRESSION_LEGACY,
+		PK2MAP_MAP_WIDTH,
+		PK2MAP_MAP_SIZE,
+		this->background_tiles);
 
 	// foreground_tiles
-	ReadVersion13Tiles(file, this->foreground_tiles);
+	ReadTiles(file, TILES_COMPRESSION_LEGACY,
+		PK2MAP_MAP_WIDTH,
+		PK2MAP_MAP_SIZE,
+		this->foreground_tiles);
 
 	// sprite_tiles
-	ReadVersion13Tiles(file, this->sprite_tiles);
+	ReadTiles(file, TILES_COMPRESSION_LEGACY,
+		PK2MAP_MAP_WIDTH,
+		PK2MAP_MAP_SIZE,
+		this->sprite_tiles);
 	
 
 	file.close();
 }
+
+
+void LevelClass::LoadVersion15(PFile::Path path, bool headerOnly){
+
+	using namespace PJson;
+	PFile::RW file = path.GetRW2("r");
+
+	file.read(version,      sizeof(version));
+
+	u32 regions = 1; //placeholder;
+
+	//Read level header
+	{
+		const nlohmann::json j = file.readCBOR();
+		jsonReadString(j, "name", this->name);
+		jsonReadString(j, "author", this->author);
+		jsonReadInt(j, "level_number", this->level_number);
+		jsonReadInt(j, "icon_x", this->icon_x);
+		jsonReadInt(j, "icon_y", this->icon_y);
+		jsonReadInt(j, "icon_id", this->icon_id);
+
+		/**
+		 * @brief
+		 * If loading a level only for the map entry, finish here.
+		 */
+		if(headerOnly)return;
+
+		jsonReadU32(regions, "regions", regions);
+
+		if(j.contains("sprite_prototypes")){
+			this->sprite_prototype_names = j["sprite_prototypes"].get<std::vector<std::string>>();
+		}
+
+		jsonReadInt(j, "player_index", this->player_sprite_index);
+		jsonReadInt(j, "map_time", this->map_time);
+		jsonReadString(j, "lua_script", this->lua_script);
+	}
+
+	if(regions!=1){
+		throw PExcept::PException("Multiple regions aren't supported yet!"); //placeholder
+	}
+
+	u32 width = 0; // placeholder
+	u32 height = 0; //placeholder
+	u32 compression = 0;
+	
+	//Read region header
+	{
+		const nlohmann::json j = file.readCBOR();
+		jsonReadU32(j, "width", width);
+		jsonReadU32(j, "height", height);
+		jsonReadU32(j, "compression", compression);
+
+		jsonReadString(j, "tileset", this->tileset_name);
+		jsonReadString(j, "music", this->music_name);
+
+		jsonReadString(j, "background", this->background_name);
+		jsonReadInt(j, "scrolling", this->background_scrolling);
+		jsonReadInt(j, "weather", this->weather);
+
+		jsonReadInt(j, "splash_color", this->splash_color);
+		jsonReadInt(j, "fire_color_1", this->fire_color_1);
+		jsonReadInt(j, "fire_color_2", this->fire_color_2);
+	}
+
+	if(width!=PK2MAP_MAP_WIDTH || height!=PK2MAP_MAP_HEIGHT){
+		throw PExcept::PException("Custom-sized regions not implemented yet!");
+	}
+
+	//background tiles
+	file.read(this->background_tiles, sizeof(u8)* PK2MAP_MAP_SIZE);
+
+	//foreground tiles
+	file.read(this->foreground_tiles, sizeof(u8)* PK2MAP_MAP_SIZE);
+
+	//sprite tiles
+	file.read(this->sprite_tiles, sizeof(u8)* PK2MAP_MAP_SIZE);
+
+	file.close();
+}
+
+
 // TO DO
-void LevelClass::SaveVersion20(const std::string& filename){
-	PFile::Path path(filename);
+void LevelClass::SaveVersion15(PFile::Path path)const{
 
 	PFile::RW file = path.GetRW2("w");
-	char version[5] = "2.p";
+	char version[5] = "1.5";
 	file.write(version, sizeof(version));
 
 	//Write header
 	{
-		nlohmann::json header;
-		header["name"] = this->name;
-		header["author"] = this->author;
-		header["level_number"] = this->level_number;
-		header["icon_id"] = this->icon_id;
-		header["icon_x"] = this->icon_x;
-		header["icon_y"] = this->icon_y;
+		nlohmann::json j;
+		j["name"] = this->name;
+		j["author"] = this->author;
+		j["level_number"] = this->level_number;
+		j["icon_id"] = this->icon_id;
+		j["icon_x"] = this->icon_x;
+		j["icon_y"] = this->icon_y;
 
-		file.writeCBOR(header);
+		j["sprite_prototypes"] = this->sprite_prototype_names;
+		j["player_index"] = this->player_sprite_index;
+
+		j["regions"] = 1;
+		j["map_time"] = this->map_time;
+		j["lua_script"] = this->lua_script;
+
+		file.writeCBOR(j);
 	}
 
 	//Write level data
 	{
 		nlohmann::json j;
-		j["background"] = this->background_name;
+
+		j["width"] = PK2MAP_MAP_WIDTH;
+		j["height"]= PK2MAP_MAP_HEIGHT;
+		j["compression"] = TILES_COMPRESSION_NONE;
+
 		j["tileset"] = this->tileset_name;
 		j["music"] = this->music_name;
+		j["background"] = this->background_name;
 		j["scrolling"] = this->background_scrolling;
 		j["weather"] = this->weather;
-		j["map_time"] = this->map_time;
-		j["player_index"] = this->player_sprite_index;
 
-		j["button1_time"] = this->button1_time;
-		j["button2_time"] = this->button2_time;
-		j["button3_time"] = this->button3_time;
-
-		j["lua_script"] = this->lua_script;
-		j["sprite_prototypes"] = this->sprite_prototype_names;
+		j["splash_color"] = this->splash_color;
+		j["fire_color_1"] = this->fire_color_1;
+		j["fire_color_2"] = this->fire_color_2;
 
 		file.writeCBOR(j);
 	}
@@ -256,59 +384,6 @@ void LevelClass::SaveVersion20(const std::string& filename){
 
 	//sprite tiles
 	file.write(this->sprite_tiles, sizeof(u8)* PK2MAP_MAP_SIZE);
-
-	file.close();
-}
-void LevelClass::LoadVersion20(PFile::Path path, bool headerOnly){
-
-	using namespace PJson;
-	PFile::RW file = path.GetRW2("r");
-
-	file.read(version,      sizeof(version));
-
-	//Read header
-	{
-		const nlohmann::json header = file.readCBOR();
-		jsonReadString(header, "name", this->name);
-		jsonReadString(header, "author", this->author);
-		jsonReadInt(header, "level_number", this->level_number);
-		jsonReadInt(header, "icon_x", this->icon_x);
-		jsonReadInt(header, "icon_y", this->icon_y);
-		jsonReadInt(header, "icon_id", this->icon_id);
-	}
-
-	if(headerOnly){
-		return;
-	}
-
-	//Read level data
-	{
-		const nlohmann::json j = file.readCBOR();
-		jsonReadString(j, "background", this->background_name);
-		jsonReadString(j, "tileset", this->tileset_name);
-		jsonReadString(j, "music", this->music_name);
-
-		jsonReadInt(j, "scrolling", this->background_scrolling);
-		jsonReadInt(j, "weather", this->weather);
-		jsonReadInt(j, "map_time", this->map_time);
-		jsonReadInt(j, "player_index", this->player_sprite_index);
-
-		jsonReadString(j, "lua_script", this->lua_script);
-
-		if(j.contains("sprite_prototypes")){
-			this->sprite_prototype_names = j["sprite_prototypes"].get<std::vector<std::string>>();
-		}
-
-	}
-
-	//background tiles
-	file.read(this->background_tiles, sizeof(u8)* PK2MAP_MAP_SIZE);
-
-	//foreground tiles
-	file.read(this->foreground_tiles, sizeof(u8)* PK2MAP_MAP_SIZE);
-
-	//sprite tiles
-	file.read(this->sprite_tiles, sizeof(u8)* PK2MAP_MAP_SIZE);
 
 	file.close();
 }
@@ -357,7 +432,9 @@ void LevelClass::Load_TilesImage(PFile::Path path){
 		throw PExcept::FileNotFoundException(path.c_str(), PExcept::MISSING_TILESET);
 	}
 
-	this->average_water_color = CalculateSplashColor(this->tiles_buffer);
+	if(this->splash_color < 0){
+		this->splash_color = CalculateSplashColor(this->tiles_buffer);
+	}
 
 
 	PDraw::image_delete(this->water_buffer); //Delete last water buffer
@@ -457,6 +534,8 @@ int LevelClass::CalculateSplashColor(int tiles){
 		for(int x = 64; x < 320; ++x){
 
 			int color = buffer[x + y*width];
+			if(color==255)continue; //do not count transparent pixels
+
 			color /= 32;
 			if(color < 7){
 				colorCounters[color] += 1;
@@ -518,9 +597,9 @@ void LevelClass::Animate_Fire(int tiles){
 				else
 				{
 					if (color > 21)
-						color += 128;
+						color += this->fire_color_2; //128;
 					else
-						color += 64;
+						color += this->fire_color_1; //64;
 				}
 			}
 
@@ -530,7 +609,7 @@ void LevelClass::Animate_Fire(int tiles){
 	if (button1_timer < 20)
 	{
 		for (x=128;x<160;x++)
-			buffer[x+479*width] = rand()%15+144;
+			buffer[x+479*width] = this->fire_color_2 + 16 + rand()%15; //rand()%15+144;
 	}
 	else
 		for (x=128;x<160;x++)

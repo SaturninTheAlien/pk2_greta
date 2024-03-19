@@ -23,6 +23,8 @@ namespace PJson{
     void jsonReadInt(const nlohmann::json& j, const std::string& name, int& target);
     void jsonReadDouble(const nlohmann::json& j, const std::string& name, double& target );
     void jsonReadBool(const nlohmann::json& j, const std::string& name, bool& target);
+    void jsonReadU32(const nlohmann::json& j, const std::string& name, u32& target);
+
     void jsonReadEnumU8(const nlohmann::json& j, const std::string& name, u8& target);
     
     void jsonReadEnumU8(const nlohmann::json& j, const std::string& name, u8& target,
