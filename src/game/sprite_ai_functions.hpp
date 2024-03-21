@@ -42,7 +42,6 @@ void Transform_If_Player_Above(SpriteClass*s);
 void Transform_If_Player_Bellow(SpriteClass*s);
 void Jump_If_Player_Above(SpriteClass*s);
 void Damaged_by_Water(SpriteClass*s);
-void Kill_Everyone(SpriteClass*s);
 void Friction_Effect(SpriteClass*s);
 void Hiding(SpriteClass*s);
 void Return_To_Orig_X(SpriteClass*s);

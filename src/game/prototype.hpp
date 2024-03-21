@@ -76,6 +76,13 @@ public:
     double  weight    = 0;
 
     bool    enemy     = false;
+
+    /**
+     * @brief 
+     * If true, the sprite is enemy towards any other sprite
+     */
+    bool    hostile_to_everyone   = false;
+
     int     energy        = 0;
     int     damage        = 0;
     int      damage_type = DAMAGE_IMPACT;

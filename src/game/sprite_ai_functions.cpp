@@ -565,10 +565,6 @@ void Damaged_by_Water(SpriteClass*s){
 	}
 }
 
-void Kill_Everyone(SpriteClass*s){
-	s->enemy = !s->enemy;
-}
-
 void Friction_Effect(SpriteClass*s){
 	if (!s->can_move_down)
 		s->a /= 1.07;

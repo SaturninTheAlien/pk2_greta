@@ -927,7 +927,11 @@ void UpdateSprite(SpriteClass* sprite){
 				} */
 
 				// If two sprites from different teams touch each other
-				if (sprite->enemy != sprite2->enemy && sprite->parent_sprite != sprite2 &&
+				if ( (sprite->enemy != sprite2->enemy
+				|| sprite->prototype->hostile_to_everyone
+				|| sprite2->prototype->hostile_to_everyone)
+
+				&& sprite->parent_sprite != sprite2 &&
 				!sprite->prototype->ambient && !sprite2->prototype->ambient) {
 					
 					if (sprite2->prototype->type != TYPE_BACKGROUND &&

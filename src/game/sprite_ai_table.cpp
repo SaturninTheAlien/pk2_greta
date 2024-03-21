@@ -51,6 +51,10 @@ void AI_Table::InitSpritePrototypeAIs(PrototypeClass* sprite_prototype)const{
         case AI_ATTACK_2_IF_DAMAGED:
             hasAttackIfDamaged = true;
             break;
+
+        case AI_KILL_EVERYONE:
+            sprite_prototype->hostile_to_everyone = true;
+            break;
         
         default:
             break;
@@ -152,7 +156,6 @@ AI_Table::AI_Table(){
     Init_AI(AI_JUMP_IF_PLAYER_ABOVE, AI_TRIGGER_ALIVE, AI_Functions::Jump_If_Player_Above); //TO DO Redesign
 
     Init_AI(AI_DAMAGED_BY_WATER, AI_TRIGGER_ALIVE, AI_Functions::Damaged_by_Water, true, true);
-    Init_AI(AI_KILL_EVERYONE, AI_TRIGGER_ALIVE, AI_Functions::Kill_Everyone);
 
     Init_AI(AI_FRICTION_EFFECT, AI_TRIGGER_ALIVE, AI_Functions::Friction_Effect);
     Init_AI(AI_HIDING, AI_TRIGGER_ALIVE, AI_Functions::Hiding);

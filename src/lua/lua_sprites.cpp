@@ -33,6 +33,7 @@ void ExposePrototypeClass(sol::state& lua){
         "height", sol::readonly(&PrototypeClass::height),
         "weight", sol::readonly(&PrototypeClass::weight),
         "enemy", sol::readonly(&PrototypeClass::enemy),
+        "hostile_to_everyone", sol::readonly(&PrototypeClass::hostile_to_everyone),
 
         "color", sol::readonly(&PrototypeClass::color),
         "energy", sol::readonly(&PrototypeClass::energy),
