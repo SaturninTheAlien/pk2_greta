@@ -70,7 +70,7 @@ void PrototypeClass::SetProto10(PrototypeClass10 &proto){
 	this->ammo1_str = ReadLegacyString(proto.ammo1_str, 13);
 	this->ammo2_str = ReadLegacyString(proto.ammo2_str, 13);
 
-	for (int i=0;i<SPRITE_SOUNDS_NUMBER;i++) {
+	for (int i=0;i<SPRITE_SOUNDS_NUMBER_LEGACY;i++) {
 		this->sound_files[i] = ReadLegacyString(proto.sound_files[i], 13);
 		this->sounds[i] = proto.sounds[i];
 	}
@@ -119,7 +119,7 @@ void PrototypeClass::SetProto11(PrototypeClass11 &proto){
 	this->ammo1_str = ReadLegacyString(proto.ammo1_str, 13);
 	this->ammo2_str = ReadLegacyString(proto.ammo2_str, 13);
 
-	for (int i=0;i<SPRITE_SOUNDS_NUMBER;i++) {
+	for (int i=0;i<SPRITE_SOUNDS_NUMBER_LEGACY;i++) {
 		this->sound_files[i] = ReadLegacyString(proto.sound_files[i], 13);
 		this->sounds[i] = proto.sounds[i];
 	}
@@ -181,7 +181,7 @@ void PrototypeClass::SetProto12(PrototypeClass12 &proto){
 	this->ammo1_str = ReadLegacyString(proto.ammo1_str, 13);
 	this->ammo2_str = ReadLegacyString(proto.ammo2_str, 13);
 
-	for (int i=0;i<SPRITE_SOUNDS_NUMBER;i++) {
+	for (int i=0;i<SPRITE_SOUNDS_NUMBER_LEGACY;i++) {
 		this->sound_files[i] = ReadLegacyString(proto.sound_files[i], 13);
 		this->sounds[i] = proto.sounds[i];
 	}
@@ -253,7 +253,7 @@ void PrototypeClass::SetProto13(PrototypeClass13 &proto){
 	this->ammo1_str = ReadLegacyString(proto.ammo1_str, 100); //proto.ammo1_str;
 	this->ammo2_str = ReadLegacyString(proto.ammo2_str, 100);  //proto.ammo2_str;
 
-	for (int i=0;i<SPRITE_SOUNDS_NUMBER;i++) {
+	for (int i=0;i<SPRITE_SOUNDS_NUMBER_LEGACY;i++) {
 		this->sound_files[i] = ReadLegacyString(proto.sound_files[i], 100);
 		this->sounds[i] = proto.sounds[i];
 	}

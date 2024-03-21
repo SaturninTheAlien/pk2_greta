@@ -14,6 +14,8 @@
 #define MAX_PROTOTYYPPEJA  256
 
 #define SPRITE_SOUNDS_NUMBER     7
+#define SPRITE_SOUNDS_NUMBER_LEGACY     5
+
 #define SPRITE_ANIMATIONS_NUMBER       11
 
 #define DAMAGE_TIME             50
