@@ -392,7 +392,7 @@ int GameClass::Open_Map() {
 	
 	this->keys = Count_Keys();
 
-	spritesHandler.onGameStart();
+	//spritesHandler.onGameStart();
 	//Sprites_On_Game_Start();
 
 	Particles_Clear();

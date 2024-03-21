@@ -301,10 +301,10 @@ AI_Table::AI_Table(){
      * 
      */
 
-    Init_AI(AI_RANDOM_START_DIRECTION, AI_TRIGGER_GAME_START, AI_Functions::RandomStartDirection);
-    Init_AI(AI_RANDOM_START_DIRECTION_VERT, AI_TRIGGER_GAME_START, AI_Functions::RandomStartDirectionVert);
-    Init_AI(AI_START_DIRECTIONS_TOWARDS_PLAYER, AI_TRIGGER_GAME_START, AI_Functions::StartFacingThePlayer);
-    Init_AI(AI_START_DIRECTIONS_TOWARDS_PLAYER_VERT, AI_TRIGGER_GAME_START, AI_Functions::StartFacingThePlayerVert);
+    Init_AI(AI_RANDOM_START_DIRECTION, AI_TRIGGER_SPAWN, AI_Functions::RandomStartDirection);
+    Init_AI(AI_RANDOM_START_DIRECTION_VERT, AI_TRIGGER_SPAWN, AI_Functions::RandomStartDirectionVert);
+    Init_AI(AI_START_DIRECTIONS_TOWARDS_PLAYER, AI_TRIGGER_SPAWN, AI_Functions::StartFacingThePlayer);
+    Init_AI(AI_START_DIRECTIONS_TOWARDS_PLAYER_VERT, AI_TRIGGER_SPAWN, AI_Functions::StartFacingThePlayerVert);
 
     /**
      * @brief 

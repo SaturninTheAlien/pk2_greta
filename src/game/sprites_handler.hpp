@@ -20,7 +20,6 @@ public:
     
 
     void sortBg();
-    void onGameStart();
     void onSkullBlocksChanged();
     void onEvent1();
     void onEvent2();

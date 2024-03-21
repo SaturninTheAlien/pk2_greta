@@ -976,15 +976,20 @@ void InfiniteEnergy(SpriteClass*s){
 
 
 void RandomStartDirection(SpriteClass*sprite){
-	while (sprite->a == 0) {
+
+	sprite->a = ((rand() % 2 )*2 - 1) * sprite->prototype->max_speed / 3.5;
+	
+	/*while (sprite->a == 0) {
 		sprite->a = ((rand()%2 - rand()%2) * sprite->prototype->max_speed) / 3.5;//2;
-	}
+	}*/
 }
 
 void RandomStartDirectionVert(SpriteClass*sprite){
-	while (sprite->b == 0) {
+	sprite->b = ((rand() % 2 )*2 - 1) * sprite->prototype->max_speed / 3.5;
+	
+	/*while (sprite->b == 0) {
 		sprite->b = ((rand()%2 - rand()%2) * sprite->prototype->max_speed) / 3.5;//2;
-	}
+	}*/
 }
 
 void StartFacingThePlayer(SpriteClass*sprite){

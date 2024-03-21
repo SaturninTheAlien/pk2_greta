@@ -118,18 +118,6 @@ void SpritesHandler::sortBg(){
 	this->fgSprites_List.sort(Compare_fgSprites);
 }
 
-void SpritesHandler::onGameStart(){
-    for (SpriteClass* sprite : Sprites_List) {
-		sprite->a = 0;
-
-		for(const SpriteAI::AI_Class& ai: sprite->prototype->AI_f){
-
-			if(ai.trigger==AI_TRIGGER_GAME_START || ai.trigger==AI_TRIGGER_SPAWN){
-				ai.func(sprite);
-			}
-		}
-	}
-}
 
 void SpritesHandler::onSkullBlocksChanged(){
     for(SpriteClass* sprite: Sprites_List){
@@ -250,6 +238,12 @@ SpriteClass* SpritesHandler::mCreateSprite(PrototypeClass* prototype, bool playe
 	
 	SpriteClass* sprite = new SpriteClass(prototype, player, x, y, parent_sprite);
 	this->Sprites_List.push_back(sprite);
+
+	for(const SpriteAI::AI_Class& ai: sprite->prototype->AI_f){
+		if(ai.trigger==AI_TRIGGER_SPAWN){
+			ai.func(sprite);
+		}
+	}
 
 	if (prototype->type == TYPE_BACKGROUND){
 		this->mAddBG(sprite);
