@@ -78,12 +78,6 @@ int GameClass::Start() {
 		this->lua = nullptr;
 	}
 
-	/**
-	 * @brief 
-	 * Load lua
-	 */
-	this->lua = PK2lua::CreateGameLuaVM(this->map_file);
-
 	Gifts_Clean(); //Reset gifts
 	Fadetext_Init(); //Reset fade text
 	GUI_Reset(); //Reset GUI
@@ -94,6 +88,10 @@ int GameClass::Start() {
 	this->Calculate_Tiles();
 
 	PSound::set_musicvolume(Settings.music_max_volume);
+
+	if(this->lua!=nullptr){
+		PK2lua::TriggerEventListeners(PK2lua::LUA_EVENT_GAME_STARTED);
+	}
 
 	this->started = true;
 	
@@ -350,12 +348,18 @@ int GameClass::Open_Map() {
 	
 	PFile::Path path = Episode->Get_Dir(map_file);
 	level.Load(path);
-	/*if (level.Load(path) == 1) {
 
-		PLog::Write(PLog::ERR, "PK2", "Can't load level \"%s\" at \"%s\"", map_file.c_str(), path.c_str());
-		return 1;
-	
-	}*/
+	/**
+	 * @brief 
+	 * Load lua
+	 */
+	if(this->level.lua_script!=""){
+		this->lua = PK2lua::CreateGameLuaVM(this->level.lua_script);
+	}
+	else{
+		PLog::Write(PLog::INFO, "PK2lua", "No Lua scripting in this level");
+	}
+
 
 	timeout = level.map_time * TIME_FPS;
 
@@ -510,7 +514,9 @@ void GameClass::ExecuteEventsIfNeeded(){
 		this->Change_SkullBlocks();
 		this->change_skulls = false;
 
-		PK2lua::TriggerEventListeners(PK2lua::LUA_EVENT_SKULL_BLOCKS_CHANGED);
+		if(this->lua!=nullptr){
+			PK2lua::TriggerEventListeners(PK2lua::LUA_EVENT_SKULL_BLOCKS_CHANGED);
+		}
 	}
 
 	if(this->event1){
@@ -520,14 +526,18 @@ void GameClass::ExecuteEventsIfNeeded(){
 		this->spritesHandler.onEvent1();
 		this->event1 = false;
 
-		PK2lua::TriggerEventListeners(PK2lua::LUA_EVENT_1);
+		if(this->lua!=nullptr){
+			PK2lua::TriggerEventListeners(PK2lua::LUA_EVENT_1);
+		}
 	}
 
 	if(this->event2){
 		this->spritesHandler.onEvent2();
 		this->event2 = false;
 
-		PK2lua::TriggerEventListeners(PK2lua::LUA_EVENT_2);
+		if(this->lua!=nullptr){
+			PK2lua::TriggerEventListeners(PK2lua::LUA_EVENT_2);
+		}
 	}
 }
 

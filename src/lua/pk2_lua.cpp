@@ -73,8 +73,8 @@ void OverrideLuaRequire(sol::state& lua){
     lua.safe_script(require_decorator);
 }
 
-sol::state* CreateGameLuaVM(const std::string& level_name){
-    std::string main_lua = PK2GetLuaFile("main.lua");
+sol::state* CreateGameLuaVM(const std::string& main_lua_script){
+    std::string main_lua = PK2GetLuaFile(main_lua_script);
 
     if(main_lua.empty()){
         PLog::Write(PLog::INFO, "PK2lua", "No Lua scripting in this level");
