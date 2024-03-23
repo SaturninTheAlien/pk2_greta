@@ -531,7 +531,8 @@ int LevelClass::CalculateSplashColor(int tiles){
 
 	std::array<int, 8> colorCounters = {0};
 	for(int y = 416; y < 448; ++y){
-		for(int x = 64; x < 320; ++x){
+		//for(int x = 64; x < 320; ++x){
+		for(int x = 0; x<32;++x){ //flowing water
 
 			int color = buffer[x + y*width];
 			if(color==255)continue; //do not count transparent pixels

@@ -264,7 +264,7 @@ int play_sfx(int index, int volume, int panoramic, int freq) {
 	int channel = find_channel();
 	if (channel == -1) {
 	
-		PLog::Write(PLog::WARN, "PSound", "No free channels available");
+		//PLog::Write(PLog::WARN, "PSound", "No free channels available");
 		return -1;
 	
 	}
