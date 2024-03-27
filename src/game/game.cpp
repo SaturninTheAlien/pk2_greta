@@ -391,8 +391,6 @@ int GameClass::Open_Map() {
 
 	if (this->chick_mode)
 		PLog::Write(PLog::DEBUG, "PK2", "Chick mode on");
-
-	Select_Start();
 	
 	this->keys = Count_Keys();
 
@@ -429,6 +427,7 @@ void GameClass::Place_Sprites() {
 
 	//this->spritesHandler.addSprite(proto, 1, 0, 0, nullptr, false);
 	this->spritesHandler.addPlayer(proto, 0, 0);
+	this->Select_Start();
 
 	for (u32 x = 0; x < PK2MAP_MAP_WIDTH; x++) {
 		for (u32 y = 0; y < PK2MAP_MAP_HEIGHT; y++) {
