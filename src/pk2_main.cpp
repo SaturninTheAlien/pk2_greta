@@ -67,7 +67,7 @@ static const char default_config[] =
 "\r\n-- It will be still possible to have more tilesets, but by selecting another tileset in the levels editor."
 "\r\n-- If you are a mapmaker and you used it,"
 "\r\n-- don't worry, your work won't be wasted!"
-"\r\n-- There will be a tool to convert your level painless to the new format."
+"\r\n-- There will be a tool allowing to convert your level painlessly to the new format."
 "\r\n--"
 "\r\n-- This feature may be removed completely in the future."
 "\r\n---------------"
