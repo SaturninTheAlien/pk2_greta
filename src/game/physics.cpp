@@ -484,7 +484,9 @@ void PotionTransformation(SpriteClass* sprite, PrototypeClass* intended_prototyp
 		 * @brief 
 		 * Transformation offset
 		 */
-		//player->y -= player->prototype->height/2;
+		if(configuration.transformation_offset){
+			sprite->y -= sprite->prototype->height/2;
+		}
 
 		sprite->swimming = false;
 		sprite->max_speed_available = false;

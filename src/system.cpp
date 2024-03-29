@@ -15,11 +15,11 @@
 #include <cmath>
 #include <string>
 
+
+ConfigurationClass configuration;
+
 int screen_width  = 800;
 int screen_height = 480;
-
-bool audio_multi_thread = true;
-int audio_buffer_size = 1024;
 
 #ifdef __ANDROID__
 

@@ -47,6 +47,34 @@ static const char default_config[] =
 "\r\n-- Default is yes"
 "\r\n---------------"
 "\r\n*audio_multi_thread:    yes"
+"\r\n"
+"\r\n"
+"\r\n-- For the compatibility with some older episodes"
+"\r\n-- Don't turn it on without a good reason!"
+"\r\n-- On the legacy PK2, the player used to move a bit upwards after using a transformation potion."
+"\r\n-- If you are a mapmaker, please don't use it intentionally."
+"\r\n--"
+"\r\n-- This feature may be removed completely in the future."
+"\r\n---------------"
+"\r\n*potion_transformation_offset:    no"
+"\r\n"
+"\r\n"
+"\r\n-- For the compatibility with some older episodes"
+"\r\n-- Don't turn it on without a good reason!"
+"\r\n-- On PK2 SDL 1.4.5 it was possible to select another tileset for the background layer by"
+"\r\n-- adding _bg suffix to the filename"
+"\r\n-- This feature is going to be deprecated in favour of the upcoming \"1.5\" level format."
+"\r\n-- It will be still possible to have more tilesets, but by selecting another tileset in the levels editor."
+"\r\n-- If you are a mapmaker and you used it,"
+"\r\n-- don't worry, your work won't be wasted!"
+"\r\n-- There will be a tool to convert your level painless to the new format."
+"\r\n--"
+"\r\n-- This feature may be removed completely in the future."
+"\r\n---------------"
+"\r\n*bg_tileset_hack:    no"
+
+"\r\n"
+"\r\n"
 "\r\n";
 
 
@@ -72,27 +100,54 @@ static void read_config() {
 		int val = atoi(txt);
 
 		if (val > 0) {
-			audio_buffer_size = val;
+			configuration.audio_buffer_size = val;
 			
 
 		}
 	}
-	PLog::Write(PLog::DEBUG, "PK2", "Audio buffer size set to %i", audio_buffer_size);
+	PLog::Write(PLog::DEBUG, "PK2", "Audio buffer size set to %i", configuration.audio_buffer_size);
 
 	idx = conf.Search_Id("audio_multi_thread");
 	if (idx != -1) {
 		const char* txt = conf.Get_Text(idx);
 
 		if (strcmp(txt, "default") == 0)
-			audio_multi_thread = true;
+			configuration.audio_multi_thread = true;
 		else if (strcmp(txt, "yes") == 0)
-			audio_multi_thread = true;
+			configuration.audio_multi_thread = true;
 		else if (strcmp(txt, "no") == 0)
-			audio_multi_thread = false;
+			configuration.audio_multi_thread = false;
 
 		
 	}
-	PLog::Write(PLog::DEBUG, "PK2", "Audio multi thread is %s", audio_multi_thread? "ON" : "OFF");
+	idx = conf.Search_Id("potion_transformation_offset");
+	if (idx != -1) {
+		const char* txt = conf.Get_Text(idx);
+
+		if (strcmp(txt, "default") == 0)
+			configuration.transformation_offset = false;
+		else if (strcmp(txt, "yes") == 0)
+			configuration.transformation_offset = true;
+		else if (strcmp(txt, "no") == 0)
+			configuration.transformation_offset = false;	
+	}
+
+	idx = conf.Search_Id("bg_tileset_hack");
+	if (idx != -1) {
+		const char* txt = conf.Get_Text(idx);
+
+		if (strcmp(txt, "default") == 0)
+			configuration.bg_tileset_hack = false;
+		else if (strcmp(txt, "yes") == 0)
+			configuration.bg_tileset_hack = true;
+		else if (strcmp(txt, "no") == 0)
+			configuration.bg_tileset_hack = false;
+
+		
+	}
+
+
+	PLog::Write(PLog::DEBUG, "PK2", "Audio multi thread is %s", configuration.audio_multi_thread? "ON" : "OFF");
 
 }
 
@@ -283,7 +338,9 @@ void pk2_main(bool _dev_mode, bool _show_fps, bool _test_level, const std::strin
 	
 	read_config();
 
-	Piste::init(screen_width, screen_height, PK2_NAME, "gfx" PE_SEP "icon_new.png", audio_buffer_size, audio_multi_thread);
+	Piste::init(screen_width, screen_height, PK2_NAME, "gfx" PE_SEP "icon_new.png",
+	configuration.audio_buffer_size, configuration.audio_multi_thread);
+	
 	if (!Piste::is_ready()) {
 
 		PLog::Write(PLog::FATAL, "PK2", "Failed to init PisteEngine");

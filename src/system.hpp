@@ -10,11 +10,23 @@
 
 // settings text (shouldn't change during execution)
 
+class ConfigurationClass{
+public:
+	bool audio_multi_thread = true;
+	int audio_buffer_size = 1024;
+
+    /**
+     * @brief 
+     * Deprecated features, they can be removed
+     */
+    bool bg_tileset_hack = false;
+    bool transformation_offset = false;
+};
+
+extern ConfigurationClass configuration;
+
 extern int screen_width;
 extern int screen_height;
-
-extern int audio_buffer_size;
-extern bool audio_multi_thread;
 
 #ifdef __ANDROID__
 // Variables used on data menu
