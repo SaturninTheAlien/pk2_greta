@@ -503,7 +503,14 @@ void PotionTransformation(SpriteClass* sprite, PrototypeClass* intended_prototyp
 	}
 }
 
-void BonusSpriteCollected(SpriteClass* sprite, SpriteClass* player){
+void BonusSpriteCollected(SpriteClass* sprite, SpriteClass* collector){
+
+	if(collector->prototype->type==TYPE_PROJECTILE){
+		collector = collector->parent_sprite;
+		if(collector==nullptr){
+			return;
+		}
+	}
 	if (sprite->prototype->score != 0) {
 		if(sprite->prototype->big_apple){
 			Game->apples_got++;
@@ -517,39 +524,10 @@ void BonusSpriteCollected(SpriteClass* sprite, SpriteClass* player){
 		}
 
 	}
-
-	if (sprite->HasAI(AI_BONUS_CLOCK)) {
-		
-		int increase_time = sprite->prototype->charge_time * TIME_FPS;
-		Game->timeout += increase_time;
-
-		float shown_time = float(increase_time) / 60;
-		int minutes = int(shown_time / 60);
-		int seconds = int(shown_time) % 60;
-
-		std::ostringstream os;
-		os<<minutes<<":";
-		if(seconds<10){
-			os<<"0";
-		}
-		os<<seconds;
-		
-		Fadetext_New(fontti1,os.str(),(int)sprite->x-15,(int)sprite->y-8,100);
-	}
-
-	if (sprite->HasAI(AI_BONUS_INVISIBILITY))
-		player->invisible_timer = sprite->prototype->charge_time;
-
-	if (sprite->HasAI(AI_BONUS_SUPERMODE)) {
-		player->super_mode_timer = sprite->prototype->charge_time;
-		//PSound::play_overlay_music();
-		PSound::start_music(PFile::Path("music" PE_SEP "super.xm"));   // the problem is this will most likely overwrite the current music, fixlater
-	}
-
 	//Game->level.spritet[(int)(sprite->orig_x/32) + (int)(sprite->orig_y/32)*PK2MAP_MAP_WIDTH] = 255;
 
 	if (sprite->prototype->how_destroyed != FX_DESTRUCT_INDESTRUCTIBLE)
-		player->energy -= sprite->prototype->damage;
+		collector->energy -= sprite->prototype->damage;
 
 	int how_destroyed = sprite->prototype->how_destroyed;
 
@@ -570,27 +548,63 @@ void BonusSpriteCollected(SpriteClass* sprite, SpriteClass* player){
 			sprite->removed = true;
 		}
 
-		if (sprite->HasAI(AI_REBORN)) {
 
-			sprite->respawn_timer = sprite->prototype->charge_time;
-			sprite->energy = sprite->prototype->energy;
-			sprite->removed = false;
-			sprite->x = sprite->orig_x;
-			sprite->y = sprite->orig_y;
+		for(const int& ai: sprite->prototype->AI_v){
+			switch (ai)
+			{
+			case AI_REBORN:{
+					sprite->respawn_timer = sprite->prototype->charge_time;
+					sprite->energy = sprite->prototype->energy;
+					sprite->removed = false;
+					sprite->x = sprite->orig_x;
+					sprite->y = sprite->orig_y;
+			}
+			break;
+			case AI_BONUS_INVISIBILITY:{
+				collector->invisible_timer = sprite->prototype->charge_time;
+			}
+			break;
+			case AI_BONUS_SUPERMODE:{
+				collector->super_mode_timer = sprite->prototype->charge_time;
+				//PSound::play_overlay_music();
+				PSound::start_music(PFile::Path("music" PE_SEP "super.xm"));   // the problem is this will most likely overwrite the current music, fixlater
+			}
+			break;
+			case AI_BONUS_CLOCK:{
+				int increase_time = sprite->prototype->charge_time * TIME_FPS;
+				Game->timeout += increase_time;
+
+				float shown_time = float(increase_time) / 60;
+				int minutes = int(shown_time / 60);
+				int seconds = int(shown_time) % 60;
+
+				std::ostringstream os;
+				os<<minutes<<":";
+				if(seconds<10){
+					os<<"0";
+				}
+				os<<seconds;
+				
+				Fadetext_New(fontti1,os.str(),(int)sprite->x-15,(int)sprite->y-8,100);
+			}
+			break;			
+			default:
+				break;
+			}
 		}
+
+
 
 		if (sprite->prototype->bonus != nullptr)
 			if (Gifts_Add(sprite->prototype->bonus))
 				Game->Show_Info(tekstit->Get_Text(PK_txt.game_newitem));
 
-		//potion transformation
-		if (sprite->prototype->transformation != nullptr)
-		{
-			PotionTransformation(player, sprite->prototype->transformation);
+		if (sprite->prototype->transformation != nullptr){
+			PotionTransformation(collector, sprite->prototype->transformation);
 		}
 
-		if (sprite->prototype->ammo1 != nullptr) {
-			player->ammo1 = sprite->prototype->ammo1;
+		if (sprite->prototype->ammo1 != nullptr){
+			collector->ammo1 = sprite->prototype->ammo1;
 
 			int infotext = Episode->infos.Search_Id("new egg attack");
 			if (infotext != -1)
@@ -599,8 +613,8 @@ void BonusSpriteCollected(SpriteClass* sprite, SpriteClass* player){
 				Game->Show_Info(tekstit->Get_Text(PK_txt.game_newegg));
 		}
 
-		if (sprite->prototype->ammo2 != nullptr) {
-			player->ammo2 = sprite->prototype->ammo2;
+		if (sprite->prototype->ammo2 != nullptr){
+			collector->ammo2 = sprite->prototype->ammo2;
 
 			int infotext = Episode->infos.Search_Id("new doodle attack");
 			if (infotext != -1)
