@@ -464,6 +464,151 @@ void SpriteOnDeath(SpriteClass* sprite){
 	}
 }
 
+void PotionTransformation(SpriteClass* player, PrototypeClass* intended_prototype){
+	if (intended_prototype->type == TYPE_GAME_CHARACTER){
+		/**
+		 * @brief 
+		 * Robohead turning into rooster is no longer considered enemy.
+		 */
+		if(player->enemy && !intended_prototype->enemy){
+			player->enemy = false;
+		}
+
+		player->prototype = intended_prototype;
+
+		player->ammo1 = player->prototype->ammo1;
+		player->ammo2 = player->prototype->ammo2;
+		player->initial_weight = player->prototype->weight;
+
+		/**
+		 * @brief 
+		 * Transformation offset
+		 */
+		//player->y -= player->prototype->height/2;
+
+		player->swimming = false;
+		player->max_speed_available = false;
+		
+		int infotext = Episode->infos.Search_Id("pekka transformed");
+		if (infotext != -1)
+			Game->Show_Info(Episode->infos.Get_Text(infotext));
+		//Game->Show_Info("pekka has been transformed!");
+	}
+}
+
+void BonusSpriteCollected(SpriteClass* sprite, SpriteClass* player){
+	if (sprite->prototype->score != 0) {
+		if(sprite->prototype->big_apple){
+			Game->apples_got++;
+		}
+
+		Game->score_increment += sprite->prototype->score;
+		
+		if (!sprite->HasAI(AI_BONUS_CLOCK)) {
+			int font = sprite->prototype->score >= 50? fontti2 : fontti1;
+			Fadetext_New(font, std::to_string(sprite->prototype->score), (int)sprite->x-8,(int)sprite->y-8,100);
+		}
+
+	}
+
+	if (sprite->HasAI(AI_BONUS_CLOCK)) {
+		
+		int increase_time = sprite->prototype->charge_time * TIME_FPS;
+		Game->timeout += increase_time;
+
+		float shown_time = float(increase_time) / 60;
+		int minutes = int(shown_time / 60);
+		int seconds = int(shown_time) % 60;
+
+		std::ostringstream os;
+		os<<minutes<<":";
+		if(seconds<10){
+			os<<"0";
+		}
+		os<<seconds;
+		
+		Fadetext_New(fontti1,os.str(),(int)sprite->x-15,(int)sprite->y-8,100);
+	}
+
+	if (sprite->HasAI(AI_BONUS_INVISIBILITY))
+		player->invisible_timer = sprite->prototype->charge_time;
+
+	if (sprite->HasAI(AI_BONUS_SUPERMODE)) {
+		player->super_mode_timer = sprite->prototype->charge_time;
+		//PSound::play_overlay_music();
+		PSound::start_music(PFile::Path("music" PE_SEP "super.xm"));   // the problem is this will most likely overwrite the current music, fixlater
+	}
+
+	//Game->level.spritet[(int)(sprite->orig_x/32) + (int)(sprite->orig_y/32)*PK2MAP_MAP_WIDTH] = 255;
+
+	if (sprite->prototype->how_destroyed != FX_DESTRUCT_INDESTRUCTIBLE)
+		player->energy -= sprite->prototype->damage;
+
+	int how_destroyed = sprite->prototype->how_destroyed;
+
+	if (how_destroyed != FX_DESTRUCT_INDESTRUCTIBLE)
+	{
+		if (how_destroyed >= FX_DESTRUCT_ANIMATED)
+			how_destroyed -= FX_DESTRUCT_ANIMATED;
+		else
+		{
+			if (sprite->prototype->can_open_locks)
+			{
+				Game->keys--;
+
+				if (Game->keys < 1)
+					Game->Open_Locks();
+			}
+
+			sprite->removed = true;
+		}
+
+		if (sprite->HasAI(AI_REBORN)) {
+
+			sprite->respawn_timer = sprite->prototype->charge_time;
+			sprite->energy = sprite->prototype->energy;
+			sprite->removed = false;
+			sprite->x = sprite->orig_x;
+			sprite->y = sprite->orig_y;
+		}
+
+		if (sprite->prototype->bonus != nullptr)
+			if (Gifts_Add(sprite->prototype->bonus))
+				Game->Show_Info(tekstit->Get_Text(PK_txt.game_newitem));
+
+		//potion transformation
+		if (sprite->prototype->transformation != nullptr)
+		{
+			PotionTransformation(player, sprite->prototype->transformation);
+		}
+
+		if (sprite->prototype->ammo1 != nullptr) {
+			player->ammo1 = sprite->prototype->ammo1;
+
+			int infotext = Episode->infos.Search_Id("new egg attack");
+			if (infotext != -1)
+				Game->Show_Info(Episode->infos.Get_Text(infotext));
+			else
+				Game->Show_Info(tekstit->Get_Text(PK_txt.game_newegg));
+		}
+
+		if (sprite->prototype->ammo2 != nullptr) {
+			player->ammo2 = sprite->prototype->ammo2;
+
+			int infotext = Episode->infos.Search_Id("new doodle attack");
+			if (infotext != -1)
+				Game->Show_Info(Episode->infos.Get_Text(infotext));
+			else
+				Game->Show_Info(tekstit->Get_Text(PK_txt.game_newdoodle));
+		}
+
+		Play_GameSFX(sprite->prototype->sounds[SOUND_DESTRUCTION],100, (int)sprite->x, (int)sprite->y,
+						sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
+
+		Effect_Destruction(how_destroyed, (u32)sprite->x, (u32)sprite->y);
+	}
+}
+
 void DisplayInfo(SpriteClass* sprite, int info){
     if (AI_Functions::player_invisible!=nullptr &&
     (AI_Functions::player_invisible->x - sprite->x < 10
@@ -1569,8 +1714,6 @@ void UpdateBonusSprite(SpriteClass* sprite){
 
 	sprite->weight = sprite->initial_weight;
 
-	int how_destroyed;
-
 	// Test if player touches bonus
 	if (sprite->x < Player_Sprite->x + Player_Sprite->prototype->width/2 &&
 		sprite->x > Player_Sprite->x - Player_Sprite->prototype->width/2 &&
@@ -1580,136 +1723,7 @@ void UpdateBonusSprite(SpriteClass* sprite){
 	{
 		if (sprite->energy > 0 && Player_Sprite->energy > 0)
 		{
-			if (sprite->prototype->score != 0) {
-				if(sprite->prototype->big_apple){
-					Game->apples_got++;
-				}
-
-				Game->score_increment += sprite->prototype->score;
-				
-				if (!sprite->HasAI(AI_BONUS_CLOCK)) {
-					int font = sprite->prototype->score >= 50? fontti2 : fontti1;
-					Fadetext_New(font, std::to_string(sprite->prototype->score), (int)sprite->x-8,(int)sprite->y-8,100);
-				}
-
-			}
-
-			if (sprite->HasAI(AI_BONUS_CLOCK)) {
-				
-				int increase_time = sprite->prototype->charge_time * TIME_FPS;
-				Game->timeout += increase_time;
-
-				float shown_time = float(increase_time) / 60;
-				int minutes = int(shown_time / 60);
-				int seconds = int(shown_time) % 60;
-
-				std::ostringstream os;
-				os<<minutes<<":";
-				if(seconds<10){
-					os<<"0";
-				}
-				os<<seconds;
-				
-				Fadetext_New(fontti1,os.str(),(int)sprite->x-15,(int)sprite->y-8,100);
-			}
-
-			if (sprite->HasAI(AI_BONUS_INVISIBILITY))
-				Player_Sprite->invisible_timer = sprite->prototype->charge_time;
-
-			if (sprite->HasAI(AI_BONUS_SUPERMODE)) {
-				Player_Sprite->super_mode_timer = sprite->prototype->charge_time;
-				//PSound::play_overlay_music();
-				PSound::start_music(PFile::Path("music" PE_SEP "super.xm"));   // the problem is this will most likely overwrite the current music, fixlater
-			}
-
-			//Game->level.spritet[(int)(sprite->orig_x/32) + (int)(sprite->orig_y/32)*PK2MAP_MAP_WIDTH] = 255;
-
-			if (sprite->prototype->how_destroyed != FX_DESTRUCT_INDESTRUCTIBLE)
-				Player_Sprite->energy -= sprite->prototype->damage;
-
-			how_destroyed = sprite->prototype->how_destroyed;
-
-			if (how_destroyed != FX_DESTRUCT_INDESTRUCTIBLE)
-			{
-				if (how_destroyed >= FX_DESTRUCT_ANIMATED)
-					how_destroyed -= FX_DESTRUCT_ANIMATED;
-				else
-				{
-					if (sprite->prototype->can_open_locks)
-					{
-						Game->keys--;
-
-						if (Game->keys < 1)
-							Game->Open_Locks();
-					}
-
-					sprite->removed = true;
-				}
-
-				if (sprite->HasAI(AI_REBORN)) {
-
-					sprite->respawn_timer = sprite->prototype->charge_time;
-					sprite->energy = sprite->prototype->energy;
-					sprite->removed = false;
-					sprite->x = sprite->orig_x;
-					sprite->y = sprite->orig_y;
-				}
-
-				if (sprite->prototype->bonus != nullptr)
-					if (Gifts_Add(sprite->prototype->bonus))
-						Game->Show_Info(tekstit->Get_Text(PK_txt.game_newitem));
-
-				//potion transformation
-				if (sprite->prototype->transformation != nullptr)
-				{
-					if (sprite->prototype->transformation->first_ai() != AI_BONUS)
-					{
-						/**
-						 * @brief 
-						 * Robohead turning into rooster is no longer considered enemy.
-						 */
-						if(Player_Sprite->enemy && !sprite->prototype->transformation->enemy){
-							Player_Sprite->enemy = false;
-						}
-
-						Player_Sprite->prototype = sprite->prototype->transformation;
-						Player_Sprite->ammo1 = Player_Sprite->prototype->ammo1;
-						Player_Sprite->ammo2 = Player_Sprite->prototype->ammo2;
-						Player_Sprite->initial_weight = Player_Sprite->prototype->weight;
-						Player_Sprite->y -= Player_Sprite->prototype->height/2;
-						
-						int infotext = Episode->infos.Search_Id("pekka transformed");
-						if (infotext != -1)
-							Game->Show_Info(Episode->infos.Get_Text(infotext));
-						//Game->Show_Info("pekka has been transformed!");
-					}
-				}
-
-				if (sprite->prototype->ammo1 != nullptr) {
-					Player_Sprite->ammo1 = sprite->prototype->ammo1;
-
-					int infotext = Episode->infos.Search_Id("new egg attack");
-					if (infotext != -1)
-						Game->Show_Info(Episode->infos.Get_Text(infotext));
-					else
-						Game->Show_Info(tekstit->Get_Text(PK_txt.game_newegg));
-				}
-
-				if (sprite->prototype->ammo2 != nullptr) {
-					Player_Sprite->ammo2 = sprite->prototype->ammo2;
-
-					int infotext = Episode->infos.Search_Id("new doodle attack");
-					if (infotext != -1)
-						Game->Show_Info(Episode->infos.Get_Text(infotext));
-					else
-						Game->Show_Info(tekstit->Get_Text(PK_txt.game_newdoodle));
-				}
-
-				Play_GameSFX(sprite->prototype->sounds[SOUND_DESTRUCTION],100, (int)sprite->x, (int)sprite->y,
-							  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
-
-				Effect_Destruction(how_destroyed, (u32)sprite->x, (u32)sprite->y);
-			}
+			BonusSpriteCollected(sprite, Player_Sprite);
 		}
 	}
 	for(const SpriteAI::AI_Class& ai: sprite->prototype->AI_f){
