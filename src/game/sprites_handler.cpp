@@ -240,7 +240,7 @@ SpriteClass* SpritesHandler::mCreateSprite(PrototypeClass* prototype, bool playe
 	this->Sprites_List.push_back(sprite);
 
 	for(const SpriteAI::AI_Class& ai: sprite->prototype->AI_f){
-		if(ai.trigger==AI_TRIGGER_SPAWN){
+		if(ai.trigger==AI_TRIGGER_SPAWN || ai.trigger==AI_TRIGGER_TRANSFORMATION){
 			ai.func(sprite);
 		}
 	}

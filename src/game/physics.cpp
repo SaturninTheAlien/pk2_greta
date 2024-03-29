@@ -464,21 +464,21 @@ void SpriteOnDeath(SpriteClass* sprite){
 	}
 }
 
-void PotionTransformation(SpriteClass* player, PrototypeClass* intended_prototype){
+void PotionTransformation(SpriteClass* sprite, PrototypeClass* intended_prototype){
 	if (intended_prototype->type == TYPE_GAME_CHARACTER){
 		/**
 		 * @brief 
 		 * Robohead turning into rooster is no longer considered enemy.
 		 */
-		if(player->enemy && !intended_prototype->enemy){
-			player->enemy = false;
+		if(sprite->enemy && !intended_prototype->enemy){
+			sprite->enemy = false;
 		}
 
-		player->prototype = intended_prototype;
+		sprite->prototype = intended_prototype;
 
-		player->ammo1 = player->prototype->ammo1;
-		player->ammo2 = player->prototype->ammo2;
-		player->initial_weight = player->prototype->weight;
+		sprite->ammo1 = sprite->prototype->ammo1;
+		sprite->ammo2 = sprite->prototype->ammo2;
+		sprite->initial_weight = sprite->prototype->weight;
 
 		/**
 		 * @brief 
@@ -486,13 +486,20 @@ void PotionTransformation(SpriteClass* player, PrototypeClass* intended_prototyp
 		 */
 		//player->y -= player->prototype->height/2;
 
-		player->swimming = false;
-		player->max_speed_available = false;
+		sprite->swimming = false;
+		sprite->max_speed_available = false;
+		sprite->can_collect_bonuses = sprite->player;
 		
 		int infotext = Episode->infos.Search_Id("pekka transformed");
 		if (infotext != -1)
 			Game->Show_Info(Episode->infos.Get_Text(infotext));
 		//Game->Show_Info("pekka has been transformed!");
+
+		for(const SpriteAI::AI_Class& ai: sprite->prototype->AI_f){
+			if(ai.trigger == AI_TRIGGER_TRANSFORMATION){
+				ai.func(sprite);
+			}
+		}
 	}
 }
 
@@ -1437,7 +1444,7 @@ void UpdateSprite(SpriteClass* sprite){
 
 void UpdateBonusSprite(SpriteClass* sprite){
 
-	SpriteClass* Player_Sprite = Game->spritesHandler.Player_Sprite;
+	if(sprite->respawn_timer!=0) return;
 
 	sprite_width  = sprite->prototype->width;
 	sprite_height = sprite->prototype->height;
@@ -1578,9 +1585,16 @@ void UpdateBonusSprite(SpriteClass* sprite){
 					sprite->y > sprite2->y - sprite2->prototype->height/2 &&
 					sprite->damage_timer == 0)
 				{
-					if (sprite2->prototype->type != TYPE_BONUS &&
-						!(sprite2 == Player_Sprite && sprite->prototype->how_destroyed != FX_DESTRUCT_INDESTRUCTIBLE))
+					if(sprite2->can_collect_bonuses &&
+					sprite->prototype->how_destroyed != FX_DESTRUCT_INDESTRUCTIBLE &&
+					sprite2->energy > 0 &&
+					sprite->energy > 0){
+						BonusSpriteCollected(sprite, sprite2);
+					}
+
+					else if (sprite2->prototype->type != TYPE_BONUS){
 						sprite->a += sprite2->a*(rand()%4);
+					}
 
 					// lis�t��n spriten painoon sit� koskettavan toisen spriten weight
 					sprite->weight_button += sprite2->prototype->weight;
@@ -1710,22 +1724,28 @@ void UpdateBonusSprite(SpriteClass* sprite){
 	else	// jos spriten weight on nolla, tehd��n spritest� "kelluva"
 	{
 		sprite->y = sprite->orig_y + cos_table(degree+(sprite->orig_x+sprite->orig_y)) / 3.0;
-	}
+		// Test if player touches bonus
 
-	sprite->weight = sprite->initial_weight;
+		if(sprite->energy>0 &&
+		sprite->prototype->how_destroyed!=FX_DESTRUCT_INDESTRUCTIBLE &&
+		sprite->damage_timer == 0){
+			for(SpriteClass* sprite2: Game->spritesHandler.Sprites_List){
+				if (sprite2 != sprite &&
+					sprite2->can_collect_bonuses &&
+					sprite2->energy > 0 &&
+					sprite->x < sprite2->x + sprite2->prototype->width/2 &&
+					sprite->x > sprite2->x - sprite2->prototype->width/2 &&
+					sprite->y < sprite2->y + sprite2->prototype->height/2 &&
+					sprite->y > sprite2->y - sprite2->prototype->height/2){
+						BonusSpriteCollected(sprite, sprite2);
+					}
+			}
 
-	// Test if player touches bonus
-	if (sprite->x < Player_Sprite->x + Player_Sprite->prototype->width/2 &&
-		sprite->x > Player_Sprite->x - Player_Sprite->prototype->width/2 &&
-		sprite->y < Player_Sprite->y + Player_Sprite->prototype->height/2 &&
-		sprite->y > Player_Sprite->y - Player_Sprite->prototype->height/2 &&
-		sprite->damage_timer == 0)
-	{
-		if (sprite->energy > 0 && Player_Sprite->energy > 0)
-		{
-			BonusSpriteCollected(sprite, Player_Sprite);
+
 		}
 	}
+	sprite->weight = sprite->initial_weight;
+	
 	for(const SpriteAI::AI_Class& ai: sprite->prototype->AI_f){
 
 		if(!ai.apply_to_bonuses)continue;

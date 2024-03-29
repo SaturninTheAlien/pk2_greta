@@ -907,6 +907,11 @@ void MaxSpeedSwimming(SpriteClass*s){
 	s->max_speed_available = s->swimming;
 }
 
+void NpcCollectBonuses(SpriteClass*s){
+	s->can_collect_bonuses = true;
+}
+
+
 void DieIfTouchesWall(SpriteClass*s){
 
 	if( !s->can_move_right || !s->can_move_left ||

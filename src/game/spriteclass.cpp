@@ -29,6 +29,8 @@ SpriteClass::SpriteClass(PrototypeClass *prototype, bool player, double x, doubl
 		this->prototype         = prototype;
 		this->player        = player;
 
+		this->can_collect_bonuses = player;
+
 		this->active     = true;
 		this->removed        = false;
 
@@ -360,6 +362,13 @@ bool SpriteClass::TransformTo(PrototypeClass * transformation){
 
 		this->swimming = false;
 		this->max_speed_available = false;
+		this->can_collect_bonuses = this->player;
+
+		for(const SpriteAI::AI_Class& ai: this->prototype->AI_f){
+			if(ai.trigger == AI_TRIGGER_TRANSFORMATION){
+				ai.func(this);
+			}
+		}
 		
 		return true;
 	}

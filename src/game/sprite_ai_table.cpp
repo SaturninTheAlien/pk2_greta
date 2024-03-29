@@ -226,7 +226,9 @@ AI_Table::AI_Table(){
     Init_AI(AI_SWIMMING, AI_TRIGGER_ALIVE, AI_Functions::SwimInWater, true, true);
     Init_AI(AI_MAX_SPEED_SWIMMING, AI_TRIGGER_ALIVE, AI_Functions::SwimInWaterMaxSpeed, true, true);
 
-    Init_AI(AI_MAX_SPEED_PLAYER, AI_TRIGGER_ALIVE, AI_Functions::MaxSpeedPlayer, false, true);
+    Init_AI(AI_MAX_SPEED_PLAYER, AI_TRIGGER_TRANSFORMATION, AI_Functions::MaxSpeedPlayer, false, true);
+    Init_AI(AI_NPC_COLLECT_BONUSES, AI_TRIGGER_TRANSFORMATION, AI_Functions::NpcCollectBonuses, true, false);
+
     Init_AI(AI_MAX_SPEED_PLAYER_ON_SUPER, AI_TRIGGER_ALIVE, AI_Functions::MaxSpeedOnSuper, true, true);
     Init_AI(AI_MAX_SPEED_SWIMMING, AI_TRIGGER_ALIVE, AI_Functions::MaxSpeedSwimming, true, true);
 

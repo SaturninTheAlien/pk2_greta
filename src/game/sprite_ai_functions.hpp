@@ -74,6 +74,7 @@ void SwimInWaterMaxSpeed(SpriteClass*s);
 void MaxSpeedPlayer(SpriteClass*s);
 void MaxSpeedSwimming(SpriteClass*s);
 void MaxSpeedOnSuper(SpriteClass*s);
+void NpcCollectBonuses(SpriteClass*s);
 
 
 void DieIfTouchesWall(SpriteClass*s);

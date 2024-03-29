@@ -22,7 +22,8 @@ enum AI_TRIGGER{
     AI_TRIGGER_DEATH,  //if the sprite dies
     AI_TRIGGER_DAMAGE, //if the sprite is damaged
 
-    AI_TRIGGER_SPAWN,  //on spawn
+    AI_TRIGGER_SPAWN,  //spawn
+    AI_TRIGGER_TRANSFORMATION,  //spawn and transformation,
 
     AI_TRIGGER_SKULLS_CHANGED, //if skull blocks are changed
     AI_TRIGGER_EVENT1, //if event1

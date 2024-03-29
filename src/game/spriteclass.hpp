@@ -82,6 +82,11 @@ public:
      * To remove the initial splash effect
      */
     bool    initial_update = false; 
+    /**
+     * @brief 
+     * if the sprite can collect bonuses
+     */
+    bool    can_collect_bonuses = false;
 
     bool CanDamageOnCollision(const SpriteClass* target)const;
 
