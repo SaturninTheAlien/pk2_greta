@@ -1441,7 +1441,7 @@ void UpdateSprite(SpriteClass* sprite){
 			Game->spritesHandler.addProjectileSprite(sprite->ammo1,sprite->x, sprite->y, sprite);
 			SpriteOnDeath(sprite);
 		}
-		else if(sprite->ammo2!=nullptr){
+		if(sprite->ammo2!=nullptr){
 			Play_GameSFX(sprite->prototype->sounds[SOUND_ATTACK2],100, (int)sprite->x, (int)sprite->y,
 						  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 			
