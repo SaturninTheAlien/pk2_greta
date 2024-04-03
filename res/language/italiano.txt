@@ -120,9 +120,9 @@ Scores
 *score screen item score:		bonus regali
 *score screen continue:			continua
 *score screen total score:		punteggio finale
-*score screen new level hiscore:	hai stracciato il record!
+*score screen new level hiscore:	sei il campione del livello!
 *score screen new level best time:	sei il giocatore piu veloce!
-*score screen new episode hiscore:	sei il campione del livello!
+*score screen new episode hiscore:	hai stracciato il record!
 
 Game
 ------------------------------------------------------------------------------------
@@ -159,17 +159,17 @@ Info Signs
 *info03:			trova il segnale di uscita!
 *info04:			i lucchetti si apriranno quando avrai le chiavi.
 *info05:			aziona gli interruttori saltandoci sopra.
-*info06:			interruttori verdi muovono muri con frecce verdi.
-*info07:			interruttori blu muovono muri con frecce blu.
+*info06:			gli interruttori verdi muovono i muri con frecce verdi.
+*info07:			gli interruttori blu muovono i muri con frecce blu.
 *info08:			gli interruttori arancioni spengono gli incendi.
 *info09:			puoi usare i regali quando vuoi.
 *info10:			le piume restituiscono energia.
 *info11:			i teletrasporti sono ingannevoli, non perderti!
 *info12:			prendi i bonus e aumenta il tuo punteggio.
 *info13:			cerca sempre i bonus nascosti!
-*info14:			un lucchetto si apre se una chiave lo tocca.
-*info15:			fai attenzione alle trappole!
+*info14:			puoi aprire un lucchetto con il tocco di una chiave.
+*info15:			fai attenzione alle trappole! eheh...
 *info16:			muoviti! il tempo vola!
-*info17:			attento agli animali ipnotizzati!
+*info17:			fai attenzione agli animali ipnotizzati!
 *info18:			fai attenzione al vento forte!
 *info19:			salva le galline!
