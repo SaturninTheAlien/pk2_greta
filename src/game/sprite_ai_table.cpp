@@ -347,6 +347,19 @@ AI_Table::AI_Table(){
     Init_AI_Projectile(AI_EGG, AI_Functions::ProjectileEgg);
     Init_AI_Projectile(AI_EGG2, AI_Functions::ProjectileEgg);
 
+    /**
+     * @brief 
+     * AIs triggered when the sprite goes off screen
+     */
+
+    Init_AI(AI_DESPAWN_IF_OFFSCREEN, AI_TRIGGER_OFFSCREEN, [](SpriteClass*s){
+        s->removed = true;
+    });
+
+    Init_AI(AI_HEAL_IF_OFFSCREEN, AI_TRIGGER_OFFSCREEN, [](SpriteClass*s){
+        s->energy = s->prototype->energy;
+    });
+
 }
 
 }

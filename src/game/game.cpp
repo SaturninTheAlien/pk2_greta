@@ -400,6 +400,12 @@ int GameClass::Open_Map() {
 	Particles_Clear();
 	Particles_LoadBG(&level);
 
+	this->StartMusic();
+	
+	return 0;
+}
+
+void GameClass::StartMusic(){
 	if (!level.music_name.empty()) {
 
 		PFile::Path music_path = Episode->Get_Dir(level.music_name);
@@ -415,7 +421,9 @@ int GameClass::Open_Map() {
 			PLog::Write(PLog::FATAL, "PK2", "Can't load any music file");
 
 	}
-	return 0;
+	else{
+		PSound::stop_music();
+	}
 }
 
 void GameClass::Place_Sprites() {

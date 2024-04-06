@@ -96,6 +96,7 @@ class GameClass {
 
 		void Change_SkullBlocks();
 		void ExecuteEventsIfNeeded();
+		void StartMusic();
 		
 		sol::state * lua = nullptr;
 	private:		

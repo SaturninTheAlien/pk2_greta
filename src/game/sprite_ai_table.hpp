@@ -22,6 +22,8 @@ enum AI_TRIGGER{
     AI_TRIGGER_DEATH,  //if the sprite dies
     AI_TRIGGER_DAMAGE, //if the sprite is damaged
 
+    AI_TRIGGER_OFFSCREEN, //if the sprite goes offscreen
+
     AI_TRIGGER_SPAWN,  //spawn
     AI_TRIGGER_TRANSFORMATION,  //spawn and transformation,
 

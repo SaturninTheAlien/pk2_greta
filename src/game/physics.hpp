@@ -6,6 +6,7 @@
 
 #include "game/spriteclass.hpp"
 
+void SpriteOffscreen(SpriteClass * sprite);
 void SpriteOnRespawn(SpriteClass* sprite);
 void SpriteOnDeath(SpriteClass* sprite);
 void UpdateSprite(SpriteClass* sprite);

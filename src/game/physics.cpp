@@ -370,6 +370,15 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 	}
 }
 
+void SpriteOffscreen(SpriteClass* sprite){
+	if(sprite->energy>0){
+		for(const SpriteAI::AI_Class& ai:sprite->prototype->AI_f){
+			if(ai.trigger==AI_TRIGGER_OFFSCREEN){
+				ai.func(sprite);
+			}
+		}
+	}
+}
 
 void SpriteOnDamage(SpriteClass* sprite){
 	sprite->energy -= sprite->damage_taken;
@@ -568,8 +577,11 @@ void BonusSpriteCollected(SpriteClass* sprite, SpriteClass* collector){
 			break;
 			case AI_BONUS_SUPERMODE:{
 				collector->super_mode_timer = sprite->prototype->charge_time;
+				if(collector == Game->spritesHandler.Player_Sprite){
+					PSound::start_music(PFile::Path("music" PE_SEP "super.xm"));
+				}
 				//PSound::play_overlay_music();
-				PSound::start_music(PFile::Path("music" PE_SEP "super.xm"));   // the problem is this will most likely overwrite the current music, fixlater
+				   // the problem is this will most likely overwrite the current music, fixlater
 			}
 			break;
 			case AI_BONUS_CLOCK:{
@@ -884,11 +896,10 @@ void UpdateSprite(SpriteClass* sprite){
 	if (sprite->super_mode_timer > 0) {
 
 		sprite->super_mode_timer--;
-		if (Player_Sprite->super_mode_timer == 0)
-			//PSound::resume_music();
-			PSound::start_music(PFile::Path("music" PE_SEP "song01.xm"));   // the problem is we dont have the music that was playing previously, fixlater
-			
-	
+
+		if(sprite==Player_Sprite && sprite->super_mode_timer==0){
+			Game->StartMusic();
+		}
 	}
 
 	/*****************************************************************************************/
