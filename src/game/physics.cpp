@@ -1124,24 +1124,21 @@ void UpdateSprite(SpriteClass* sprite){
 					{
 
 						if (sprite->super_mode_timer > 0 && sprite2->super_mode_timer == 0) {
-							sprite2->damage_taken = 500;
-							sprite2->damage_taken_type = DAMAGE_ALL;
+							sprite2->damage_taken = sprite2->energy;
+							sprite2->damage_taken_type = DAMAGE_SUPERMODE;
 						}
-						if (sprite2->super_mode_timer > 0 && sprite->super_mode_timer == 0) {
-							sprite->damage_taken = 500;
-							sprite->damage_taken_type = DAMAGE_ALL;
+						else if (sprite2->super_mode_timer > 0 && sprite->super_mode_timer == 0) {
+							sprite->damage_taken = sprite->energy;
+							sprite->damage_taken_type = DAMAGE_SUPERMODE;
 						}
 						
 						//Bounce on the sprite head
-						if (sprite2->b > 2 && sprite2->weight >= 0.5 &&
+						else if (sprite2->b > 2 && sprite2->weight >= 0.5 &&
 							sprite2->y < sprite->y && !sprite->prototype->is_wall &&
 							sprite->prototype->how_destroyed != FX_DESTRUCT_INDESTRUCTIBLE &&
 							sprite2->CanDamageOnCollision(sprite))
 						{
-							if (sprite2->super_mode_timer)
-								sprite->damage_taken = 500;
-							else
-								sprite->damage_taken = (int)(sprite2->weight+sprite2->b/4);
+							sprite->damage_taken = (int)(sprite2->weight+sprite2->b/4);
 							sprite->damage_taken_type = DAMAGE_DROP;
 							sprite2->jump_timer = 1;
 							if (sprite2->HasAI(AI_EGG2)) // Egg bounced, then crack
@@ -1183,16 +1180,13 @@ void UpdateSprite(SpriteClass* sprite){
 	/*****************************************************************************************/
 	/* If the sprite has suffered damage                                                     */
 	/*****************************************************************************************/
-	if (sprite->damage_taken != 0 && sprite->super_mode_timer != 0) {
-		sprite->damage_taken = 0;
-		sprite->damage_taken_type = DAMAGE_NONE;
-	}
-
 	if (sprite->damage_taken != 0 && sprite->energy > 0){
-		
+
 		if ((sprite->prototype->immunity_type != sprite->damage_taken_type
 		|| sprite->prototype->immunity_type == DAMAGE_NONE)
-		&& sprite->prototype->how_destroyed != FX_DESTRUCT_INDESTRUCTIBLE){
+
+		&& sprite->prototype->how_destroyed != FX_DESTRUCT_INDESTRUCTIBLE
+		&& (sprite->super_mode_timer==0	|| sprite->damage_taken_type == DAMAGE_ALL) ){
 			SpriteOnDamage(sprite);
 		}
 
