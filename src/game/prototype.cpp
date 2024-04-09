@@ -93,7 +93,12 @@ void PrototypeClass::SetProto10(PrototypeClass10 &proto){
 	weight				= proto.weight;
 	score				= proto.score;
 	immunity_type				= proto.immunity_type;
-	how_destroyed		= proto.how_destroyed;
+	
+	destruction_effect		= proto.how_destroyed;
+	if(destruction_effect==FX_DESTRUCT_NO_EFFECT){
+		indestructible = true;
+	}
+
 	type				= proto.sprite_type;
 	damage				= proto.damage;
 	color				= proto.color;
@@ -147,7 +152,12 @@ void PrototypeClass::SetProto11(PrototypeClass11 &proto){
 	score				= proto.score;
 	immunity_type				= proto.immunity_type;
 	vibrates				= proto.vibrates;
-	how_destroyed		= proto.how_destroyed;
+	
+	destruction_effect		= proto.how_destroyed;
+	if(destruction_effect==FX_DESTRUCT_NO_EFFECT){
+		indestructible = true;
+	}
+
 	type				= proto.sprite_type;
 	damage				= proto.damage;
 	damage_type		= proto.damage_type;
@@ -216,7 +226,12 @@ void PrototypeClass::SetProto12(PrototypeClass12 &proto){
 	immunity_type				= proto.immunity_type;
 	vibrates				= proto.vibrates;
 	check_tiles		= proto.check_tiles;
-	how_destroyed		= proto.how_destroyed;
+	
+	destruction_effect		= proto.how_destroyed;
+	if(destruction_effect==FX_DESTRUCT_NO_EFFECT){
+		indestructible = true;
+	}
+
 	type				= proto.sprite_type;
 	damage				= proto.damage;
 	damage_type		= proto.damage_type;
@@ -288,7 +303,12 @@ void PrototypeClass::SetProto13(PrototypeClass13 &proto){
 	immunity_type				= proto.immunity_type;
 	vibrates				= proto.vibrates;
 	check_tiles		= proto.check_tiles;
-	how_destroyed		= proto.how_destroyed;
+	
+	destruction_effect		= proto.how_destroyed;
+	if(destruction_effect==FX_DESTRUCT_NO_EFFECT){
+		indestructible = true;
+	}
+
 	type				= proto.sprite_type;
 	damage				= proto.damage;
 	damage_type		= proto.damage_type;
@@ -423,7 +443,21 @@ void PrototypeClass::SetProto20(const nlohmann::json& j){
 
 	jsonReadInt(j, "frames_number", this->frames_number);
 
-	jsonReadInt(j, "how_destroyed", this->how_destroyed);
+	/**
+	 * @brief 
+	 * Obsolete field
+	 */
+	if(j.contains("how_destroyed")){
+		int how_destroyed = j["how_destroyed"].get<int>();
+
+		this->destruction_effect = how_destroyed;
+		if(this->destruction_effect == FX_DESTRUCT_NO_EFFECT){
+			this->indestructible = true;
+		}
+	}
+
+	jsonReadInt(j, "destruction_effect", this->destruction_effect);
+	jsonReadBool(j, "indestructible", this->indestructible);
 
 	jsonReadInt(j, "immunity_type", this->immunity_type);
 
@@ -553,7 +587,10 @@ void to_json(nlohmann::json& j, const PrototypeClass& c){
 	}
 
     j["is_wall"] = c.is_wall;
-    j["how_destroyed"] = c.how_destroyed;
+
+	j["destruction_effect"] = c.destruction_effect;
+	j["indestructible"] = c.indestructible;
+
     j["can_open_locks"] = c.can_open_locks;
     j["vibrates"] = c.vibrates;
     j["bonuses_number"] = c.bonuses_number;

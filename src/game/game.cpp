@@ -508,7 +508,7 @@ int GameClass::Count_Keys() {
 
 		if (sprite != 255) // Why is this index skipped ????
 			if (proto->can_open_locks && 
-				proto->how_destroyed != FX_DESTRUCT_INDESTRUCTIBLE)
+				!proto->indestructible)
 
 				keys++;
 	}

@@ -409,6 +409,7 @@ bool pk2_convertToNewFormat(const std::string& filename_in, const std::string& f
 		return false;
 	}
 
+	
 	/**
 	 * @brief 
 	 * Sprite
@@ -424,6 +425,15 @@ bool pk2_convertToNewFormat(const std::string& filename_in, const std::string& f
 		convertToSpr2(filename_in, filename_out2);
 		return true;
 	}
+	else if(filename_in.size()>5 && filename_in.substr(filename_in.size()-5,5)==".spr2"){
+		std::string filename_out2;
+		if(filename_out.empty()){
+			filename_out2 = filename_in;
+		}
+		convertToSpr2(filename_in, filename_out2);
+		return true;
+	}
+
 	/**
 	 * @brief 
 	 * Level

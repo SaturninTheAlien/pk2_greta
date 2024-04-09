@@ -242,7 +242,7 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 
 			sprite->removed = true;
 
-			if (sprite->prototype->how_destroyed != FX_DESTRUCT_INDESTRUCTIBLE) {
+			if (!sprite->prototype->indestructible) {
 				Game->keys--;
 				if (Game->keys < 1)
 					Game->Open_Locks();
@@ -390,7 +390,7 @@ void SpriteOnDamage(SpriteClass* sprite){
 	Play_GameSFX(sprite->prototype->sounds[SOUND_DAMAGE], 100, (int)sprite->x, (int)sprite->y,
 					sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 
-	if (sprite->prototype->how_destroyed%100 == FX_DESTRUCT_FEATHERS)
+	if (sprite->prototype->destruction_effect%100 == FX_DESTRUCT_FEATHERS)
 		Effect_Destruction(FX_DESTRUCT_FEATHERS, (u32)sprite->x, (u32)sprite->y);
 
 	if (sprite->prototype->type != TYPE_PROJECTILE){
@@ -421,7 +421,7 @@ void SpriteOnRespawn(SpriteClass* sprite){
 }
 
 void SpriteOnDeath(SpriteClass* sprite){
-	int how_destroyed = sprite->prototype->how_destroyed;
+	int destruction_effect = sprite->prototype->destruction_effect;
 
 	for(const SpriteAI::AI_Class&ai: sprite->prototype->AI_f){
 
@@ -447,12 +447,12 @@ void SpriteOnDeath(SpriteClass* sprite){
 		}
 	}
 
-	if (how_destroyed >= FX_DESTRUCT_ANIMATED)
-		how_destroyed -= FX_DESTRUCT_ANIMATED;
+	if (destruction_effect >= FX_DESTRUCT_ANIMATED)
+		destruction_effect -= FX_DESTRUCT_ANIMATED;
 	else
 		sprite->removed = true;
 
-	Effect_Destruction(how_destroyed, (u32)sprite->x, (u32)sprite->y);
+	Effect_Destruction(destruction_effect, (u32)sprite->x, (u32)sprite->y);
 	Play_GameSFX(sprite->prototype->sounds[SOUND_DESTRUCTION],100, (int)sprite->x, (int)sprite->y,
 					sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 
@@ -535,17 +535,14 @@ void BonusSpriteCollected(SpriteClass* sprite, SpriteClass* collector){
 		}
 
 	}
-	//Game->level.spritet[(int)(sprite->orig_x/32) + (int)(sprite->orig_y/32)*PK2MAP_MAP_WIDTH] = 255;
 
-	if (sprite->prototype->how_destroyed != FX_DESTRUCT_INDESTRUCTIBLE)
-		collector->energy -= sprite->prototype->damage;
-
-	int how_destroyed = sprite->prototype->how_destroyed;
-
-	if (how_destroyed != FX_DESTRUCT_INDESTRUCTIBLE)
+	if (!sprite->prototype->indestructible)
 	{
-		if (how_destroyed >= FX_DESTRUCT_ANIMATED)
-			how_destroyed -= FX_DESTRUCT_ANIMATED;
+		collector->energy -= sprite->prototype->damage;
+		int destruction_effect = sprite->prototype->destruction_effect;
+
+		if (destruction_effect >= FX_DESTRUCT_ANIMATED)
+			destruction_effect -= FX_DESTRUCT_ANIMATED;
 		else
 		{
 			if (sprite->prototype->can_open_locks)
@@ -640,7 +637,7 @@ void BonusSpriteCollected(SpriteClass* sprite, SpriteClass* collector){
 		Play_GameSFX(sprite->prototype->sounds[SOUND_DESTRUCTION],100, (int)sprite->x, (int)sprite->y,
 						sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 
-		Effect_Destruction(how_destroyed, (u32)sprite->x, (u32)sprite->y);
+		Effect_Destruction(destruction_effect, (u32)sprite->x, (u32)sprite->y);
 	}
 }
 
@@ -1002,7 +999,6 @@ void UpdateSprite(SpriteClass* sprite){
 	/* Sprite collision with other sprites                                                   */
 	/*****************************************************************************************/
 
-	int how_destroyed;
 	double sprite2_yla; // kyykistymiseen liittyv�
 	PK2BLOCK spritepalikka;
 
@@ -1133,38 +1129,41 @@ void UpdateSprite(SpriteClass* sprite){
 						}
 						
 						//Bounce on the sprite head
-						else if (sprite2->b > 2 && sprite2->weight >= 0.5 &&
-							sprite2->y < sprite->y && !sprite->prototype->is_wall &&
-							sprite->prototype->how_destroyed != FX_DESTRUCT_INDESTRUCTIBLE &&
-							sprite2->CanDamageOnCollision(sprite))
-						{
-							sprite->damage_taken = (int)(sprite2->weight+sprite2->b/4);
-							sprite->damage_taken_type = DAMAGE_DROP;
-							sprite2->jump_timer = 1;
-							if (sprite2->HasAI(AI_EGG2)) // Egg bounced, then crack
-								sprite2->damage_taken = sprite2->prototype->energy;
-						}
-
-						// If there is another sprite damaging
-						if (sprite->prototype->damage > 0 && sprite2->prototype->type != TYPE_BONUS &&
-						sprite->CanDamageOnCollision(sprite2)) {
-							
-							sprite2->damage_taken        = sprite->prototype->damage;
-							sprite2->damage_taken_type = sprite->prototype->damage_type;
-							
-							if ( !(sprite2->player && sprite2->invisible_timer) ) //If sprite2 isn't a invisible player
-								sprite->attack1_timer = sprite->prototype->attack1_time; //Then sprite attack??
-
-							// The projectiles are shattered by shock
-							if (sprite2->prototype->type == TYPE_PROJECTILE) {
-								sprite->damage_taken = 1;//sprite2->prototype->damage;
-								sprite->damage_taken_type = sprite2->prototype->damage_type;
+						else{
+							if (sprite2->b > 2 && sprite2->weight >= 0.5 &&
+								sprite2->y < sprite->y && !sprite->prototype->is_wall &&
+								!sprite->prototype->indestructible &&
+								sprite2->CanDamageOnCollision(sprite))
+							{
+								sprite->damage_taken = (int)(sprite2->weight+sprite2->b/4);
+								sprite->damage_taken_type = DAMAGE_DROP;
+								sprite2->jump_timer = 1;
+								if (sprite2->HasAI(AI_EGG2)) // Egg bounced, then crack
+									sprite2->damage_taken = sprite2->prototype->energy;
 							}
 
-							if (sprite->prototype->type == TYPE_PROJECTILE) {
-								sprite->damage_taken = 1;//sprite2->prototype->damage;
-								sprite->damage_taken_type = sprite2->prototype->damage_type;
+							// If there is another sprite damaging
+							if (sprite->prototype->damage > 0 && sprite2->prototype->type != TYPE_BONUS &&
+							sprite->CanDamageOnCollision(sprite2)) {
+								
+								sprite2->damage_taken        = sprite->prototype->damage;
+								sprite2->damage_taken_type = sprite->prototype->damage_type;
+								
+								if ( !(sprite2->player && sprite2->invisible_timer) ) //If sprite2 isn't a invisible player
+									sprite->attack1_timer = sprite->prototype->attack1_time; //Then sprite attack??
+
+								// The projectiles are shattered by shock
+								if (sprite2->prototype->type == TYPE_PROJECTILE) {
+									sprite->damage_taken = 1;//sprite2->prototype->damage;
+									sprite->damage_taken_type = sprite2->prototype->damage_type;
+								}
+
+								if (sprite->prototype->type == TYPE_PROJECTILE) {
+									sprite->damage_taken = 1;//sprite2->prototype->damage;
+									sprite->damage_taken_type = sprite2->prototype->damage_type;
+								}
 							}
+
 						}
 					}
 				}
@@ -1182,11 +1181,15 @@ void UpdateSprite(SpriteClass* sprite){
 	/*****************************************************************************************/
 	if (sprite->damage_taken != 0 && sprite->energy > 0){
 
-		if ((sprite->prototype->immunity_type != sprite->damage_taken_type
-		|| sprite->prototype->immunity_type == DAMAGE_NONE)
-
-		&& sprite->prototype->how_destroyed != FX_DESTRUCT_INDESTRUCTIBLE
-		&& (sprite->super_mode_timer==0	|| sprite->damage_taken_type == DAMAGE_ALL) ){
+		if(sprite->damage_taken_type == DAMAGE_ALL){
+			SpriteOnDamage(sprite);
+		}
+		else if (
+			!sprite->prototype->indestructible
+			&& (sprite->prototype->immunity_type != sprite->damage_taken_type
+			|| sprite->prototype->immunity_type == DAMAGE_NONE)
+			&& sprite->super_mode_timer==0){
+				
 			SpriteOnDamage(sprite);
 		}
 
@@ -1199,12 +1202,7 @@ void UpdateSprite(SpriteClass* sprite){
 		/*****************************************************************************************/
 
 		if (sprite->energy < 1) {
-			how_destroyed = sprite->prototype->how_destroyed;
-
-			if (how_destroyed != FX_DESTRUCT_INDESTRUCTIBLE) {
-				SpriteOnDeath(sprite);
-			} else
-				sprite->energy = 1;
+			SpriteOnDeath(sprite);
 		}
 	}
 
@@ -1607,7 +1605,7 @@ void UpdateBonusSprite(SpriteClass* sprite){
 					sprite->damage_timer == 0)
 				{
 					if(sprite2->can_collect_bonuses &&
-					sprite->prototype->how_destroyed != FX_DESTRUCT_INDESTRUCTIBLE &&
+					!sprite->prototype->indestructible &&
 					sprite2->energy > 0 &&
 					sprite->energy > 0){
 						BonusSpriteCollected(sprite, sprite2);
@@ -1748,7 +1746,7 @@ void UpdateBonusSprite(SpriteClass* sprite){
 		// Test if player touches bonus
 
 		if(sprite->energy>0 &&
-		sprite->prototype->how_destroyed!=FX_DESTRUCT_INDESTRUCTIBLE &&
+		!sprite->prototype->indestructible &&
 		sprite->damage_timer == 0){
 			for(SpriteClass* sprite2: Game->spritesHandler.Sprites_List){
 				if (sprite2 != sprite &&

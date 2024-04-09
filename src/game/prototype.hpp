@@ -102,7 +102,14 @@ public:
     int     charge_time  = 0;
     u8      color         = COLOR_NORMAL;
     bool    is_wall         = false;
-    int     how_destroyed = FX_DESTRUCT_ANIMATED;
+    
+    int     destruction_effect = FX_DESTRUCT_NO_EFFECT;
+    bool    indestructible = false; //if true only DAMAGE_ALL can really hurt the sprite
+
+
+    //int     how_destroyed = FX_DESTRUCT_ANIMATED;
+    
+    
     bool    can_open_locks        = false;
     bool    vibrates      = false;
     int      bonuses_number = 1;
@@ -176,7 +183,6 @@ public:
      * To fix the bomb and legacy projectiles bugs with the new sprite system
      */
     bool    legacy_projectile = false;
-
 
     PrototypeClass();
     ~PrototypeClass();
