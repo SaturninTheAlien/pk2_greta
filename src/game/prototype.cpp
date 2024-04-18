@@ -515,6 +515,8 @@ void PrototypeClass::SetProto20(const nlohmann::json& j){
 
 	jsonReadDouble(j, "weight", this->weight);
 
+	jsonReadInt(j, "info_id", this->info_id);
+
 	if(j.contains("commands")){
 		this->commands_json = j["commands"];
 	}
@@ -620,6 +622,8 @@ void to_json(nlohmann::json& j, const PrototypeClass& c){
     j["can_swim"] = c.can_swim;
 
 	j["always_active"] = c.always_active;
+
+	j["info_id"] = c.info_id;
 
 	if(!c.commands_json.is_null()){
 		j["commands"] = c.commands_json;

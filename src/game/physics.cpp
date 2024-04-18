@@ -641,26 +641,6 @@ void BonusSpriteCollected(SpriteClass* sprite, SpriteClass* collector){
 	}
 }
 
-void DisplayInfo(SpriteClass* sprite, int info){
-    if (AI_Functions::player_invisible!=nullptr &&
-    (AI_Functions::player_invisible->x - sprite->x < 10
-    && AI_Functions::player_invisible->x - sprite->x > -10) &&
-    (AI_Functions::player_invisible->y - sprite->y < sprite->prototype->height
-    && AI_Functions::player_invisible->y - sprite->y > -sprite->prototype->height)){
-        
-        //int info = ai.info_id;
-        std::string sinfo = "info";
-        if (info < 10) sinfo += '0';
-        sinfo += std::to_string(info);
-
-        int index = Episode->infos.Search_Id(sinfo.c_str());
-        if (index != -1)
-            Game->Show_Info(Episode->infos.Get_Text(index));
-        else if(info<100)
-            Game->Show_Info(tekstit->Get_Text(PK_txt.infos[info]));
-    }
-}
-
 void UpdateSprite(SpriteClass* sprite){
 	
 	if (!sprite->prototype){
@@ -1352,14 +1332,8 @@ void UpdateSprite(SpriteClass* sprite){
 			if(ai.trigger==AI_TRIGGER_ANYWAY){
 				ai.func(sprite);
 			}
-			else if(sprite->energy>0){
-
-				if(ai.info_id!=-1){
-					DisplayInfo(sprite, ai.info_id);
-				}
-				else if(ai.trigger==AI_TRIGGER_ALIVE){
-					ai.func(sprite);
-				}
+			else if(sprite->energy>0 && ai.trigger==AI_TRIGGER_ALIVE){
+				ai.func(sprite);
 			}
 		}
 	}

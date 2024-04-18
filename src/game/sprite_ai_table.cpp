@@ -28,6 +28,18 @@ void AI_Table::InitSpritePrototypeAIs(PrototypeClass* sprite_prototype)const{
     bool hasAttackIfDamaged = false;
 
     for(const int& index: sprite_prototype->AI_v){
+
+        if(index >= AI_LEGACY_INFOS_BEGIN && index <= AI_LEGACY_INFOS_END ){
+
+            auto it = this->mAIsDict.find(AI_INFO_IF_TOUCHES_PLAYER);
+            if(it!=this->mAIsDict.end()){
+                ai_vec.push_back(it->second);
+
+                sprite_prototype->info_id = index - AI_LEGACY_INFOS_BEGIN + 1;
+            }
+            continue;
+        }
+
         auto it = this->mAIsDict.find(index);
         if(it!=this->mAIsDict.end()){
             ai_vec.push_back(it->second);
@@ -235,21 +247,10 @@ AI_Table::AI_Table(){
     Init_AI(AI_DIE_IF_TOUCHES_WALL, AI_TRIGGER_ALIVE, AI_Functions::DieIfTouchesWall, true, true, true, false);
 
     /**
-     * @brief 
-     * Infos
+     * @brief
+     * Background AIs
      */
 
-    for(int id=AI_INFOS_BEGIN;id<=AI_INFOS_END;++id){
-        AI_Class ai;
-        ai.id = id;
-        ai.info_id = id - AI_INFOS_BEGIN + 1;
-        ai.apply_to_creatures = true;
-        ai.apply_to_bonuses = false;
-        ai.apply_to_backgrounds = false;
-        ai.apply_to_player = false;
-
-        this->mAIsDict[id] = ai;
-    }
 
     Init_AI(AI_BACKGROUND_MOON, AI_TRIGGER_ANYWAY, nullptr, false, false, false, true);
     Init_AI(AI_BACKGROUND_HORIZONTAL_PARALLAX, AI_TRIGGER_ANYWAY, nullptr, false, false, false, true);
@@ -359,6 +360,15 @@ AI_Table::AI_Table(){
     Init_AI(AI_HEAL_IF_OFFSCREEN, AI_TRIGGER_OFFSCREEN, [](SpriteClass*s){
         s->energy = s->prototype->energy;
     });
+
+    /**
+     * @brief 
+     * Infos
+     */
+
+    Init_AI(AI_INFO_IF_TOUCHES_PLAYER, AI_TRIGGER_ALIVE, AI_Functions::DisplayInfoIfTouchesPlayer, true, false, true, true);
+    Init_AI(AI_INFO_IF_DAMAGED, AI_TRIGGER_DAMAGE, AI_Functions::DisplayInfo, true, true, true, true);
+    Init_AI(AI_INFO_IF_DEAD, AI_TRIGGER_DEATH, AI_Functions::DisplayInfo, true, true, true, true);
 
 }
 

@@ -128,4 +128,12 @@ void ProjectileEgg(SpriteClass*sprite, SpriteClass*shooter);
 void StaticProjectile(SpriteClass*sprite, SpriteClass*shooter);
 
 
+/**
+ * @brief 
+ * Info AIs
+ */
+
+void DisplayInfo(SpriteClass* sprite);
+void DisplayInfoIfTouchesPlayer(SpriteClass*sprite);
+
 }

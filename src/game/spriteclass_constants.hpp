@@ -247,9 +247,23 @@ enum {
 
     // AI_154 - AI_200
 
-    // New AI
-    AI_INFOS_BEGIN = 201,
-    AI_INFOS_END = 301,
+    /**
+     * @brief 
+     * Obsolete, legacy info AIs,
+     * Automatically translated to AI_INFO_IF_TOUCHES_PLAYER (302) while sprites loading
+     */
+    AI_LEGACY_INFOS_BEGIN = 201,
+    AI_LEGACY_INFOS_END = 301,
+
+    /**
+     * @brief 
+     * New info AIs
+     */
+    AI_INFO_IF_TOUCHES_PLAYER, // 302,
+    AI_INFO_IF_DAMAGED, // 303
+    AI_INFO_IF_DEAD, // 304
+    AI_INFO_IF_BONUS_COLLECTED, // 305
+
 
     AI_CHICK = 400,
     AI_CHICKBOX,

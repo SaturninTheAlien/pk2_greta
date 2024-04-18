@@ -58,8 +58,6 @@ public:
     bool apply_to_creatures = false;
     bool apply_to_bonuses = false;
     bool apply_to_backgrounds = false;
-
-    int info_id = -1;
 };
 
 /**

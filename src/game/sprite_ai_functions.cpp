@@ -6,9 +6,11 @@
 #include "spriteclass.hpp"
 #include "gfx/effect.hpp"
 #include "game.hpp"
+#include "episode/episodeclass.hpp"
 #include "system.hpp"
 #include "sfx.hpp"
 #include "engine/PSound.hpp"
+#include "language.hpp"
 
 namespace AI_Functions{
 
@@ -1083,5 +1085,34 @@ void StaticProjectile(SpriteClass*sprite, SpriteClass*shooter){
 	sprite->a = 0;
 	sprite->b = 0;
 }
+
+
+void DisplayInfo(SpriteClass* sprite){
+	std::string sinfo = "info";
+
+	int info = sprite->prototype->info_id;
+	if(info <= 0)return;
+
+	if (info < 10) sinfo += '0';
+	sinfo += std::to_string(info);
+
+	int index = Episode->infos.Search_Id(sinfo.c_str());
+	if (index != -1)
+		Game->Show_Info(Episode->infos.Get_Text(index));
+	else if(info<100)
+		Game->Show_Info(tekstit->Get_Text(PK_txt.infos[info]));
+}
+
+void DisplayInfoIfTouchesPlayer(SpriteClass* sprite){
+    if (player_invisible!=nullptr &&
+    (player_invisible->x - sprite->x < 10
+    && player_invisible->x - sprite->x > -10) &&
+    (player_invisible->y - sprite->y < sprite->prototype->height
+    && player_invisible->y - sprite->y > -sprite->prototype->height)){
+
+		DisplayInfo(sprite);
+    }
+}
+
 
 }

@@ -152,6 +152,11 @@ public:
      * If Episode->ignore_collectable==false, this field will be always false.
      */
     bool    big_apple     = false;   //
+    /**
+     * @brief 
+     * The ID of displayed text in the "shoutbox"
+     */
+    int     info_id = 0;
 
     /**
      * @brief 
