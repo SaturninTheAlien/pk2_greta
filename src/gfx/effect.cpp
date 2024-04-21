@@ -170,6 +170,20 @@ void Effect_Destruction(u8 tehoste, double x, double y) {
 		case FX_DESTRUCT_SMOKE_VIOLET     : Effect_Smoke(x,y,160); break;
 		case FX_DESTRUCT_SMOKE_TURQUOISE     : Effect_Smoke(x,y,192); break;
 		case FX_DESTRUCT_SMOKECLOUDS        : Effect_SmokeClouds(x,y); break;
+
+		/**
+		 * @brief 
+		 * New GE destruction effects
+		 */
+		case FX_DESTRUCT_SPLASH_GRAY: Effect_Splash(x,y,0); break;
+		case FX_DESTRUCT_SPLASH_BLUE: Effect_Splash(x,y,32); break;
+		case FX_DESTRUCT_SPLASH_RED: Effect_Splash(x,y,64); break;
+		case FX_DESTRUCT_SPLASH_GREEN: Effect_Splash(x,y,96); break;
+		case FX_DESTRUCT_SPLASH_ORANGE: Effect_Splash(x,y,128); break;
+		case FX_DESTRUCT_SPLASH_VIOLET: Effect_Splash(x,y,160); break;
+		case FX_DESTRUCT_SPLASH_TURQUOISE: Effect_Splash(x,y,192); break;
+
+
 		default	: break;
 	}
 }
