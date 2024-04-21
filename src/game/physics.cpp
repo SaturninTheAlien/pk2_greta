@@ -1074,15 +1074,16 @@ void UpdateSprite(SpriteClass* sprite){
 					}
 				}
 
-				/* sprites can exchange information about a player's whereabouts */ //TODO - test this sometime
-	/*			if (sprite->seen_player_x != -1 && sprite2->seen_player_x == -1)
-				{
-					sprite2->seen_player_x = sprite->seen_player_x + rand()%30 - rand()%30;
-					sprite->seen_player_x = -1;
-				} */
+				if(sprite2->prototype->type==TYPE_BLACK_HOLE){
+					sprite->energy = 0;
+					sprite->removed = true;
+
+					if (sprite->weight_button >= 1)
+						Game->vibration = 50;				
+				}
 
 				// If two sprites from different teams touch each other
-				if ( (sprite->enemy != sprite2->enemy
+				else if ( (sprite->enemy != sprite2->enemy
 				|| sprite->prototype->hostile_to_everyone
 				|| sprite2->prototype->hostile_to_everyone)
 
@@ -1313,6 +1314,7 @@ void UpdateSprite(SpriteClass* sprite){
 
 		sprite->y = PK2MAP_MAP_HEIGHT*32 + sprite_height;
 		sprite->energy = 0;
+		sprite->damage_taken_type = DAMAGE_ALL;
 		sprite->removed = true;
 
 		if (sprite->weight_button >= 1)
@@ -1502,7 +1504,7 @@ void UpdateBonusSprite(SpriteClass* sprite){
 
 
 
-	if (sprite->weight != 0)	// jos bonuksella on weight, tutkitaan ymp�rist�
+	if (sprite->weight != 0 && !sprite->prototype->has_dead_weight)	// jos bonuksella on weight, tutkitaan ymp�rist�
 	{
 		// o
 		//
@@ -1578,7 +1580,14 @@ void UpdateBonusSprite(SpriteClass* sprite){
 					sprite->y > sprite2->y - sprite2->prototype->height/2 &&
 					sprite->damage_timer == 0)
 				{
-					if(sprite2->can_collect_bonuses &&
+
+					if(sprite2->prototype->type==TYPE_BLACK_HOLE){
+						sprite->removed = true;
+						sprite->energy = 0;
+					}
+
+
+					else if(sprite2->can_collect_bonuses &&
 					!sprite->prototype->indestructible &&
 					sprite2->energy > 0 &&
 					sprite->energy > 0){

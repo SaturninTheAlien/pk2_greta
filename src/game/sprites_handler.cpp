@@ -216,7 +216,9 @@ int SpritesHandler::onTickUpdate(){
 
 	for (SpriteClass* sprite : Sprites_List) {
 		if (sprite->active && !sprite->removed) {
-			if (sprite->prototype->type != TYPE_BONUS && sprite->prototype->type != TYPE_BACKGROUND) {
+			if (sprite->prototype->type != TYPE_BONUS
+			&& sprite->prototype->type != TYPE_BACKGROUND
+			&& sprite->prototype->type != TYPE_BLACK_HOLE) {
 				UpdateSprite(sprite);
 				active_sprites++;
 			}

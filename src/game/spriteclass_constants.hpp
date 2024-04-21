@@ -292,13 +292,18 @@ enum { //Damage
 
 enum {
 
-    TYPE_NOTHING,
-    TYPE_GAME_CHARACTER,
-    TYPE_BONUS,
-    TYPE_PROJECTILE,
-    TYPE_TELEPORT,
-    TYPE_BACKGROUND,
-    TYPE_FOREGROUND
+    TYPE_NOTHING, //0
+    TYPE_GAME_CHARACTER, //1
+    TYPE_BONUS, //2
+    TYPE_PROJECTILE, //3
+    TYPE_TELEPORT, //4
+    TYPE_BACKGROUND, //5
+    TYPE_FOREGROUND, //6
+
+    TYPE_CHECKPOINT, //7 Reserved, not implemented
+    TYPE_EXIT, //8 Reserved, not implemented
+
+    TYPE_BLACK_HOLE, //9
 
 };
 
