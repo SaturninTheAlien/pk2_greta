@@ -246,6 +246,8 @@ AI_Table::AI_Table(){
 
     Init_AI(AI_DIE_IF_TOUCHES_WALL, AI_TRIGGER_ALIVE, AI_Functions::DieIfTouchesWall, true, true, true, false);
 
+    Init_AI(AI_SELF_TRANSFORMATION_RANDOM_PROTOTYPE, AI_TRIGGER_ALIVE, AI_Functions::Self_Transformation_Random_Prototype, true, true, true, true);
+
     /**
      * @brief
      * Background AIs

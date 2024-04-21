@@ -666,6 +666,35 @@ void Self_Transformation(SpriteClass* s){
 	}
 }
 
+void Self_Transformation_Random_Prototype(SpriteClass* s){
+
+	int charge_time = s->prototype->charge_time;
+	if(charge_time>0){
+		if (s->mutation_timer/*charging_timer*/ == 0)
+			s->mutation_timer/*charging_timer*/ = s->prototype->charge_time;
+		
+		if (s->mutation_timer/*charging_timer*/ == 1)
+		{
+			PrototypeClass* transformation = rand() % 2 == 0 ? s->prototype->transformation : s->prototype->ammo2;
+			if(s->TransformTo(transformation)){
+				s->charging_timer = 0;
+				s->animation_index = -1;
+				s->Animaatio(ANIMATION_IDLE,true);
+			}
+		}
+	}
+
+	else{
+		PrototypeClass* transformation = rand() % 2 == 0 ? s->prototype->transformation : s->prototype->ammo2;
+		if(s->TransformTo(transformation)){
+			s->charging_timer = 0;
+			s->animation_index = -1;
+			s->Animaatio(ANIMATION_IDLE,true);
+		}
+
+	}
+}
+
 void Random_Move_Vert_Hori(SpriteClass* s){
 
 	if (rand()%150 == 1 || s->action_timer == 1)
