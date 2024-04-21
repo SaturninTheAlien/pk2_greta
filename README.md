@@ -123,6 +123,9 @@ This example starts the level13.map (the robot boss fight) on dev mode:
 
     * AI_DIE_IF_TOUCHES_WALL (144),
     * AI_NPC_COLLECT_BONUSES (145) - sprites with this AI can collect bonuses despite not being the player,
+    * AI_DESPAWN_IF_OFFSCREEN (146) - the sprite despawns if far away from player,
+    * AI_HEAL_IF_OFFSCREEN (147) - the sprite heals to its maximum health if far away from player,
+    * AI_SELF_TRANSFORMATION_RANDOM_PROTOTYPE (148) - sprite turns into its Transformation Sprite (50% chances) or into its Ammo2 Sprite (50% chances) when its Reload / Charge Time is over.
 
     * AI_BACKGROUND_HORIZONTAL_PARALLAX (104) -  removes Y parallax,
     * AI_BACKGROUND_BRING_TO_FRONT (105) - for sorting BG (and FG) sprites despite their parallax
@@ -156,8 +159,10 @@ Currently available commands:
 
 Commands / waypoints are executed by the sprite in a loop unless there is "die" or "transform" command.
 
-* Foreground sprites (type 6).
-Currently they don't have any AIs supported or parallax types.
+* Foreground sprites (type 6) - similar to background sprites,
+* Back Hole sprites (type 9) - silently removes every sprite of other types, contact with it is similar to falling into the void,
+
+* Splash as a new sprite destruction effect (24 - 30, different colors)
 
 # Fixed bugs
 * Enemies can no longer deal damage to invisible player by jumping on their head,

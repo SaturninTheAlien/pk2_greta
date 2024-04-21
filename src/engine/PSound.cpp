@@ -427,6 +427,8 @@ int load_overlay_music(PFile::Path path) { //TODO - load ovarlay from zip
 
 int start_music(PFile::Path path) {
 
+	SDL_LockMutex(chunks_mutex);
+
 	if (playingMusic == path)
 		return 1;
 	
@@ -482,6 +484,8 @@ int start_music(PFile::Path path) {
 	
 	PLog::Write(PLog::DEBUG, "PSound", "Loaded %s", path.c_str());
 
+	SDL_UnlockMutex(chunks_mutex);
+
 	return 0;
 	
 }
@@ -501,10 +505,17 @@ void set_musicvolume_now(u8 volume) {
 }
 
 void stop_music(){
+
+	SDL_LockMutex(chunks_mutex);
+	SDL_LockMutex(queue_mutex);
+
 	clear_channels();
 	Mix_HaltMusic();
 	overlay_playing = false;
 	playingMusic = PFile::Path("");
+
+	SDL_UnlockMutex(chunks_mutex);
+	SDL_UnlockMutex(queue_mutex);
 
 }
 
