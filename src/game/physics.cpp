@@ -1504,7 +1504,7 @@ void UpdateBonusSprite(SpriteClass* sprite){
 
 
 
-	if (sprite->weight != 0 && !sprite->prototype->has_dead_weight)	// jos bonuksella on weight, tutkitaan ymp�rist�
+	if (sprite->weight != 0 || sprite->prototype->has_dead_weight)	// jos bonuksella on weight, tutkitaan ymp�rist�
 	{
 		// o
 		//
