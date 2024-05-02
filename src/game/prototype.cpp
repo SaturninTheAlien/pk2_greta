@@ -715,12 +715,12 @@ void PrototypeClass::LoadAssets(EpisodeClass*episode){
 	 * @brief 
 	 * To fix the bug causing the sprite with attack_time=0 shooting non-stop
 	 */
-	if(this->attack1_time==0){
+	/*if(this->attack1_time==0){
 		this->attack1_time = 1;
 	}
 	if(this->attack2_time==0){
 		this->attack2_time = 1;
-	}
+	}*/
 
 	if(this->mAssetsLoaded){
 		std::ostringstream os;

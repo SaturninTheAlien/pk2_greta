@@ -1359,13 +1359,20 @@ void UpdateSprite(SpriteClass* sprite){
 	/* Attacks 1 and 2                                                                       */
 	/*****************************************************************************************/
 
+
 	// If the sprite is ready and isn't crouching
 	if (sprite->charging_timer == 0  && !sprite->crouched ) {
 		// the attack has just started
 		if (sprite->attack1_timer == sprite->prototype->attack1_time) {
-			// provides recovery time, after which the sprite can attack again
-			sprite->charging_timer = sprite->prototype->charge_time;
-			if(sprite->charging_timer == 0) sprite->charging_timer = 5;
+
+			if(sprite->energy>0){
+				// provides recovery time, after which the sprite can attack again
+				sprite->charging_timer = sprite->prototype->charge_time;
+				if(sprite->charging_timer == 0) sprite->charging_timer = 5;
+			}
+			else{
+				sprite->charging_timer = -1;
+			}			
 			// if you don't have your own charging time ...
 			if (sprite->ammo1 != nullptr && sprite->prototype->charge_time == 0)
 			// ... and the projectile has, take charge_time from the projectile
@@ -1386,8 +1393,16 @@ void UpdateSprite(SpriteClass* sprite){
 
 		// Same as attack 1
 		if (sprite->attack2_timer == sprite->prototype->attack2_time) {
-			sprite->charging_timer = sprite->prototype->charge_time;
-			if(sprite->charging_timer == 0) sprite->charging_timer = 5;
+			
+			if(sprite->energy>0){
+				// provides recovery time, after which the sprite can attack again
+				sprite->charging_timer = sprite->prototype->charge_time;
+				if(sprite->charging_timer == 0) sprite->charging_timer = 5;
+			}
+			else{
+				sprite->charging_timer = -1;
+			}
+
 			if (sprite->ammo2 != nullptr && sprite->prototype->charge_time == 0)
 				if (sprite->ammo2->projectile_charge_time > 0)
 					sprite->charging_timer = sprite->ammo2->projectile_charge_time;
