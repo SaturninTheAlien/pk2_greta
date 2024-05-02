@@ -541,8 +541,10 @@ void BonusSpriteCollected(SpriteClass* sprite, SpriteClass* collector){
 		collector->energy -= sprite->prototype->damage;
 		int destruction_effect = sprite->prototype->destruction_effect;
 
-		if (destruction_effect >= FX_DESTRUCT_ANIMATED)
+		if (destruction_effect >= FX_DESTRUCT_ANIMATED){
 			destruction_effect -= FX_DESTRUCT_ANIMATED;
+			sprite->charging_timer = -1;
+		}
 		else
 		{
 			if (sprite->prototype->can_open_locks)

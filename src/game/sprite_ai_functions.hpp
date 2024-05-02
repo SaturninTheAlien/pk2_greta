@@ -18,6 +18,7 @@ void Projectile(SpriteClass*s);
 void Jumper(SpriteClass*s);
 void Basic(SpriteClass*s);
 void NonStop(SpriteClass*s);
+void NonStopVertical(SpriteClass*s);
 
 void Turning_Horizontally(SpriteClass*s);
 void Turning_Vertically(SpriteClass*s);
@@ -108,6 +109,11 @@ void RandomStartDirection(SpriteClass*s);
 void RandomStartDirectionVert(SpriteClass*s);
 void StartFacingThePlayer(SpriteClass*s);
 void StartFacingThePlayerVert(SpriteClass*s);
+
+void StartDown(SpriteClass*s);
+void StartUp(SpriteClass*s);
+void StartLeft(SpriteClass*s);
+void StartRight(SpriteClass*s);
 
 /**
  * @brief 

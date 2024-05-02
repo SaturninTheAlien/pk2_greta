@@ -194,6 +194,21 @@ void NonStop(SpriteClass*s){
     }
 }
 
+void NonStopVertical(SpriteClass*s){
+	double max = s->prototype->max_speed / 3.5;
+
+    if (s->b <= 0)
+    {
+        if (s->b > -max)
+            s->b -= 0.1;
+    }
+    else
+    {
+        if (s->b < max)
+            s->b += 0.1;
+    }
+}
+
 void Turning_Horizontally(SpriteClass*s){
 
     if (!s->can_move_right)
@@ -1045,6 +1060,22 @@ void StartFacingThePlayerVert(SpriteClass*sprite){
 	if (sprite->y > player->y)
 		sprite->b = sprite->prototype->max_speed / 3.5;
 
+}
+
+
+void StartDown(SpriteClass*s){
+	s->b = s->prototype->max_speed / 3.5;
+}
+
+void StartUp(SpriteClass*s){
+	s->b = -s->prototype->max_speed / 3.5;
+}
+
+void StartLeft(SpriteClass*s){
+	s->a = -s->prototype->max_speed / 3.5;
+}
+void StartRight(SpriteClass*s){
+	s->a = s->prototype->max_speed / 3.5;
 }
 
 void DieIfSkullBlocksChanged(SpriteClass*sprite){

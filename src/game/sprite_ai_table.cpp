@@ -129,6 +129,7 @@ AI_Table::AI_Table(){
     Init_AI(AI_BASIC, AI_TRIGGER_ANYWAY, AI_Functions::Basic, true, false, true, true);
 
     Init_AI(AI_NONSTOP, AI_TRIGGER_ALIVE, AI_Functions::NonStop);
+    Init_AI(AI_NONSTOP_VERTICAL, AI_TRIGGER_ALIVE, AI_Functions::NonStopVertical);
     
     Init_AI(AI_TURNING_HORIZONTALLY, AI_TRIGGER_ALIVE, AI_Functions::Turning_Horizontally);
     Init_AI(AI_TURNING_VERTICALLY, AI_TRIGGER_ALIVE, AI_Functions::Turning_Vertically);
@@ -313,6 +314,11 @@ AI_Table::AI_Table(){
     Init_AI(AI_RANDOM_START_DIRECTION_VERT, AI_TRIGGER_SPAWN, AI_Functions::RandomStartDirectionVert);
     Init_AI(AI_START_DIRECTIONS_TOWARDS_PLAYER, AI_TRIGGER_SPAWN, AI_Functions::StartFacingThePlayer);
     Init_AI(AI_START_DIRECTIONS_TOWARDS_PLAYER_VERT, AI_TRIGGER_SPAWN, AI_Functions::StartFacingThePlayerVert);
+
+    Init_AI(AI_START_DOWN, AI_TRIGGER_SPAWN, AI_Functions::StartDown);
+    Init_AI(AI_START_UP, AI_TRIGGER_SPAWN, AI_Functions::StartUp);
+    Init_AI(AI_START_LEFT, AI_TRIGGER_SPAWN, AI_Functions::StartLeft);
+    Init_AI(AI_START_RIGHT, AI_TRIGGER_ALIVE, AI_Functions::StartRight);
 
     /**
      * @brief 
