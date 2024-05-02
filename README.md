@@ -127,6 +127,13 @@ This example starts the level13.map (the robot boss fight) on dev mode:
     * AI_HEAL_IF_OFFSCREEN (147) - the sprite heals to its maximum health if far away from player,
     * AI_SELF_TRANSFORMATION_RANDOM_PROTOTYPE (148) - sprite turns into its Transformation Sprite (50% chances) or into its Ammo2 Sprite (50% chances) when its Reload / Charge Time is over.
 
+    * AI_NONSTOP_VERTICAL (171)
+
+    * AI_START_DOWN (172)
+    * AI_START_UP (173)
+    * AI_START_LEFT (174)
+    * AI_START_RIGHT (175)
+
     * AI_BACKGROUND_HORIZONTAL_PARALLAX (104) -  removes Y parallax,
     * AI_BACKGROUND_BRING_TO_FRONT (105) - for sorting BG (and FG) sprites despite their parallax
     * AI_BACKGROUND_SEND_TO_BACK (106)
