@@ -16,7 +16,7 @@
 #include "exceptions.hpp"
 #include "sfx.hpp"
 #include "spriteclass.hpp"
-
+#include "gfx/effect.hpp"
 #include "game/game.hpp"
 #include "3rd_party/sol.hpp"
 
@@ -325,6 +325,20 @@ bool ChasePlayerCommand::execute(SpriteClass*sprite){
 }
 
 
+class EffectCommand: public Command{
+public:
+    EffectCommand(int effect):mEffect(effect){}
+    bool execute(SpriteClass*sprite);
+private:
+    int mEffect;
+};
+
+
+bool EffectCommand::execute(SpriteClass*sprite){
+    Effect_By_ID(this->mEffect, sprite->x, sprite->y);
+    return true;
+}
+
 void Parse_Commands(const nlohmann::json& j_in, std::vector<Command*>& commands_v, int prototypeWidth, int prototypeHeight){
     if(!j_in.is_array()){
         throw PExcept::PException("Commands field has to be an array!");
@@ -387,6 +401,9 @@ void Parse_Commands(const nlohmann::json& j_in, std::vector<Command*>& commands_
                 }
                 else if(command_name=="chase_player"){
                     state = 14;
+                }
+                else if(command_name=="effect"){
+                    state = 15;
                 }
             }
             break;
@@ -514,6 +531,16 @@ void Parse_Commands(const nlohmann::json& j_in, std::vector<Command*>& commands_
 
             state = 0;
             break;
+
+        case 15:
+            if(j.is_number_integer()){
+                int effect_id = j.get<int>();
+                commands_v.push_back(new EffectCommand(effect_id));
+            }
+
+            state=0;
+            break;
+
         default:
             break;
         }

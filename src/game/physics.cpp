@@ -391,7 +391,7 @@ void SpriteOnDamage(SpriteClass* sprite){
 					sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 
 	if (sprite->prototype->destruction_effect%100 == FX_DESTRUCT_FEATHERS)
-		Effect_Destruction(FX_DESTRUCT_FEATHERS, (u32)sprite->x, (u32)sprite->y);
+		Effect_By_ID(FX_DESTRUCT_FEATHERS, (u32)sprite->x, (u32)sprite->y);
 
 	if (sprite->prototype->type != TYPE_PROJECTILE){
 		Particles_New(PARTICLE_STAR,sprite->x,sprite->y,-1,-1,60,0.01,128);
@@ -447,12 +447,14 @@ void SpriteOnDeath(SpriteClass* sprite){
 		}
 	}
 
-	if (destruction_effect >= FX_DESTRUCT_ANIMATED)
+	if (destruction_effect >= FX_DESTRUCT_ANIMATED){
 		destruction_effect -= FX_DESTRUCT_ANIMATED;
+	}
+		
 	else
 		sprite->removed = true;
 
-	Effect_Destruction(destruction_effect, (u32)sprite->x, (u32)sprite->y);
+	Effect_By_ID(destruction_effect, (u32)sprite->x, (u32)sprite->y);
 	Play_GameSFX(sprite->prototype->sounds[SOUND_DESTRUCTION],100, (int)sprite->x, (int)sprite->y,
 					sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 
@@ -543,7 +545,6 @@ void BonusSpriteCollected(SpriteClass* sprite, SpriteClass* collector){
 
 		if (destruction_effect >= FX_DESTRUCT_ANIMATED){
 			destruction_effect -= FX_DESTRUCT_ANIMATED;
-			sprite->charging_timer = -1;
 		}
 		else
 		{
@@ -639,7 +640,7 @@ void BonusSpriteCollected(SpriteClass* sprite, SpriteClass* collector){
 		Play_GameSFX(sprite->prototype->sounds[SOUND_DESTRUCTION],100, (int)sprite->x, (int)sprite->y,
 						sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 
-		Effect_Destruction(destruction_effect, (u32)sprite->x, (u32)sprite->y);
+		Effect_By_ID(destruction_effect, (u32)sprite->x, (u32)sprite->y);
 	}
 }
 

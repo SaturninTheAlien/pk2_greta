@@ -145,8 +145,30 @@ void Effect_Stars(double x, double y, u8 color) {
 		Particles_New(	PARTICLE_POINT,x-5, y-5, double(rand()%30-rand()%30)/15, rand()%3*-1,100,(rand()%5+5)/100.0,color);
 }
 
-void Effect_Destruction(u8 tehoste, double x, double y) {
-	switch (tehoste){
+
+
+void Effect_SmokelessExplosion(double x, double y, u8 color) {
+	int i;
+	for (i=0;i<9;i++)//12
+		Particles_New(	PARTICLE_LIGHT,x+rand()%17-13,y+rand()%17-13,
+							double(rand()%7-rand()%7)/5.0,double(rand()%7-rand()%7)/3.0,
+							rand()%40+60,0.025,color);
+
+	for (i=0;i<8;i++)//8//10
+		Particles_New(	PARTICLE_SPARK,x+rand()%17-13,y+rand()%17-13,
+							(rand()%3-rand()%3),//(rand()%7-rand()%7)/5,
+							double(rand()%7-rand()%7)/3,
+							rand()%20+60,0.015,color);//50+60
+
+	for (i=0;i<20;i++)//12
+		Particles_New(	PARTICLE_POINT,x+rand()%17-13,y+rand()%17-13,
+							double(rand()%7-rand()%7)/5,double(rand()%7-rand()%7)/3,
+							rand()%40+60,0.025,color);
+}
+
+
+void Effect_By_ID(int effect_id, double x, double y) {
+	switch (effect_id){
 		case FX_DESTRUCT_FEATHERS          : Effect_Feathers(x, y); break;
 		case FX_DESTRUCT_STARS_GRAY     : Effect_Stars(x,y,0); break;
 		case FX_DESTRUCT_STARS_BLUE	   : Effect_Stars(x,y,32); break;
@@ -182,6 +204,14 @@ void Effect_Destruction(u8 tehoste, double x, double y) {
 		case FX_DESTRUCT_SPLASH_ORANGE: Effect_Splash(x,y,128); break;
 		case FX_DESTRUCT_SPLASH_VIOLET: Effect_Splash(x,y,160); break;
 		case FX_DESTRUCT_SPLASH_TURQUOISE: Effect_Splash(x,y,192); break;
+
+		case FX_DESTRUCT_SMOKELESS_EXPLOSION_GRAY: Effect_SmokelessExplosion(x,y, 0); break;
+		case FX_DESTRUCT_SMOKELESS_EXPLOSION_BLUE: Effect_SmokelessExplosion(x,y, 32); break;
+		case FX_DESTRUCT_SMOKELESS_EXPLOSION_RED: Effect_SmokelessExplosion(x,y, 64); break;
+		case FX_DESTRUCT_SMOKELESS_EXPLOSION_GREEN: Effect_SmokelessExplosion(x,y, 96); break;
+		case FX_DESTRUCT_SMOKELESS_EXPLOSION_ORANGE: Effect_SmokelessExplosion(x,y, 128); break;
+		case FX_DESTRUCT_SMOKELESS_EXPLOSION_VIOLET: Effect_SmokelessExplosion(x,y, 160); break;
+		case FX_DESTRUCT_SMOKELESS_EXPLOSION_TURQUOISE: Effect_SmokelessExplosion(x,y, 192); break;
 
 
 		default	: break;
