@@ -13,6 +13,7 @@ int main(int argc, char **argv) {
 	bool dev_mode = false;
 	bool show_fps = false;
 	bool converting_sprite = false;
+	bool updating_sprites = false;
 
 	std::string filename_in;
 	std::string filename_out;
@@ -65,6 +66,13 @@ int main(int argc, char **argv) {
 				state=3;
 				converting_sprite = true;
 			}
+			else if (arg=="--update-sprites"){
+				printf("Updating sprites\n");
+				filename_in = ".";
+				filename_out = "";
+				state=5;
+				updating_sprites = true;
+			}
 			else {
 				printf("Invalid arg\n");
 				return 1;
@@ -94,6 +102,11 @@ int main(int argc, char **argv) {
 			state = 0;
 		}
 		break;
+		case 5:{
+			filename_in = arg;
+			state = 0;
+		}
+		break;
 
 		default:
 			printf("Invalid arg\n");
@@ -103,7 +116,10 @@ int main(int argc, char **argv) {
 
 	pk2_init();
 
-	if(converting_sprite){
+	if(updating_sprites){
+		pk2_updateSprites(filename_in);
+	}
+	else if(converting_sprite){
 		pk2_convertToNewFormat(filename_in, filename_out);
 	}
 	else{

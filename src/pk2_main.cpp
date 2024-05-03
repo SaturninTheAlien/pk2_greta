@@ -25,6 +25,7 @@
 #include "language.hpp"
 #include "settings.hpp"
 #include <filesystem>
+#include <algorithm>
 
 #include "game/prototypes_handler.hpp"
 
@@ -47,7 +48,7 @@ static const char default_config[] =
 "\r\n-- Change frequency in another thread"
 "\r\n-- Default is no"
 "\r\n---------------"
-"\r\n*audio_multi_thread:    no"
+"\r\n*audio_multi_thread_x:    no"
 "\r\n"
 "\r\n"
 "\r\n-- For the compatibility with some older episodes"
@@ -108,12 +109,12 @@ static void read_config() {
 	}
 	PLog::Write(PLog::DEBUG, "PK2", "Audio buffer size set to %i", configuration.audio_buffer_size);
 
-	idx = conf.Search_Id("audio_multi_thread");
+	idx = conf.Search_Id("audio_multi_thread_x");
 	if (idx != -1) {
 		const char* txt = conf.Get_Text(idx);
 
 		if (strcmp(txt, "default") == 0)
-			configuration.audio_multi_thread = true;
+			configuration.audio_multi_thread = false;
 		else if (strcmp(txt, "yes") == 0)
 			configuration.audio_multi_thread = true;
 		else if (strcmp(txt, "no") == 0)
@@ -376,10 +377,29 @@ void pk2_main(bool _dev_mode, bool _show_fps, bool _test_level, const std::strin
 	quit();
 }
 
+void replaceObsoleteAIs(PrototypeClass* prototype){
+
+	bool is_info = false;
+	std::vector<int>& vec = prototype->AI_v;
+
+	for(const int& ai: vec){
+		if(ai>=AI_LEGACY_INFOS_BEGIN && ai<=AI_LEGACY_INFOS_END){
+			prototype->info_id = ai - AI_LEGACY_INFOS_BEGIN + 1;
+			is_info = true;
+		}
+	}
+
+	if(is_info){
+		vec.erase(std::remove_if(vec.begin(), vec.end(), [](int ai) { return ai>=201 && ai<=302; }), vec.end());
+		vec.push_back(302);
+	}
+}
+
 void convertToSpr2(const std::string& filename_in, const std::string& filename_out){
 	PrototypesHandler handler(false, false, nullptr);
 	try{
 		PrototypeClass* prototype = handler.loadPrototype(filename_in);
+		replaceObsoleteAIs(prototype);
 		nlohmann::json j = *prototype;
 		handler.savePrototype(prototype, filename_out);
 		PLog::Write(PLog::INFO, "PK2", "Sprite %s converted to %s\n", filename_in.c_str(), filename_out.c_str());
@@ -454,4 +474,24 @@ bool pk2_convertToNewFormat(const std::string& filename_in, const std::string& f
 	printf("Unsupported file format to convert");
 	
 	return false;
+}
+
+/**
+ * @brief 
+ * A temporary function for updating sprites.
+ */
+
+void pk2_updateSprites(const std::string& dir){
+	printf("%s\n", dir.c_str());
+	
+	for (const auto & entry : std::filesystem::directory_iterator(dir)){
+        if(entry.is_regular_file()){
+            std::filesystem::path p = entry.path();
+            std::string s = p.string();
+			printf("%s\n", s.c_str());
+            if(s.size()>5 && s.substr(s.size()-5,5)==".spr2"){
+				convertToSpr2(s, s);	
+			}
+		}
+	}
 }
