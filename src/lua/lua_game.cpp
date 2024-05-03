@@ -11,6 +11,7 @@
 #include "game/prototypes_handler.hpp"
 #include "game/sprites_handler.hpp"
 #include "game/game.hpp"
+#include "gfx/effect.hpp"
 #include <vector>
 
 namespace PK2lua{
@@ -63,6 +64,50 @@ void AddEventListener(int event_type, sol::object o){
     }
 }
 
+
+void ForEachCreature(sol::object o){
+
+    if(o.is<std::function<void(SpriteClass* s)>>()){
+        sol::protected_function func = o;
+
+        for(SpriteClass*sprite: Game->spritesHandler.Sprites_List){
+            if(sprite->energy > 0
+            && sprite->prototype->type == TYPE_GAME_CHARACTER
+            && !sprite->removed
+            && sprite->respawn_timer==0){
+
+                sol::protected_function_result res = func(sprite);
+                if(!res.valid()){
+                    throw res.get<sol::error>();
+                }
+            }       
+        }
+    }
+    else{
+        throw std::runtime_error("PK2Lua, incorrect lua function!");
+    }
+}
+
+void ForEachSprite(sol::object o){
+
+    if(o.is<std::function<void(SpriteClass* s)>>()){
+        sol::protected_function func = o;
+
+        for(SpriteClass*sprite: Game->spritesHandler.Sprites_List){
+            if(!sprite->removed && sprite->respawn_timer==0){
+
+                sol::protected_function_result res = func(sprite);
+                if(!res.valid()){
+                    throw res.get<sol::error>();
+                }
+            }       
+        }
+    }
+    else{
+        throw std::runtime_error("PK2Lua, incorrect lua function!");
+    }
+}
+
 void ExposeGameAPI(sol::state& lua){
 
     sol::table PK2_API = lua.create_table();
@@ -94,11 +139,10 @@ void ExposeGameAPI(sol::state& lua){
 
     /**
      * @brief 
-     * Get a list of all the sprites
+     * Execute a Lua function for all the sprites
      */
-    
-    PK2_API["get_sprites_list"] = [](){return Game->spritesHandler.Sprites_List;};
-
+    PK2_API["for_each_creature"] = ForEachCreature;    
+    PK2_API["for_each_sprite"] = ForEachSprite;
 
     /**
      * @brief 
@@ -118,6 +162,13 @@ void ExposeGameAPI(sol::state& lua){
      * Show info
      */
     PK2_API["show_info"] = [](const std::string& text){ Game->Show_Info(text);};
+
+    /**
+     * @brief 
+     * Spawn effect
+     */
+    
+    PK2_API["effect"] = Effect_By_ID;
 
     lua["_pk2_api"] = PK2_API;
 }

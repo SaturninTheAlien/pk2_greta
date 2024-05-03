@@ -180,6 +180,7 @@ Currently available commands:
 > wait_random, \<ticks_min\>, \<ticks_max\>, \
 > thunder \
 > chase_player, \<ticks\>, \
+> effect, \<effect\>, \
 > lua, \<global_lua_function_name>
 
 Commands / waypoints are executed by the sprite in a loop unless there is "die" or "transform" command.
