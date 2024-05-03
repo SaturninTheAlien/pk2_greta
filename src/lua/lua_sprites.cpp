@@ -34,8 +34,10 @@ void ExposePrototypeClass(sol::state& lua){
         "weight", sol::readonly(&PrototypeClass::weight),
         "enemy", sol::readonly(&PrototypeClass::enemy),
         "hostile_to_everyone", sol::readonly(&PrototypeClass::hostile_to_everyone),
+        "indestructible", sol::readonly(&PrototypeClass::indestructible),
 
         "color", sol::readonly(&PrototypeClass::color),
+        "destruction_effect", sol::readonly(&PrototypeClass::destruction_effect),
         "energy", sol::readonly(&PrototypeClass::energy),
         "max_speed", sol::readonly(&PrototypeClass::max_speed));
 }
@@ -95,7 +97,8 @@ void ExposeSpriteClass(sol::state& lua){
          * Shouldn't be changed in scripts because they are handled by physics.cpp and so on
          */
 
-        "player", sol::readonly(&SpriteClass::player),
+        //"player", sol::readonly(&SpriteClass::player),
+        "player", &SpriteClass::player,
 
         "orig_x", sol::readonly(&SpriteClass::orig_x),
         "orig_y", sol::readonly(&SpriteClass::orig_y),
