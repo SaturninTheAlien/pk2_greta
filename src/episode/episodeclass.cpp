@@ -173,19 +173,45 @@ void EpisodeClass::Load_Info() {
 
 //TODO - don't load the same image again
 void EpisodeClass::Load_Assets() {
+	PFile::Path path = this->Get_Dir("pk2stuff.png");
+	if(!FindAsset(&path, "gfx" PE_SEP)){
+		path = this->Get_Dir("pk2stuff.bmp");
+		if (FindAsset(&path, "gfx" PE_SEP)) {
 
-	PFile::Path path = this->Get_Dir("pk2stuff.bmp");
-	if (FindAsset(&path, "gfx" PE_SEP)) {
+			PDraw::image_load(game_assets, path, true);
 
+		} else {
+
+			PLog::Write(PLog::ERR, "PK2", "Can't load pk2stuff"); //"Can't load map bg"
+
+		}
+	}
+	else{
 		PDraw::image_load(game_assets, path, true);
-
-	} else {
-
-		PLog::Write(PLog::ERR, "PK2", "Can't load pk2stuff"); //"Can't load map bg"
-
 	}
 
-	path = this->Get_Dir("pk2stuff2.bmp");
+	path = this->Get_Dir("pk2stuff2.png");
+	if(!FindAsset(&path, "gfx" PE_SEP)){
+		path = this->Get_Dir("pk2stuff2.bmp");
+		if (FindAsset(&path, "gfx" PE_SEP)) {
+
+			PDraw::image_load(game_assets2, path, true);
+
+		} else {
+
+			PLog::Write(PLog::ERR, "PK2", "Can't load pk2stuff2"); //"Can't load map bg"
+
+		}
+	}
+	else{
+		PDraw::image_load(game_assets2, path, true);
+	}
+	
+	
+	
+	
+
+	/*path = this->Get_Dir("pk2stuff2.bmp");
 	if (FindAsset(&path, "gfx" PE_SEP)) {
 
 		PDraw::image_load(game_assets2, path, true);
@@ -194,7 +220,7 @@ void EpisodeClass::Load_Assets() {
 
 		PLog::Write(PLog::ERR, "PK2", "Can't load pk2stuff2"); //"Can't load map bg"
 
-	}
+	}*/
 
 }
 
