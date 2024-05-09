@@ -107,7 +107,11 @@ void ExposeSpriteClass(sol::state& lua){
         "swimming", sol::readonly(&SpriteClass::swimming),
 
         "hidden", sol::readonly(&SpriteClass::hidden),
-        "orig_weight", sol::readonly(&SpriteClass::initial_weight),
+        "initial_weight", sol::readonly(&SpriteClass::initial_weight),
+        "jump_timer", &SpriteClass::jump_timer,
+
+        "seen_player_x", sol::readonly(&SpriteClass::seen_player_x),
+        "seen_player_y", sol::readonly(&SpriteClass::seen_player_y),
         
 
         "can_move_left", sol::readonly(&SpriteClass::can_move_left),

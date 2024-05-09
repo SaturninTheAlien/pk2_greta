@@ -363,6 +363,9 @@ bool SpriteClass::TransformTo(PrototypeClass * transformation){
 		this->max_speed_available = false;
 		this->can_collect_bonuses = this->player;
 
+		this->seen_player_x = -1;
+		this->seen_player_y = -1;
+
 		for(const SpriteAI::AI_Class& ai: this->prototype->AI_f){
 			if(ai.trigger == AI_TRIGGER_TRANSFORMATION){
 				ai.func(this);

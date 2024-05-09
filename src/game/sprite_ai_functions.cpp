@@ -298,8 +298,8 @@ void Follow_Player(SpriteClass*s){
 			s->a += 0.1;
 		}
 
-		s->seen_player_x = (int)(player->x+player->a);
-		s->seen_player_y = (int)(player->y+player->b);
+		/*s->seen_player_x = (int)(player->x+player->a);
+		s->seen_player_y = (int)(player->y+player->b);*/
 
 		if (s->prototype->max_speed == 0)
 		{
