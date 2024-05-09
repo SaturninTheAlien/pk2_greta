@@ -30,6 +30,10 @@ static Uint8* freq_chunks[CHANNELS];  //The chunk allocated for each channel
 
 static bool channel_playing[CHANNELS];
 
+static Mix_Music* overlay_music = NULL;
+static PFile::RW* overlay_rw = NULL;
+static bool overlay_playing = false;
+
 static Mix_Music* music = NULL;
 static PFile::RW* music_rw = NULL;
 static PFile::Path playingMusic = PFile::Path("");
@@ -40,6 +44,13 @@ struct audio_data_t {
 	int index, channel, volume, panoramic, freq;
 
 };
+
+static SDL_Thread* queue_thread = NULL;
+static SDL_sem* semafore = NULL;
+static SDL_mutex* queue_mutex = NULL;
+static SDL_mutex* chunks_mutex = NULL;
+static SDL_atomic_t thread_done;
+static std::queue<audio_data_t> sound_queue;
 
 static int find_channel() {
 	
@@ -100,6 +111,8 @@ int load_sfx(PFile::Path path) {
 
 	int ret = -1;
 
+	SDL_LockMutex(chunks_mutex);
+
 	for( int i = 0; i < MAX_SOUNDS; i++ )
 		if (chunks[i] == NULL) {
 
@@ -116,7 +129,9 @@ int load_sfx(PFile::Path path) {
 			}
 			break;
 		}
-		
+	
+	SDL_UnlockMutex(chunks_mutex);
+	
 	return ret;
 }
 
@@ -144,6 +159,8 @@ int set_channel(int channel, int panoramic, int volume) {
 
 int change_frequency_and_play(int index, int channel, int freq) {
 	
+	SDL_LockMutex(chunks_mutex);
+
 	//Save a backup of the parameter that will be ovewrited
 	Uint8* bkp_buf = chunks[index]->abuf;
 	Uint32 bkp_len = chunks[index]->alen;
@@ -156,6 +173,8 @@ int change_frequency_and_play(int index, int channel, int freq) {
 			PLog::Write(PLog::ERR, "PSound", "Can't change frequency");
 			chunks[index]->abuf = bkp_buf;
 			chunks[index]->alen = bkp_len;
+			SDL_UnlockMutex(chunks_mutex);
+
 			return -1;
 
 		}
@@ -168,7 +187,72 @@ int change_frequency_and_play(int index, int channel, int freq) {
 	chunks[index]->abuf = bkp_buf;
 	chunks[index]->alen = bkp_len;
 
+	SDL_UnlockMutex(chunks_mutex);
+
 	return error;
+
+}
+
+static int queue_function(void* data) {
+
+	while (!SDL_AtomicGet(&thread_done)) {
+
+        SDL_SemWait(semafore);
+
+		while (1) {
+
+			SDL_LockMutex(queue_mutex);
+
+			if (sound_queue.size() == 0) {
+
+				SDL_UnlockMutex(queue_mutex);
+				break;
+
+			}
+
+			audio_data_t audio_data = sound_queue.front();
+			sound_queue.pop();
+
+			SDL_UnlockMutex(queue_mutex);
+
+			if (audio_data.index == -1) {
+
+				u8* pointer = freq_chunks[audio_data.channel];
+				freq_chunks[audio_data.channel] = NULL;
+				SDL_free(pointer);
+				channel_playing[audio_data.channel] = false;
+				continue;
+
+			}
+
+			int error = change_frequency_and_play(audio_data.index, audio_data.channel, audio_data.freq);
+			if (error == -1) {
+
+				PLog::Write(PLog::ERR, "PSound", "Can't play chunk");
+
+			}
+
+		}
+    
+	}
+
+	return 0;
+
+}
+
+
+static void send_queue(int index, int channel, int volume, int panoramic, int freq) {
+
+	audio_data_t audio_data;
+	audio_data.index = index;
+	audio_data.channel = channel;
+	audio_data.volume = volume;
+	audio_data.panoramic = panoramic;
+	audio_data.freq = freq;
+
+	SDL_LockMutex(queue_mutex);
+	sound_queue.push(audio_data);
+	SDL_UnlockMutex(queue_mutex);
 
 }
 
@@ -189,6 +273,12 @@ int play_sfx(int index, int volume, int panoramic, int freq) {
 
 	set_channel(channel, panoramic, volume);
 
+	if (queue_thread != NULL) {
+
+		send_queue(index, channel, volume, panoramic, freq);
+		return channel;
+
+	}
 
 	int error = change_frequency_and_play(index, channel, freq);
 
@@ -204,12 +294,18 @@ int play_sfx(int index, int volume, int panoramic, int freq) {
 }
 
 int free_sfx(int index) {
+
+	SDL_LockMutex(chunks_mutex);
+
 	if(chunks[index] != NULL) {
 		
 		Mix_FreeChunk(chunks[index]);
 		chunks[index] = NULL;
 	
 	}
+
+	SDL_UnlockMutex(chunks_mutex);
+
 	return 0;
 
 }
@@ -229,6 +325,12 @@ void clear_channels() {
 
 int resume_music() {
 
+	if (!overlay_playing) {
+
+		return -1;
+
+	}
+
 	if (music == NULL) {
 
 		PLog::Write(PLog::WARN, "PSound", "No music loaded");
@@ -242,17 +344,97 @@ int resume_music() {
 		return -1;
 	
 	}
+
+	overlay_playing = false;
+
 	return 0;
 	
 }
 
+int play_overlay_music() {
+
+	if (overlay_playing) {
+
+		return -1;
+
+	}
+
+	if (overlay_music == NULL) {
+
+		PLog::Write(PLog::WARN, "PSound", "No overlay music loaded");
+		return -1;
+	
+	}
+
+	Mix_HaltMusic();
+	if (Mix_PlayMusic(overlay_music, -1) == -1) {
+
+		PLog::Write(PLog::ERR, "PSound", Mix_GetError());
+		Mix_ClearError();
+		return -1;
+	
+	}
+
+	overlay_playing = true;
+
+	return 0;
+
+}
+
+int load_overlay_music(PFile::Path path) { //TODO - load ovarlay from zip
+
+	if (overlay_playing)
+		resume_music();
+
+	if (overlay_music!=nullptr) {
+		Mix_FreeMusic(overlay_music);
+		overlay_music = nullptr;
+	}
+
+	if(overlay_rw!=nullptr){
+		delete overlay_rw;
+		overlay_rw = nullptr;
+	}
+
+	try
+	{
+		overlay_rw = new PFile::RW(path.GetRW2("r"));
+		overlay_music = Mix_LoadMUS_RW((SDL_RWops*)(overlay_rw->_rwops), 0);
+	}
+	catch(const PFile::PFileException& e)
+	{
+		PLog::Write(PLog::ERR, "PSound", e.what());
+		PLog::Write(PLog::ERR, "PSound", "Unable to overlay load music \"%s\"", path.c_str());
+		return -1;
+	}
+	
+
+	if (overlay_music == nullptr) {
+
+		PLog::Write(PLog::WARN, "PSound", Mix_GetError());
+		Mix_ClearError();
+		delete overlay_rw;
+		overlay_rw = nullptr;
+
+		return -1;
+	
+	}
+
+	PLog::Write(PLog::DEBUG, "PSound", "Loaded %s to overlay music", path.c_str());
+	return 0;
+
+}
 
 int start_music(PFile::Path path) {
+
+	SDL_LockMutex(chunks_mutex);
 
 	if (playingMusic == path)
 		return 1;
 	
 	Mix_HaltMusic();
+	overlay_playing = false;
+
 	if (music!=nullptr) {
 		Mix_FreeMusic(music);
 		music = nullptr;
@@ -301,6 +483,9 @@ int start_music(PFile::Path path) {
 	Mix_VolumeMusic(mus_volume_now * MIX_MAX_VOLUME / 100);
 	
 	PLog::Write(PLog::DEBUG, "PSound", "Loaded %s", path.c_str());
+
+	SDL_UnlockMutex(chunks_mutex);
+
 	return 0;
 	
 }
@@ -321,13 +506,35 @@ void set_musicvolume_now(u8 volume) {
 
 void stop_music(){
 
+	SDL_LockMutex(chunks_mutex);
+	SDL_LockMutex(queue_mutex);
+
 	clear_channels();
 	Mix_HaltMusic();
+	overlay_playing = false;
 	playingMusic = PFile::Path("");
+
+	SDL_UnlockMutex(chunks_mutex);
+	SDL_UnlockMutex(queue_mutex);
 
 }
 
 void channelDone(int channel) {
+
+	if (queue_thread) {
+
+		audio_data_t audio_data;
+		audio_data.index = -1;
+		audio_data.channel = channel;
+
+		SDL_LockMutex(queue_mutex);
+		sound_queue.push(audio_data);
+		SDL_UnlockMutex(queue_mutex);
+
+		return;
+
+	}
+
 	u8* pointer = freq_chunks[channel];
 	freq_chunks[channel] = NULL;
     SDL_free(pointer);
@@ -336,7 +543,7 @@ void channelDone(int channel) {
 }
 
 
-int init(int buffer_size) {
+int init(int buffer_size, bool multi_thread) {
 
 	if (Mix_OpenAudio(PS_FREQ, PS_FORMAT, PS_CHANNELS, buffer_size) < 0) {
 	
@@ -364,6 +571,18 @@ int init(int buffer_size) {
 
 	PLog::Write(PLog::DEBUG, "PSound", "Got %ihz 0x%x", frequency, format);
 
+	overlay_playing = false;
+
+	if (multi_thread) {
+
+		SDL_AtomicSet(&thread_done, 0);
+		semafore = SDL_CreateSemaphore(0);
+		queue_mutex = SDL_CreateMutex();
+		chunks_mutex = SDL_CreateMutex();
+		queue_thread = SDL_CreateThread(queue_function, "Audio Thread", NULL);
+
+	}
+
 	return 0;
 
 }
@@ -379,8 +598,14 @@ int update() {
 	if (volume != Mix_VolumeMusic(-1))
 		Mix_VolumeMusic(volume);
 	
-	if (!Mix_PlayingMusic())
+	if (overlay_playing && !Mix_PlayingMusic())
 		resume_music();
+
+	SDL_LockMutex(queue_mutex);
+	int size = sound_queue.size();
+	SDL_UnlockMutex(queue_mutex);
+	if (size > 0)
+		SDL_SemPost(semafore);
 
 	return 0;
 
@@ -399,6 +624,28 @@ int terminate() {
 	if(music_rw != nullptr){
 		delete music_rw;
 		music_rw = nullptr;
+	}
+
+	if(overlay_music != nullptr) {
+		Mix_FreeMusic(overlay_music);
+		overlay_music = nullptr;
+	}
+
+	if(overlay_rw != nullptr){
+		delete overlay_rw;
+		overlay_rw = nullptr;
+	}
+
+
+	if (queue_thread != NULL) {
+
+		SDL_AtomicSet(&thread_done, 1);
+		SDL_SemPost(semafore);
+		SDL_WaitThread(queue_thread, NULL);
+		SDL_DestroySemaphore(semafore);
+		SDL_DestroyMutex(queue_mutex);
+		SDL_DestroyMutex(chunks_mutex);
+
 	}
 
 	Mix_CloseAudio();

@@ -11,7 +11,7 @@ namespace PSound {
 
 const int CHANNELS = 32;//16;
 
-int init(int buffer_size, bool multi_thread);
+int init(int buffer_size);
 int update();
 int terminate();
 
@@ -28,7 +28,5 @@ void set_musicvolume_now(u8 volume);
 void stop_music();
 
 int resume_music();
-int play_overlay_music();
-int load_overlay_music(PFile::Path path);
 
 }

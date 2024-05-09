@@ -341,7 +341,7 @@ void pk2_main(bool _dev_mode, bool _show_fps, bool _test_level, const std::strin
 	read_config();
 
 	Piste::init(screen_width, screen_height, PK2_NAME, "gfx" PE_SEP "icon_new.png",
-	configuration.audio_buffer_size, configuration.audio_multi_thread);
+	configuration.audio_buffer_size);
 	
 	if (!Piste::is_ready()) {
 
