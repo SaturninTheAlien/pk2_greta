@@ -82,6 +82,12 @@ public:
      * To remove the initial splash effect
      */
     bool    initial_update = false; 
+
+    /**
+     * To fix some legacy indestructible projectiles transformation
+    */
+    bool    legacy_indestructible_ammo = false;
+
     /**
      * @brief 
      * if the sprite can collect bonuses

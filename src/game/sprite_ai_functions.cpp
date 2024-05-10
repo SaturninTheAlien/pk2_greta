@@ -122,9 +122,14 @@ void Projectile(SpriteClass*s){
 
 	if (s->charging_timer == 1)
 	{
-		s->damage_taken = s->prototype->energy;
-		s->damage_taken_type = DAMAGE_ALL;
-		s->self_destruction = true;
+		if(!s->prototype->indestructible){
+			s->damage_taken = s->prototype->energy;
+			s->damage_taken_type = DAMAGE_ALL;
+			s->self_destruction = true;
+		}
+		else{
+			s->legacy_indestructible_ammo = true;
+		}
 	}
 
 	if (s->energy < 1)

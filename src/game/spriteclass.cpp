@@ -371,6 +371,19 @@ bool SpriteClass::TransformTo(PrototypeClass * transformation){
 				ai.func(this);
 			}
 		}
+
+		/**
+		 * To fix some legacy indestructible projectiles
+		*/
+		if(this->legacy_indestructible_ammo){
+			this->legacy_indestructible_ammo = false;
+
+			if(!this->prototype->indestructible){
+				this->damage_taken = this->prototype->energy;
+				this->damage_taken_type = DAMAGE_ALL;
+				this->self_destruction = true;
+			}
+		}
 		
 		return true;
 	}
