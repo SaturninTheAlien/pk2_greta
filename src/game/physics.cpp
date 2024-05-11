@@ -1154,12 +1154,12 @@ void UpdateSprite(SpriteClass* sprite){
 								if ( !(sprite2->player && sprite2->invisible_timer) ) //If sprite2 isn't a invisible player
 									sprite->attack1_timer = sprite->prototype->attack1_time; //Then sprite attack??
 
-								// The projectiles are shattered by shock
-								if (sprite2->prototype->type == TYPE_PROJECTILE) {
-									sprite->damage_taken = 1;//sprite2->prototype->damage;
+								if (sprite2->prototype->type == TYPE_PROJECTILE && sprite2->CanDamageOnCollision(sprite)) {
+									sprite->damage_taken = sprite2->prototype->damage;
 									sprite->damage_taken_type = sprite2->prototype->damage_type;
 								}
 
+								// The projectiles are shattered by shock
 								if (sprite->prototype->type == TYPE_PROJECTILE) {
 									sprite->damage_taken = 1;//sprite2->prototype->damage;
 									sprite->damage_taken_type = sprite2->prototype->damage_type;
