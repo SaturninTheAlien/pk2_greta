@@ -211,8 +211,8 @@ enum {
     AI_BONUS_SUPERTULITUS, // 123   // unused
     AI_BONUS_SUPERVAUHTI, // 124    // unused    
 
-    // New AI
     AI_BONUS_SUPERMODE, // 125
+    AI_BONUS_CANNOT_BE_PUSHED, // 126
 
     // AI_126 - AI_128
 

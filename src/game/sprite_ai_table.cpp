@@ -249,6 +249,8 @@ AI_Table::AI_Table(){
 
     Init_AI(AI_SELF_TRANSFORMATION_RANDOM_PROTOTYPE, AI_TRIGGER_ALIVE, AI_Functions::Self_Transformation_Random_Prototype, true, true, true, true);
 
+    Init_AI(AI_BONUS_CANNOT_BE_PUSHED, AI_TRIGGER_ANYWAY, AI_Functions::CannotBePushed, false, false, true, false);
+
     /**
      * @brief
      * Background AIs

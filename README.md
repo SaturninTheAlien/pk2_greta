@@ -138,6 +138,12 @@ This example starts the level13.map (the robot boss fight) on dev mode:
     * AI_BACKGROUND_BRING_TO_FRONT (105) - for sorting BG (and FG) sprites despite their parallax
     * AI_BACKGROUND_SEND_TO_BACK (106)
 
+    * AI_BONUS_CANNOT_BE_PUSHED (126)
+    * AI_INFO_IF_TOUCHES_PLAYER (302)
+    * AI_INFO_IF_DAMAGED (303)
+    * AI_INFO_IF_DEAD (304)
+    * AI_INFO_IF_BONUS_COLLECTED (305)
+
 * New sprite destruction effects:
     * FX_DESTRUCT_SPLASH_GRAY (24)
     * FX_DESTRUCT_SPLASH_BLUE (25)

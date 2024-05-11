@@ -973,6 +973,11 @@ void DieIfTouchesWall(SpriteClass*s){
 	}
 }
 
+void CannotBePushed(SpriteClass*s){
+	s->a = 0;
+	s->x = s->orig_x;
+}
+
 /**
  * @brief 
  * AIs triggered on death

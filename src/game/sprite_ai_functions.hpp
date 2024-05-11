@@ -81,7 +81,7 @@ void NpcCollectBonuses(SpriteClass*s);
 
 
 void DieIfTouchesWall(SpriteClass*s);
-
+void CannotBePushed(SpriteClass*s);
 
 /**
  * @brief 
