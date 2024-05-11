@@ -1263,9 +1263,6 @@ void UpdateSprite(SpriteClass* sprite){
 	if (sprite->energy < 0)
 		sprite->energy = 0;
 
-	if (sprite->energy > sprite->prototype->energy)
-		sprite->energy = sprite->prototype->energy;
-
 	if (sprite->damage_timer == 0 || sprite->player) {
 		sprite->x += sprite->a;
 		sprite->y += sprite->b;
@@ -1342,6 +1339,9 @@ void UpdateSprite(SpriteClass* sprite){
 			}
 		}
 	}
+
+	if (sprite->energy > sprite->prototype->energy)
+		sprite->energy = sprite->prototype->energy;
 
 	//if (kaiku == 1 && sprite->prototype->prototype == TYPE_PROJECTILE && sprite->prototype->damage_type == DAMAGE_NOISE &&
 	//	sprite->prototype->sounds[SOUND_ATTACK1] > -1)
