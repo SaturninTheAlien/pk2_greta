@@ -101,7 +101,7 @@ public:
     SpriteClass(PrototypeClass *prototype, bool player, double x, double y, SpriteClass*parent=nullptr);
     ~SpriteClass();
 
-    int  Draw(int camera_x, int camera_y);   // animate and draw the sprite
+    void  Draw(int camera_x, int camera_y);   // animate and draw the sprite
     void  SetAnimation(int anim_i, bool reset);  // set sprite animation
     int  Animoi();                             // animate the sprite
     void HandleEffects();                      // create sprite effects

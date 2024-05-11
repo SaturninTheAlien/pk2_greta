@@ -179,16 +179,7 @@ int SpritesHandler::onTickUpdate(){
 
 	//Activate sprite if it is next to the screen
 	for (SpriteClass* sprite : Sprites_List) {
-		if(sprite->respawn_timer>0){
-			sprite->active=false;
-			--sprite->respawn_timer;
-
-			if(sprite->respawn_timer==0){
-				SpriteOnRespawn(sprite);
-			}
-
-		}
-		else if(sprite->prototype->always_active){
+		if(sprite->prototype->always_active){
 			sprite->active=true;
 		}
 		else if (sprite->x < Game->camera_x + 640 + ACTIVE_BORDER_X &&
@@ -204,12 +195,22 @@ int SpritesHandler::onTickUpdate(){
 		}	
 	}
 
-	// Update bonus first to get energy change
 	for (SpriteClass* sprite : Sprites_List) {
-		if (sprite->active && !sprite->removed) {
-			if (sprite->prototype->type == TYPE_BONUS) {
-				UpdateBonusSprite(sprite);
-				active_sprites++;
+		if(sprite->active){
+			if(sprite->respawn_timer>0){
+				--sprite->respawn_timer;
+
+				if(sprite->respawn_timer==0){
+					SpriteOnRespawn(sprite);
+				}
+			}
+
+			// Update bonus first to get energy change
+			if (sprite->active && !sprite->removed) {
+				if (sprite->prototype->type == TYPE_BONUS && sprite->respawn_timer==0) {
+					UpdateBonusSprite(sprite);
+					active_sprites++;
+				}
 			}
 		}
 	}
@@ -219,8 +220,11 @@ int SpritesHandler::onTickUpdate(){
 			if (sprite->prototype->type != TYPE_BONUS
 			&& sprite->prototype->type != TYPE_BACKGROUND
 			&& sprite->prototype->type != TYPE_BLACK_HOLE) {
-				UpdateSprite(sprite);
-				active_sprites++;
+
+				if(sprite->respawn_timer==0 || sprite->prototype->destruction_effect>=100){
+					UpdateSprite(sprite);
+					active_sprites++;
+				}
 			}
 		}
 	}

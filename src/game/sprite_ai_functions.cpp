@@ -989,9 +989,16 @@ void Chick(SpriteClass*s){
 }
 
 void Reborn(SpriteClass*s){
-	s->respawn_timer = s->prototype->charge_time;
-	s->energy = s->prototype->energy;
-	s->removed = false;
+	if(s->prototype->charge_time==0){
+		s->respawn_timer = s->prototype->charge_time;
+		s->energy = s->prototype->energy;
+		s->removed = false;
+	}
+	else{
+		s->respawn_timer = s->prototype->charge_time;
+		s->energy = 0;
+		s->removed = false;
+	}
 }
 
 

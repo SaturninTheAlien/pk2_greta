@@ -410,14 +410,15 @@ void SpriteOnDamage(SpriteClass* sprite){
 }
 
 void SpriteOnRespawn(SpriteClass* sprite){
-	double ax, ay;
-	ax = sprite->x;//-sprite->prototype->width;
-	ay = sprite->y-sprite->prototype->height/2.0;
+	int effect_id = sprite->prototype->destruction_effect;
+	if(effect_id>=100)
+		effect_id -= 100;
+
+	Effect_By_ID(effect_id, sprite->x, sprite->y);
+
 	sprite->removed = false;
 	sprite->energy = sprite->prototype->energy;
-	Effect_Stars(ax, ay, sprite->prototype->color);
-	/*for (int r=1;r<6;r++)
-		Particles_New(PARTICLE_SPARK,ax+rand()%10-rand()%10, ay+rand()%10-rand()%10,0,0,rand()%100,0.1,32);*/
+	sprite->charging_timer = 0;
 }
 
 void SpriteOnDeath(SpriteClass* sprite){
@@ -1476,9 +1477,6 @@ void UpdateSprite(SpriteClass* sprite){
 }
 
 void UpdateBonusSprite(SpriteClass* sprite){
-
-	if(sprite->respawn_timer!=0) return;
-
 	sprite_width  = sprite->prototype->width;
 	sprite_height = sprite->prototype->height;
 
@@ -1570,8 +1568,8 @@ void UpdateBonusSprite(SpriteClass* sprite){
 		PK2BLOCK spritepalikka; 
 
 		for (SpriteClass* sprite2 : Game->spritesHandler.Sprites_List) {
-			if (sprite2 != sprite && !sprite2->removed && sprite->respawn_timer==0) {
-				if (sprite2->prototype->is_wall && sprite->prototype->check_tiles) {
+			if (sprite2 != sprite && !sprite2->removed) {
+				if (sprite2->prototype->is_wall && sprite->prototype->check_tiles && sprite2->energy>0) {
 					if (sprite->x-sprite_width/2 +sprite->a <= sprite2->x + sprite2->prototype->width /2 &&
 						sprite->x+sprite_width/2 +sprite->a >= sprite2->x - sprite2->prototype->width /2 &&
 						sprite->y-sprite_height/2+sprite->b <= sprite2->y + sprite2->prototype->height/2 &&

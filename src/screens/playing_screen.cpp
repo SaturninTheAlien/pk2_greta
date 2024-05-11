@@ -140,7 +140,7 @@ void PlayingScreen::Draw_InGame_Sprites() {
 		if (sprite->prototype->type == TYPE_BACKGROUND || sprite->prototype->type == TYPE_FOREGROUND)
 			continue;
 		
-		if (sprite->removed || sprite->respawn_timer>0)
+		if (sprite->removed)
 			continue;
 
 		if (Is_Sprite_Visible(sprite)) {
@@ -177,7 +177,7 @@ void PlayingScreen::Draw_InGame_Sprites() {
 				sprite->Animoi();
 
 			// Delete death body
-			if (sprite->energy < 1)
+			if (sprite->energy < 1 && sprite->respawn_timer==0)
 				sprite->removed = true;
 			
 		}

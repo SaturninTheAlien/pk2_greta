@@ -114,7 +114,10 @@ int SpriteClass::Animoi(){
 
 	return frame;
 }
-int SpriteClass::Draw(int kamera_x, int kamera_y){
+void SpriteClass::Draw(int kamera_x, int kamera_y){
+
+	if(this->respawn_timer>0 && this->prototype->destruction_effect<100)return;
+
 	// Tehdaan apumuuttujia
 	int	l = (int)prototype->picture_frame_width/2,//width
 		h = (int)prototype->picture_frame_height/2,
@@ -151,8 +154,6 @@ int SpriteClass::Draw(int kamera_x, int kamera_y){
 			PDraw::image_clip(prototype->frames[frame], x-l-1, y-h);
 		}	
 	}
-
-	return 0;
 }
 
 void SpriteClass::HandleEffects() {

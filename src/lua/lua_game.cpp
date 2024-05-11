@@ -73,8 +73,7 @@ void ForEachCreature(sol::object o){
         for(SpriteClass*sprite: Game->spritesHandler.Sprites_List){
             if(sprite->energy > 0
             && sprite->prototype->type == TYPE_GAME_CHARACTER
-            && !sprite->removed
-            && sprite->respawn_timer==0){
+            && !sprite->removed){
 
                 sol::protected_function_result res = func(sprite);
                 if(!res.valid()){
@@ -94,7 +93,7 @@ void ForEachSprite(sol::object o){
         sol::protected_function func = o;
 
         for(SpriteClass*sprite: Game->spritesHandler.Sprites_List){
-            if(!sprite->removed && sprite->respawn_timer==0){
+            if(!sprite->removed){
 
                 sol::protected_function_result res = func(sprite);
                 if(!res.valid()){
