@@ -42,6 +42,7 @@ enum AI_TRIGGER{
 namespace AI_Functions{
     extern SpriteClass* player;
     extern SpriteClass* player_invisible;
+    void DisplayInfo(SpriteClass* sprite);
 }
 
 namespace SpriteAI{

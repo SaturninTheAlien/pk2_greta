@@ -55,15 +55,13 @@ SpriteClass::SpriteClass(PrototypeClass *prototype, bool player, double x, doubl
 
 SpriteClass::~SpriteClass() {}
 
-int SpriteClass::Animaatio(int anim_i, bool reset){
+void SpriteClass::SetAnimation(int anim_i, bool reset){
 	if (anim_i != animation_index){
 		if (reset)
 			current_sequence = 0;
 
 		animation_index = anim_i;
 	}
-
-	return 0;
 }
 int SpriteClass::Animoi(){
 
@@ -132,18 +130,26 @@ int SpriteClass::Draw(int kamera_x, int kamera_y){
 	
 	if (flip_x) {
 		
-		if(this->invisible_timer)
-			PDraw::image_cliptransparent(prototype->frames_mirror[frame], x-l-1, y-h, 40, COLOR_GRAY);
-		else
+		if(this->invisible_timer){
+			if(this->player || !this->enemy){
+				PDraw::image_cliptransparent(prototype->frames_mirror[frame], x-l-1, y-h, 40, COLOR_GRAY);
+			}
+		}			
+		else{
 			PDraw::image_clip(prototype->frames_mirror[frame], x-l-1, y-h);
+		}
+			
 
 	} else {
 
-		if(this->invisible_timer)
-			PDraw::image_cliptransparent(prototype->frames[frame], x-l-1, y-h, 40, COLOR_GRAY);
-		else
+		if(this->invisible_timer){
+			if(this->player || !this->enemy){
+				PDraw::image_cliptransparent(prototype->frames[frame], x-l-1, y-h, 40, COLOR_GRAY);
+			}
+		}
+		else{
 			PDraw::image_clip(prototype->frames[frame], x-l-1, y-h);
-	
+		}	
 	}
 
 	return 0;
@@ -253,7 +259,7 @@ void SpriteClass::Animation_Basic(){
 	}
 
 	if (uusi_animaatio != -1)
-		Animaatio(uusi_animaatio,alusta);
+		SetAnimation(uusi_animaatio,alusta);
 
 }
 void SpriteClass::Animation_Rooster(){
@@ -327,14 +333,14 @@ void SpriteClass::Animation_Rooster(){
 	}
 
 	if (uusi_animaatio != -1)
-		Animaatio(uusi_animaatio,alusta);
+		SetAnimation(uusi_animaatio,alusta);
 }
 
 void SpriteClass::Animation_Bonus() {
-	Animaatio(ANIMATION_IDLE, true);
+	SetAnimation(ANIMATION_IDLE, true);
 }
 void SpriteClass::Animation_Projectile() {
-	Animaatio(ANIMATION_IDLE, true);
+	SetAnimation(ANIMATION_IDLE, true);
 }
 
 void SpriteClass::Animation_Egg() {
@@ -345,7 +351,7 @@ void SpriteClass::Animation_Egg() {
 	if (energy < prototype->energy)
 		uusi_animaatio = ANIMATION_DEATH;
 	
-	Animaatio(uusi_animaatio, alusta);
+	SetAnimation(uusi_animaatio, alusta);
 }
 
 bool SpriteClass::TransformTo(PrototypeClass * transformation){

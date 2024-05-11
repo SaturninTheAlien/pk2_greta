@@ -502,11 +502,12 @@ void PotionTransformation(SpriteClass* sprite, PrototypeClass* intended_prototyp
 		sprite->swimming = false;
 		sprite->max_speed_available = false;
 		sprite->can_collect_bonuses = sprite->player;
-		
-		int infotext = Episode->infos.Search_Id("pekka transformed");
-		if (infotext != -1)
-			Game->Show_Info(Episode->infos.Get_Text(infotext));
-		//Game->Show_Info("pekka has been transformed!");
+
+		if(sprite==Game->spritesHandler.Player_Sprite){
+			int infotext = Episode->infos.Search_Id("pekka transformed");
+			if (infotext != -1)
+				Game->Show_Info(Episode->infos.Get_Text(infotext));
+		}
 
 		for(const SpriteAI::AI_Class& ai: sprite->prototype->AI_f){
 			if(ai.trigger == AI_TRIGGER_TRANSFORMATION){
@@ -540,6 +541,8 @@ void BonusSpriteCollected(SpriteClass* sprite, SpriteClass* collector){
 
 	if (!sprite->prototype->indestructible)
 	{
+		bool showed_info = false;
+
 		collector->energy -= sprite->prototype->damage;
 		int destruction_effect = sprite->prototype->destruction_effect;
 
@@ -601,7 +604,13 @@ void BonusSpriteCollected(SpriteClass* sprite, SpriteClass* collector){
 				
 				Fadetext_New(fontti1,os.str(),(int)sprite->x-15,(int)sprite->y-8,100);
 			}
-			break;			
+			break;
+			case AI_INFO_IF_BONUS_COLLECTED:{
+				showed_info = true;
+				AI_Functions::DisplayInfo(sprite);
+			}
+			break;
+
 			default:
 				break;
 			}
@@ -617,24 +626,32 @@ void BonusSpriteCollected(SpriteClass* sprite, SpriteClass* collector){
 			PotionTransformation(collector, sprite->prototype->transformation);
 		}
 
-		if (sprite->prototype->ammo1 != nullptr){
-			collector->ammo1 = sprite->prototype->ammo1;
-
-			int infotext = Episode->infos.Search_Id("new egg attack");
-			if (infotext != -1)
-				Game->Show_Info(Episode->infos.Get_Text(infotext));
-			else
-				Game->Show_Info(tekstit->Get_Text(PK_txt.game_newegg));
-		}
-
 		if (sprite->prototype->ammo2 != nullptr){
 			collector->ammo2 = sprite->prototype->ammo2;
 
-			int infotext = Episode->infos.Search_Id("new doodle attack");
-			if (infotext != -1)
-				Game->Show_Info(Episode->infos.Get_Text(infotext));
-			else
-				Game->Show_Info(tekstit->Get_Text(PK_txt.game_newdoodle));
+			if(!showed_info && collector == Game->spritesHandler.Player_Sprite){
+				showed_info = true;
+
+				int infotext = Episode->infos.Search_Id("new doodle attack");
+				if (infotext != -1)
+					Game->Show_Info(Episode->infos.Get_Text(infotext));
+				else
+					Game->Show_Info(tekstit->Get_Text(PK_txt.game_newdoodle));
+			}
+		}
+
+		if (sprite->prototype->ammo1 != nullptr){
+			collector->ammo1 = sprite->prototype->ammo1;
+
+			if(!showed_info && collector == Game->spritesHandler.Player_Sprite){
+				showed_info = true;
+
+				int infotext = Episode->infos.Search_Id("new egg attack");
+				if (infotext != -1)
+					Game->Show_Info(Episode->infos.Get_Text(infotext));
+				else
+					Game->Show_Info(tekstit->Get_Text(PK_txt.game_newegg));
+			}
 		}
 
 		Play_GameSFX(sprite->prototype->sounds[SOUND_DESTRUCTION],100, (int)sprite->x, (int)sprite->y,
@@ -1362,9 +1379,35 @@ void UpdateSprite(SpriteClass* sprite){
 	/* Attacks 1 and 2                                                                       */
 	/*****************************************************************************************/
 
+	/**
+	 * @brief 
+	 * Some old projectile spri
+	 */
 
+	if(sprite->self_destruction && sprite->prototype->legacy_projectile){
+
+		if(sprite->ammo1!=nullptr){
+			Play_GameSFX(sprite->prototype->sounds[SOUND_ATTACK1],100, (int)sprite->x, (int)sprite->y,
+						  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
+			
+			Game->spritesHandler.addProjectileSprite(sprite->ammo1,sprite->x, sprite->y, sprite);
+			SpriteOnDeath(sprite);
+		}
+		if(sprite->ammo2!=nullptr){
+			Play_GameSFX(sprite->prototype->sounds[SOUND_ATTACK2],100, (int)sprite->x, (int)sprite->y,
+						  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
+			
+			Game->spritesHandler.addProjectileSprite(sprite->ammo2,sprite->x, sprite->y, sprite);
+			SpriteOnDeath(sprite);
+		}
+	}
+
+	/**
+	 * @brief 
+	 * Normal attack1, attack2
+	 */
 	// If the sprite is ready and isn't crouching
-	if (sprite->charging_timer == 0  && !sprite->crouched ) {
+	else if (sprite->charging_timer == 0  && !sprite->crouched ) {
 		// the attack has just started
 		if (sprite->attack1_timer == sprite->prototype->attack1_time) {
 
@@ -1421,29 +1464,6 @@ void UpdateSprite(SpriteClass* sprite){
 		//						  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 
 			}
-		}
-	}
-
-	/**
-	 * @brief 
-	 * Some old projectile spri
-	 */
-
-	if(sprite->self_destruction && sprite->prototype->legacy_projectile){
-
-		if(sprite->ammo1!=nullptr){
-			Play_GameSFX(sprite->prototype->sounds[SOUND_ATTACK1],100, (int)sprite->x, (int)sprite->y,
-						  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
-			
-			Game->spritesHandler.addProjectileSprite(sprite->ammo1,sprite->x, sprite->y, sprite);
-			SpriteOnDeath(sprite);
-		}
-		if(sprite->ammo2!=nullptr){
-			Play_GameSFX(sprite->prototype->sounds[SOUND_ATTACK2],100, (int)sprite->x, (int)sprite->y,
-						  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
-			
-			Game->spritesHandler.addProjectileSprite(sprite->ammo2,sprite->x, sprite->y, sprite);
-			SpriteOnDeath(sprite);
 		}
 	}
 

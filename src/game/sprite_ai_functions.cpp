@@ -681,7 +681,7 @@ void Self_Transformation(SpriteClass* s){
 
 			s->charging_timer = 0;
 			s->animation_index = -1;
-			s->Animaatio(ANIMATION_IDLE,true);
+			s->SetAnimation(ANIMATION_IDLE,true);
 		}
 	}
 }
@@ -699,7 +699,7 @@ void Self_Transformation_Random_Prototype(SpriteClass* s){
 			if(s->TransformTo(transformation)){
 				s->charging_timer = 0;
 				s->animation_index = -1;
-				s->Animaatio(ANIMATION_IDLE,true);
+				s->SetAnimation(ANIMATION_IDLE,true);
 			}
 		}
 	}
@@ -709,7 +709,7 @@ void Self_Transformation_Random_Prototype(SpriteClass* s){
 		if(s->TransformTo(transformation)){
 			s->charging_timer = 0;
 			s->animation_index = -1;
-			s->Animaatio(ANIMATION_IDLE,true);
+			s->SetAnimation(ANIMATION_IDLE,true);
 		}
 
 	}

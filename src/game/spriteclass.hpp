@@ -102,7 +102,7 @@ public:
     ~SpriteClass();
 
     int  Draw(int camera_x, int camera_y);   // animate and draw the sprite
-    int  Animaatio(int anim_i, bool nollaus);  // set sprite animation
+    void  SetAnimation(int anim_i, bool reset);  // set sprite animation
     int  Animoi();                             // animate the sprite
     void HandleEffects();                      // create sprite effects
     bool HasAI(int AI)const{
