@@ -102,7 +102,7 @@ int SpriteClass::Animoi(){
 			current_sequence++;
 		// If not and the animation is set to loop, the animation is started from the beginning.
 		else if(anim.loop) {
-			current_sequence = 0;
+			current_sequence = anim.intro;//0;
 		}
 	}
 

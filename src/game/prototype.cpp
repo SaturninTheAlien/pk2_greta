@@ -34,12 +34,23 @@ UnsupportedSpriteVersionException::UnsupportedSpriteVersionException(const std::
 
 void to_json(nlohmann::json& j, const SpriteAnimation& a){
 	j["loop"] = a.loop;
-	j["sequence"] = a.sequence; 
+	j["sequence"] = a.sequence;
+
+	if(a.intro > 0){
+		j["intro"] = a.intro;
+	}
 }
 
 void from_json(const nlohmann::json&j, SpriteAnimation& a){
 	a.loop = j["loop"].get<bool>();
 	a.sequence = j["sequence"].get<std::vector<int>>();
+
+	if(j.contains("intro")){
+		a.intro = j["intro"].get<unsigned int>();
+		if(a.intro >= a.sequence.size()){
+			a.intro = 0;
+		}
+	}
 }
 
 /**

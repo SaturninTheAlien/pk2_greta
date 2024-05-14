@@ -32,6 +32,8 @@ public:
     SpriteAnimation(){};
     SpriteAnimation(const LegacySprAnimation& anim);
     bool loop = false;
+    u32 intro = 0;
+
     std::vector<int> sequence;
 
     friend void to_json(nlohmann::json& j, const SpriteAnimation& a);
