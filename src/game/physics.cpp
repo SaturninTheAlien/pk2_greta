@@ -43,7 +43,6 @@ static PK2BLOCK Block_Get(u32 x, u32 y) {
 	if (x >= PK2MAP_MAP_WIDTH || y >= PK2MAP_MAP_HEIGHT) {
 		
 		block.id  = 255;
-		block.permeable = true;
 		block.left  = x*32;
 		block.right  = x*32 + 32;
 		block.top    = y*32;
@@ -73,7 +72,6 @@ static PK2BLOCK Block_Get(u32 x, u32 y) {
 	} else { //If it is sky - Need to reset
 	
 		block.id  = 255;
-		block.permeable = true;
 		block.left  = x*32;
 		block.right  = x*32 + 32;
 		block.top    = y*32;
@@ -1026,8 +1024,6 @@ void UpdateSprite(SpriteClass* sprite){
 
 					spritepalikka.water  = false;
 
-					spritepalikka.permeable = false;
-
 					spritepalikka.right_side   = BLOCK_WALL;
 					spritepalikka.left_side = BLOCK_WALL;
 					spritepalikka.top_side       = BLOCK_WALL;
@@ -1597,8 +1593,6 @@ void UpdateBonusSprite(SpriteClass* sprite){
 
 
 						spritepalikka.water  = false;
-
-						spritepalikka.permeable = false;
 
 						// Bonus accepts just walls?
 						/*spritepalikka.right_side   = BLOCK_WALL;

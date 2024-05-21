@@ -94,7 +94,6 @@ enum BLOCKS {
 struct PK2BLOCK {
 
 	u8   id;
-	bool permeable;
 	u8   left_side, right_side, top_side, bottom_side;
 	int  left, right, top, bottom;
 	bool water;
@@ -103,12 +102,8 @@ struct PK2BLOCK {
 };
 
 struct PK2BLOCKMASK {
-
 	int ylos[32];
 	int alas[32];
-	int vasemmalle[32];
-	int oikealle[32];
-
 };
 
 class LevelClass {

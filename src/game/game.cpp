@@ -245,8 +245,6 @@ int GameClass::Calculate_Tiles() {
 		palikka.id  = i;
 
 		if ((i < 80 || i > 139) && i != 255){
-			palikka.permeable = false;
-
 			palikka.right_side	= BLOCK_WALL;
 			palikka.left_side	= BLOCK_WALL;
 			palikka.top_side		= BLOCK_WALL;
@@ -291,8 +289,6 @@ int GameClass::Calculate_Tiles() {
 			}
 		}
 		else{
-			palikka.permeable = true;
-
 			palikka.right_side	= BLOCK_BACKGROUND;
 			palikka.left_side	= BLOCK_BACKGROUND;
 			palikka.top_side		= BLOCK_BACKGROUND;
