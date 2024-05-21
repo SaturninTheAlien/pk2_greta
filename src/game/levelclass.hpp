@@ -7,6 +7,7 @@
 #include "engine/platform.hpp"
 #include "engine/PFile.hpp"
 
+#include "tileset.hpp"
 #include <vector>
 #include <string>
 
@@ -154,11 +155,11 @@ class LevelClass {
     std::vector<std::string> sprite_prototype_names;
     bool     edges [PK2MAP_MAP_SIZE] = {false};            // map edges - calculated during game
 
-    int      tiles_buffer      = -1;                        // index of block palette
-    int      bg_tiles_buffer   = -1;
+    //int      tiles_buffer      = -1;                        // index of block palette
+    //int      bg_tiles_buffer   = -1;
     int      background_buffer = -1;                        // index of bg image
-    int      water_buffer      = -1;                        // index of water palette
-    int      bg_water_buffer   = -1;
+    //int      water_buffer      = -1;                        // index of water palette
+    //int      bg_water_buffer   = -1;
 
     int      icon_x = 0;                                         // map icon x pos
 	int      icon_y = 0;                                         // map icon x pos
@@ -178,6 +179,9 @@ class LevelClass {
     int     fire_color_2 = 128; //orange
 
     std::string lua_script = "main.lua";                        // lua script
+
+
+    Tileset tileset1;   //tilset
 
 
     /* Metodit --------------------------*/
@@ -208,15 +212,18 @@ private:
 
 
     int Load_BG(PFile::Path path);
-    void Load_TilesImage(PFile::Path path);
+
+    //void LoadTilset(const std::string & name);
+
+    //void Load_TilesImage(PFile::Path path);
     //int Load_BGSfx(PFile::Path path);
 
-    static int CalculateSplashColor(int tiles);
+    /*static int CalculateSplashColor(int tiles);
 
     void Animate_Fire(int tiles);
     void Animate_Waterfall(int tiles);
     void Animate_RollUp(int tiles);
     void Animate_WaterSurface(int tiles);
-    void Animate_Water(int tiles, int water_tiles);
+    void Animate_Water(int tiles, int water_tiles);*/
     
 };

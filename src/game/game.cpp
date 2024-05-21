@@ -132,7 +132,7 @@ int GameClass::Calculete_TileMasks() {
 	int x, y;
 	u8 color;
 
-	PDraw::drawimage_start(level.tiles_buffer, buffer, width);
+	PDraw::drawimage_start(level.tileset1.getImage(), buffer, width);
 	for (int mask=0; mask<BLOCK_MAX_MASKS; mask++){
 		for (x=0; x<32; x++){
 			y=0;
@@ -150,43 +150,11 @@ int GameClass::Calculete_TileMasks() {
 			block_masks[mask].ylos[x] = 31-y;
 		}
 	}
-	PDraw::drawimage_end(level.tiles_buffer);
+	PDraw::drawimage_end(level.tileset1.getImage());
 
 	return 0;
 }
 
-//PK2KARTTA::Clean_TileBuffer()
-int GameClass::Clean_TileBuffer() {
-
-	u8 *buffer = NULL;
-	u32 width;
-	int x,y;
-
-	int w, h;
-	PDraw::image_getsize(level.tiles_buffer, w, h);
-
-	PDraw::drawimage_start(level.tiles_buffer, buffer, width);
-	for (y = 0; y < h; y++)
-		for(x = 0; x < w; x++)
-			if (buffer[x+y*width] == 254)
-				buffer[x+y*width] = 255;
-	PDraw::drawimage_end(level.tiles_buffer);
-
-	if (level.bg_tiles_buffer < 0)
-			return 0;
-	
-	// Clan bg buffer
-	PDraw::image_getsize(level.bg_tiles_buffer, w, h);
-
-	PDraw::drawimage_start(level.bg_tiles_buffer, buffer, width);
-	for (y = 0; y < h; y++)
-		for(x = 0; x < w; x++)
-			if (buffer[x+y*width] == 254)
-				buffer[x+y*width] = 255;
-	PDraw::drawimage_end(level.bg_tiles_buffer);
-
-	return 0;
-}
 
 // This moves the collisions of the blocks palette
 int GameClass::Move_Blocks() {
@@ -374,9 +342,6 @@ int GameClass::Open_Map() {
 		level.button3_time = SWITCH_INITIAL_VALUE;
 	}
 
-	/*if (strcmp(level.version,"1.2") == 0 || strcmp(level.version,"1.3") == 0)
-		if (Level_Prototypes_LoadAll() == 1)
-			return 1;*/
 
 	spritesHandler.loadAllLevelPrototypes(this->level);
 
@@ -384,8 +349,7 @@ int GameClass::Open_Map() {
 
 	Calculete_TileMasks();
 
-	if (Clean_TileBuffer() == 1)
-		return 1;
+	this->level.tileset1.make254Transparent();
 
 	Place_Sprites();
 
@@ -393,9 +357,6 @@ int GameClass::Open_Map() {
 		PLog::Write(PLog::DEBUG, "PK2", "Chick mode on");
 	
 	this->keys = Count_Keys();
-
-	//spritesHandler.onGameStart();
-	//Sprites_On_Game_Start();
 
 	Particles_Clear();
 	Particles_LoadBG(&level);

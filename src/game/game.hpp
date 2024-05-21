@@ -103,8 +103,7 @@ class GameClass {
 		bool started = false;
 		
 		int Calculete_TileMasks();
-		int Clean_TileBuffer();
-
+		
 		int Calculate_Tiles();
 		int Open_Map();
 
