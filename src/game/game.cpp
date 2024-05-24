@@ -232,75 +232,75 @@ int GameClass::Move_Blocks() {
 
 int GameClass::Calculate_Tiles() {
 	
-	PK2BLOCK palikka;
+	PK2BLOCK block;
 
 	for (int i=0;i<150;i++){
-		palikka = this->block_types[i];
+		block = this->block_types[i];
 
-		palikka.left  = 0;
-		palikka.right  = 0;//32
-		palikka.top	   = 0;
-		palikka.bottom    = 0;//32
+		block.left  = 0;
+		block.right  = 0;//32
+		block.top	   = 0;
+		block.bottom    = 0;//32
 
-		palikka.id  = i;
+		block.id  = i;
 
 		if ((i < 80 || i > 139) && i != 255){
-			palikka.right_side	= BLOCK_WALL;
-			palikka.left_side	= BLOCK_WALL;
-			palikka.top_side		= BLOCK_WALL;
-			palikka.bottom_side		= BLOCK_WALL;
+			block.right_side	= BLOCK_WALL;
+			block.left_side	= BLOCK_WALL;
+			block.top_side		= BLOCK_WALL;
+			block.bottom_side		= BLOCK_WALL;
 
 			// Erikoislattiat
 
 			if (i > 139){
-				palikka.right_side	= BLOCK_BACKGROUND;
-				palikka.left_side	= BLOCK_BACKGROUND;
-				palikka.top_side		= BLOCK_BACKGROUND;
-				palikka.bottom_side		= BLOCK_BACKGROUND;
+				block.right_side	= BLOCK_BACKGROUND;
+				block.left_side	= BLOCK_BACKGROUND;
+				block.top_side		= BLOCK_BACKGROUND;
+				block.bottom_side		= BLOCK_BACKGROUND;
 			}
 
 			// L�pik�velt�v� lattia
 
 			if (i == BLOCK_BARRIER_DOWN){
-				palikka.right_side	= BLOCK_BACKGROUND;
-				palikka.top_side		= BLOCK_BACKGROUND;
-				palikka.bottom_side		= BLOCK_WALL;
-				palikka.left_side	= BLOCK_BACKGROUND;
-				palikka.bottom -= 27;
+				block.right_side	= BLOCK_BACKGROUND;
+				block.top_side		= BLOCK_BACKGROUND;
+				block.bottom_side		= BLOCK_WALL;
+				block.left_side	= BLOCK_BACKGROUND;
+				block.bottom -= 27;
 			}
 
 			// M�et
 
 			if (i > 49 && i < 60){
-				palikka.right_side	= BLOCK_BACKGROUND;
-				palikka.top_side		= BLOCK_WALL;
-				palikka.bottom_side		= BLOCK_WALL;
-				palikka.left_side	= BLOCK_BACKGROUND;
-				palikka.bottom += 1;
+				block.right_side	= BLOCK_BACKGROUND;
+				block.top_side		= BLOCK_WALL;
+				block.bottom_side		= BLOCK_WALL;
+				block.left_side	= BLOCK_BACKGROUND;
+				block.bottom += 1;
 			}
 
 			// Kytkimet
 
 			if (i >= BLOCK_BUTTON1 && i <= BLOCK_BUTTON3){
-				palikka.right_side	= BLOCK_WALL;
-				palikka.top_side		= BLOCK_WALL;
-				palikka.bottom_side		= BLOCK_WALL;
-				palikka.left_side	= BLOCK_WALL;
+				block.right_side	= BLOCK_WALL;
+				block.top_side		= BLOCK_WALL;
+				block.bottom_side		= BLOCK_WALL;
+				block.left_side	= BLOCK_WALL;
 			}
 		}
 		else{
-			palikka.right_side	= BLOCK_BACKGROUND;
-			palikka.left_side	= BLOCK_BACKGROUND;
-			palikka.top_side		= BLOCK_BACKGROUND;
-			palikka.bottom_side		= BLOCK_BACKGROUND;
+			block.right_side	= BLOCK_BACKGROUND;
+			block.left_side	= BLOCK_BACKGROUND;
+			block.top_side		= BLOCK_BACKGROUND;
+			block.bottom_side		= BLOCK_BACKGROUND;
 		}
 
 		if (i > 131 && i < 140)
-			palikka.water = true;
+			block.water = true;
 		else
-			palikka.water = false;
+			block.water = false;
 
-		this->block_types[i] = palikka;
+		this->block_types[i] = block;
 	}
 
 	Move_Blocks();
@@ -538,11 +538,11 @@ void GameClass::Open_Locks() {
 	for (u32 x = 0; x < PK2MAP_MAP_WIDTH; x++)
 		for (u32 y = 0; y < PK2MAP_MAP_HEIGHT; y++){
 			
-			u8 palikka = level.foreground_tiles[x+y*PK2MAP_MAP_WIDTH];
+			u8 block = level.foreground_tiles[x+y*PK2MAP_MAP_WIDTH];
 			
-			if (palikka == BLOCK_LOCK){
+			if (block == BLOCK_LOCK){
 				level.foreground_tiles[x+y*PK2MAP_MAP_WIDTH] = 255;
-				Effect_SmokeClouds(x*32+6,y*32+6);
+				Effect_SmokeClouds(x*32+24,y*32+6);
 			}
 		}
 
