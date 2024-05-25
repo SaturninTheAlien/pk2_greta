@@ -49,6 +49,12 @@ enum {
 
 };
 
+enum{
+    GAME_MODE_STANDARD = 0,
+    GAME_MODE_KILL_ALL,
+    GAME_MODE_CHICK
+};
+
 class LevelClass {
 	private:
 
@@ -60,12 +66,13 @@ class LevelClass {
 	u32 button3_timer  = 0;  // button 3 timer
 
     public:
-
     /* Atributs ------------------------*/
 
     char     version[5]       = PK2MAP_LAST_VERSION;         // map version. eg "1.3"
 
     std::string tileset_name = "blox.bmp";                  // path of block palette .bmp
+    std::string tileset_bg_name = "";                       // optional different tileset for the background layer
+
     std::string background_name = "default.bmp";            // path of map bg .bmp
     std::string music_name = "default.xm";                  // path of map music*/           
 
@@ -87,17 +94,10 @@ class LevelClass {
     u8       background_tiles[PK2MAP_MAP_SIZE] = {255};              // map bg tiles 256*224
     u8       foreground_tiles[PK2MAP_MAP_SIZE] = {255};              // map fg tiles 256*224
     u8       sprite_tiles[PK2MAP_MAP_SIZE] = {255};              // map sprites 256*224
-    
-    
-    //char     sprite_filenames[PK2MAP_MAP_MAX_PROTOTYPES][13] = {""}; // map prototype list .spr
-    std::vector<std::string> sprite_prototype_names;
+     
+    std::vector<std::string> sprite_prototype_names;        // map prototype list .spr
     bool     edges [PK2MAP_MAP_SIZE] = {false};            // map edges - calculated during game
-
-    //int      tiles_buffer      = -1;                        // index of block palette
-    //int      bg_tiles_buffer   = -1;
     int      background_buffer = -1;                        // index of bg image
-    //int      water_buffer      = -1;                        // index of water palette
-    //int      bg_water_buffer   = -1;
 
     int      icon_x = 0;                                         // map icon x pos
 	int      icon_y = 0;                                         // map icon x pos
@@ -117,21 +117,23 @@ class LevelClass {
     int     fire_color_2 = 128; //orange
 
     std::string lua_script = "main.lua";                        // lua script
+    int game_mode = 0;                                          // game mode
 
 
-    Tileset tileset1;   //tilset
+    Tileset tileset1; //tilset
+    Tileset tileset2; //optional tileset for background
     std::array<PK2BLOCK, TILESET_SIZE> block_types;
     
     /* Metodit --------------------------*/
 
-    LevelClass();                                             // Oletusmuodostin
-    ~LevelClass();                                            // Hajoitin
+    LevelClass(); 
+    ~LevelClass();
 
-    void Load(PFile::Path path);                             // Load kartta
-    void Load_Plain_Data(PFile::Path path, bool headerOnly);                  // Load kartta ilman grafiikoita
+    void Load(PFile::Path path);
+    void Load_Plain_Data(PFile::Path path, bool headerOnly);
 
-    int DrawBackgroundTiles(int kamera_x, int kamera_y);
-    int DrawForegroundTiles(int kamera_x, int kamera_y);
+    void DrawBackgroundTiles(int kamera_x, int kamera_y);
+    void DrawForegroundTiles(int kamera_x, int kamera_y);
 
     void SetTilesAnimations(int degree, int anim, u32 aika1, u32 aika2, u32 aika3);
 

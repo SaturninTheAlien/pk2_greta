@@ -2,6 +2,7 @@
 //Pekka Kana 2
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
+#include <sstream>
 #include "tileset.hpp"
 #include "engine/PDraw.hpp"
 #include "engine/PFile.hpp"
@@ -27,6 +28,16 @@ void Tileset::loadImage(PFile::Path path){
 	if(this->tiles==-1){
 		throw PExcept::PException("Unable to load tileset image!");
 	}
+
+	int w=0, h=0;
+	PDraw::image_getsize(this->tiles, w, h);
+
+	if(w!=320 || (h!=480 && h!= 608)){
+		std::ostringstream os;
+		os<<"Incorrect tileset size: "<<w<<" x "<<h;
+		throw PExcept::PException(os.str());
+	}
+
 
 	this->water_tiles = PDraw::image_cut(this->tiles,0,416,320,32);
 	this->calculateBlockMasks();

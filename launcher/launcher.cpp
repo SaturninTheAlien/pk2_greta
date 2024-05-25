@@ -13,6 +13,7 @@ int main(int argc, char **argv) {
 	bool dev_mode = false;
 	bool show_fps = false;
 	bool converting_sprite = false;
+	bool converting_level_with_bg_tiles = false;
 	bool updating_sprites = false;
 
 	std::string filename_in;
@@ -60,18 +61,23 @@ int main(int argc, char **argv) {
 				PUtils::Force_Mobile();
 			}*/
 			else if	(arg=="--convert"){
-				printf("Converting sprite\n");
 				filename_in = "";
 				filename_out = "";
 				state=3;
 				converting_sprite = true;
 			}
 			else if (arg=="--update-sprites"){
-				printf("Updating sprites\n");
 				filename_in = ".";
 				filename_out = "";
 				state=5;
 				updating_sprites = true;
+			}
+			else if(arg=="--convert-bg"){
+				converting_level_with_bg_tiles = true;
+				filename_in = "";
+				filename_out = "";
+				state=3;
+				converting_sprite = true;
 			}
 			else {
 				printf("Invalid arg\n");
@@ -120,7 +126,7 @@ int main(int argc, char **argv) {
 		pk2_updateSprites(filename_in);
 	}
 	else if(converting_sprite){
-		pk2_convertToNewFormat(filename_in, filename_out);
+		pk2_convertToNewFormat(filename_in, filename_out, converting_level_with_bg_tiles);
 	}
 	else{
 		pk2_main(dev_mode, show_fps, test_level, test_path);

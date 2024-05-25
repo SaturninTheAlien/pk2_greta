@@ -189,13 +189,21 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 		/* Examine if block is the exit                                       */
 		/**********************************************************************/
 		if (block.id == BLOCK_EXIT && sprite->energy>0) {
-			if(Game->chick_mode){
+
+			switch (Game->level.game_mode)
+			{
+			case GAME_MODE_STANDARD:
+				if(sprite == Game->spritesHandler.Player_Sprite){
+					Game->Finish();
+				}
+				break;
+			case GAME_MODE_CHICK:
 				if(sprite->HasAI(AI_CHICK)){
 					Game->Finish();
 				}
-			}
-			else if(sprite->player){
-				Game->Finish();
+				break;
+			default:
+				break;
 			}
 		}
 	}

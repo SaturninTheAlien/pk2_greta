@@ -161,9 +161,6 @@ int GameClass::Open_Map() {
 	spritesHandler.prototypesHandler.loadSpriteAssets();
 
 	Place_Sprites();
-
-	if (this->chick_mode)
-		PLog::Write(PLog::DEBUG, "PK2", "Chick mode on");
 	
 	this->keys = Count_Keys();
 
@@ -221,8 +218,8 @@ void GameClass::Place_Sprites() {
 				if (protot->big_apple)
 				this->apples_count++;
 
-				if (protot->HasAI(AI_CHICK) || protot->HasAI(AI_CHICKBOX))
-					this->chick_mode = true;
+				/*if (protot->HasAI(AI_CHICK) || protot->HasAI(AI_CHICKBOX))
+					this->chick_mode = true;*/
 
 				this->spritesHandler.addLevelSprite(protot, x*32, y*32 - protot->height+32);
 				//this->spritesHandler.addSprite(protot, 0, x*32, y*32 - protot->height+32, nullptr, false);

@@ -29,8 +29,6 @@ class GameClass {
 		bool level_clear = false;
 		bool repeating = false;
 
-		bool chick_mode = false;
-
 		u32 exit_timer = 0;
 
 		int  timeout = 0; //timeout in frames

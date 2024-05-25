@@ -52,6 +52,12 @@ void LevelClass::Load(PFile::Path path){
 
 	}
 
+	this->tileset2.clear();
+	if(!this->tileset_bg_name.empty()){
+		path.SetFile(this->tileset_bg_name);
+		this->tileset2.loadImage(path);
+	}
+
 
 	path.SetFile(this->background_name);
 	this->Load_BG(path);
@@ -308,6 +314,7 @@ void LevelClass::LoadVersion15(PFile::Path path, bool headerOnly){
 		jsonReadU32(j, "compression", compression);
 
 		jsonReadString(j, "tileset", this->tileset_name);
+		jsonReadString(j, "tileset_bg", this->tileset_bg_name);
 		jsonReadString(j, "music", this->music_name);
 
 		jsonReadString(j, "background", this->background_name);
@@ -372,6 +379,7 @@ void LevelClass::SaveVersion15(PFile::Path path)const{
 		j["compression"] = TILES_COMPRESSION_NONE;
 
 		j["tileset"] = this->tileset_name;
+		j["tileset_bg"] = this->tileset_bg_name;
 		j["music"] = this->music_name;
 		j["background"] = this->background_name;
 		j["scrolling"] = this->background_scrolling;
@@ -599,7 +607,7 @@ void LevelClass::Calculate_Edges(){
 }
 
 
-int LevelClass::DrawBackgroundTiles(int kamera_x, int kamera_y){
+void LevelClass::DrawBackgroundTiles(int kamera_x, int kamera_y){
 	
 	int kartta_x = kamera_x/32;
 	int kartta_y = kamera_y/32;
@@ -626,15 +634,14 @@ int LevelClass::DrawBackgroundTiles(int kamera_x, int kamera_y){
 				if (block == BLOCK_ANIM1 || block == BLOCK_ANIM2 || block == BLOCK_ANIM3 || block == BLOCK_ANIM4)
 					px += block_animation_frame * 32;
 
-				PDraw::image_cutclip(this->tileset1.getImage(), x*32-(kamera_x%32), y*32-(kamera_y%32), px, py, px+32, py+32);
+				PDraw::image_cutclip(this->tileset2 ? this->tileset2.getImage() : this->tileset1.getImage(),	
+				x*32-(kamera_x%32), y*32-(kamera_y%32), px, py, px+32, py+32);
 			}
 		}
 	}
-
-	return 0;
 }
 
-int LevelClass::DrawForegroundTiles(int kamera_x, int kamera_y){
+void LevelClass::DrawForegroundTiles(int kamera_x, int kamera_y){
 
 	int kartta_x = kamera_x / 32;
 	int kartta_y = kamera_y / 32;
@@ -738,20 +745,28 @@ int LevelClass::DrawForegroundTiles(int kamera_x, int kamera_y){
 	if (tiles_animation_timer%2 == 0)
 	{
 
-		tileset1.animateFire(this->button1_timer, this->fire_color_1, this->fire_color_2);
-		tileset1.animateWaterfall();
-		tileset1.animateWaterSurface();
-		tileset1.animateRollUp();
+		this->tileset1.animateFire(this->button1_timer, this->fire_color_1, this->fire_color_2);
+		this->tileset1.animateWaterfall();
+		this->tileset1.animateWaterSurface();
+		this->tileset1.animateRollUp();
 
-		if (tiles_animation_timer%4 == 0)
-		{
-			tileset1.animateWater(tiles_animation_timer);
+		if(this->tileset2){
+			this->tileset2.animateFire(this->button1_timer, this->fire_color_1, this->fire_color_2);
+			this->tileset2.animateWaterfall();
+			this->tileset2.animateWaterSurface();
+			this->tileset2.animateRollUp();
+		}
+
+		if (tiles_animation_timer%4 == 0){
+
+			this->tileset1.animateWater(this->tiles_animation_timer);
+			if(this->tileset2){
+				this->tileset2.animateWater(this->tiles_animation_timer);
+			}
 			PDraw::rotate_palette(224,239);
 		}
 
 	}
 
-	tiles_animation_timer = 1 + tiles_animation_timer % 320;
-
-	return 0;
+	this->tiles_animation_timer = 1 + this->tiles_animation_timer % 320;
 }

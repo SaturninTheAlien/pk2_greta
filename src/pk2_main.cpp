@@ -409,11 +409,17 @@ void convertToSpr2(const std::string& filename_in, const std::string& filename_o
 	}
 }
 
-void convertLevel(const std::string& filename_in, const std::string& filename_out){
+void convertLevel(const std::string& filename_in, const std::string& filename_out, bool bg_tiles){
 	try{
 		LevelClass level;
 		level.Load_Plain_Data(PFile::Path(filename_in), false);
 		printf("Converting level \"%s\" to the new experimental format.\n", level.name.c_str());
+
+		if(bg_tiles){
+			level.tileset_bg_name = level.tileset_name.substr(0, level.tileset_name.size() - 4) + "_bg.bmp";
+			printf("Waring, assuming _bg tileset: %s!\n", level.tileset_bg_name.c_str());
+		}
+
 		level.SaveVersion15(PFile::Path(filename_out));
 		printf("Done!\n");
 	}
@@ -422,7 +428,7 @@ void convertLevel(const std::string& filename_in, const std::string& filename_ou
 	}
 }
 
-bool pk2_convertToNewFormat(const std::string& filename_in, const std::string& filename_out){
+bool pk2_convertToNewFormat(const std::string& filename_in, const std::string& filename_out, bool bg_tiles){
 
 	PLog::Init(PLog::ALL, PFile::Path(data_path + "log.txt"));
 	if(filename_in.empty()){
@@ -467,7 +473,7 @@ bool pk2_convertToNewFormat(const std::string& filename_in, const std::string& f
 		else{
 			filename_out2 = filename_out;
 		}
-		convertLevel(filename_in, filename_out2);
+		convertLevel(filename_in, filename_out2, bg_tiles);
 		return true;
 	}
 
