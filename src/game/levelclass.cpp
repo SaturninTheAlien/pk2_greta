@@ -2,7 +2,6 @@
 //Pekka Kana 2
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
-#include <iostream>
 #include "levelclass.hpp"
 #include "exceptions.hpp"
 #include <sstream>
@@ -43,8 +42,6 @@ LevelClass::~LevelClass(){
 void LevelClass::Load(PFile::Path path){
 	this->Load_Plain_Data(path, false);
 
-	std::cout<<"A1"<<std::endl;
-
 	path.SetFile(this->tileset_name);
 
 	this->tileset1.clear();
@@ -56,14 +53,10 @@ void LevelClass::Load(PFile::Path path){
 	}
 
 
-	std::cout<<"A2"<<std::endl;
-
 	path.SetFile(this->background_name);
-	Load_BG(path);
-
-	Calculate_Edges();
-
-	std::cout<<"A3"<<std::endl;
+	this->Load_BG(path);
+	this->Calculate_Edges();
+	this->calculateBlockTypes();	
 }
 
 void LevelClass::Load_Plain_Data(PFile::Path path, bool headerOnly) {
@@ -413,6 +406,149 @@ int LevelClass::Load_BG(PFile::Path path){
 		return -2;
 
 	return 0;
+}
+
+
+void LevelClass::calculateBlockTypes(){
+	PK2BLOCK block;
+
+	for (int i=0;i<150;i++){
+		block = this->block_types[i];
+
+		block.left  = 0;
+		block.right  = 0;//32
+		block.top	   = 0;
+		block.bottom    = 0;//32
+
+		block.id  = i;
+
+		if ((i < 80 || i > 139) && i != 255){
+			block.right_side	= BLOCK_WALL;
+			block.left_side	= BLOCK_WALL;
+			block.top_side		= BLOCK_WALL;
+			block.bottom_side		= BLOCK_WALL;
+
+			// Erikoislattiat
+
+			if (i > 139){
+				block.right_side	= BLOCK_BACKGROUND;
+				block.left_side	= BLOCK_BACKGROUND;
+				block.top_side		= BLOCK_BACKGROUND;
+				block.bottom_side		= BLOCK_BACKGROUND;
+			}
+
+			// L�pik�velt�v� lattia
+
+			if (i == BLOCK_BARRIER_DOWN){
+				block.right_side	= BLOCK_BACKGROUND;
+				block.top_side		= BLOCK_BACKGROUND;
+				block.bottom_side		= BLOCK_WALL;
+				block.left_side	= BLOCK_BACKGROUND;
+				block.bottom -= 27;
+			}
+
+			// M�et
+
+			if (i > 49 && i < 60){
+				block.right_side	= BLOCK_BACKGROUND;
+				block.top_side		= BLOCK_WALL;
+				block.bottom_side		= BLOCK_WALL;
+				block.left_side	= BLOCK_BACKGROUND;
+				block.bottom += 1;
+			}
+
+			// Kytkimet
+
+			if (i >= BLOCK_BUTTON1 && i <= BLOCK_BUTTON3){
+				block.right_side	= BLOCK_WALL;
+				block.top_side		= BLOCK_WALL;
+				block.bottom_side		= BLOCK_WALL;
+				block.left_side	= BLOCK_WALL;
+			}
+		}
+		else{
+			block.right_side	= BLOCK_BACKGROUND;
+			block.left_side	= BLOCK_BACKGROUND;
+			block.top_side		= BLOCK_BACKGROUND;
+			block.bottom_side		= BLOCK_BACKGROUND;
+		}
+
+		if (i > 131 && i < 140)
+			block.water = true;
+		else
+			block.water = false;
+
+		this->block_types[i] = block;
+	}
+}
+
+void LevelClass::moveBlocks(u32 button1, u32 button2, u32 button3){
+	this->block_types[BLOCK_LIFT_HORI].left = (int)cos_table(degree);
+	this->block_types[BLOCK_LIFT_HORI].right = (int)cos_table(degree);
+
+	this->block_types[BLOCK_LIFT_VERT].bottom = (int)sin_table(degree);
+	this->block_types[BLOCK_LIFT_VERT].top = (int)sin_table(degree);
+
+	int kytkin1_y = 0,
+		kytkin2_y = 0,
+		kytkin3_x = 0;
+
+	if (button1 > 0) {
+		kytkin1_y = 64;
+
+		if (button1 < 64)
+			kytkin1_y = button1;
+
+		if (button1 > this->button1_time - 64)
+			kytkin1_y = this->button1_time - button1;
+	}
+
+	if (button2 > 0) {
+		kytkin2_y = 64;
+
+		if (button2 < 64)
+			kytkin2_y = button2;
+
+		if (button2 > this->button2_time - 64)
+			kytkin2_y = this->button2_time - button2;
+	}
+
+	if (button3 > 0) {
+		kytkin3_x = 64;
+
+		if (button3 < 64)
+			kytkin3_x = button3;
+
+		if (button3 > this->button3_time - 64)
+			kytkin3_x = this->button3_time - button3;
+	}
+
+	kytkin1_y /= 2;
+	kytkin2_y /= 2;
+	kytkin3_x /= 2;
+
+	this->block_types[BLOCK_BUTTON1].bottom = kytkin1_y;
+	this->block_types[BLOCK_BUTTON1].top = kytkin1_y;
+
+	this->block_types[BLOCK_BUTTON2_UP].bottom = -kytkin2_y;
+	this->block_types[BLOCK_BUTTON2_UP].top = -kytkin2_y;
+
+	this->block_types[BLOCK_BUTTON2_DOWN].bottom = kytkin2_y;
+	this->block_types[BLOCK_BUTTON2_DOWN].top = kytkin2_y;
+
+	this->block_types[BLOCK_BUTTON2].bottom = kytkin2_y;
+	this->block_types[BLOCK_BUTTON2].top = kytkin2_y;
+
+	this->block_types[BLOCK_BUTTON3_RIGHT].right = kytkin3_x;
+	this->block_types[BLOCK_BUTTON3_RIGHT].left = kytkin3_x;
+	this->block_types[BLOCK_BUTTON3_RIGHT].id = BLOCK_LIFT_HORI;
+
+	this->block_types[BLOCK_BUTTON3_LEFT].right = -kytkin3_x;
+	this->block_types[BLOCK_BUTTON3_LEFT].left = -kytkin3_x;
+	this->block_types[BLOCK_BUTTON3_LEFT].id = BLOCK_LIFT_HORI;
+
+	this->block_types[BLOCK_BUTTON3].bottom = kytkin3_x;
+	this->block_types[BLOCK_BUTTON3].top = kytkin3_x;
 }
 
 void LevelClass::Calculate_Edges(){

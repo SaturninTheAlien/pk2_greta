@@ -120,8 +120,8 @@ class LevelClass {
 
 
     Tileset tileset1;   //tilset
-
-
+    std::array<PK2BLOCK, TILESET_SIZE> block_types;
+    
     /* Metodit --------------------------*/
 
     LevelClass();                                             // Oletusmuodostin
@@ -138,6 +138,10 @@ class LevelClass {
     void Calculate_Edges();
 
     void SaveVersion15(PFile::Path path)const;
+
+    void calculateBlockTypes();
+    void moveBlocks(u32 button1, u32 button2, u32 button3);
+
 private:
     static void ReadTiles(PFile::RW& file,
         u8 compression,

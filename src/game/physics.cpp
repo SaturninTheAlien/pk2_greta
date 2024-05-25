@@ -63,11 +63,11 @@ static PK2BLOCK Block_Get(u32 x, u32 y) {
 
 	if (i<150) { //If it is ground
 
-		block        = Game->block_types[i];
-		block.left  = x*32+Game->block_types[i].left;
-		block.right  = x*32+32+Game->block_types[i].right;
-		block.top    = y*32+Game->block_types[i].top;
-		block.bottom    = y*32+32+Game->block_types[i].bottom;
+		block        = Game->level.block_types[i];
+		block.left  = x*32+Game->level.block_types[i].left;
+		block.right  = x*32+32+Game->level.block_types[i].right;
+		block.top    = y*32+Game->level.block_types[i].top;
+		block.bottom    = y*32+32+Game->level.block_types[i].bottom;
 
 	} else { //If it is sky - Need to reset
 	

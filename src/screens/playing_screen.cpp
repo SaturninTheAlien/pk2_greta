@@ -713,7 +713,7 @@ void PlayingScreen::Loop(){
 
 	}
 	
-	Game->Move_Blocks();
+	Game->moveBlocks();
 
 	if (!Game->paused) {
 

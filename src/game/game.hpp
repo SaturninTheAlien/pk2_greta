@@ -23,9 +23,7 @@ class GameClass {
 
 		u32 level_id = -1;
 		LevelClass level;
-		std::string map_file;
-
-		std::array<PK2BLOCK, TILESET_SIZE> block_types;
+		std::string map_file;	
 		
 		bool game_over = false;
 		bool level_clear = false;
@@ -78,7 +76,11 @@ class GameClass {
 		int Start();
 		int Finish();
 
-		int Move_Blocks();
+		void moveBlocks(){
+			this->level.moveBlocks(this->button1, this->button2, this->button3);
+		}
+
+
 		void Show_Info(const std::string& text);
 
 		bool isStarted();
@@ -100,8 +102,7 @@ class GameClass {
 		
 		sol::state * lua = nullptr;
 	private:		
-		bool started = false;		
-		int Calculate_Tiles();
+		bool started = false;
 		int Open_Map();
 
 };
