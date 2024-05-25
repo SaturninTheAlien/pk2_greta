@@ -93,6 +93,11 @@ public:
      * if the sprite can collect bonuses
      */
     bool    can_collect_bonuses = false;
+    /**
+     * @brief 
+     * if the sprite is original, placed directly in the levels editor
+     */
+    bool    original = false;
 
     bool CanDamageOnCollision(const SpriteClass* target)const;
 

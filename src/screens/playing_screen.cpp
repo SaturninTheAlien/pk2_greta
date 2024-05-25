@@ -384,14 +384,19 @@ void PlayingScreen::Draw_InGame_Lower_Menu() {
 	}
 
 	/////////////////
-	// Draw keys
+	// Draw keys / enemies
 	/////////////////
-	if (Game->keys > 0){
+	if(Game->level.game_mode==GAME_MODE_KILL_ALL){
+		x = screen_width / 2 + 210;
+		y = screen_height - 39;
+		PDraw::font_write(fontti1,"enemies:",x,y-20);
+		ShadowedText_Draw(std::to_string(Game->enemies), x, y);
+
+	}
+	else if (Game->keys > 0){
 		x = screen_width / 2 + 210;
 		y = screen_height - 39;
 		PDraw::font_write(fontti1,tekstit->Get_Text(PK_txt.game_keys),x,y-20);
-
-		//sprintf(luku, "%i", Game->keys);
 		ShadowedText_Draw(std::to_string(Game->keys), x, y);
 	}
 

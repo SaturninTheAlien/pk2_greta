@@ -61,22 +61,6 @@ static const char default_config[] =
 "\r\n*potion_transformation_offset:    no"
 "\r\n"
 "\r\n"
-"\r\n-- For the compatibility with some older episodes"
-"\r\n-- Don't turn it on without a good reason!"
-"\r\n-- On PK2 SDL 1.4.5 it was possible to select another tileset for the background layer by"
-"\r\n-- adding _bg suffix to the filename"
-"\r\n-- This feature is going to be deprecated in favour of the upcoming \"1.5\" level format."
-"\r\n-- It will be still possible to have more tilesets, but by selecting another tileset in the levels editor."
-"\r\n-- If you are a mapmaker and you used it,"
-"\r\n-- don't worry, your work won't be wasted!"
-"\r\n-- There will be a tool allowing to convert your level painlessly to the new format."
-"\r\n--"
-"\r\n-- This feature may be removed completely in the future."
-"\r\n---------------"
-"\r\n*bg_tileset_hack:    no"
-
-"\r\n"
-"\r\n"
 "\r\n";
 
 
@@ -133,22 +117,6 @@ static void read_config() {
 		else if (strcmp(txt, "no") == 0)
 			configuration.transformation_offset = false;	
 	}
-
-	idx = conf.Search_Id("bg_tileset_hack");
-	if (idx != -1) {
-		const char* txt = conf.Get_Text(idx);
-
-		if (strcmp(txt, "default") == 0)
-			configuration.bg_tileset_hack = false;
-		else if (strcmp(txt, "yes") == 0)
-			configuration.bg_tileset_hack = true;
-		else if (strcmp(txt, "no") == 0)
-			configuration.bg_tileset_hack = false;
-
-		
-	}
-
-
 	PLog::Write(PLog::DEBUG, "PK2", "Audio multi thread is %s", configuration.audio_multi_thread? "ON" : "OFF");
 
 }
@@ -414,7 +382,6 @@ void convertLevel(const std::string& filename_in, const std::string& filename_ou
 		LevelClass level;
 		level.Load_Plain_Data(PFile::Path(filename_in), false);
 		printf("Converting level \"%s\" to the new experimental format.\n", level.name.c_str());
-
 		if(bg_tiles){
 			level.tileset_bg_name = level.tileset_name.substr(0, level.tileset_name.size() - 4) + "_bg.bmp";
 			printf("Waring, assuming _bg tileset: %s!\n", level.tileset_bg_name.c_str());

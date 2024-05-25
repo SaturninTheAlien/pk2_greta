@@ -265,6 +265,7 @@ SpriteClass* SpritesHandler::mCreateSprite(PrototypeClass* prototype, bool playe
 void SpritesHandler::addPlayer(PrototypeClass*prototype, double x, double y){
 	SpriteClass* sprite = this->mCreateSprite(prototype, true, x, y, nullptr);
 	sprite->initial_update = true;
+	sprite->original = true;
 
 	this->Player_Sprite = sprite;
 
@@ -293,6 +294,7 @@ void SpritesHandler::addPlayer(PrototypeClass*prototype, double x, double y){
 void SpritesHandler::addLevelSprite(PrototypeClass*prototype, double x, double y){
 	SpriteClass* sprite  = this->mCreateSprite(prototype, false, x, y, nullptr);
 	sprite->initial_update = true;
+	sprite->original = true;
 
 	/**
 	 * @brief 
@@ -314,14 +316,6 @@ void SpritesHandler::addDroppedBonusSprite(PrototypeClass*prototype, double x, d
 	sprite->damage_timer = 35;//25
 
 	sprite->a = 3 - rand()%7;
-
-	/*if(protot->weight==0 && protot->max_speed==0){
-		sprite->a = 0;
-		sprite->b = 0;
-	}
-	else{
-		sprite->a = 3 - rand()%7;
-	}*/
 }
 
 void SpritesHandler::addGiftSprite(PrototypeClass* prototype){

@@ -19,7 +19,6 @@ public:
      * @brief 
      * Deprecated features, they can be removed
      */
-    bool bg_tileset_hack = false;
     bool transformation_offset = false;
 };
 

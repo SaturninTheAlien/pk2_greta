@@ -161,8 +161,6 @@ int GameClass::Open_Map() {
 	spritesHandler.prototypesHandler.loadSpriteAssets();
 
 	Place_Sprites();
-	
-	this->keys = Count_Keys();
 
 	Particles_Clear();
 	Particles_LoadBG(&level);
@@ -194,14 +192,13 @@ void GameClass::StartMusic(){
 }
 
 void GameClass::Place_Sprites() {
-	PrototypeClass * proto = this->spritesHandler.getLevelPrototype(level.player_sprite_index);
+	PrototypeClass * prototype = this->spritesHandler.getLevelPrototype(level.player_sprite_index);
 
-	if(proto==nullptr){
+	if(prototype==nullptr){
 		throw std::runtime_error("Null player prototype is quite serious error!");
 	}
 
-	//this->spritesHandler.addSprite(proto, 1, 0, 0, nullptr, false);
-	this->spritesHandler.addPlayer(proto, 0, 0);
+	this->spritesHandler.addPlayer(prototype, 0, 0);
 	this->Select_Start();
 
 	for (u32 x = 0; x < PK2MAP_MAP_WIDTH; x++) {
@@ -210,20 +207,38 @@ void GameClass::Place_Sprites() {
 			int sprite = level.sprite_tiles[x+y*PK2MAP_MAP_WIDTH];
 			if(sprite<0||sprite>=255) continue;
 
-			PrototypeClass* protot = this->spritesHandler.getLevelPrototype(sprite);
-			if(protot==nullptr) continue;
+			prototype = this->spritesHandler.getLevelPrototype(sprite);
+			if(prototype==nullptr) continue;
 
-			if(sprite!=255){ // Why is this index skipped ????
-				
-				if (protot->big_apple)
+			/**
+			 * @brief 
+			 * Count big apples
+			 */
+			if(prototype->big_apple){
 				this->apples_count++;
-
-				/*if (protot->HasAI(AI_CHICK) || protot->HasAI(AI_CHICKBOX))
-					this->chick_mode = true;*/
-
-				this->spritesHandler.addLevelSprite(protot, x*32, y*32 - protot->height+32);
-				//this->spritesHandler.addSprite(protot, 0, x*32, y*32 - protot->height+32, nullptr, false);
 			}
+
+			/**
+			 * @brief 
+			 * Count keys
+			 */
+			if (prototype->can_open_locks && 
+				!prototype->indestructible){
+				this->keys++;
+			}
+
+			/**
+			 * @brief 
+			 * Count enemies
+			 */
+			if(prototype->type == TYPE_GAME_CHARACTER
+			&& !prototype->indestructible
+			&& prototype->damage > 0 //to ignore switches, boxes and so on
+			&& prototype->enemy){
+				this->enemies++;
+			}
+
+			this->spritesHandler.addLevelSprite(prototype, x*32, y*32 - prototype->height+32);
 		}
 	}
 
@@ -263,26 +278,6 @@ void GameClass::Select_Start() {
 
 }
 
-int GameClass::Count_Keys() {
-
-	int keys = 0;
-
-	for (u32 x=0; x < PK2MAP_MAP_SIZE; x++){
-		u8 sprite = level.sprite_tiles[x];
-
-		PrototypeClass*proto = this->spritesHandler.getLevelPrototype(sprite);
-		if(proto==nullptr) continue;
-
-		if (sprite != 255) // Why is this index skipped ????
-			if (proto->can_open_locks && 
-				!proto->indestructible)
-
-				keys++;
-	}
-
-	return keys;
-}
-
 void GameClass::ExecuteEventsIfNeeded(){
 	if(this->change_skulls){
 		this->Change_SkullBlocks();
@@ -312,6 +307,15 @@ void GameClass::ExecuteEventsIfNeeded(){
 		if(this->lua!=nullptr){
 			PK2lua::TriggerEventListeners(PK2lua::LUA_EVENT_2);
 		}
+	}
+
+	if(this->level.game_mode == GAME_MODE_KILL_ALL &&
+		this->enemies <= 0 &&
+		this->spritesHandler.Player_Sprite->damage_taken==0 && 
+		this->spritesHandler.Player_Sprite->damage_timer==0 && 
+		this->spritesHandler.Player_Sprite->energy>0){
+
+		this->Finish();
 	}
 }
 

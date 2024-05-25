@@ -61,6 +61,7 @@ class GameClass {
 		bool music_stopped = false;
 
 		int keys = 0;
+		int enemies = 0;
 
 		int info_timer = 0;
 		std::string info_text;
@@ -85,7 +86,6 @@ class GameClass {
 
 		void Place_Sprites();
 		void Select_Start();
-		int Count_Keys();
 		void Open_Locks();
 
 		bool change_skulls=false;

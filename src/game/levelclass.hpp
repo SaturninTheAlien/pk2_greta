@@ -51,8 +51,8 @@ enum {
 
 enum{
     GAME_MODE_STANDARD = 0,
-    GAME_MODE_KILL_ALL,
-    GAME_MODE_CHICK
+    GAME_MODE_KILL_ALL, //1
+    GAME_MODE_CHICK //2
 };
 
 class LevelClass {

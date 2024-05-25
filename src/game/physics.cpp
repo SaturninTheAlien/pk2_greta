@@ -480,6 +480,18 @@ void SpriteOnDeath(SpriteClass* sprite){
 			}
 		}
 	}
+
+	if(sprite->original
+	&& sprite->prototype->type == TYPE_GAME_CHARACTER
+	&& !sprite->prototype->indestructible //to ignore indestructible
+	&& sprite->prototype->damage > 0 //to ignore switches, boxes and so on
+	&& sprite->prototype->enemy){
+		
+		Game->enemies--;
+		if(Game->enemies<=0){
+			Game->enemies=0;
+		}
+	}
 }
 
 void PotionTransformation(SpriteClass* sprite, PrototypeClass* intended_prototype){

@@ -296,6 +296,7 @@ void LevelClass::LoadVersion15(PFile::Path path, bool headerOnly){
 		jsonReadInt(j, "player_index", this->player_sprite_index);
 		jsonReadInt(j, "map_time", this->map_time);
 		jsonReadString(j, "lua_script", this->lua_script);
+		jsonReadInt(j, "game_mode", this->game_mode);
 	}
 
 	if(regions!=1){
@@ -366,6 +367,7 @@ void LevelClass::SaveVersion15(PFile::Path path)const{
 		j["regions"] = 1;
 		j["map_time"] = this->map_time;
 		j["lua_script"] = this->lua_script;
+		j["game_mode"] = this->game_mode;
 
 		file.writeCBOR(j);
 	}
