@@ -29,6 +29,8 @@ void Tileset::loadImage(PFile::Path path){
 	}
 
 	this->water_tiles = PDraw::image_cut(this->tiles,0,416,320,32);
+	this->calculateBlockMasks();
+	this->make254Transparent();
 }
 
 void Tileset::animateFire(int button1_timer, int color1, int color2){
@@ -302,5 +304,32 @@ void Tileset::make254Transparent(){
 		for(x = 0; x < w; x++)
 			if (buffer[x+y*width] == 254)
 				buffer[x+y*width] = 255;
+	PDraw::drawimage_end(this->tiles);
+}
+
+void Tileset::calculateBlockMasks(){
+	u8 *buffer = nullptr;
+	u32 width;
+	int x, y;
+	u8 color;
+
+	PDraw::drawimage_start(this->tiles, buffer, width);
+	for (int mask=0; mask<TILESET_SIZE; mask++){
+		for (x=0; x<32; x++){
+			y=0;
+			while (y<31 && (color = buffer[x+(mask%10)*32 + (y+(mask/10)*32)*width])==255)
+				y++;
+
+			block_masks[mask].alas[x] = y;
+		}
+
+		for (x=0; x<32; x++){
+			y=31;
+			while (y>=0 && (color = buffer[x+(mask%10)*32 + (y+(mask/10)*32)*width])==255)
+				y--;
+
+			block_masks[mask].ylos[x] = 31-y;
+		}
+	}
 	PDraw::drawimage_end(this->tiles);
 }

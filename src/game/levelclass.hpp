@@ -25,43 +25,9 @@ typedef struct {
 
 #define SWITCH_INITIAL_VALUE 2000
 
-#define BLOCK_MAX_MASKS 150
-
-
 enum{
     TILES_COMPRESSION_NONE = 0,
     TILES_COMPRESSION_LEGACY = 1
-};
-
-enum {
-
-    BLOCK_BARRIER_DOWN = 40,
-    BLOCK_LIFT_HORI,
-    BLOCK_LIFT_VERT,
-    BLOCK_BUTTON2_UP,
-    BLOCK_BUTTON3_RIGHT,
-    BLOCK_BUTTON2_DOWN,
-    BLOCK_BUTTON3_LEFT,
-    BLOCK_LOCK,
-    BLOCK_SKULL_FOREGROUND,
-    BLOCK_SKULL_BACKGROUND,
-
-    BLOCK_ANIM1 = 60,
-    BLOCK_ANIM2 = 65,
-    BLOCK_ANIM3 = 70,
-    BLOCK_ANIM4 = 75,
-
-    BLOCK_DRIFT_LEFT = 140,
-    BLOCK_DRIFT_RIGHT,
-    BLOCK_SCROLL_UP,
-    BLOCK_HIDEOUT,
-    BLOCK_FIRE,
-    BLOCK_BUTTON1,
-    BLOCK_BUTTON2,
-    BLOCK_BUTTON3,
-    BLOCK_START,
-    BLOCK_EXIT,
-
 };
 
 enum {
@@ -81,29 +47,6 @@ enum {
     BACKGROUND_PARALLAX_HORI,
     BACKGROUND_PARALLAX_VERT_AND_HORI
 
-};
-
-enum BLOCKS {
-
-	BLOCK_BACKGROUND,
-	BLOCK_WALL
-
-};
-
-
-struct PK2BLOCK {
-
-	u8   id;
-	u8   left_side, right_side, top_side, bottom_side;
-	int  left, right, top, bottom;
-	bool water;
-	bool border;
-
-};
-
-struct PK2BLOCKMASK {
-	int ylos[32];
-	int alas[32];
 };
 
 class LevelClass {
@@ -205,20 +148,5 @@ private:
     void LoadVersion13(PFile::Path path, bool headerOnly);
     void LoadVersion15(PFile::Path path, bool headerOnly);
 
-
-    int Load_BG(PFile::Path path);
-
-    //void LoadTilset(const std::string & name);
-
-    //void Load_TilesImage(PFile::Path path);
-    //int Load_BGSfx(PFile::Path path);
-
-    /*static int CalculateSplashColor(int tiles);
-
-    void Animate_Fire(int tiles);
-    void Animate_Waterfall(int tiles);
-    void Animate_RollUp(int tiles);
-    void Animate_WaterSurface(int tiles);
-    void Animate_Water(int tiles, int water_tiles);*/
-    
+    int Load_BG(PFile::Path path);   
 };

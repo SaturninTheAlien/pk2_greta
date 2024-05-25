@@ -4,6 +4,7 @@
 //#########################
 #pragma once
 
+#include <array>
 #include "engine/types.hpp"
 
 #include "sprites_handler.hpp"
@@ -24,9 +25,8 @@ class GameClass {
 		LevelClass level;
 		std::string map_file;
 
-		PK2BLOCK     block_types[150];//150
-		PK2BLOCKMASK block_masks[BLOCK_MAX_MASKS];
-
+		std::array<PK2BLOCK, TILESET_SIZE> block_types;
+		
 		bool game_over = false;
 		bool level_clear = false;
 		bool repeating = false;
@@ -100,10 +100,7 @@ class GameClass {
 		
 		sol::state * lua = nullptr;
 	private:		
-		bool started = false;
-		
-		int Calculete_TileMasks();
-		
+		bool started = false;		
 		int Calculate_Tiles();
 		int Open_Map();
 

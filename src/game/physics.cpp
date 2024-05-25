@@ -221,12 +221,12 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 		if (mask_index > 31)
 			mask_index = 31;
 
-		block.top += Game->block_masks[block.id].alas[mask_index];
+		block.top += Game->level.tileset1.block_masks[block.id].alas[mask_index];
 
 		if (block.top >= block.bottom-2)
 			block.bottom_side = BLOCK_BACKGROUND;
 
-		block.bottom -= Game->block_masks[block.id].ylos[mask_index];
+		block.bottom -= Game->level.tileset1.block_masks[block.id].ylos[mask_index];
 	}
 
 	//If sprite is thouching the block (again?)

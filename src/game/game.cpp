@@ -125,37 +125,6 @@ int GameClass::Finish() {
 
 }
 
-int GameClass::Calculete_TileMasks() {
-	
-	u8 *buffer = nullptr;
-	u32 width;
-	int x, y;
-	u8 color;
-
-	PDraw::drawimage_start(level.tileset1.getImage(), buffer, width);
-	for (int mask=0; mask<BLOCK_MAX_MASKS; mask++){
-		for (x=0; x<32; x++){
-			y=0;
-			while (y<31 && (color = buffer[x+(mask%10)*32 + (y+(mask/10)*32)*width])==255)
-				y++;
-
-			block_masks[mask].alas[x] = y;
-		}
-
-		for (x=0; x<32; x++){
-			y=31;
-			while (y>=0 && (color = buffer[x+(mask%10)*32 + (y+(mask/10)*32)*width])==255)
-				y--;
-
-			block_masks[mask].ylos[x] = 31-y;
-		}
-	}
-	PDraw::drawimage_end(level.tileset1.getImage());
-
-	return 0;
-}
-
-
 // This moves the collisions of the blocks palette
 int GameClass::Move_Blocks() {
 
@@ -342,10 +311,6 @@ int GameClass::Open_Map() {
 	spritesHandler.loadAllLevelPrototypes(this->level);
 
 	spritesHandler.prototypesHandler.loadSpriteAssets();
-
-	Calculete_TileMasks();
-
-	this->level.tileset1.make254Transparent();
 
 	Place_Sprites();
 

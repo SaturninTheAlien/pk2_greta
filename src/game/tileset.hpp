@@ -6,6 +6,62 @@
 #include <string>
 #include "engine/PFile.hpp"
 
+#define TILESET_SIZE 150
+
+enum {
+
+    BLOCK_BARRIER_DOWN = 40,
+    BLOCK_LIFT_HORI, //41
+    BLOCK_LIFT_VERT, //42
+    BLOCK_BUTTON2_UP, //43
+    BLOCK_BUTTON3_RIGHT, //44
+    BLOCK_BUTTON2_DOWN, //45
+    BLOCK_BUTTON3_LEFT, //46
+    BLOCK_LOCK, //47
+    BLOCK_SKULL_FOREGROUND, //48
+    BLOCK_SKULL_BACKGROUND, //49
+
+    BLOCK_ANIM1 = 60,
+    BLOCK_ANIM2 = 65,
+    BLOCK_ANIM3 = 70,
+    BLOCK_ANIM4 = 75,
+
+    BLOCK_DRIFT_LEFT = 140,
+    BLOCK_DRIFT_RIGHT, //141
+    BLOCK_SCROLL_UP, //142
+    BLOCK_HIDEOUT, //143
+    BLOCK_FIRE, //144
+    BLOCK_BUTTON1, //145
+    BLOCK_BUTTON2, //146
+    BLOCK_BUTTON3, //147
+    BLOCK_START, //148
+    BLOCK_EXIT, //149
+
+};
+
+
+enum BLOCKS {
+
+	BLOCK_BACKGROUND,
+	BLOCK_WALL
+
+};
+
+struct PK2BLOCK {
+
+	u8   id;
+	u8   left_side, right_side, top_side, bottom_side;
+	int  left, right, top, bottom;
+	bool water;
+	bool border;
+
+};
+
+struct PK2BLOCKMASK {
+	int ylos[32];
+	int alas[32];
+};
+
 class Tileset{
 public:
     Tileset()=default;
@@ -33,12 +89,17 @@ public:
     void animateWater(int animation_timer);
     void animateRollUp();
 
-    void make254Transparent();
+    
     
     operator bool()const{
         return this->tiles != -1;
     }
+
+    std::array<PK2BLOCKMASK, TILESET_SIZE> block_masks;
 private:
+    void calculateBlockMasks();
+    void make254Transparent();
+
     int tiles = -1;
     int water_tiles = -1;
 };
