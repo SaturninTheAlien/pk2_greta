@@ -297,48 +297,7 @@ void PlayingScreen::Draw_InGame_DevKeys() {
 }
 
 
-void PlayingScreen::Draw_InGame_BG() {
 
-	int pallarx = ( Game->camera_x % (640*3) ) / 3;
-	int pallary = ( Game->camera_y % (480*3) ) / 3;
-
-	if (Game->level.background_scrolling == BACKGROUND_STATIC){
-	
-		PDraw::image_clip(Game->level.background_buffer,0,0);
-		PDraw::image_clip(Game->level.background_buffer,640,0);
-	
-	} else if (Game->level.background_scrolling == BACKGROUND_PARALLAX_HORI){
-	
-		PDraw::image_clip(Game->level.background_buffer,0   - pallarx,0);
-		PDraw::image_clip(Game->level.background_buffer,640 - pallarx,0);
-
-		if (screen_width > 640)
-			PDraw::image_clip(Game->level.background_buffer,640*2 - pallarx,0);
-	
-	} else if (Game->level.background_scrolling == BACKGROUND_PARALLAX_VERT){
-	
-		PDraw::image_clip(Game->level.background_buffer,0,0   - pallary);
-		PDraw::image_clip(Game->level.background_buffer,0,480 - pallary);
-
-		if (screen_width > 640){
-			PDraw::image_clip(Game->level.background_buffer,640,0   - pallary);
-			PDraw::image_clip(Game->level.background_buffer,640,480 - pallary);
-		}
-	
-	} else if (Game->level.background_scrolling == BACKGROUND_PARALLAX_VERT_AND_HORI){
-	
-		PDraw::image_clip(Game->level.background_buffer,0   - pallarx, 0-pallary);
-		PDraw::image_clip(Game->level.background_buffer,640 - pallarx, 0-pallary);
-		PDraw::image_clip(Game->level.background_buffer,0   - pallarx, 480-pallary);
-		PDraw::image_clip(Game->level.background_buffer,640 - pallarx, 480-pallary);
-
-		if (screen_width > 640){
-			PDraw::image_clip(Game->level.background_buffer,640*2 - pallarx,0-pallary);
-			PDraw::image_clip(Game->level.background_buffer,640*2 - pallarx,480-pallary);
-		}
-	
-	}
-}
 
 void PlayingScreen::Draw_InGame_Gifts() {
 
@@ -519,7 +478,9 @@ void PlayingScreen::Draw() {
 
 	debug_drawn_sprites = 0;
 
-	Draw_InGame_BG();
+	Game->level.sectorPlaceholder.drawBackground(Game->camera_x, Game->camera_y);
+
+	//Draw_InGame_BG();
 	
 	if (Settings.bg_sprites)
 		Draw_InGame_BGSprites();

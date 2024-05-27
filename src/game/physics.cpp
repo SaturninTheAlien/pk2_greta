@@ -989,11 +989,11 @@ void UpdateSprite(SpriteClass* sprite){
 
 		if (rand()%80 == 1)
 			Particles_New(PARTICLE_SPARK,sprite->x-4,sprite->y,0,-0.5-rand()%2,rand()%30+30,0,
-			Game->level.splash_color);
+			Game->level.sectorPlaceholder.splash_color);
 	}
 
 	if (in_water != sprite->in_water&&!sprite->initial_update) { // Sprite comes in or out from water
-		Effect_Splash(sprite->x, sprite->y, Game->level.splash_color);
+		Effect_Splash(sprite->x, sprite->y, Game->level.sectorPlaceholder.splash_color);
 		Play_GameSFX(Episode->sfx.splash_sound, 100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, true);
 	}
 
@@ -1304,10 +1304,10 @@ void UpdateSprite(SpriteClass* sprite){
 	if (sprite == Player_Sprite || sprite->energy < 1) {
 		double kitka = 1.04;
 
-		if (Game->level.weather == WEATHER_RAIN || Game->level.weather == WEATHER_RAIN_LEAVES)
+		if (Game->level.sectorPlaceholder.weather == WEATHER_RAIN || Game->level.sectorPlaceholder.weather == WEATHER_RAIN_LEAVES)
 			kitka = 1.03; // Slippery ground in the rain
 
-		if (Game->level.weather == WEATHER_SNOW)
+		if (Game->level.sectorPlaceholder.weather == WEATHER_SNOW)
 			kitka = 1.01; // And even more on snow
 
 		if (!sprite->can_move_down)
@@ -1571,7 +1571,7 @@ void UpdateBonusSprite(SpriteClass* sprite){
 
 			if (rand()%80 == 1)
 				Particles_New(PARTICLE_SPARK,sprite->x-4,sprite->y,0,-0.5-rand()%2,rand()%30+30,0,
-				Game->level.splash_color);
+				Game->level.sectorPlaceholder.splash_color);
 		}
 
 		sprite->in_water = false;
@@ -1704,7 +1704,7 @@ void UpdateBonusSprite(SpriteClass* sprite){
 		}
 
 		if (in_water != sprite->in_water && !sprite->initial_update) {
-			Effect_Splash((int)sprite->x,(int)sprite->y, Game->level.splash_color);
+			Effect_Splash((int)sprite->x,(int)sprite->y, Game->level.sectorPlaceholder.splash_color);
 			Play_GameSFX(Episode->sfx.splash_sound, 100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, true);
 		}
 

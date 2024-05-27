@@ -163,7 +163,7 @@ int GameClass::Open_Map() {
 	Place_Sprites();
 
 	Particles_Clear();
-	Particles_LoadBG(&level);
+	Particles_LoadBG(&level.sectorPlaceholder);
 
 	this->StartMusic();
 	

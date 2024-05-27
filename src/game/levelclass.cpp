@@ -49,8 +49,8 @@ void LevelClass::Load(PFile::Path path){
 	this->tileset1.clear();
 	this->tileset1.loadImage(path);
 	//this->tileset1.make254Transparent();
-	if(this->splash_color == -1){
-		this->splash_color = this->tileset1.calculateSplashColor();
+	if(this->sectorPlaceholder.splash_color == -1){
+		this->sectorPlaceholder.splash_color = this->tileset1.calculateSplashColor();
 
 	}
 
@@ -199,13 +199,13 @@ void LevelClass::LoadVersion13(PFile::Path path, bool headerOnly){
 	file.readLegacyStr40Chars(author);
 
 	file.readLegacyStrInt(this->level_number);
-	file.readLegacyStrInt(this->weather);
+	file.readLegacyStrInt(this->sectorPlaceholder.weather);
 	file.readLegacyStrU32(this->button1_time);
 	file.readLegacyStrU32(this->button2_time);
 	file.readLegacyStrU32(this->button3_time);
 	file.readLegacyStrInt(this->map_time);
 	file.readLegacyStrInt(this->extra);
-	file.readLegacyStrInt(this->background_scrolling);
+	file.readLegacyStrInt(this->sectorPlaceholder.background_scrolling);
 	file.readLegacyStrInt(this->player_sprite_index);
 	file.readLegacyStrInt(this->icon_x);
 	file.readLegacyStrInt(this->icon_y);
@@ -325,12 +325,12 @@ void LevelClass::LoadVersion15(PFile::Path path, bool headerOnly){
 		jsonReadString(j, "music", this->music_name);
 
 		jsonReadString(j, "background", this->background_name);
-		jsonReadInt(j, "scrolling", this->background_scrolling);
-		jsonReadInt(j, "weather", this->weather);
+		jsonReadInt(j, "scrolling", this->sectorPlaceholder.background_scrolling);
+		jsonReadInt(j, "weather", this->sectorPlaceholder.weather);
 
-		jsonReadInt(j, "splash_color", this->splash_color);
-		jsonReadInt(j, "fire_color_1", this->fire_color_1);
-		jsonReadInt(j, "fire_color_2", this->fire_color_2);
+		jsonReadInt(j, "splash_color", this->sectorPlaceholder.splash_color);
+		jsonReadInt(j, "fire_color_1", this->sectorPlaceholder.fire_color_1);
+		jsonReadInt(j, "fire_color_2", this->sectorPlaceholder.fire_color_2);
 	}
 
 	if(width!=PK2MAP_MAP_WIDTH || height!=PK2MAP_MAP_HEIGHT){
@@ -390,12 +390,12 @@ void LevelClass::SaveVersion15(PFile::Path path)const{
 		j["tileset_bg"] = this->tileset_bg_name;
 		j["music"] = this->music_name;
 		j["background"] = this->background_name;
-		j["scrolling"] = this->background_scrolling;
-		j["weather"] = this->weather;
+		j["scrolling"] = this->sectorPlaceholder.background_scrolling;
+		j["weather"] = this->sectorPlaceholder.weather;
 
-		j["splash_color"] = this->splash_color;
-		j["fire_color_1"] = this->fire_color_1;
-		j["fire_color_2"] = this->fire_color_2;
+		j["splash_color"] = this->sectorPlaceholder.splash_color;
+		j["fire_color_1"] = this->sectorPlaceholder.fire_color_1;
+		j["fire_color_2"] = this->sectorPlaceholder.fire_color_2;
 
 		file.writeCBOR(j);
 	}
@@ -417,8 +417,8 @@ int LevelClass::Load_BG(PFile::Path path){
 	if (!FindAsset(&path, "gfx" PE_SEP "scenery" PE_SEP))
 		return 1;
 
-	PDraw::image_load(this->background_buffer, path, true, false);
-	if (this->background_buffer == -1)
+	PDraw::image_load(this->sectorPlaceholder.background_picture, path, true, false);
+	if (this->sectorPlaceholder.background_picture == -1)
 		return -2;
 
 	return 0;
@@ -611,13 +611,13 @@ void LevelClass::DrawForegroundTiles(int camera_x, int camera_y){
 	if (tiles_animation_timer%2 == 0)
 	{
 
-		this->tileset1.animateFire(this->button1_timer, this->fire_color_1, this->fire_color_2);
+		this->tileset1.animateFire(this->button1_timer, this->sectorPlaceholder.fire_color_1, this->sectorPlaceholder.fire_color_2);
 		this->tileset1.animateWaterfall();
 		this->tileset1.animateWaterSurface();
 		this->tileset1.animateRollUp();
 
 		if(this->tileset2){
-			this->tileset2.animateFire(this->button1_timer, this->fire_color_1, this->fire_color_2);
+			this->tileset2.animateFire(this->button1_timer, this->sectorPlaceholder.fire_color_1, this->sectorPlaceholder.fire_color_2);
 			this->tileset2.animateWaterfall();
 			this->tileset2.animateWaterSurface();
 			this->tileset2.animateRollUp();

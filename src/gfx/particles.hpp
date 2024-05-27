@@ -5,7 +5,7 @@
 #pragma once
 
 #include "gfx/particle.hpp"
-#include "game/levelclass.hpp"
+#include "game/levelsector.hpp"
 
 void Particles_Update();
 
@@ -15,6 +15,6 @@ void Particles_DrawFront(int cam_x, int cam_y);
 
 void Particles_DrawBG(int cam_x, int cam_y);
 
-void Particles_LoadBG(LevelClass* level);
+void Particles_LoadBG(LevelSector* level);
 
 void Particles_Clear();

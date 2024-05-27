@@ -24,7 +24,6 @@ private:
     void Draw_InGame_Sprites();
     void Draw_InGame_DebugInfo();
     void Draw_InGame_DevKeys();
-    void Draw_InGame_BG();
     void Draw_InGame_Gifts();
     void Draw_InGame_Lower_Menu();
     void Draw_InGame_UI();

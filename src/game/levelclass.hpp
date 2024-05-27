@@ -26,29 +26,6 @@ typedef struct {
 
 #define SWITCH_INITIAL_VALUE 2000
 
-enum{
-    TILES_COMPRESSION_NONE = 0,
-    TILES_COMPRESSION_LEGACY = 1
-};
-
-enum {
-
-    WEATHER_NORMAL,
-    WEATHER_RAIN,
-    WEATHER_LEAVES,
-    WEATHER_RAIN_LEAVES,
-    WEATHER_SNOW
-
-};
-
-enum {
-
-    BACKGROUND_STATIC,
-    BACKGROUND_PARALLAX_VERT,
-    BACKGROUND_PARALLAX_HORI,
-    BACKGROUND_PARALLAX_VERT_AND_HORI
-
-};
 
 enum{
     GAME_MODE_STANDARD = 0,
@@ -83,10 +60,10 @@ class LevelClass {
     char     author[40] = "unknown";                        // map author*/
 
     int      level_number          = 0;                            // level of the episode
-    int      weather           = WEATHER_NORMAL;                // map climate
+    
     int      map_time           = 0;                            // map time (in (dec)conds)
     int       extra          = 0;                            // extra config - not used
-    int       background_scrolling = BACKGROUND_STATIC;            // bg movemant type
+    
     u32      button1_time   = SWITCH_INITIAL_VALUE;         // button 1 time
     u32      button2_time   = SWITCH_INITIAL_VALUE;         // button 2 time
     u32      button3_time   = SWITCH_INITIAL_VALUE;         // button 3 time
@@ -100,25 +77,11 @@ class LevelClass {
     bool     edges [PK2MAP_MAP_SIZE] = {false};            // map edges - calculated during game*/
      
     std::vector<std::string> sprite_prototype_names;        // map prototype list .spr
-    
-    int      background_buffer = -1;                        // index of bg image
-
     int      icon_x = 0;                                         // map icon x pos
 	int      icon_y = 0;                                         // map icon x pos
     int      icon_id = 0;                                      // map icon id
 
-    /**
-     * @brief 
-     * The average color of the water, used in splash and bubble effects.
-     */
-    int      splash_color = -1;
-
-    /**
-     * @brief 
-     * Fire colors
-     */
-    int     fire_color_1 = 64;  //red
-    int     fire_color_2 = 128; //orange
+    
 
     std::string lua_script = "main.lua";                        // lua script
     int game_mode = 0;                                          // game mode

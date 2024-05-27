@@ -54,8 +54,8 @@ void Particles_DrawBG(int cam_x, int cam_y) {
 
 }
 
-void Particles_LoadBG(LevelClass* level) {
-	
+void Particles_LoadBG(LevelSector* level) {
+
 	for (int i = 0; i < nof_bg_particles; i++) {
 
 		BGParticles.emplace_back(
