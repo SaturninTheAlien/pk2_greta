@@ -1,0 +1,193 @@
+//#########################
+//Pekka Kana 2
+//Copyright (c) 2003 Janne Kivilahti
+//#########################
+#include "levelsector.hpp"
+#include "engine/PDraw.hpp"
+#include "system.hpp"
+
+LevelSector::LevelSector(std::size_t height, std::size_t width):
+mHeight(height), mWidth(width){
+    this->mSize = width * height;
+    if(this->mSize>0){
+        this->background_tiles = new u8[this->mSize];
+        this->foreground_tiles = new u8[this->mSize];
+        this->sprite_tiles = new u8[this->mSize];
+		this->edges = new bool[this->mSize];
+
+		memset(this->background_tiles, u8(255), this->mSize);
+		memset(this->foreground_tiles, u8(255), this->mSize);
+		memset(this->sprite_tiles, u8(255), this->mSize);
+		memset(this->edges, false, this->mSize);
+    }
+}
+
+LevelSector::~LevelSector(){
+    this->mSize = 0;
+    if(this->background_tiles!=nullptr){
+        delete[] this->background_tiles;
+        this->background_tiles = nullptr;
+    }
+
+    if(this->foreground_tiles!=nullptr){
+        delete[] this->foreground_tiles;
+        this->foreground_tiles = nullptr;
+    }
+
+    if(this->sprite_tiles!=nullptr){
+        delete[] this->sprite_tiles;
+        this->sprite_tiles = nullptr;
+    }
+
+	if(this->edges!=nullptr){
+		delete[] this->edges;
+		this->edges = nullptr;
+	}
+}
+
+void LevelSector::calculateEdges(){
+	u8 tile1, tile2, tile3;
+	for (u32 y = 0; y < this->mHeight - 1; y++){
+		for (u32 x = 1; x < this->mWidth - 1; x++){
+			bool edge = false;
+
+			tile1 = this->foreground_tiles[x+y*this->mWidth];
+
+			if (tile1 > BLOCK_EXIT)
+				this->foreground_tiles[x+y*this->mWidth] = 255;
+
+			tile2 = this->foreground_tiles[x+(y+1)*this->mWidth];
+
+			if (tile1 > 79 || tile1 == BLOCK_BARRIER_DOWN) tile1 = 1; else tile1 = 0;
+			if (tile2 > 79) tile2 = 1; else tile2 = 0;
+
+			if (tile1 == 1 && tile2 == 1){
+				tile1 = this->foreground_tiles[x+1+(y+1)*this->mWidth];
+				tile2 = this->foreground_tiles[x-1+(y+1)*this->mWidth];
+
+				if (tile1 < 80  && !(tile1 < 60 && tile1 > 49)) tile1 = 1; else tile1 = 0;
+				if (tile2 < 80  && !(tile2 < 60 && tile2 > 49)) tile2 = 1; else tile2 = 0;
+
+				if (tile1 == 1){
+					tile3 = this->foreground_tiles[x+1+y*this->mWidth];
+					if (tile3 > 79 || (tile3 < 60 && tile3 > 49) || tile3 == BLOCK_BARRIER_DOWN)
+						edge = true;
+				}
+
+				if (tile2 == 1){
+					tile3 = this->foreground_tiles[x-1+y*this->mWidth];
+					if (tile3 > 79 || (tile3 < 60 && tile3 > 49) || tile3 == BLOCK_BARRIER_DOWN)
+						edge = true;
+				}
+
+				if (edge){
+					this->edges[x+y*this->mWidth] = true;
+					//this->background_tiles[x+y*PK2MAP_MAP_WIDTH] = 18; //Debug
+				}
+			}
+		}
+	}
+}
+
+
+void LevelSector::drawBackgroundTiles(int camera_x, int camera_y,int block_animation_frame)const{
+
+    int kartta_x = camera_x/32;
+	int kartta_y = camera_y/32;
+
+	int tiles_w = screen_width/32 + 1;
+	int tiles_h = screen_height/32 + 1;
+
+
+	for (int x = 0; x < tiles_w; x++){
+		if (x + kartta_x < 0 || uint(x + kartta_x) > this->mWidth) continue;
+
+		for (int y = 0; y < tiles_h; y++){
+			if (y + kartta_y < 0 || uint(y + kartta_y) > this->mHeight) continue;
+
+			int i = x + kartta_x + (y + kartta_y) * this->mWidth;
+			if( i < 0 || i >= int(this->mSize)) continue; //Dont access a not allowed address
+
+			int block = background_tiles[i];
+
+			if (block != 255){
+				int px = ((block%10)*32);
+				int py = ((block/10)*32);
+
+				if (block == BLOCK_ANIM1 || block == BLOCK_ANIM2 || block == BLOCK_ANIM3 || block == BLOCK_ANIM4)
+					px += block_animation_frame * 32;
+
+				PDraw::image_cutclip(this->tileset2 ? this->tileset2->getImage() : this->tileset1->getImage(),	
+				x*32-(camera_x%32), y*32-(camera_y%32), px, py, px+32, py+32);
+			}
+		}
+	}
+}
+
+void LevelSector::drawForegroundTiles(int camera_x, int camera_y, int block_animation_frame,
+int arrows_block_degree, int button1_timer_y, int button2_timer_y, int button3_timer_y)const{
+
+    int kartta_x = camera_x/32;
+	int kartta_y = camera_y/32;
+
+	int tiles_w = screen_width/32 + 1;
+	int tiles_h = screen_height/32 + 1;
+
+    for (int x = -1; x < tiles_w + 1; x++) {
+		if (x + kartta_x < 0 || uint(x + kartta_x) > this->mWidth) continue;
+
+		for (int y = -1; y < tiles_h + 1; y++) {
+			if (y + kartta_y < 0 || uint(y + kartta_y) > this->mHeight) continue;
+
+			int i = x + kartta_x + (y + kartta_y) * this->mWidth;
+			if( i < 0 || i >= int(this->mSize)) continue; //Dont access a not allowed address
+
+			u8 block = foreground_tiles[i];
+
+			if (block != 255 && block != BLOCK_BARRIER_DOWN){
+				
+				int px = (block % 10) * 32;
+				int py = (block / 10) * 32;
+				
+				int ay = 0;
+				int ax = 0;
+
+				if (block == BLOCK_LIFT_VERT)
+					ay = floor(sin_table(arrows_block_degree));
+
+				else if (block == BLOCK_LIFT_HORI)
+					ax = floor(cos_table(arrows_block_degree));
+
+				else if (block == BLOCK_BUTTON1)
+					ay = button1_timer_y/2;
+
+				else if (block == BLOCK_BUTTON2_UP)
+					ay = -button2_timer_y/2;
+
+				else if (block == BLOCK_BUTTON2_DOWN)
+					ay = button2_timer_y/2;
+
+				else if (block == BLOCK_BUTTON2)
+					ay = button2_timer_y/2;
+
+				else if (block == BLOCK_BUTTON3_RIGHT)
+					ax = button3_timer_y/2;
+
+				else if (block == BLOCK_BUTTON3_LEFT)
+					ax = -button3_timer_y/2;
+
+				else if (block == BLOCK_BUTTON3)
+					ay = button3_timer_y/2;
+
+				else if (block == BLOCK_ANIM1 || block == BLOCK_ANIM2 || block == BLOCK_ANIM3 || block == BLOCK_ANIM4)
+					px += block_animation_frame * 32;
+
+				//hide drift tiles
+				else if(block == BLOCK_DRIFT_LEFT || block == BLOCK_DRIFT_RIGHT)
+					continue;
+
+				PDraw::image_cutclip(this->tileset1->getImage(), x*32-(camera_x%32)+ax, y*32-(camera_y%32)+ay, px, py, px+32, py+32);
+			}
+		}
+	}    
+}

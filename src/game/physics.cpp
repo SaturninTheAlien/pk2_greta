@@ -35,7 +35,6 @@ static int sprite_width;
 static int sprite_height;
 
 static PK2BLOCK Block_Get(u32 x, u32 y) {
-
 	PK2BLOCK block;
 	//memset(&block, 0, sizeof(block));
 
@@ -59,7 +58,7 @@ static PK2BLOCK Block_Get(u32 x, u32 y) {
 
 	}
 
-	u8 i = Game->level.foreground_tiles[x+y*PK2MAP_MAP_WIDTH];
+	u8 i = Game->level.sectorPlaceholder.foreground_tiles[x+y*PK2MAP_MAP_WIDTH];
 
 	if (i<150) { //If it is ground
 
@@ -85,12 +84,12 @@ static PK2BLOCK Block_Get(u32 x, u32 y) {
 	
 	}
 
-	i = Game->level.background_tiles[x+y*PK2MAP_MAP_WIDTH];
+	i = Game->level.sectorPlaceholder.background_tiles[x+y*PK2MAP_MAP_WIDTH];
 
 	if (i > 131 && i < 140)
 		block.water = true;
 
-	block.border = Game->level.edges[x+y*PK2MAP_MAP_WIDTH];
+	block.border = Game->level.sectorPlaceholder.edges[x+y*PK2MAP_MAP_WIDTH];
 
 	return block;
 }
@@ -243,7 +242,7 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 		/* Examine if it is a key and touches lock wall                       */
 		/**********************************************************************/
 		if (block.id == BLOCK_LOCK && sprite->prototype->can_open_locks){
-			Game->level.foreground_tiles[block.left/32+(block.top/32)*PK2MAP_MAP_WIDTH] = 255;
+			Game->level.sectorPlaceholder.foreground_tiles[block.left/32+(block.top/32)*PK2MAP_MAP_WIDTH] = 255;
 			Game->level.Calculate_Edges();
 
 			sprite->removed = true;

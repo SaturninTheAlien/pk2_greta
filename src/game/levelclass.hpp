@@ -6,6 +6,7 @@
 
 #include "engine/platform.hpp"
 #include "engine/PFile.hpp"
+#include "levelsector.hpp"
 
 #include "tileset.hpp"
 #include <vector>
@@ -91,12 +92,15 @@ class LevelClass {
     u32      button3_time   = SWITCH_INITIAL_VALUE;         // button 3 time
     int      player_sprite_index = 0;                            // player prototype
 
-    u8       background_tiles[PK2MAP_MAP_SIZE] = {255};              // map bg tiles 256*224
+    LevelSector sectorPlaceholder;
+
+    /*u8       background_tiles[PK2MAP_MAP_SIZE] = {255};              // map bg tiles 256*224
     u8       foreground_tiles[PK2MAP_MAP_SIZE] = {255};              // map fg tiles 256*224
     u8       sprite_tiles[PK2MAP_MAP_SIZE] = {255};              // map sprites 256*224
+    bool     edges [PK2MAP_MAP_SIZE] = {false};            // map edges - calculated during game*/
      
     std::vector<std::string> sprite_prototype_names;        // map prototype list .spr
-    bool     edges [PK2MAP_MAP_SIZE] = {false};            // map edges - calculated during game
+    
     int      background_buffer = -1;                        // index of bg image
 
     int      icon_x = 0;                                         // map icon x pos
@@ -132,12 +136,16 @@ class LevelClass {
     void Load(PFile::Path path);
     void Load_Plain_Data(PFile::Path path, bool headerOnly);
 
-    void DrawBackgroundTiles(int kamera_x, int kamera_y);
+    void DrawBackgroundTiles(int camera_x, int camera_y){
+        this->sectorPlaceholder.drawBackgroundTiles(camera_x, camera_y, this->block_animation_frame);
+    }
     void DrawForegroundTiles(int kamera_x, int kamera_y);
 
     void SetTilesAnimations(int degree, int anim, u32 aika1, u32 aika2, u32 aika3);
 
-    void Calculate_Edges();
+    void Calculate_Edges(){
+        this->sectorPlaceholder.calculateEdges();
+    }
 
     void SaveVersion15(PFile::Path path)const;
 

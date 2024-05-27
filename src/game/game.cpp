@@ -204,7 +204,7 @@ void GameClass::Place_Sprites() {
 	for (u32 x = 0; x < PK2MAP_MAP_WIDTH; x++) {
 		for (u32 y = 0; y < PK2MAP_MAP_HEIGHT; y++) {
 
-			int sprite = level.sprite_tiles[x+y*PK2MAP_MAP_WIDTH];
+			int sprite = level.sectorPlaceholder.sprite_tiles[x+y*PK2MAP_MAP_WIDTH];
 			if(sprite<0||sprite>=255) continue;
 
 			prototype = this->spritesHandler.getLevelPrototype(sprite);
@@ -253,7 +253,7 @@ void GameClass::Select_Start() {
 	std::vector<u32> starts;
 
 	for (u32 i = 0; i < PK2MAP_MAP_SIZE; i++)
-		if (level.foreground_tiles[i] == BLOCK_START)
+		if (level.sectorPlaceholder.foreground_tiles[i] == BLOCK_START)
 			starts.push_back(i);
 
 	if (starts.size() > 0) {
@@ -324,18 +324,18 @@ void GameClass::Change_SkullBlocks() {
 	for (u32 x = 0; x < PK2MAP_MAP_WIDTH; x++)
 		for (u32 y = 0; y < PK2MAP_MAP_HEIGHT; y++){
 			
-			u8 front = level.foreground_tiles[x+y*PK2MAP_MAP_WIDTH];
-			u8 back  = level.background_tiles[x+y*PK2MAP_MAP_WIDTH];
+			u8 front = level.sectorPlaceholder.foreground_tiles[x+y*PK2MAP_MAP_WIDTH];
+			u8 back  = level.sectorPlaceholder.background_tiles[x+y*PK2MAP_MAP_WIDTH];
 
 			if (front == BLOCK_SKULL_FOREGROUND){
-				level.foreground_tiles[x+y*PK2MAP_MAP_WIDTH] = 255;
+				level.sectorPlaceholder.foreground_tiles[x+y*PK2MAP_MAP_WIDTH] = 255;
 				if (back != BLOCK_SKULL_FOREGROUND)
 					Effect_SmokeClouds(x*32+24,y*32+6);
 
 			}
 
 			if (back == BLOCK_SKULL_BACKGROUND && front == 255)
-				level.foreground_tiles[x+y*PK2MAP_MAP_WIDTH] = BLOCK_SKULL_FOREGROUND;
+				level.sectorPlaceholder.foreground_tiles[x+y*PK2MAP_MAP_WIDTH] = BLOCK_SKULL_FOREGROUND;
 		}
 
 	//Put in game
@@ -352,10 +352,10 @@ void GameClass::Open_Locks() {
 	for (u32 x = 0; x < PK2MAP_MAP_WIDTH; x++)
 		for (u32 y = 0; y < PK2MAP_MAP_HEIGHT; y++){
 			
-			u8 block = level.foreground_tiles[x+y*PK2MAP_MAP_WIDTH];
+			u8 block = level.sectorPlaceholder.foreground_tiles[x+y*PK2MAP_MAP_WIDTH];
 			
 			if (block == BLOCK_LOCK){
-				level.foreground_tiles[x+y*PK2MAP_MAP_WIDTH] = 255;
+				level.sectorPlaceholder.foreground_tiles[x+y*PK2MAP_MAP_WIDTH] = 255;
 				Effect_SmokeClouds(x*32+24,y*32+6);
 			}
 		}

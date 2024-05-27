@@ -29,7 +29,9 @@ void LevelClass::SetTilesAnimations(int degree, int anim, u32 aika1, u32 aika2, 
 
 }
 
-LevelClass::LevelClass(){}
+LevelClass::LevelClass()
+:sectorPlaceholder(PK2MAP_MAP_HEIGHT, PK2MAP_MAP_WIDTH)
+{}
 
 LevelClass::~LevelClass(){
 	/*PDraw::image_delete(this->tiles_buffer);
@@ -52,10 +54,14 @@ void LevelClass::Load(PFile::Path path){
 
 	}
 
+	this->sectorPlaceholder.tileset1 = &this->tileset1;
+
 	this->tileset2.clear();
 	if(!this->tileset_bg_name.empty()){
 		path.SetFile(this->tileset_bg_name);
 		this->tileset2.loadImage(path);
+
+		this->sectorPlaceholder.tileset2 = &this->tileset2;
 	}
 
 
@@ -164,9 +170,9 @@ void LevelClass::ReadTiles(PFile::RW& file,
 void LevelClass::LoadVersion13(PFile::Path path, bool headerOnly){
 	PFile::RW file = path.GetRW2("r");
 
-	memset(this->background_tiles, 255, sizeof(this->background_tiles));
+	/*memset(this->background_tiles, 255, sizeof(this->background_tiles));
 	memset(this->foreground_tiles , 255, sizeof(this->foreground_tiles));
-	memset(this->sprite_tiles, 255, sizeof(this->sprite_tiles));
+	memset(this->sprite_tiles, 255, sizeof(this->sprite_tiles));*/
 
 
 	file.read(version,      sizeof(version));
@@ -243,19 +249,19 @@ void LevelClass::LoadVersion13(PFile::Path path, bool headerOnly){
 	ReadTiles(file, TILES_COMPRESSION_LEGACY,
 		PK2MAP_MAP_WIDTH,
 		PK2MAP_MAP_SIZE,
-		this->background_tiles);
+		this->sectorPlaceholder.background_tiles);
 
 	// foreground_tiles
 	ReadTiles(file, TILES_COMPRESSION_LEGACY,
 		PK2MAP_MAP_WIDTH,
 		PK2MAP_MAP_SIZE,
-		this->foreground_tiles);
+		this->sectorPlaceholder.foreground_tiles);
 
 	// sprite_tiles
 	ReadTiles(file, TILES_COMPRESSION_LEGACY,
 		PK2MAP_MAP_WIDTH,
 		PK2MAP_MAP_SIZE,
-		this->sprite_tiles);
+		this->sectorPlaceholder.sprite_tiles);
 	
 
 	file.close();
@@ -332,13 +338,13 @@ void LevelClass::LoadVersion15(PFile::Path path, bool headerOnly){
 	}
 
 	//background tiles
-	file.read(this->background_tiles, sizeof(u8)* PK2MAP_MAP_SIZE);
+	file.read(this->sectorPlaceholder.background_tiles, sizeof(u8)* PK2MAP_MAP_SIZE);
 
 	//foreground tiles
-	file.read(this->foreground_tiles, sizeof(u8)* PK2MAP_MAP_SIZE);
+	file.read(this->sectorPlaceholder.foreground_tiles, sizeof(u8)* PK2MAP_MAP_SIZE);
 
 	//sprite tiles
-	file.read(this->sprite_tiles, sizeof(u8)* PK2MAP_MAP_SIZE);
+	file.read(this->sectorPlaceholder.sprite_tiles, sizeof(u8)* PK2MAP_MAP_SIZE);
 
 	file.close();
 }
@@ -395,13 +401,13 @@ void LevelClass::SaveVersion15(PFile::Path path)const{
 	}
 
 	//background tiles
-	file.write(this->background_tiles, sizeof(u8)* PK2MAP_MAP_SIZE);
+	file.write(this->sectorPlaceholder.background_tiles, sizeof(u8)* PK2MAP_MAP_SIZE);
 
 	//foreground tiles
-	file.write(this->foreground_tiles, sizeof(u8)* PK2MAP_MAP_SIZE);
+	file.write(this->sectorPlaceholder.foreground_tiles, sizeof(u8)* PK2MAP_MAP_SIZE);
 
 	//sprite tiles
-	file.write(this->sprite_tiles, sizeof(u8)* PK2MAP_MAP_SIZE);
+	file.write(this->sectorPlaceholder.sprite_tiles, sizeof(u8)* PK2MAP_MAP_SIZE);
 
 	file.close();
 }
@@ -561,99 +567,12 @@ void LevelClass::moveBlocks(u32 button1, u32 button2, u32 button3){
 	this->block_types[BLOCK_BUTTON3].top = kytkin3_x;
 }
 
-void LevelClass::Calculate_Edges(){
+void LevelClass::DrawForegroundTiles(int camera_x, int camera_y){
 
-	u8 tile1, tile2, tile3;
-
-	memset(this->edges, false, sizeof(this->edges));
-
-	for (u32 x = 1; x < PK2MAP_MAP_WIDTH - 1; x++)
-		for (u32 y = 0; y < PK2MAP_MAP_HEIGHT - 1; y++){
-			bool edge = false;
-
-			tile1 = this->foreground_tiles[x+y*PK2MAP_MAP_WIDTH];
-
-			if (tile1 > BLOCK_EXIT)
-				this->foreground_tiles[x+y*PK2MAP_MAP_WIDTH] = 255;
-
-			tile2 = this->foreground_tiles[x+(y+1)*PK2MAP_MAP_WIDTH];
-
-			if (tile1 > 79 || tile1 == BLOCK_BARRIER_DOWN) tile1 = 1; else tile1 = 0;
-			if (tile2 > 79) tile2 = 1; else tile2 = 0;
-
-			if (tile1 == 1 && tile2 == 1){
-				tile1 = this->foreground_tiles[x+1+(y+1)*PK2MAP_MAP_WIDTH];
-				tile2 = this->foreground_tiles[x-1+(y+1)*PK2MAP_MAP_WIDTH];
-
-				if (tile1 < 80  && !(tile1 < 60 && tile1 > 49)) tile1 = 1; else tile1 = 0;
-				if (tile2 < 80  && !(tile2 < 60 && tile2 > 49)) tile2 = 1; else tile2 = 0;
-
-				if (tile1 == 1){
-					tile3 = this->foreground_tiles[x+1+y*PK2MAP_MAP_WIDTH];
-					if (tile3 > 79 || (tile3 < 60 && tile3 > 49) || tile3 == BLOCK_BARRIER_DOWN)
-						edge = true;
-				}
-
-				if (tile2 == 1){
-					tile3 = this->foreground_tiles[x-1+y*PK2MAP_MAP_WIDTH];
-					if (tile3 > 79 || (tile3 < 60 && tile3 > 49) || tile3 == BLOCK_BARRIER_DOWN)
-						edge = true;
-				}
-
-				if (edge){
-					this->edges[x+y*PK2MAP_MAP_WIDTH] = true;
-					//this->background_tiles[x+y*PK2MAP_MAP_WIDTH] = 18; //Debug
-				}
-			}
-		}
-}
-
-
-void LevelClass::DrawBackgroundTiles(int kamera_x, int kamera_y){
-	
-	int kartta_x = kamera_x/32;
-	int kartta_y = kamera_y/32;
-
-	int tiles_w = screen_width/32 + 1;
-	int tiles_h = screen_height/32 + 1;
-
-
-	for (int x = 0; x < tiles_w; x++){
-		if (x + kartta_x < 0 || uint(x + kartta_x) > PK2MAP_MAP_WIDTH) continue;
-
-		for (int y = 0; y < tiles_h; y++){
-			if (y + kartta_y < 0 || uint(y + kartta_y) > PK2MAP_MAP_HEIGHT) continue;
-
-			int i = x + kartta_x + (y + kartta_y) * PK2MAP_MAP_WIDTH;
-			if( i < 0 || i >= int(sizeof(background_tiles)) ) continue; //Dont access a not allowed address
-
-			int block = background_tiles[i];
-
-			if (block != 255){
-				int px = ((block%10)*32);
-				int py = ((block/10)*32);
-
-				if (block == BLOCK_ANIM1 || block == BLOCK_ANIM2 || block == BLOCK_ANIM3 || block == BLOCK_ANIM4)
-					px += block_animation_frame * 32;
-
-				PDraw::image_cutclip(this->tileset2 ? this->tileset2.getImage() : this->tileset1.getImage(),	
-				x*32-(kamera_x%32), y*32-(kamera_y%32), px, py, px+32, py+32);
-			}
-		}
-	}
-}
-
-void LevelClass::DrawForegroundTiles(int kamera_x, int kamera_y){
-
-	int kartta_x = kamera_x / 32;
-	int kartta_y = kamera_y / 32;
 
 	int button1_timer_y = 0;
 	int button2_timer_y = 0;
 	int button3_timer_y = 0;
-
-	int tiles_w = screen_width  / 32 + 1;
-	int tiles_h = screen_height / 32 + 1;
 
 	if (button1_timer > 0){
 		button1_timer_y = 64;
@@ -685,64 +604,9 @@ void LevelClass::DrawForegroundTiles(int kamera_x, int kamera_y){
 			button3_timer_y = button3_time - button3_timer;
 	}
 
+	this->sectorPlaceholder.drawForegroundTiles(camera_x, camera_y, this->block_animation_frame,
+	this->arrows_block_degree, button1_timer_y, button2_timer_y, button3_timer_y);
 
-	for (int x = -1; x < tiles_w + 1; x++) {
-		if (x + kartta_x < 0 || uint(x + kartta_x) > PK2MAP_MAP_WIDTH) continue;
-
-		for (int y = -1; y < tiles_h + 1; y++) {
-			if (y + kartta_y < 0 || uint(y + kartta_y) > PK2MAP_MAP_HEIGHT) continue;
-
-			int i = x + kartta_x + (y + kartta_y) * PK2MAP_MAP_WIDTH;
-			if( i < 0 || i >= int(sizeof(foreground_tiles)) ) continue; //Dont access a not allowed address
-
-			u8 block = foreground_tiles[i];
-
-			if (block != 255 && block != BLOCK_BARRIER_DOWN){
-				
-				int px = (block % 10) * 32;
-				int py = (block / 10) * 32;
-				
-				int ay = 0;
-				int ax = 0;
-
-				if (block == BLOCK_LIFT_VERT)
-					ay = floor(sin_table(arrows_block_degree));
-
-				else if (block == BLOCK_LIFT_HORI)
-					ax = floor(cos_table(arrows_block_degree));
-
-				else if (block == BLOCK_BUTTON1)
-					ay = button1_timer_y/2;
-
-				else if (block == BLOCK_BUTTON2_UP)
-					ay = -button2_timer_y/2;
-
-				else if (block == BLOCK_BUTTON2_DOWN)
-					ay = button2_timer_y/2;
-
-				else if (block == BLOCK_BUTTON2)
-					ay = button2_timer_y/2;
-
-				else if (block == BLOCK_BUTTON3_RIGHT)
-					ax = button3_timer_y/2;
-
-				else if (block == BLOCK_BUTTON3_LEFT)
-					ax = -button3_timer_y/2;
-
-				else if (block == BLOCK_BUTTON3)
-					ay = button3_timer_y/2;
-
-				else if (block == BLOCK_ANIM1 || block == BLOCK_ANIM2 || block == BLOCK_ANIM3 || block == BLOCK_ANIM4)
-					px += block_animation_frame * 32;
-
-				//hide drift tiles
-				else if(block == BLOCK_DRIFT_LEFT || block == BLOCK_DRIFT_RIGHT)
-					continue;
-
-				PDraw::image_cutclip(this->tileset1.getImage(), x*32-(kamera_x%32)+ax, y*32-(kamera_y%32)+ay, px, py, px+32, py+32);
-			}
-		}
-	}
 
 	if (tiles_animation_timer%2 == 0)
 	{
