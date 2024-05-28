@@ -10,15 +10,21 @@
 void Background::load(PFile::Path path){
     if (!FindAsset(&path, "gfx" PE_SEP "scenery" PE_SEP)){
         throw PExcept::FileNotFoundException(path.c_str(), PExcept::MISSING_BACKGROUND);
-    }
-	
-	PDraw::image_load(this->picture, path, true, false);
+	}
+
+	std::pair<int, int> p = PDraw::image_load_with_palette(path, false);
+	this->picture = p.first;
+	this->pallete = p.second;
+
+	PDraw::pallete_set(this->pallete);
+
 	if (this->picture == -1)
 		throw PExcept::PException("Cannot load the background!");
 }
 
 void Background::clear(){
     PDraw::image_delete(this->picture);
+	PDraw::pallete_delete(this->pallete);
 }
 
 

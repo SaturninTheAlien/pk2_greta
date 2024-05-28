@@ -73,7 +73,7 @@ int PFont::load(PFile::Path path) {
 	if (!path.Find())
 		return -1;
 
-	int temp_image = PDraw::image_load(path, false);
+	int temp_image = PDraw::image_load(path, true);
 	if (temp_image == -1) return -1;
 
 	this->get_image(buf_x, buf_y, temp_image);

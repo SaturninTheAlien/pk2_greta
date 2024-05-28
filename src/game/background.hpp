@@ -29,4 +29,5 @@ public:
     void draw(int camera_x, int camera_y);
 private:
     int picture = -1;
+    int pallete = -1;
 };

@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <vector>
+#include <array>
 
 #include <SDL_image.h>
 
@@ -21,15 +22,13 @@ static SDL_Surface* frameBuffer8 = NULL;
 // game_colors stores the original colors,
 // without alpha modification
 static SDL_Palette* game_palette = NULL;
-static SDL_Color game_colors[256];
-static SDL_Color buff_colors[256];
+//static SDL_Color game_colors[256];
+//static SDL_Color buff_colors[256];
 
 static std::vector<SDL_Surface*> imageList;
 static std::vector<PFont*> fontList;
 
 static bool ready = false;
-
-static float color_r = 1, color_g = 1, color_b = 1;
 
 static int x_offset = 0;
 static int y_offset = 0;
@@ -39,19 +38,41 @@ static int offset_height = 0;
 
 #define IS_UNITY(X) ((X > 0.99) && (X < 1.01))
 
-static int update_palette_effect() {
 
-    if (IS_UNITY(color_r) || IS_UNITY(color_g) || IS_UNITY(color_b))
-        return SDL_SetPaletteColors(game_palette, game_colors, 0, 256);
+class Palette{
+public:
+    SDL_Color colors[256];
+    float r = 1;
+    float g = 1;
+    float b = 1;
 
-    // Why cant't it be defined here?
-    //SDL_Color buff_colors[256];
+    int updateEffect();
+    void rotate(u8 start, u8 end);
+    void setRGB(float r, float g, float b){
+        this->r = r;
+        this->g = g;
+        this->b = b;
+        this->updateEffect();
+    }
+};
+
+static int mCurrentPalleteIndex = -1;
+static std::vector<Palette*> palleteList;
+
+int Palette::updateEffect(){
+
+    return SDL_SetPaletteColors(game_palette, this->colors, 0, 256);
+
+    /*if (IS_UNITY(this->r) || IS_UNITY(this->g) || IS_UNITY(this->b))
+        return SDL_SetPaletteColors(game_palette, this->colors, 0, 256);*/
+
+    /*SDL_Color buff_colors[256];
 
     for (int i = 0; i < 256; i++) {
 
-        int r = game_colors[i].r * color_r;
-        int g = game_colors[i].g * color_g;
-        int b = game_colors[i].b * color_b;
+        int r = this->colors[i].r * this->r;
+        int g = this->colors[i].g * this->g;
+        int b = this->colors[i].b * this->b;
 
         if (r > 255) r = 255;
         if (r < 0)   r = 0;
@@ -63,11 +84,20 @@ static int update_palette_effect() {
         buff_colors[i].r = r;
         buff_colors[i].g = g;
         buff_colors[i].b = b;
-
     }
 
-    return SDL_SetPaletteColors(game_palette, buff_colors, 0, 256);
+    return SDL_SetPaletteColors(game_palette, buff_colors, 0, 256);*/
+}
 
+void Palette::rotate(u8 start, u8 end){
+
+    SDL_Color temp_color = this->colors[end];
+
+    for (uint i = end; i > start; i--)
+        this->colors[i] = this->colors[i-1];
+
+    this->colors[start] = temp_color;
+    this->updateEffect();
 }
 
 static int findfreeimage() {
@@ -92,17 +122,37 @@ static int findfreefont(){
     return size;
 }
 
+static int findfreepalette(){
+    int size = palleteList.size();
+
+    for(int i = 0; i < size; i++)
+        if(palleteList[i] == nullptr)
+            return i;
+
+    palleteList.push_back(nullptr);
+    return size;
+}
+
+void pallete_set(int index){
+    if(index<0 || index>= palleteList.size() || palleteList[index]==nullptr)return;
+    mCurrentPalleteIndex = index;
+    palleteList[index]->updateEffect();
+
+}
+
+void pallete_delete(int& index){
+    if(index<0 || index>= palleteList.size() || palleteList[index]==nullptr)return;
+
+    if(index==mCurrentPalleteIndex){
+        mCurrentPalleteIndex = -1;
+    }
+
+    delete palleteList[index];
+    palleteList[index] = nullptr;
+}
+
 void rotate_palette(u8 start, u8 end){
-
-    SDL_Color temp_color = game_colors[end];
-
-    for (uint i = end; i > start; i--)
-        game_colors[i] = game_colors[i-1];
-
-    game_colors[start] = temp_color;
-
-    update_palette_effect();
-
+    palleteList[mCurrentPalleteIndex]->rotate(start, end);
 }
 
 int image_new(int w, int h){
@@ -117,9 +167,9 @@ int image_new(int w, int h){
     
     return index;
 }
-int image_load(PFile::Path path, bool getPalette,
-    bool changeColorToAlpha,
-    unsigned int colorToAlpha) {
+
+
+static int mLoadImage(PFile::Path path, bool hasAlphaColor){
 
     int index = findfreeimage();
 
@@ -153,31 +203,46 @@ int image_load(PFile::Path path, bool getPalette,
         PLog::Write(PLog::ERR, "PDraw", "Failed to open %s, just 8bpp indexed images!", path.c_str());
         image_delete(index);
         return -1;
-    
     }
 
-    if(getPalette) {
-
-        SDL_Palette* pal = imageList[index]->format->palette;
-        SDL_memcpy(game_colors, pal->colors, sizeof(SDL_Color) * 256);
-        update_palette_effect();
-    
+    if(hasAlphaColor){
+        SDL_SetColorKey(imageList[index], SDL_TRUE, ALPHA_COLOR_INDEX);
     }
+
+    return index;
+}
+
+
+int image_load(PFile::Path path, bool hasAlphaColor) {
+
+    int index = mLoadImage(path, hasAlphaColor);
+    if(index<0)return index;
 
     SDL_SetSurfacePalette(imageList[index], game_palette);
-
-    if(changeColorToAlpha){
-        SDL_SetColorKey(imageList[index], SDL_TRUE, 255);
-    }
-
     return index;
 
 }
 
-int image_load(int& index, PFile::Path path, bool getPalette, bool changeColorToAlpha, unsigned int colorToAlpha) {
+std::pair<int, int> image_load_with_palette(PFile::Path path, bool hasAlphaColor){
+    int index = mLoadImage(path, hasAlphaColor);
+    if(index<0)return std::make_pair(-1, -1);
+
+    int palIndex = findfreepalette();
+    Palette* pal = new Palette();
+    palleteList[palIndex] = pal;
+
+    SDL_Palette* sdlPal = imageList[index]->format->palette;
+    SDL_memcpy(pal->colors, sdlPal->colors, sizeof(SDL_Color) * 256);
+
+    SDL_SetSurfacePalette(imageList[index], game_palette);
+    return std::make_pair(index, palIndex);
+}
+
+
+int image_load(int& index, PFile::Path path, bool hasAlphaColor) {
     
     image_delete(index);
-    index = image_load(path, getPalette, changeColorToAlpha, colorToAlpha);
+    index = image_load(path, hasAlphaColor);
 
     return index;
 
@@ -199,19 +264,17 @@ int image_copy(int image) {
 
 }
 
-int image_cut(int ImgIndex, int x, int y, int w, int h, bool changeColorToAlpha,
-        unsigned int colorToAlpha) {
+int image_cut(int ImgIndex, int x, int y, int w, int h) {
 
     RECT area;
     area.x = x; area.y = y;
     area.w = (w <= 0) ? imageList[ImgIndex]->w : w; //If 0 get the entire image
     area.h = (h <= 0) ? imageList[ImgIndex]->h : h;
 
-    return image_cut(ImgIndex, area, changeColorToAlpha, colorToAlpha);
+    return image_cut(ImgIndex, area);
 
 }
-int image_cut(int ImgIndex, RECT area, bool changeColorToAlpha,
-        unsigned int colorToAlpha) {
+int image_cut(int ImgIndex, RECT area) {
 
     int index = findfreeimage();
 
@@ -225,15 +288,9 @@ int image_cut(int ImgIndex, RECT area, bool changeColorToAlpha,
     imageList[index] = SDL_CreateRGBSurface(0, area.w, area.h, 8, 0, 0, 0, 0);
 
     SDL_SetSurfacePalette(imageList[index], game_palette);
-
-    if(changeColorToAlpha){
-        SDL_SetColorKey(imageList[index], SDL_TRUE, colorToAlpha);
-        SDL_FillRect(imageList[index], NULL, colorToAlpha);
-    }
-    else{
-        // TO DO - test this.
-        SDL_FillRect(imageList[index], NULL, SDL_MapRGBA(imageList[ImgIndex]->format, 0,0,0,0));
-    }
+    
+    SDL_SetColorKey(imageList[index], SDL_TRUE, ALPHA_COLOR_INDEX);
+    SDL_FillRect(imageList[index], NULL, ALPHA_COLOR_INDEX);
 
     // TODO - BlitScaled?
     SDL_BlitScaled(imageList[ImgIndex], (SDL_Rect*)&area, imageList[index], NULL);
@@ -721,19 +778,6 @@ void set_offset(int width, int height) {
         y_offset = 0;
 
     }
-
-}
-
-void set_rgb(float r, float g, float b) {
-
-    if (color_r == r && color_g == g && color_b == b)
-        return;
-
-    color_r = r;
-    color_g = g;
-    color_b = b;
-
-    update_palette_effect();
 
 }
 

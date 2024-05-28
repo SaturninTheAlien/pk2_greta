@@ -24,7 +24,7 @@ void Tileset::loadImage(PFile::Path path){
 		throw PExcept::FileNotFoundException(path.c_str(), PExcept::MISSING_TILESET);
 	}
 
-	PDraw::image_load(this->tiles, path, false);
+	PDraw::image_load(this->tiles, path, true);
 	if(this->tiles==-1){
 		throw PExcept::PException("Unable to load tileset image!");
 	}

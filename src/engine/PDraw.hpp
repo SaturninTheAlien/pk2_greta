@@ -4,10 +4,13 @@
 //#########################
 #pragma once
 #include <string>
+#include <utility>
 
 #include "engine/PFile.hpp"
 #include "engine/PFont.hpp"
 #include "engine/platform.hpp"
+
+#define ALPHA_COLOR_INDEX 255
 
 namespace PDraw {
 
@@ -19,24 +22,19 @@ struct RECT {
 
 void  rotate_palette(u8 start, u8 end);
 
+void  pallete_set(int index);
+void  pallete_delete(int& index);
+
 int   image_new(int w, int h);
-int   image_load(PFile::Path path, bool getPalette,
-        bool changeColorToAlpha=true,
-        unsigned int colorToAlpha = 255);
+int   image_load(PFile::Path path, bool hasAlphaColor=true);
+int   image_load(int& index, PFile::Path path, bool hasAlphaColor=true);
 
-int   image_load(int& index, PFile::Path path, bool getPalette,
-        bool changeColorToAlpha=true,
-        unsigned int colorToAlpha = 255);
-
+std::pair<int, int> image_load_with_palette(PFile::Path path, bool hasAlphaColor=true);
 
 int   image_copy(int image);
-int   image_cut(int ImgIndex, int x, int y, int w, int h,
-        bool changeColorToAlpha=true,
-        unsigned int colorToAlpha = 255);
+int   image_cut(int ImgIndex, int x, int y, int w, int h);
 
-int   image_cut(int ImgIndex, RECT area,
-        bool changeColorToAlpha=true,
-        unsigned int colorToAlpha = 255);
+int   image_cut(int ImgIndex, RECT area);
 
 int   image_clip(int index);
 int   image_clip(int index, int x, int y);
@@ -75,7 +73,7 @@ void  get_offset(int* x, int* y);
 void  set_offset(int width, int height);
 void  clear_fonts();
 
-void  set_rgb(float r, float g, float b);
+//void  set_rgb(float r, float g, float b);
 
 void  get_buffer_data(void** _buffer8);
 void  update();
