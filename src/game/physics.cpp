@@ -34,10 +34,6 @@ static double sprite_bottom;
 static int sprite_width;
 static int sprite_height;
 
-static inline PK2BLOCK Block_Get(u32 x, u32 y) {
-	return Game->level.sectorPlaceholder.getBlock(x, y, Game->level.block_types);
-}
-
 static void Check_SpriteBlock(SpriteClass* sprite, const PK2BLOCK &block) {
 
 	//left and right
@@ -186,8 +182,10 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 		/* Examine if it is a key and touches lock wall                       */
 		/**********************************************************************/
 		if (block.id == BLOCK_LOCK && sprite->prototype->can_open_locks){
-			Game->level.sectorPlaceholder.foreground_tiles[block.left/32+(block.top/32)*PK2MAP_MAP_WIDTH] = 255;
-			Game->level.Calculate_Edges();
+			LevelSector * sector = Game->getLevelSector(sprite->sector_id);
+
+			sector->foreground_tiles[block.left/32+(block.top/32)* sector->getWidth()] = 255;
+			sector->calculateEdges();
 
 			sprite->removed = true;
 
@@ -629,6 +627,8 @@ void UpdateSprite(SpriteClass* sprite){
 		throw PExcept::PException("Sprite with null prototype is not acceptable!");
 	}
 
+	LevelSector * sector = Game->getLevelSector(sprite->sector_id);
+
 	sprite_width  = sprite->prototype->width;
 	sprite_height = sprite->prototype->height;
 
@@ -910,7 +910,8 @@ void UpdateSprite(SpriteClass* sprite){
 				int p = x + y*palikat_x_lkm;
 				if ( p < 300 )
 					if (!(sprite == Player_Sprite && dev_mode && PInput::Keydown(PInput::Y))){
-						PK2BLOCK block = Block_Get(map_vasen+x-1,map_yla+y-1);
+						PK2BLOCK block = sector->getBlock(map_vasen+x-1,map_yla+y-1, Game->level.block_types);
+						//Block_Get(map_vasen+x-1,map_yla+y-1);
 						Check_MapBlock(sprite, block);
 					}
 			}
@@ -933,11 +934,11 @@ void UpdateSprite(SpriteClass* sprite){
 
 		if (rand()%80 == 1)
 			Particles_New(PARTICLE_SPARK,sprite->x-4,sprite->y,0,-0.5-rand()%2,rand()%30+30,0,
-			Game->level.sectorPlaceholder.splash_color);
+			sector->splash_color);
 	}
 
 	if (in_water != sprite->in_water&&!sprite->initial_update) { // Sprite comes in or out from water
-		Effect_Splash(sprite->x, sprite->y, Game->level.sectorPlaceholder.splash_color);
+		Effect_Splash(sprite->x, sprite->y, sector->splash_color);
 		Play_GameSFX(Episode->sfx.splash_sound, 100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, true);
 	}
 
@@ -1248,10 +1249,10 @@ void UpdateSprite(SpriteClass* sprite){
 	if (sprite == Player_Sprite || sprite->energy < 1) {
 		double kitka = 1.04;
 
-		if (Game->level.sectorPlaceholder.weather == WEATHER_RAIN || Game->level.sectorPlaceholder.weather == WEATHER_RAIN_LEAVES)
+		if (sector->weather == WEATHER_RAIN || sector->weather == WEATHER_RAIN_LEAVES)
 			kitka = 1.03; // Slippery ground in the rain
 
-		if (Game->level.sectorPlaceholder.weather == WEATHER_SNOW)
+		if (sector->weather == WEATHER_SNOW)
 			kitka = 1.01; // And even more on snow
 
 		if (!sprite->can_move_down)
@@ -1280,16 +1281,16 @@ void UpdateSprite(SpriteClass* sprite){
 		sprite->can_move_up = false;
 	}		
 
-	if (sprite->x > PK2MAP_MAP_WIDTH*32){
+	if (sprite->x > sector->getWidth()*32){
 		sprite->can_move_right = false;
-		sprite->x = PK2MAP_MAP_WIDTH*32;
+		sprite->x = sector->getWidth()*32;
 	}
 		
 
 	// If the sprite falls under the lower edge of the level
-	if (sprite->y > PK2MAP_MAP_HEIGHT*32 + sprite_height) {
+	if (sprite->y > sector->getHeight()*32 + sprite_height) {
 
-		sprite->y = PK2MAP_MAP_HEIGHT*32 + sprite_height;
+		sprite->y = sector->getHeight() *32 + sprite_height;
 		sprite->energy = 0;
 		sprite->damage_taken_type = DAMAGE_ALL;
 		sprite->removed = true;
@@ -1436,6 +1437,9 @@ void UpdateSprite(SpriteClass* sprite){
 }
 
 void UpdateBonusSprite(SpriteClass* sprite){
+
+	LevelSector * sector = Game->getLevelSector(sprite->sector_id);
+
 	sprite_width  = sprite->prototype->width;
 	sprite_height = sprite->prototype->height;
 
@@ -1459,16 +1463,16 @@ void UpdateBonusSprite(SpriteClass* sprite){
 		sprite->can_move_up = false;
 	}		
 
-	if (sprite->x > PK2MAP_MAP_WIDTH*32){
+	if (sprite->x > sector->getWidth()*32){
 		sprite->can_move_right = false;
-		sprite->x = PK2MAP_MAP_WIDTH*32;
+		sprite->x = sector->getWidth()*32;
 	}
 		
 
 	// If the sprite falls under the lower edge of the level
-	if (sprite->y > PK2MAP_MAP_HEIGHT*32 + sprite_height) {
+	if (sprite->y > sector->getHeight()*32 + sprite_height) {
 
-		sprite->y = PK2MAP_MAP_HEIGHT*32 + sprite_height;
+		sprite->y = sector->getHeight()*32 + sprite_height;
 		sprite->energy = 0;
 		sprite->removed = true;
 	}
@@ -1515,7 +1519,7 @@ void UpdateBonusSprite(SpriteClass* sprite){
 
 			if (rand()%80 == 1)
 				Particles_New(PARTICLE_SPARK,sprite->x-4,sprite->y,0,-0.5-rand()%2,rand()%30+30,0,
-				Game->level.sectorPlaceholder.splash_color);
+				sector->splash_color);
 		}
 
 		sprite->in_water = false;
@@ -1641,14 +1645,15 @@ void UpdateBonusSprite(SpriteClass* sprite){
 
 			for (int y = 0; y < palikat_y_lkm; y++)
 				for (int x = 0; x < palikat_x_lkm; x++){
-					PK2BLOCK block = Block_Get(map_vasen+x-1,map_yla+y-1);
+					PK2BLOCK block = sector->getBlock(map_vasen+x-1,map_yla+y-1, Game->level.block_types);
+					//Block_Get(map_vasen+x-1,map_yla+y-1);
 					Check_MapBlock(sprite, block);
 				}
 
 		}
 
 		if (in_water != sprite->in_water && !sprite->initial_update) {
-			Effect_Splash((int)sprite->x,(int)sprite->y, Game->level.sectorPlaceholder.splash_color);
+			Effect_Splash((int)sprite->x,(int)sprite->y, sector->splash_color);
 			Play_GameSFX(Episode->sfx.splash_sound, 100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, true);
 		}
 

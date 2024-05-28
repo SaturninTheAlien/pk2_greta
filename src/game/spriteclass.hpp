@@ -28,6 +28,7 @@ public:
     double  y                = 0;               // sprite y location
     double  a                = 0;               // horizontal speed
     double  b                = 0;               // vertical speed
+    u32     sector_id           = 0;
     bool    flip_x           = false;           // if it is flipped horizontally
     bool    flip_y           = false;           // if it is flipped vertically
     int     jump_timer       = 0;               // jump times: = 0 not jumping; > 0 jumping; < 0 falling

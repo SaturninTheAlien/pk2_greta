@@ -16,16 +16,12 @@ typedef struct {
     int left, top, right, bottom;
 } MAP_RECT;
 
-#define PK2MAP_LAST_VERSION "1.3"
+#define PK2MAP_LAST_VERSION "1.5"
+#define SWITCH_INITIAL_VALUE 2000
 
 #define PK2MAP_MAP_WIDTH  256
 #define PK2MAP_MAP_HEIGHT 224
 #define PK2MAP_MAP_SIZE   PK2MAP_MAP_WIDTH * PK2MAP_MAP_HEIGHT
-
-#define PK2MAP_MAP_MAX_PROTOTYPES 100
-
-#define SWITCH_INITIAL_VALUE 2000
-
 
 enum{
     GAME_MODE_STANDARD = 0,

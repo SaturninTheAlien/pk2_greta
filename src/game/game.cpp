@@ -58,6 +58,7 @@ GameClass::GameClass(std::string map_file) {
 GameClass::~GameClass(){
 
 	PSound::stop_music();
+	PDraw::pallete_set(default_palette);
 	this->spritesHandler.clearAll();
 
 	if(this->lua!=nullptr){

@@ -99,6 +99,14 @@ class GameClass {
 		void StartMusic();
 		
 		sol::state * lua = nullptr;
+
+		LevelSector* getLevelSector(u32){
+			/**
+			 * Placeholder
+			*/
+			return &this->level.sectorPlaceholder;
+		}
+
 	private:		
 		bool started = false;
 		int Open_Map();

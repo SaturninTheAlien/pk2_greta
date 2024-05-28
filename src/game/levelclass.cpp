@@ -19,6 +19,9 @@
 #include <cmath>
 #include <array>
 
+#define PK2MAP_MAP_MAX_PROTOTYPES 100
+
+
 void LevelClass::SetTilesAnimations(int degree, int anim, u32 aika1, u32 aika2, u32 aika3) {
 
 	arrows_block_degree = degree;
