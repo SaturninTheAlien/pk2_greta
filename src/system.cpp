@@ -34,9 +34,10 @@ char id_code[8] = "";
 
 std::string data_path;
 
-int default_pallete = -1;
+int default_palette = -1;
 int game_assets = -1;
 int game_assets2 = -1;
+
 int bg_screen = -1;
 
 int key_delay = 0;
@@ -119,7 +120,7 @@ void Update_Colors() {
 
 	float thunder = (thunder_index == thunder_size) ? 1 : thunder_sheet[thunder_index];
 
-    //PDraw::set_rgb(alpha * thunder, alpha * thunder, alpha * thunder);
+    PDraw::set_rgb(alpha * thunder, alpha * thunder, alpha * thunder);
 
 }
 

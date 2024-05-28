@@ -1392,8 +1392,9 @@ void MenuScreen::Init() {
 	langlistindex = 0;
 
 	if (!Episode) {
+		PDraw::image_load_with_palette(bg_screen, default_palette, PFile::Path("gfx" PE_SEP "menu.bmp"), true);
+		PDraw::pallete_set(default_palette);
 
-		PDraw::image_load(bg_screen, PFile::Path("gfx" PE_SEP "menu.bmp"), true);
 		PSound::start_music(PFile::Path("music" PE_SEP "song09.xm"));
 		PSound::set_musicvolume(Settings.music_max_volume);
 	

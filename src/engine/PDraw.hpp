@@ -30,6 +30,7 @@ int   image_load(PFile::Path path, bool hasAlphaColor=true);
 int   image_load(int& index, PFile::Path path, bool hasAlphaColor=true);
 
 std::pair<int, int> image_load_with_palette(PFile::Path path, bool hasAlphaColor=true);
+void   image_load_with_palette(int& img_index, int& pal_index, PFile::Path path, bool hasAlphaColor=true);
 
 int   image_copy(int image);
 int   image_cut(int ImgIndex, int x, int y, int w, int h);
@@ -73,7 +74,7 @@ void  get_offset(int* x, int* y);
 void  set_offset(int width, int height);
 void  clear_fonts();
 
-//void  set_rgb(float r, float g, float b);
+void  set_rgb(float r, float g, float b);
 
 void  get_buffer_data(void** _buffer8);
 void  update();

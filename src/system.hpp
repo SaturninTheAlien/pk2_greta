@@ -43,6 +43,9 @@ extern std::string data_path;
 
 extern int game_assets;
 extern int game_assets2;
+extern int default_palette;
+
+
 extern int bg_screen;
 
 extern int key_delay;

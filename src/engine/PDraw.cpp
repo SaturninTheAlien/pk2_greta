@@ -61,12 +61,12 @@ static std::vector<Palette*> palleteList;
 
 int Palette::updateEffect(){
 
-    return SDL_SetPaletteColors(game_palette, this->colors, 0, 256);
+    //return SDL_SetPaletteColors(game_palette, this->colors, 0, 256);
 
     /*if (IS_UNITY(this->r) || IS_UNITY(this->g) || IS_UNITY(this->b))
         return SDL_SetPaletteColors(game_palette, this->colors, 0, 256);*/
 
-    /*SDL_Color buff_colors[256];
+    SDL_Color buff_colors[256];
 
     for (int i = 0; i < 256; i++) {
 
@@ -86,7 +86,7 @@ int Palette::updateEffect(){
         buff_colors[i].b = b;
     }
 
-    return SDL_SetPaletteColors(game_palette, buff_colors, 0, 256);*/
+    return SDL_SetPaletteColors(game_palette, buff_colors, 0, 256);
 }
 
 void Palette::rotate(u8 start, u8 end){
@@ -153,6 +153,10 @@ void pallete_delete(int& index){
 
 void rotate_palette(u8 start, u8 end){
     palleteList[mCurrentPalleteIndex]->rotate(start, end);
+}
+
+void set_rgb(float r, float g, float b){
+    palleteList[mCurrentPalleteIndex]->setRGB(r,g,b);
 }
 
 int image_new(int w, int h){
@@ -246,6 +250,17 @@ int image_load(int& index, PFile::Path path, bool hasAlphaColor) {
 
     return index;
 
+}
+
+void image_load_with_palette(int& img_index, int& pal_index, PFile::Path path, bool hasAlphaColor){
+
+    image_delete(img_index);
+    pallete_delete(pal_index);
+
+    std::pair p = image_load_with_palette(path, hasAlphaColor);
+
+    img_index = p.first;
+    pal_index = p.second;
 }
 
 int image_copy(int image) {
