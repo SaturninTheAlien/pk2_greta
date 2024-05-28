@@ -8,7 +8,6 @@
 #include "system.hpp"
 #include "gfx/text.hpp"
 #include "gfx/particles.hpp"
-#include "gfx/effect.hpp"
 #include "episode/episodeclass.hpp"
 #include "settings.hpp"
 #include "gui.hpp"
@@ -202,10 +201,11 @@ void GameClass::Place_Sprites() {
 	this->spritesHandler.addPlayer(prototype, 0, 0);
 	this->Select_Start();
 
-	for (u32 x = 0; x < PK2MAP_MAP_WIDTH; x++) {
-		for (u32 y = 0; y < PK2MAP_MAP_HEIGHT; y++) {
+	for (u32 y = 0; y < level.sectorPlaceholder.getHeight(); y++){
+		for (u32 x = 0; x < level.sectorPlaceholder.getWidth(); x++) {
+		
 
-			int sprite = level.sectorPlaceholder.sprite_tiles[x+y*PK2MAP_MAP_WIDTH];
+			int sprite = level.sectorPlaceholder.sprite_tiles[x+y*level.sectorPlaceholder.getWidth()];
 			if(sprite<0||sprite>=255) continue;
 
 			prototype = this->spritesHandler.getLevelPrototype(sprite);
@@ -251,29 +251,28 @@ void GameClass::Select_Start() {
 	double  pos_x = 320;
 	double  pos_y = 196;
 
-	std::vector<u32> starts;
+	std::vector<BlockPosition> startSigns;
 
-	for (u32 i = 0; i < PK2MAP_MAP_SIZE; i++)
-		if (level.sectorPlaceholder.foreground_tiles[i] == BLOCK_START)
-			starts.push_back(i);
+	level.sectorPlaceholder.countStartSigns(startSigns, 0);
 
-	if (starts.size() > 0) {
-		u32 i = starts[rand() % starts.size()];
-
-		u32 x = i % PK2MAP_MAP_WIDTH;
-		u32 y = i / PK2MAP_MAP_WIDTH;
-
-		pos_x = x*32;
-		pos_y = y*32;
-
+	int selected_start = 0;
+	if(startSigns.size()>1){
+		selected_start = rand() % startSigns.size();
 	}
 
-	SpriteClass * Player_Sprite = this->spritesHandler.Player_Sprite;
-	Player_Sprite->x = pos_x + Player_Sprite->prototype->width/2;
-	Player_Sprite->y = pos_y - Player_Sprite->prototype->height/2;
 
-	this->camera_x = (int)Player_Sprite->x;
-	this->camera_y = (int)Player_Sprite->y;
+	if(startSigns.size()>0){
+		pos_x = startSigns[selected_start].x * 32;
+		pos_y = startSigns[selected_start].y * 32;
+	}
+
+
+	SpriteClass * playerSprite = this->spritesHandler.Player_Sprite;
+	playerSprite->x = pos_x + playerSprite->prototype->width/2;
+	playerSprite->y = pos_y - playerSprite->prototype->height/2;
+
+	this->camera_x = (int)playerSprite->x;
+	this->camera_y = (int)playerSprite->y;
 	this->dcamera_x = this->camera_x;
 	this->dcamera_y = this->camera_y;
 
@@ -321,23 +320,7 @@ void GameClass::ExecuteEventsIfNeeded(){
 }
 
 void GameClass::Change_SkullBlocks() {
-
-	for (u32 x = 0; x < PK2MAP_MAP_WIDTH; x++)
-		for (u32 y = 0; y < PK2MAP_MAP_HEIGHT; y++){
-			
-			u8 front = level.sectorPlaceholder.foreground_tiles[x+y*PK2MAP_MAP_WIDTH];
-			u8 back  = level.sectorPlaceholder.background_tiles[x+y*PK2MAP_MAP_WIDTH];
-
-			if (front == BLOCK_SKULL_FOREGROUND){
-				level.sectorPlaceholder.foreground_tiles[x+y*PK2MAP_MAP_WIDTH] = 255;
-				if (back != BLOCK_SKULL_FOREGROUND)
-					Effect_SmokeClouds(x*32+24,y*32+6);
-
-			}
-
-			if (back == BLOCK_SKULL_BACKGROUND && front == 255)
-				level.sectorPlaceholder.foreground_tiles[x+y*PK2MAP_MAP_WIDTH] = BLOCK_SKULL_FOREGROUND;
-		}
+	this->level.sectorPlaceholder.changeSkulls();
 
 	//Put in game
 	this->vibration = 90;//60
@@ -350,16 +333,7 @@ void GameClass::Change_SkullBlocks() {
 
 void GameClass::Open_Locks() {
 
-	for (u32 x = 0; x < PK2MAP_MAP_WIDTH; x++)
-		for (u32 y = 0; y < PK2MAP_MAP_HEIGHT; y++){
-			
-			u8 block = level.sectorPlaceholder.foreground_tiles[x+y*PK2MAP_MAP_WIDTH];
-			
-			if (block == BLOCK_LOCK){
-				level.sectorPlaceholder.foreground_tiles[x+y*PK2MAP_MAP_WIDTH] = 255;
-				Effect_SmokeClouds(x*32+24,y*32+6);
-			}
-		}
+	this->level.sectorPlaceholder.openKeylocks();
 
 	//Put in game
 	this->vibration = 90;//60
@@ -381,8 +355,67 @@ void GameClass::Show_Info(const std::string& text) {
 	}
 }
 
-bool GameClass::isStarted() {
+void GameClass::updateCamera(){
+	SpriteClass* playerSprite = this->spritesHandler.Player_Sprite;
+	const LevelSector* sector = this->getLevelSector(playerSprite->sector_id);
 
-	return started;
+	this->camera_x = (int)playerSprite->x-screen_width / 2;
+	this->camera_y = (int)playerSprite->y-screen_height / 2;
+	
+	if(dev_mode && PInput::MouseLeft() /*&& !PUtils::Is_Mobile()*/) {
+		this->camera_x += PInput::mouse_x - screen_width / 2;
+		this->camera_y += PInput::mouse_y - screen_height / 2;
+	}
 
+	if (this->vibration > 0) {
+		this->dcamera_x += (rand()%this->vibration-rand()%this->vibration)/5;
+		this->dcamera_y += (rand()%this->vibration-rand()%this->vibration)/5;
+
+		this->vibration--;
+	}
+
+	if (this->button_vibration > 0) {
+		this->dcamera_x += (rand()%9-rand()%9);//3
+		this->dcamera_y += (rand()%9-rand()%9);
+
+		this->button_vibration--;
+	}
+
+	if (this->dcamera_x != this->camera_x)
+		this->dcamera_a = (this->camera_x - this->dcamera_x) / 15;
+
+	if (this->dcamera_y != this->camera_y)
+		this->dcamera_b = (this->camera_y - this->dcamera_y) / 15;
+
+	if (this->dcamera_a > 6)
+		this->dcamera_a = 6;
+
+	if (this->dcamera_a < -6)
+		this->dcamera_a = -6;
+
+	if (this->dcamera_b > 6)
+		this->dcamera_b = 6;
+
+	if (this->dcamera_b < -6)
+		this->dcamera_b = -6;
+
+	this->dcamera_x += this->dcamera_a;
+	this->dcamera_y += this->dcamera_b;
+
+	this->camera_x = (int)this->dcamera_x;
+	this->camera_y = (int)this->dcamera_y;
+
+	if (this->camera_x < 0)
+		this->camera_x = 0;
+
+	if (this->camera_y < 0)
+		this->camera_y = 0;
+
+	if (this->camera_x > int(sector->getWidth() -screen_width/32)*32)
+		this->camera_x = int(sector->getWidth()-screen_width/32)*32;
+
+	if (this->camera_y > int(sector->getHeight()-screen_height/32)*32)
+		this->camera_y = int(sector->getHeight()-screen_height/32)*32;
 }
+
+

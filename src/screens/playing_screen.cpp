@@ -579,77 +579,13 @@ void PlayingScreen::Init(){
 	}
 }
 
-void PlayingScreen::Update_Camera(){
-
-	SpriteClass* Player_Sprite = Game->spritesHandler.Player_Sprite;
-
-	Game->camera_x = (int)Player_Sprite->x-screen_width / 2;
-	Game->camera_y = (int)Player_Sprite->y-screen_height / 2;
-	
-	if(dev_mode && PInput::MouseLeft() && !PUtils::Is_Mobile()) {
-		Game->camera_x += PInput::mouse_x - screen_width / 2;
-		Game->camera_y += PInput::mouse_y - screen_height / 2;
-	}
-
-	if (Game->vibration > 0) {
-		Game->dcamera_x += (rand()%Game->vibration-rand()%Game->vibration)/5;
-		Game->dcamera_y += (rand()%Game->vibration-rand()%Game->vibration)/5;
-
-		Game->vibration--;
-	}
-
-	if (Game->button_vibration > 0) {
-		Game->dcamera_x += (rand()%9-rand()%9);//3
-		Game->dcamera_y += (rand()%9-rand()%9);
-
-		Game->button_vibration--;
-	}
-
-	if (Game->dcamera_x != Game->camera_x)
-		Game->dcamera_a = (Game->camera_x - Game->dcamera_x) / 15;
-
-	if (Game->dcamera_y != Game->camera_y)
-		Game->dcamera_b = (Game->camera_y - Game->dcamera_y) / 15;
-
-	if (Game->dcamera_a > 6)
-		Game->dcamera_a = 6;
-
-	if (Game->dcamera_a < -6)
-		Game->dcamera_a = -6;
-
-	if (Game->dcamera_b > 6)
-		Game->dcamera_b = 6;
-
-	if (Game->dcamera_b < -6)
-		Game->dcamera_b = -6;
-
-	Game->dcamera_x += Game->dcamera_a;
-	Game->dcamera_y += Game->dcamera_b;
-
-	Game->camera_x = (int)Game->dcamera_x;
-	Game->camera_y = (int)Game->dcamera_y;
-
-	if (Game->camera_x < 0)
-		Game->camera_x = 0;
-
-	if (Game->camera_y < 0)
-		Game->camera_y = 0;
-
-	if (Game->camera_x > int(PK2MAP_MAP_WIDTH-screen_width/32)*32)
-		Game->camera_x = int(PK2MAP_MAP_WIDTH-screen_width/32)*32;
-
-	if (Game->camera_y > int(PK2MAP_MAP_HEIGHT-screen_height/32)*32)
-		Game->camera_y = int(PK2MAP_MAP_HEIGHT-screen_height/32)*32;
-
-}
-
 void PlayingScreen::Loop(){
 	if (!Game->level_clear && (!Game->has_time || Game->timeout > 0)) {
 		Game->level.SetTilesAnimations(degree, Game->palikka_animaatio/7, Game->button1, Game->button2, Game->button3);
 		Game->palikka_animaatio = 1 + Game->palikka_animaatio % 34;
 	}
 
-	Update_Camera();
+	Game->updateCamera();
 	Update_GameSFX();
 
 	if (!Game->paused) {

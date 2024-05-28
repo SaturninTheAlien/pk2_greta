@@ -19,6 +19,10 @@
 #include <cmath>
 #include <array>
 
+
+#define PK2MAP_MAP_WIDTH  256
+#define PK2MAP_MAP_HEIGHT 224
+#define PK2MAP_MAP_SIZE   PK2MAP_MAP_WIDTH * PK2MAP_MAP_HEIGHT
 #define PK2MAP_MAP_MAX_PROTOTYPES 100
 
 

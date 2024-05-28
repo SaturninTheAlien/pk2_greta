@@ -21,6 +21,14 @@ enum {
 
 };
 
+class BlockPosition{
+public:
+    BlockPosition(u32 x, u32 y, u32 sector):x(x),y(y),sector(sector){}
+    u32 x = 0;
+    u32 y = 0;
+    u32 sector = 0;
+};
+
 class LevelSector{
 public:
     LevelSector(std::size_t height, std::size_t width);
@@ -54,6 +62,9 @@ public:
     }
 
     PK2BLOCK getBlock(u32 x, u32 y, const std::array<PK2BLOCK, TILESET_SIZE>& block_types)const;
+    void openKeylocks();
+    void changeSkulls();
+    void countStartSigns(std::vector<BlockPosition>& vec, u32 sector_id)const;
 
     u8* background_tiles = nullptr;
     u8* foreground_tiles = nullptr;

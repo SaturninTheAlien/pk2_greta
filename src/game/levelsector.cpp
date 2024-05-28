@@ -5,6 +5,8 @@
 #include "levelsector.hpp"
 #include "engine/PDraw.hpp"
 #include "system.hpp"
+#include "gfx/effect.hpp"
+
 
 LevelSector::LevelSector(std::size_t height, std::size_t width):
 mHeight(height), mWidth(width){
@@ -250,4 +252,48 @@ PK2BLOCK LevelSector::getBlock(u32 x, u32 y, const std::array<PK2BLOCK, TILESET_
 	block.border = this->edges[x+y*this->mWidth];
 
 	return block;
+}
+
+void LevelSector::openKeylocks(){
+	for (u32 y = 0; y < this->mHeight; y++){
+		for(u32 x = 0; x < this->mWidth; x++){
+			u8 block = this->foreground_tiles[x+y*this->mWidth];
+			
+			if (block == BLOCK_LOCK){
+				this->foreground_tiles[x+y*this->mWidth] = 255;
+				Effect_SmokeClouds(x*32+24,y*32+6);
+			}
+		}
+	}
+}
+
+void LevelSector::changeSkulls(){
+	for (u32 y = 0; y < this->mHeight; y++){
+		for(u32 x = 0; x < this->mWidth; x++){
+			
+			u8 front = this->foreground_tiles[x+y*this->mWidth];
+			u8 back  = this->background_tiles[x+y*this->mWidth];
+
+			if (front == BLOCK_SKULL_FOREGROUND){
+				this->foreground_tiles[x+y*this->mWidth] = 255;
+				if (back != BLOCK_SKULL_FOREGROUND)
+					Effect_SmokeClouds(x*32+24,y*32+6);
+
+			}
+
+			if (back == BLOCK_SKULL_BACKGROUND && front == 255)
+				this->foreground_tiles[x+y*this->mWidth] = BLOCK_SKULL_FOREGROUND;
+		}
+	}
+}
+
+void LevelSector::countStartSigns(std::vector<BlockPosition>& vec, u32 sector_id)const{
+	for (u32 y = 0; y < this->mHeight; y++){
+		for(u32 x = 0; x < this->mWidth; x++){
+			u8 block = this->foreground_tiles[x+y*this->mWidth];
+			if(block == BLOCK_START){
+				vec.push_back(BlockPosition(x, y, sector_id));
+			}
+		}
+	}
 }

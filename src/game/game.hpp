@@ -82,8 +82,6 @@ class GameClass {
 
 		void Show_Info(const std::string& text);
 
-		bool isStarted();
-
 		void Place_Sprites();
 		void Select_Start();
 		void Open_Locks();
@@ -99,6 +97,7 @@ class GameClass {
 		void StartMusic();
 		
 		sol::state * lua = nullptr;
+		void updateCamera();
 
 		LevelSector* getLevelSector(u32){
 			/**
@@ -106,7 +105,9 @@ class GameClass {
 			*/
 			return &this->level.sectorPlaceholder;
 		}
-
+		bool isStarted()const{
+			return this->started;
+		}
 	private:		
 		bool started = false;
 		int Open_Map();

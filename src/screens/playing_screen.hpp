@@ -27,7 +27,7 @@ private:
     void Draw_InGame_Gifts();
     void Draw_InGame_Lower_Menu();
     void Draw_InGame_UI();
-    void Update_Camera();
+    //void Update_Camera();
 
     bool draw_debug_info = false;
     int debug_drawn_sprites = 0;
