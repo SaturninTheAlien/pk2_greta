@@ -66,7 +66,9 @@ void LevelClass::Load(PFile::Path path){
 
 
 	path.SetFile(this->background_name);
-	this->Load_BG(path);
+	background.load(path);
+	this->sectorPlaceholder.background = &this->background;
+
 	this->Calculate_Edges();
 	this->calculateBlockTypes();	
 }
@@ -205,7 +207,7 @@ void LevelClass::LoadVersion13(PFile::Path path, bool headerOnly){
 	file.readLegacyStrU32(this->button3_time);
 	file.readLegacyStrInt(this->map_time);
 	file.readLegacyStrInt(this->extra);
-	file.readLegacyStrInt(this->sectorPlaceholder.background_scrolling);
+	file.readLegacyStrInt(this->background.scrolling);
 	file.readLegacyStrInt(this->player_sprite_index);
 	file.readLegacyStrInt(this->icon_x);
 	file.readLegacyStrInt(this->icon_y);
@@ -325,7 +327,7 @@ void LevelClass::LoadVersion15(PFile::Path path, bool headerOnly){
 		jsonReadString(j, "music", this->music_name);
 
 		jsonReadString(j, "background", this->background_name);
-		jsonReadInt(j, "scrolling", this->sectorPlaceholder.background_scrolling);
+		jsonReadInt(j, "scrolling", this->background.scrolling);
 		jsonReadInt(j, "weather", this->sectorPlaceholder.weather);
 
 		jsonReadInt(j, "splash_color", this->sectorPlaceholder.splash_color);
@@ -390,7 +392,7 @@ void LevelClass::SaveVersion15(PFile::Path path)const{
 		j["tileset_bg"] = this->tileset_bg_name;
 		j["music"] = this->music_name;
 		j["background"] = this->background_name;
-		j["scrolling"] = this->sectorPlaceholder.background_scrolling;
+		j["scrolling"] = this->background.scrolling;
 		j["weather"] = this->sectorPlaceholder.weather;
 
 		j["splash_color"] = this->sectorPlaceholder.splash_color;
@@ -410,18 +412,6 @@ void LevelClass::SaveVersion15(PFile::Path path)const{
 	file.write(this->sectorPlaceholder.sprite_tiles, sizeof(u8)* PK2MAP_MAP_SIZE);
 
 	file.close();
-}
-
-int LevelClass::Load_BG(PFile::Path path){
-	
-	if (!FindAsset(&path, "gfx" PE_SEP "scenery" PE_SEP))
-		return 1;
-
-	PDraw::image_load(this->sectorPlaceholder.background_picture, path, true, false);
-	if (this->sectorPlaceholder.background_picture == -1)
-		return -2;
-
-	return 0;
 }
 
 

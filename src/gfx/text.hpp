@@ -22,7 +22,6 @@ int WavetextLap_Draw(const char *text, int fontti, int x, int y, float lap, char
 int WavetextSlow_Draw(const char *text, int fontti, int x, int y, char end = '\0');
 int ShadowedText_Draw(const std::string& text, int x, int y);
 
-bool Draw_Menu_Text(const char *teksti, int x, int y, char end = '\0');
 
 void Fadetext_Init();
 void Fadetext_New(int font, const std::string&text , u32 x, u32 y, u32 timer);

@@ -89,6 +89,8 @@ class LevelClass {
 
     Tileset tileset1; //tilset
     Tileset tileset2; //optional tileset for background
+    Background background; //
+
     std::array<PK2BLOCK, TILESET_SIZE> block_types;
     
     /* Metodit --------------------------*/
@@ -124,6 +126,4 @@ private:
 
     void LoadVersion13(PFile::Path path, bool headerOnly);
     void LoadVersion15(PFile::Path path, bool headerOnly);
-
-    int Load_BG(PFile::Path path);   
 };

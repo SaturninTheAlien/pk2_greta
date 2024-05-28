@@ -4,7 +4,7 @@
 //#########################
 #pragma once
 #include "tileset.hpp"
-
+#include "background.hpp"
 
 enum{
     TILES_COMPRESSION_NONE = 0,
@@ -20,17 +20,6 @@ enum {
     WEATHER_SNOW
 
 };
-
-
-enum {
-
-    BACKGROUND_STATIC,
-    BACKGROUND_PARALLAX_VERT,
-    BACKGROUND_PARALLAX_HORI,
-    BACKGROUND_PARALLAX_VERT_AND_HORI
-
-};
-
 
 class LevelSector{
 public:
@@ -60,7 +49,11 @@ public:
     void drawForegroundTiles(int camera_x, int camera_y, int block_animation_frame,
     int arrows_block_degree, int button1_timer_y, int button2_timer_y, int button3_timer_y)const;
 
-    void drawBackground(int camera_x, int camera_y);
+    void drawBackground(int camera_x, int camera_y){
+        this->background->draw(camera_x, camera_y);
+    }
+
+    PK2BLOCK getBlock(u32 x, u32 y, const std::array<PK2BLOCK, TILESET_SIZE>& block_types)const;
 
     u8* background_tiles = nullptr;
     u8* foreground_tiles = nullptr;
@@ -69,10 +62,11 @@ public:
 
     Tileset* tileset1 = nullptr;
     Tileset* tileset2 = nullptr;
+    Background* background = nullptr;
 
 
-    int background_scrolling = BACKGROUND_STATIC; // bg movemant type
-    int background_picture = -1;
+    /*int background_scrolling = BACKGROUND_STATIC; // bg movemant type
+    int background_picture = -1;*/
 
 
     int weather = WEATHER_NORMAL;                // map climate

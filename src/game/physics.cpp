@@ -34,64 +34,8 @@ static double sprite_bottom;
 static int sprite_width;
 static int sprite_height;
 
-static PK2BLOCK Block_Get(u32 x, u32 y) {
-	PK2BLOCK block;
-	//memset(&block, 0, sizeof(block));
-
-	// Outside the screen
-	if (x >= PK2MAP_MAP_WIDTH || y >= PK2MAP_MAP_HEIGHT) {
-		
-		block.id  = 255;
-		block.left  = x*32;
-		block.right  = x*32 + 32;
-		block.top    = y*32;
-		block.bottom    = y*32 + 32;
-		block.water  = false;
-		block.border = true;
-
-		block.left_side = 0;
-		block.right_side = 0;
-		block.top_side = 0;
-		block.bottom_side = 0;
-
-		return block;
-
-	}
-
-	u8 i = Game->level.sectorPlaceholder.foreground_tiles[x+y*PK2MAP_MAP_WIDTH];
-
-	if (i<150) { //If it is ground
-
-		block        = Game->level.block_types[i];
-		block.left  = x*32+Game->level.block_types[i].left;
-		block.right  = x*32+32+Game->level.block_types[i].right;
-		block.top    = y*32+Game->level.block_types[i].top;
-		block.bottom    = y*32+32+Game->level.block_types[i].bottom;
-
-	} else { //If it is sky - Need to reset
-	
-		block.id  = 255;
-		block.left  = x*32;
-		block.right  = x*32 + 32;
-		block.top    = y*32;
-		block.bottom    = y*32 + 32;
-		block.water  = false;
-
-		block.left_side = 0;
-		block.right_side = 0;
-		block.top_side = 0;
-		block.bottom_side = 0;
-	
-	}
-
-	i = Game->level.sectorPlaceholder.background_tiles[x+y*PK2MAP_MAP_WIDTH];
-
-	if (i > 131 && i < 140)
-		block.water = true;
-
-	block.border = Game->level.sectorPlaceholder.edges[x+y*PK2MAP_MAP_WIDTH];
-
-	return block;
+static inline PK2BLOCK Block_Get(u32 x, u32 y) {
+	return Game->level.sectorPlaceholder.getBlock(x, y, Game->level.block_types);
 }
 
 static void Check_SpriteBlock(SpriteClass* sprite, const PK2BLOCK &block) {

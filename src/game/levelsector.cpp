@@ -192,45 +192,62 @@ int arrows_block_degree, int button1_timer_y, int button2_timer_y, int button3_t
 	}    
 }
 
-void LevelSector::drawBackground(int camera_x, int camera_y){
+PK2BLOCK LevelSector::getBlock(u32 x, u32 y, const std::array<PK2BLOCK, TILESET_SIZE>& block_types)const{
+	PK2BLOCK block;
+	//memset(&block, 0, sizeof(block));
 
-	int pallarx = ( camera_x % (640*3) ) / 3;
-	int pallary = ( camera_y % (480*3) ) / 3;
+	// Outside the screen
+	if (x >= this->mWidth || y >= this->mHeight) {
+		
+		block.id  = 255;
+		block.left  = x*32;
+		block.right  = x*32 + 32;
+		block.top    = y*32;
+		block.bottom    = y*32 + 32;
+		block.water  = false;
+		block.border = true;
 
-	if (this->background_scrolling == BACKGROUND_STATIC){
-	
-		PDraw::image_clip(this->background_picture,0,0);
-		PDraw::image_clip(this->background_picture,640,0);
-	
-	} else if (this->background_scrolling == BACKGROUND_PARALLAX_HORI){
-	
-		PDraw::image_clip(this->background_picture,0   - pallarx,0);
-		PDraw::image_clip(this->background_picture,640 - pallarx,0);
+		block.left_side = 0;
+		block.right_side = 0;
+		block.top_side = 0;
+		block.bottom_side = 0;
 
-		if (screen_width > 640)
-			PDraw::image_clip(this->background_picture,640*2 - pallarx,0);
-	
-	} else if (this->background_scrolling == BACKGROUND_PARALLAX_VERT){
-	
-		PDraw::image_clip(this->background_picture,0,0   - pallary);
-		PDraw::image_clip(this->background_picture,0,480 - pallary);
+		return block;
 
-		if (screen_width > 640){
-			PDraw::image_clip(this->background_picture,640,0   - pallary);
-			PDraw::image_clip(this->background_picture,640,480 - pallary);
-		}
-	
-	} else if (this->background_scrolling == BACKGROUND_PARALLAX_VERT_AND_HORI){
-	
-		PDraw::image_clip(this->background_picture,0   - pallarx, 0-pallary);
-		PDraw::image_clip(this->background_picture,640 - pallarx, 0-pallary);
-		PDraw::image_clip(this->background_picture,0   - pallarx, 480-pallary);
-		PDraw::image_clip(this->background_picture,640 - pallarx, 480-pallary);
+	}
 
-		if (screen_width > 640){
-			PDraw::image_clip(this->background_picture,640*2 - pallarx,0-pallary);
-			PDraw::image_clip(this->background_picture,640*2 - pallarx,480-pallary);
-		}
+	u8 i = this->foreground_tiles[x+y*this->mWidth];
+
+	if (i<150) { //If it is ground
+
+		block        = block_types[i];
+		block.left  = x*32+block_types[i].left;
+		block.right  = x*32+32+block_types[i].right;
+		block.top    = y*32+block_types[i].top;
+		block.bottom    = y*32+32+block_types[i].bottom;
+
+	} else { //If it is sky - Need to reset
+	
+		block.id  = 255;
+		block.left  = x*32;
+		block.right  = x*32 + 32;
+		block.top    = y*32;
+		block.bottom    = y*32 + 32;
+		block.water  = false;
+
+		block.left_side = 0;
+		block.right_side = 0;
+		block.top_side = 0;
+		block.bottom_side = 0;
 	
 	}
+
+	i = this->background_tiles[x+y*this->mWidth];
+
+	if (i > 131 && i < 140)
+		block.water = true;
+
+	block.border = this->edges[x+y*this->mWidth];
+
+	return block;
 }
