@@ -22,8 +22,9 @@ struct RECT {
 
 void  rotate_palette(u8 start, u8 end);
 
-void  pallete_set(int index);
-void  pallete_delete(int& index);
+void  palette_set(int index);
+//void  palette_set_if_not_set(int index);
+void  palette_delete(int& index);
 
 int   image_new(int w, int h);
 int   image_load(PFile::Path path, bool hasAlphaColor=true);

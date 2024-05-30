@@ -12,6 +12,7 @@
 #include <array>
 
 #include <SDL_image.h>
+#include <iostream>
 
 namespace PDraw {
 
@@ -56,8 +57,8 @@ public:
     }
 };
 
-static int mCurrentPalleteIndex = -1;
-static std::vector<Palette*> palleteList;
+static int mCurrentpaletteIndex = -1;
+static std::vector<Palette*> paletteList;
 
 int Palette::updateEffect(){
 
@@ -123,40 +124,40 @@ static int findfreefont(){
 }
 
 static int findfreepalette(){
-    int size = palleteList.size();
+    int size = paletteList.size();
 
     for(int i = 0; i < size; i++)
-        if(palleteList[i] == nullptr)
+        if(paletteList[i] == nullptr)
             return i;
 
-    palleteList.push_back(nullptr);
+    paletteList.push_back(nullptr);
     return size;
 }
 
-void pallete_set(int index){
-    if(index<0 || index>= palleteList.size() || palleteList[index]==nullptr)return;
-    mCurrentPalleteIndex = index;
-    palleteList[index]->updateEffect();
+void palette_set(int index){
+    if(index<0 || index>= paletteList.size() || paletteList[index]==nullptr)return;
+    mCurrentpaletteIndex = index;
+    paletteList[index]->updateEffect();
 
 }
 
-void pallete_delete(int& index){
-    if(index<0 || index>= palleteList.size() || palleteList[index]==nullptr)return;
+void palette_delete(int& index){
+    if(index<0 || index>= paletteList.size() || paletteList[index]==nullptr)return;
 
-    if(index==mCurrentPalleteIndex){
-        mCurrentPalleteIndex = -1;
+    if(index==mCurrentpaletteIndex){
+        mCurrentpaletteIndex = -1;
     }
 
-    delete palleteList[index];
-    palleteList[index] = nullptr;
+    delete paletteList[index];
+    paletteList[index] = nullptr;
 }
 
 void rotate_palette(u8 start, u8 end){
-    palleteList[mCurrentPalleteIndex]->rotate(start, end);
+    paletteList[mCurrentpaletteIndex]->rotate(start, end);
 }
 
 void set_rgb(float r, float g, float b){
-    palleteList[mCurrentPalleteIndex]->setRGB(r,g,b);
+    paletteList[mCurrentpaletteIndex]->setRGB(r,g,b);
 }
 
 int image_new(int w, int h){
@@ -233,7 +234,7 @@ std::pair<int, int> image_load_with_palette(PFile::Path path, bool hasAlphaColor
 
     int palIndex = findfreepalette();
     Palette* pal = new Palette();
-    palleteList[palIndex] = pal;
+    paletteList[palIndex] = pal;
 
     SDL_Palette* sdlPal = imageList[index]->format->palette;
     SDL_memcpy(pal->colors, sdlPal->colors, sizeof(SDL_Color) * 256);
@@ -255,7 +256,7 @@ int image_load(int& index, PFile::Path path, bool hasAlphaColor) {
 void image_load_with_palette(int& img_index, int& pal_index, PFile::Path path, bool hasAlphaColor){
 
     image_delete(img_index);
-    pallete_delete(pal_index);
+    palette_delete(pal_index);
 
     std::pair p = image_load_with_palette(path, hasAlphaColor);
 
@@ -302,7 +303,13 @@ int image_cut(int ImgIndex, RECT area) {
 
     imageList[index] = SDL_CreateRGBSurface(0, area.w, area.h, 8, 0, 0, 0, 0);
 
-    SDL_SetSurfacePalette(imageList[index], game_palette);
+    if(game_palette!=nullptr){
+        SDL_SetSurfacePalette(imageList[index], game_palette);
+    }
+    else{
+        PLog::Write(PLog::WARN, "PDraw", "Cannot image_cut due to missing palette!");
+        return -1;
+    }
     
     SDL_SetColorKey(imageList[index], SDL_TRUE, ALPHA_COLOR_INDEX);
     SDL_FillRect(imageList[index], NULL, ALPHA_COLOR_INDEX);

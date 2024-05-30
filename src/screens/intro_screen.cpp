@@ -93,7 +93,7 @@ void IntroScreen::Init() {
 	PDraw::set_offset(640, 480);
 
 	PDraw::image_load_with_palette(bg_screen, default_palette, PFile::Path("gfx" PE_SEP "intro.bmp"), false);
-	PDraw::pallete_set(default_palette);
+	PDraw::palette_set(default_palette);
 
 	if (PSound::start_music(PFile::Path("music" PE_SEP "intro.xm")) == -1)
 		throw PExcept::PException("Can't load intro.xm");

@@ -302,7 +302,7 @@ void MapScreen::Init() {
 	if (FindAsset(&path, "gfx" PE_SEP)) {
 
 		PDraw::image_load_with_palette(bg_screen, default_palette, path, true);
-		PDraw::pallete_set(default_palette);
+		PDraw::palette_set(default_palette);
 
 	} else {
 

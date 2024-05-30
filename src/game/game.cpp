@@ -59,7 +59,7 @@ spritePrototypes(true, true, Episode){
 GameClass::~GameClass(){
 
 	PSound::stop_music();
-	PDraw::pallete_set(default_palette);
+	PDraw::palette_set(default_palette);
 	level.clear();
 	this->spritePrototypes.clear();
 

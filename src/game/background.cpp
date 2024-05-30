@@ -14,19 +14,21 @@ void Background::load(PFile::Path path){
 
 	std::pair<int, int> p = PDraw::image_load_with_palette(path, false);
 	this->picture = p.first;
-	this->pallete = p.second;
+	this->palette = p.second;
+
+	//PDraw::palette_set_if_not_set(this->palette);
 
 	if (this->picture == -1)
 		throw PExcept::PException("Cannot load the background!");
 }
 
 void Background::setPalette(){
-	PDraw::pallete_set(this->pallete);
+	PDraw::palette_set(this->palette);
 }
 
 void Background::clear(){
     PDraw::image_delete(this->picture);
-	PDraw::pallete_delete(this->pallete);
+	PDraw::palette_delete(this->palette);
 }
 
 

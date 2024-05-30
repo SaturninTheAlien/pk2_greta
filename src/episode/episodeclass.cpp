@@ -258,54 +258,60 @@ void EpisodeClass::Load() {
 		
 	}
 
-	// Read config
-	PLang config(PFile::Path(path, "config.txt"));
-	if (config.loaded) {
+	PFile::Path config_path(path, "config.txt");
 
-		int id = config.Search_Id("glow_effect");
-		if (id != -1) {
-			PLog::Write(PLog::INFO, "PK2", "Episode glow is ON");
-			this->glows = true;
+	if(config_path.Find()){
+		PLang config(config_path);
+		if (config.loaded) {
+
+			int id = config.Search_Id("glow_effect");
+			if (id != -1) {
+				PLog::Write(PLog::INFO, "PK2", "Episode glow is ON");
+				this->glows = true;
+			}
+
+			id = config.Search_Id("hide_numbers");
+			if (id != -1) {
+				PLog::Write(PLog::INFO, "PK2", "Episode hide numbers is ON");
+				this->hide_numbers = true;
+			}
+
+			id = config.Search_Id("ignore_collectable");
+			if (id != -1) {
+				PLog::Write(PLog::INFO, "PK2", "Episode ignore apples is ON");
+				this->ignore_collectable = true;
+			}
+
+			id = config.Search_Id("collectable_name");
+			if (id != -1) {
+				this->collectable_name = config.Get_Text(id);
+				PLog::Write(PLog::INFO, "PK2", "Collectable name:");
+				PLog::Write(PLog::INFO, "PK2", this->collectable_name.c_str());
+			}
+
+			id = config.Search_Id("require_all_levels");
+			if (id != -1) {
+				PLog::Write(PLog::INFO, "PK2", "Episode require all levels is ON");
+				this->require_all_levels = true;
+			}
+
+			id = config.Search_Id("no_ending");
+			if (id != -1) {
+				PLog::Write(PLog::INFO, "PK2", "Episode no ending is ON");
+				this->no_ending = true;
+			}
+
+			id = config.Search_Id("use_button_timer");
+			if (id != -1) {
+				PLog::Write(PLog::INFO, "PK2", "Episode use button timer is ON");
+				this->use_button_timer = true;
+			}
+
 		}
-
-		id = config.Search_Id("hide_numbers");
-		if (id != -1) {
-			PLog::Write(PLog::INFO, "PK2", "Episode hide numbers is ON");
-			this->hide_numbers = true;
-		}
-
-		id = config.Search_Id("ignore_collectable");
-		if (id != -1) {
-			PLog::Write(PLog::INFO, "PK2", "Episode ignore apples is ON");
-			this->ignore_collectable = true;
-		}
-
-		id = config.Search_Id("collectable_name");
-		if (id != -1) {
-			this->collectable_name = config.Get_Text(id);
-			PLog::Write(PLog::INFO, "PK2", "Collectable name:");
-			PLog::Write(PLog::INFO, "PK2", this->collectable_name.c_str());
-		}
-
-		id = config.Search_Id("require_all_levels");
-		if (id != -1) {
-			PLog::Write(PLog::INFO, "PK2", "Episode require all levels is ON");
-			this->require_all_levels = true;
-		}
-
-		id = config.Search_Id("no_ending");
-		if (id != -1) {
-			PLog::Write(PLog::INFO, "PK2", "Episode no ending is ON");
-			this->no_ending = true;
-		}
-
-		id = config.Search_Id("use_button_timer");
-		if (id != -1) {
-			PLog::Write(PLog::INFO, "PK2", "Episode use button timer is ON");
-			this->use_button_timer = true;
-		}
-
 	}
+
+	// Read config
+	
 
 	// Sort levels
 	std::stable_sort(this->levels_list, this->levels_list + this->level_count,

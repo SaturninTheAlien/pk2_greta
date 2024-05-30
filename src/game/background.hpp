@@ -33,5 +33,5 @@ public:
     std::string name;
 private:
     int picture = -1;
-    int pallete = -1;
+    int palette = -1;
 };
