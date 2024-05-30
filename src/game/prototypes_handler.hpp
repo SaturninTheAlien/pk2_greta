@@ -47,6 +47,10 @@ public:
 
     void loadSpriteAssets();
     void unloadSpriteAssets();
+
+    std::size_t size(){
+        return this->mPrototypes.size();
+    }
 private:
     std::string mSearchingDirectory = "";
 

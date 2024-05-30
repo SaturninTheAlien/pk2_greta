@@ -18,15 +18,15 @@ namespace PK2lua{
 
 
 PrototypeClass* LoadSpritePrototype(const std::string& filename){
-    return Game->spritesHandler.prototypesHandler.loadPrototype(filename);
+    return Game->spritePrototypes.loadPrototype(filename);
 }
 
 SpriteClass* AddSprite1(PrototypeClass* prototype, double x, double y, SpriteClass*parent){
-    return Game->spritesHandler.addLuaSprite(prototype, x, y, parent);
+    return Game->playerSprite->level_sector->sprites.addLuaSprite(prototype, x, y, parent);
 }
 
 SpriteClass* AddSprite2(PrototypeClass* prototype, double x, double y){
-    return Game->spritesHandler.addLuaSprite(prototype, x, y);
+    return Game->playerSprite->level_sector->sprites.addLuaSprite(prototype, x, y);
 }
 
 class LuaEventListener{
@@ -70,16 +70,18 @@ void ForEachCreature(sol::object o){
     if(o.is<std::function<void(SpriteClass* s)>>()){
         sol::protected_function func = o;
 
-        for(SpriteClass*sprite: Game->spritesHandler.Sprites_List){
-            if(sprite->energy > 0
-            && sprite->prototype->type == TYPE_GAME_CHARACTER
-            && !sprite->removed){
+        for(LevelSector* sector: Game->level.sectors){
+            for(SpriteClass*sprite: sector->sprites.Sprites_List){
+                if(sprite->energy > 0
+                && sprite->prototype->type == TYPE_GAME_CHARACTER
+                && !sprite->removed){
 
-                sol::protected_function_result res = func(sprite);
-                if(!res.valid()){
-                    throw res.get<sol::error>();
-                }
-            }       
+                    sol::protected_function_result res = func(sprite);
+                    if(!res.valid()){
+                        throw res.get<sol::error>();
+                    }
+                }       
+            }
         }
     }
     else{
@@ -92,14 +94,16 @@ void ForEachSprite(sol::object o){
     if(o.is<std::function<void(SpriteClass* s)>>()){
         sol::protected_function func = o;
 
-        for(SpriteClass*sprite: Game->spritesHandler.Sprites_List){
-            if(!sprite->removed){
+        for(LevelSector* sector: Game->level.sectors){
+            for(SpriteClass*sprite: sector->sprites.Sprites_List){
+                if(!sprite->removed){
 
-                sol::protected_function_result res = func(sprite);
-                if(!res.valid()){
-                    throw res.get<sol::error>();
-                }
-            }       
+                    sol::protected_function_result res = func(sprite);
+                    if(!res.valid()){
+                        throw res.get<sol::error>();
+                    }
+                }   
+            }
         }
     }
     else{
@@ -127,7 +131,7 @@ void ExposeGameAPI(sol::state& lua){
      * @brief 
      * Get the player sprite
      */
-    PK2_API["get_player"] = [](){return Game->spritesHandler.Player_Sprite;};
+    PK2_API["get_player"] = [](){return Game->playerSprite;};
 
     /**
      * @brief 

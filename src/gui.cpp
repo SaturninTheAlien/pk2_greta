@@ -338,7 +338,7 @@ void GUI_Update() {
 		float alpha = Screen_Alpha();
 
 		{
-			SpriteClass* Player_Sprite = Game->spritesHandler.Player_Sprite;
+			SpriteClass* Player_Sprite = Game->playerSprite;
 
 			doodle_active = Player_Sprite->ammo2 != nullptr;
 			egg_active = Player_Sprite->ammo1 != nullptr;

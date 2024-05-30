@@ -5,7 +5,7 @@
 #pragma once
 
 #include "engine/PFile.hpp"
-
+#include <string>
 
 enum {
 
@@ -27,6 +27,8 @@ public:
     void load(PFile::Path path);
     void clear();
     void draw(int camera_x, int camera_y);
+
+    std::string name;
 private:
     int picture = -1;
     int pallete = -1;

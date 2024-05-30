@@ -1,36 +1,32 @@
 #pragma once
 #include "prototypes_handler.hpp"
 #include "spriteclass.hpp"
-#include "levelclass.hpp"
 
 #include <list>
 
-class LevelClass;
+class LevelSector;
 
 class SpritesHandler{
 public:
-    SpritesHandler();
+    SpritesHandler(LevelSector* sector):mLevelSector(sector){}
+
     ~SpritesHandler(){
         clearAll();
     };
     void clearAll();
-    PrototypeClass* getLevelPrototype(int index);
-    void loadAllLevelPrototypes(const LevelClass& map);
-
     
-
     void sortBg();
     void onSkullBlocksChanged();
     void onEvent1();
     void onEvent2();
 
-    int onTickUpdate();
+    int onTickUpdate(int camera_x, int camera_y);
     
     /**
      * @brief 
      * Spawning the player
      */
-    void addPlayer(PrototypeClass*prototype, double x, double y);
+    SpriteClass* addPlayer(PrototypeClass*prototype, double x, double y);
 
     /**
      * @brief 
@@ -62,14 +58,18 @@ public:
         
         return this->mCreateSprite(prototype, false, x, y, parent);
     }
-
-    PrototypesHandler prototypesHandler;
     
     std::list<SpriteClass*> Sprites_List;
     std::list<SpriteClass*> bgSprites_List;
     std::list<SpriteClass*> fgSprites_List;
 
     SpriteClass* Player_Sprite = nullptr;
+    LevelSector* mLevelSector;
+
+    void drawSprites(int camera_x, int camera_y, bool gamePaused, int& debug_drawn_sprites);
+    void drawBGsprites(int camera_x, int camera_y, bool gamePaused, int& debug_drawn_sprite);
+    void drawFGsprites(int camera_x, int camera_y, bool gamePaused, int& debug_drawn_sprite);
+
 private:
     SpriteClass * mCreateSprite(PrototypeClass* prototype, bool player, double x, double y, SpriteClass*parent_sprite=nullptr);
 
@@ -82,6 +82,4 @@ private:
     }
 
     bool spriteDestructed (SpriteClass* sprite);
-    void loadLevelPrototype(const std::string& name, int id);
-    PrototypeClass* Level_Prototypes_List[MAX_PROTOTYYPPEJA] = {nullptr};
 };

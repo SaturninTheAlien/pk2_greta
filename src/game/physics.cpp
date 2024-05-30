@@ -132,7 +132,7 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 			switch (Game->level.game_mode)
 			{
 			case GAME_MODE_STANDARD:
-				if(sprite == Game->spritesHandler.Player_Sprite){
+				if(sprite == Game->playerSprite){
 					Game->Finish();
 				}
 				break;
@@ -168,12 +168,12 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 		if (mask_index > 31)
 			mask_index = 31;
 
-		block.top += Game->level.tileset1.block_masks[block.id].alas[mask_index];
+		block.top += sprite->level_sector->tileset1->block_masks[block.id].alas[mask_index];
 
 		if (block.top >= block.bottom-2)
 			block.bottom_side = BLOCK_BACKGROUND;
 
-		block.bottom -= Game->level.tileset1.block_masks[block.id].ylos[mask_index];
+		block.bottom -= sprite->level_sector->tileset1->block_masks[block.id].ylos[mask_index];
 	}
 
 	//If sprite is thouching the block (again?)
@@ -182,7 +182,7 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 		/* Examine if it is a key and touches lock wall                       */
 		/**********************************************************************/
 		if (block.id == BLOCK_LOCK && sprite->prototype->can_open_locks){
-			LevelSector * sector = Game->getLevelSector(sprite->sector_id);
+			LevelSector * sector = sprite->level_sector;
 
 			sector->foreground_tiles[block.left/32+(block.top/32)* sector->getWidth()] = 255;
 			sector->calculateEdges();
@@ -370,6 +370,7 @@ void SpriteOnRespawn(SpriteClass* sprite){
 
 void SpriteOnDeath(SpriteClass* sprite){
 	int destruction_effect = sprite->prototype->destruction_effect;
+	LevelSector* sector = sprite->level_sector;
 
 	for(const SpriteAI::AI_Class&ai: sprite->prototype->AI_f){
 
@@ -386,11 +387,11 @@ void SpriteOnDeath(SpriteClass* sprite){
 
 			if(bonuses_number>1){
 				for(int i=0;i<bonuses_number;++i){
-					Game->spritesHandler.addDroppedBonusSprite(bonus, sprite->x+(10-rand()%21),sprite->y+(10-rand()%21));
+					sector->sprites.addDroppedBonusSprite(bonus, sprite->x+(10-rand()%21),sprite->y+(10-rand()%21));
 				}
 			}
 			else if(bonuses_number==1){
-				Game->spritesHandler.addDroppedBonusSprite(bonus, sprite->x,sprite->y);
+				sector->sprites.addDroppedBonusSprite(bonus, sprite->x,sprite->y);
 			}			
 		}
 	}
@@ -412,7 +413,7 @@ void SpriteOnDeath(SpriteClass* sprite){
 	}
 
 
-	for(SpriteClass* sprite2: Game->spritesHandler.Sprites_List){
+	for(SpriteClass* sprite2: sector->sprites.Sprites_List){
 		if(sprite2->parent_sprite==sprite){
 			sprite2->parent_sprite=nullptr;
 			if(sprite2->HasAI(AI_DIE_WITH_MOTHER_SPPRITE)){
@@ -463,7 +464,7 @@ void PotionTransformation(SpriteClass* sprite, PrototypeClass* intended_prototyp
 		sprite->max_speed_available = false;
 		sprite->can_collect_bonuses = sprite->player;
 
-		if(sprite==Game->spritesHandler.Player_Sprite){
+		if(sprite==Game->playerSprite){
 			int infotext = Episode->infos.Search_Id("pekka transformed");
 			if (infotext != -1)
 				Game->Show_Info(Episode->infos.Get_Text(infotext));
@@ -540,7 +541,7 @@ void BonusSpriteCollected(SpriteClass* sprite, SpriteClass* collector){
 			break;
 			case AI_BONUS_SUPERMODE:{
 				collector->super_mode_timer = sprite->prototype->charge_time;
-				if(collector == Game->spritesHandler.Player_Sprite){
+				if(collector == Game->playerSprite){
 					PSound::start_music(PFile::Path("music" PE_SEP "super.xm"));
 				}
 				//PSound::play_overlay_music();
@@ -589,7 +590,7 @@ void BonusSpriteCollected(SpriteClass* sprite, SpriteClass* collector){
 		if (sprite->prototype->ammo2 != nullptr){
 			collector->ammo2 = sprite->prototype->ammo2;
 
-			if(!showed_info && collector == Game->spritesHandler.Player_Sprite){
+			if(!showed_info && collector == Game->playerSprite){
 				showed_info = true;
 
 				int infotext = Episode->infos.Search_Id("new doodle attack");
@@ -603,7 +604,7 @@ void BonusSpriteCollected(SpriteClass* sprite, SpriteClass* collector){
 		if (sprite->prototype->ammo1 != nullptr){
 			collector->ammo1 = sprite->prototype->ammo1;
 
-			if(!showed_info && collector == Game->spritesHandler.Player_Sprite){
+			if(!showed_info && collector == Game->playerSprite){
 				showed_info = true;
 
 				int infotext = Episode->infos.Search_Id("new egg attack");
@@ -627,7 +628,7 @@ void UpdateSprite(SpriteClass* sprite){
 		throw PExcept::PException("Sprite with null prototype is not acceptable!");
 	}
 
-	LevelSector * sector = Game->getLevelSector(sprite->sector_id);
+	LevelSector * sector = sprite->level_sector;
 
 	sprite_width  = sprite->prototype->width;
 	sprite_height = sprite->prototype->height;
@@ -850,14 +851,14 @@ void UpdateSprite(SpriteClass* sprite){
 
 	}
 
-	SpriteClass* Player_Sprite = Game->spritesHandler.Player_Sprite;
+	SpriteClass* Player_Sprite = Game->playerSprite;
 	
 	if (sprite->super_mode_timer > 0) {
 
 		sprite->super_mode_timer--;
 
 		if(sprite==Player_Sprite && sprite->super_mode_timer==0){
-			Game->StartMusic();
+			Player_Sprite->level_sector->startMusic();
 		}
 	}
 
@@ -966,7 +967,7 @@ void UpdateSprite(SpriteClass* sprite){
 	PK2BLOCK spritepalikka;
 
 	//Compare this sprite with every sprite in the game
-	for (SpriteClass* sprite2 : Game->spritesHandler.Sprites_List) {
+	for (SpriteClass* sprite2 : sector->sprites.Sprites_List) {
 		if (sprite2 != sprite && sprite2->active && !sprite2->removed) {
 			if (sprite2->crouched)
 				sprite2_yla = sprite2->prototype->height / 3;//1.5;
@@ -1351,14 +1352,14 @@ void UpdateSprite(SpriteClass* sprite){
 			Play_GameSFX(sprite->prototype->sounds[SOUND_ATTACK1],100, (int)sprite->x, (int)sprite->y,
 						  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 			
-			Game->spritesHandler.addProjectileSprite(sprite->ammo1,sprite->x, sprite->y, sprite);
+			sector->sprites.addProjectileSprite(sprite->ammo1,sprite->x, sprite->y, sprite);
 			SpriteOnDeath(sprite);
 		}
 		if(sprite->ammo2!=nullptr){
 			Play_GameSFX(sprite->prototype->sounds[SOUND_ATTACK2],100, (int)sprite->x, (int)sprite->y,
 						  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 			
-			Game->spritesHandler.addProjectileSprite(sprite->ammo2,sprite->x, sprite->y, sprite);
+			sector->sprites.addProjectileSprite(sprite->ammo2,sprite->x, sprite->y, sprite);
 			SpriteOnDeath(sprite);
 		}
 	}
@@ -1391,7 +1392,7 @@ void UpdateSprite(SpriteClass* sprite){
 						  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 
 			if (sprite->ammo1 != nullptr) {
-				Game->spritesHandler.addProjectileSprite(sprite->ammo1,sprite->x, sprite->y, sprite);
+				sector->sprites.addProjectileSprite(sprite->ammo1,sprite->x, sprite->y, sprite);
 		//		if (Level_Prototypes_List[sprite->ammo1].sounds[SOUND_ATTACK1] > -1)
 		//			Play_GameSFX(Level_Prototypes_List[sprite->ammo1].sounds[SOUND_ATTACK1],100, (int)sprite->x, (int)sprite->y,
 		//						  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
@@ -1418,7 +1419,7 @@ void UpdateSprite(SpriteClass* sprite){
 						  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 
 			if (sprite->ammo2 != nullptr) {
-				Game->spritesHandler.addProjectileSprite(sprite->ammo2,sprite->x, sprite->y, sprite);
+				sector->sprites.addProjectileSprite(sprite->ammo2,sprite->x, sprite->y, sprite);
 
 		//		if (Level_Prototypes_List[sprite->ammo2].sounds[SOUND_ATTACK1] > -1)
 		//			Play_GameSFX(Level_Prototypes_List[sprite->ammo2].sounds[SOUND_ATTACK1],100, (int)sprite->x, (int)sprite->y,
@@ -1438,7 +1439,7 @@ void UpdateSprite(SpriteClass* sprite){
 
 void UpdateBonusSprite(SpriteClass* sprite){
 
-	LevelSector * sector = Game->getLevelSector(sprite->sector_id);
+	LevelSector * sector = sprite->level_sector;
 
 	sprite_width  = sprite->prototype->width;
 	sprite_height = sprite->prototype->height;
@@ -1530,7 +1531,7 @@ void UpdateBonusSprite(SpriteClass* sprite){
 
 		PK2BLOCK spritepalikka; 
 
-		for (SpriteClass* sprite2 : Game->spritesHandler.Sprites_List) {
+		for (SpriteClass* sprite2 : sector->sprites.Sprites_List) {
 			if (sprite2 != sprite && !sprite2->removed) {
 				if (sprite2->prototype->is_wall && sprite->prototype->check_tiles && sprite2->energy>0) {
 					if (sprite->x-sprite_width/2 +sprite->a <= sprite2->x + sprite2->prototype->width /2 &&
@@ -1729,7 +1730,7 @@ void UpdateBonusSprite(SpriteClass* sprite){
 		if(sprite->energy>0 &&
 		!sprite->prototype->indestructible &&
 		sprite->damage_timer == 0){
-			for(SpriteClass* sprite2: Game->spritesHandler.Sprites_List){
+			for(SpriteClass* sprite2: sector->sprites.Sprites_List){
 				if (sprite2 != sprite &&
 					sprite2->can_collect_bonuses &&
 					sprite2->energy > 0 &&

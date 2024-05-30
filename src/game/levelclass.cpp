@@ -36,51 +36,38 @@ void LevelClass::SetTilesAnimations(int degree, int anim, u32 aika1, u32 aika2, 
 
 }
 
-LevelClass::LevelClass()
-:sectorPlaceholder(PK2MAP_MAP_HEIGHT, PK2MAP_MAP_WIDTH)
-{}
+LevelClass::LevelClass(){
 
-LevelClass::~LevelClass(){
-	/*PDraw::image_delete(this->tiles_buffer);
-	PDraw::image_delete(this->bg_tiles_buffer);
-	PDraw::image_delete(this->background_buffer);
-	PDraw::image_delete(this->water_buffer);
-	PDraw::image_delete(this->bg_water_buffer);*/
 }
 
-void LevelClass::Load(PFile::Path path){
-	this->Load_Plain_Data(path, false);
 
-	path.SetFile(this->tileset_name);
-
-	this->tileset1.clear();
-	this->tileset1.loadImage(path);
-	//this->tileset1.make254Transparent();
-	if(this->sectorPlaceholder.splash_color == -1){
-		this->sectorPlaceholder.splash_color = this->tileset1.calculateSplashColor();
-
+void LevelClass::clear(){
+	for(LevelSector*& sector:this->sectors){
+		if(sector!=nullptr){
+			delete sector;
+			sector = nullptr;
+		}
 	}
+	this->sectors.clear();
 
-	this->sectorPlaceholder.tileset1 = &this->tileset1;
-
-	this->tileset2.clear();
-	if(!this->tileset_bg_name.empty()){
-		path.SetFile(this->tileset_bg_name);
-		this->tileset2.loadImage(path);
-
-		this->sectorPlaceholder.tileset2 = &this->tileset2;
+	for(Tileset*& tileset:this->mTilesets){
+		if(tileset!=nullptr){
+			delete tileset;
+			tileset = nullptr;
+		}
 	}
+	this->mTilesets.clear();
 
-
-	path.SetFile(this->background_name);
-	background.load(path);
-	this->sectorPlaceholder.background = &this->background;
-
-	this->Calculate_Edges();
-	this->calculateBlockTypes();	
+	for(Background*& background: this->mBackgrounds){
+		if(background!=nullptr){
+			delete background;
+			background = nullptr;
+		}
+	}
+	this->mBackgrounds.clear();
 }
 
-void LevelClass::Load_Plain_Data(PFile::Path path, bool headerOnly) {
+void LevelClass::load(PFile::Path path, bool headerOnly) {
 	try{
 		char version[5];
 		PFile::RW file = path.GetRW2("r");
@@ -178,17 +165,15 @@ void LevelClass::ReadTiles(PFile::RW& file,
 
 void LevelClass::LoadVersion13(PFile::Path path, bool headerOnly){
 	PFile::RW file = path.GetRW2("r");
-
-	/*memset(this->background_tiles, 255, sizeof(this->background_tiles));
-	memset(this->foreground_tiles , 255, sizeof(this->foreground_tiles));
-	memset(this->sprite_tiles, 255, sizeof(this->sprite_tiles));*/
-
-
 	file.read(version,      sizeof(version));
 
-	file.readLegacyStr13Chars(this->tileset_name);
-	file.readLegacyStr13Chars(this->background_name);
-	file.readLegacyStr13Chars(this->music_name);
+	std::string tileset_name, background_name, music_name;
+	int weather = 0;
+	int scrolling = 0;
+
+	file.readLegacyStr13Chars(tileset_name);	
+	file.readLegacyStr13Chars(background_name);
+	file.readLegacyStr13Chars(music_name);
 
 
 	char name_buffer[40];
@@ -208,13 +193,13 @@ void LevelClass::LoadVersion13(PFile::Path path, bool headerOnly){
 	file.readLegacyStr40Chars(author);
 
 	file.readLegacyStrInt(this->level_number);
-	file.readLegacyStrInt(this->sectorPlaceholder.weather);
+	file.readLegacyStrInt(weather);
 	file.readLegacyStrU32(this->button1_time);
 	file.readLegacyStrU32(this->button2_time);
 	file.readLegacyStrU32(this->button3_time);
 	file.readLegacyStrInt(this->map_time);
 	file.readLegacyStrInt(this->extra);
-	file.readLegacyStrInt(this->background.scrolling);
+	file.readLegacyStrInt(scrolling);
 	file.readLegacyStrInt(this->player_sprite_index);
 	file.readLegacyStrInt(this->icon_x);
 	file.readLegacyStrInt(this->icon_y);
@@ -229,6 +214,16 @@ void LevelClass::LoadVersion13(PFile::Path path, bool headerOnly){
 		file.close();
 		return;
 	}
+
+	LevelSector* sector = new LevelSector(PK2MAP_MAP_WIDTH, PK2MAP_MAP_HEIGHT);
+	this->sectors.push_back(sector);
+
+	sector->background = this->mLoadBackground(path, background_name);
+	sector->tileset1 = this->mLoadTileset(path, tileset_name);
+	sector->music_name = music_name;
+
+	sector->background->scrolling = scrolling;
+	sector->weather = weather;
 
 	// sprite prototypes
 
@@ -258,19 +253,19 @@ void LevelClass::LoadVersion13(PFile::Path path, bool headerOnly){
 	ReadTiles(file, TILES_COMPRESSION_LEGACY,
 		PK2MAP_MAP_WIDTH,
 		PK2MAP_MAP_SIZE,
-		this->sectorPlaceholder.background_tiles);
+		sector->background_tiles);
 
 	// foreground_tiles
 	ReadTiles(file, TILES_COMPRESSION_LEGACY,
 		PK2MAP_MAP_WIDTH,
 		PK2MAP_MAP_SIZE,
-		this->sectorPlaceholder.foreground_tiles);
+		sector->foreground_tiles);
 
 	// sprite_tiles
 	ReadTiles(file, TILES_COMPRESSION_LEGACY,
 		PK2MAP_MAP_WIDTH,
 		PK2MAP_MAP_SIZE,
-		this->sectorPlaceholder.sprite_tiles);
+		sector->sprite_tiles);
 	
 
 	file.close();
@@ -284,7 +279,7 @@ void LevelClass::LoadVersion15(PFile::Path path, bool headerOnly){
 
 	file.read(version,      sizeof(version));
 
-	u32 regions = 1; //placeholder;
+	u32 sectors_number = 1; //placeholder;
 
 	//Read level header
 	{
@@ -302,7 +297,7 @@ void LevelClass::LoadVersion15(PFile::Path path, bool headerOnly){
 		 */
 		if(headerOnly)return;
 
-		jsonReadU32(regions, "regions", regions);
+		jsonReadU32(j, "regions", sectors_number);
 
 		if(j.contains("sprite_prototypes")){
 			this->sprite_prototype_names = j["sprite_prototypes"].get<std::vector<std::string>>();
@@ -314,47 +309,69 @@ void LevelClass::LoadVersion15(PFile::Path path, bool headerOnly){
 		jsonReadInt(j, "game_mode", this->game_mode);
 	}
 
-	if(regions!=1){
-		throw PExcept::PException("Multiple regions aren't supported yet!"); //placeholder
+	if(sectors_number==0){
+		throw PExcept::PException("At least one level sector is required!");
 	}
 
-	u32 width = 0; // placeholder
-	u32 height = 0; //placeholder
-	u32 compression = 0;
-	
-	//Read region header
-	{
+	this->sectors.resize(sectors_number);
+	for(u32 i=0;i<sectors_number;++i){
+		u32 width = 0; // placeholder
+		u32 height = 0; //placeholder
+		u32 compression = 0;
+
+		// Read sector header
 		const nlohmann::json j = file.readCBOR();
 		jsonReadU32(j, "width", width);
 		jsonReadU32(j, "height", height);
 		jsonReadU32(j, "compression", compression);
 
-		jsonReadString(j, "tileset", this->tileset_name);
-		jsonReadString(j, "tileset_bg", this->tileset_bg_name);
-		jsonReadString(j, "music", this->music_name);
+		LevelSector*& sector = this->sectors[i];
+		sector = new LevelSector(width, height);
 
-		jsonReadString(j, "background", this->background_name);
-		jsonReadInt(j, "scrolling", this->background.scrolling);
-		jsonReadInt(j, "weather", this->sectorPlaceholder.weather);
+		/**
+		 * @brief 
+		 * Tileset
+		 */
+		sector->tileset1 = this->mLoadTileset(path, j["tileset"].get<std::string>());
 
-		jsonReadInt(j, "splash_color", this->sectorPlaceholder.splash_color);
-		jsonReadInt(j, "fire_color_1", this->sectorPlaceholder.fire_color_1);
-		jsonReadInt(j, "fire_color_2", this->sectorPlaceholder.fire_color_2);
+		/**
+		 * @brief 
+		 * Tileset bg
+		 */
+
+		if(j.contains("tileset_bg") && j["tileset_bg"].is_string()){
+			std::string tileset_bg_name = j["tileset_bg"].get<std::string>();
+			if(!tileset_bg_name.empty()){
+				sector->tileset2 = this->mLoadTileset(path, tileset_bg_name);
+			}
+		}
+
+		/**
+		 * @brief 
+		 * background
+		 */
+		sector->background = this->mLoadBackground(path, j["background"].get<std::string>());
+
+
+		jsonReadString(j, "music", sector->music_name);
+
+		jsonReadInt(j, "scrolling", sector->background->scrolling);
+		jsonReadInt(j, "weather", sector->weather);
+
+		jsonReadInt(j, "splash_color", sector->splash_color);
+		jsonReadInt(j, "fire_color_1", sector->fire_color_1);
+		jsonReadInt(j, "fire_color_2", sector->fire_color_2);
+
+
+		// Background tiles
+		ReadTiles(file, compression, sector->getWidth(), sector->size(), sector->background_tiles);
+
+		// Foreground tiles
+		ReadTiles(file, compression, sector->getWidth(), sector->size(), sector->foreground_tiles);
+
+		// Sprite tiles
+		ReadTiles(file, compression, sector->getWidth(), sector->size(), sector->sprite_tiles);
 	}
-
-	if(width!=PK2MAP_MAP_WIDTH || height!=PK2MAP_MAP_HEIGHT){
-		throw PExcept::PException("Custom-sized regions not implemented yet!");
-	}
-
-	//background tiles
-	file.read(this->sectorPlaceholder.background_tiles, sizeof(u8)* PK2MAP_MAP_SIZE);
-
-	//foreground tiles
-	file.read(this->sectorPlaceholder.foreground_tiles, sizeof(u8)* PK2MAP_MAP_SIZE);
-
-	//sprite tiles
-	file.read(this->sectorPlaceholder.sprite_tiles, sizeof(u8)* PK2MAP_MAP_SIZE);
-
 	file.close();
 }
 
@@ -379,7 +396,7 @@ void LevelClass::SaveVersion15(PFile::Path path)const{
 		j["sprite_prototypes"] = this->sprite_prototype_names;
 		j["player_index"] = this->player_sprite_index;
 
-		j["regions"] = 1;
+		j["regions"] = u32(this->sectors.size());
 		j["map_time"] = this->map_time;
 		j["lua_script"] = this->lua_script;
 		j["game_mode"] = this->game_mode;
@@ -387,42 +404,51 @@ void LevelClass::SaveVersion15(PFile::Path path)const{
 		file.writeCBOR(j);
 	}
 
-	//Write level data
-	{
+
+	for(LevelSector* sector:this->sectors){
 		nlohmann::json j;
 
 		j["width"] = PK2MAP_MAP_WIDTH;
 		j["height"]= PK2MAP_MAP_HEIGHT;
 		j["compression"] = TILES_COMPRESSION_NONE;
 
-		j["tileset"] = this->tileset_name;
-		j["tileset_bg"] = this->tileset_bg_name;
-		j["music"] = this->music_name;
-		j["background"] = this->background_name;
-		j["scrolling"] = this->background.scrolling;
-		j["weather"] = this->sectorPlaceholder.weather;
+		j["tileset"] = sector->tileset1->name;
+		if(sector->tileset2!=nullptr){
+			j["tileset_bg"] = sector->tileset2->name;
+		}
 
-		j["splash_color"] = this->sectorPlaceholder.splash_color;
-		j["fire_color_1"] = this->sectorPlaceholder.fire_color_1;
-		j["fire_color_2"] = this->sectorPlaceholder.fire_color_2;
+		
+		j["music"] = sector->music_name;
+		j["background"] = sector->background->name;
+		j["scrolling"] = sector->background->scrolling;
+		j["weather"] = sector->weather;
+
+		j["splash_color"] = sector->splash_color;
+		j["fire_color_1"] = sector->fire_color_1;
+		j["fire_color_2"] = sector->fire_color_2;
 
 		file.writeCBOR(j);
+
+		//background tiles
+		file.write(sector->background_tiles, sizeof(u8) * sector->size());
+
+		//foreground tiles
+		file.write(sector->foreground_tiles, sizeof(u8) * sector->size());
+
+		//sprite tiles
+		file.write(sector->sprite_tiles, sizeof(u8) * sector->size());
 	}
-
-	//background tiles
-	file.write(this->sectorPlaceholder.background_tiles, sizeof(u8)* PK2MAP_MAP_SIZE);
-
-	//foreground tiles
-	file.write(this->sectorPlaceholder.foreground_tiles, sizeof(u8)* PK2MAP_MAP_SIZE);
-
-	//sprite tiles
-	file.write(this->sectorPlaceholder.sprite_tiles, sizeof(u8)* PK2MAP_MAP_SIZE);
 
 	file.close();
 }
 
 
 void LevelClass::calculateBlockTypes(){
+
+	for(LevelSector*sector: this->sectors){
+		sector->calculateColors();
+	}
+
 	PK2BLOCK block;
 
 	for (int i=0;i<150;i++){
@@ -564,7 +590,7 @@ void LevelClass::moveBlocks(u32 button1, u32 button2, u32 button3){
 	this->block_types[BLOCK_BUTTON3].top = kytkin3_x;
 }
 
-void LevelClass::DrawForegroundTiles(int camera_x, int camera_y){
+void LevelClass::drawForegroundTiles(int camera_x, int camera_y, LevelSector* sector){
 
 
 	int button1_timer_y = 0;
@@ -601,35 +627,54 @@ void LevelClass::DrawForegroundTiles(int camera_x, int camera_y){
 			button3_timer_y = button3_time - button3_timer;
 	}
 
-	this->sectorPlaceholder.drawForegroundTiles(camera_x, camera_y, this->block_animation_frame,
+	sector->drawForegroundTiles(camera_x, camera_y, this->block_animation_frame,
 	this->arrows_block_degree, button1_timer_y, button2_timer_y, button3_timer_y);
 
+	sector->animateTilesets(tiles_animation_timer, button1_timer);
+	/**
+	 * @brief 
+	 * Blinking pixels,
+	 * TO DO
+	 * Move this to GameClass
+	 */
+	if(tiles_animation_timer%4 == 0){
+		PDraw::rotate_palette(224,239);
+	}
+	
+	this->tiles_animation_timer = 1 + this->tiles_animation_timer % 320;
+}
 
-	if (tiles_animation_timer%2 == 0)
-	{
 
-		this->tileset1.animateFire(this->button1_timer, this->sectorPlaceholder.fire_color_1, this->sectorPlaceholder.fire_color_2);
-		this->tileset1.animateWaterfall();
-		this->tileset1.animateWaterSurface();
-		this->tileset1.animateRollUp();
-
-		if(this->tileset2){
-			this->tileset2.animateFire(this->button1_timer, this->sectorPlaceholder.fire_color_1, this->sectorPlaceholder.fire_color_2);
-			this->tileset2.animateWaterfall();
-			this->tileset2.animateWaterSurface();
-			this->tileset2.animateRollUp();
+Tileset* LevelClass::mLoadTileset(PFile::Path path, const std::string& tilesetName){
+	for(Tileset* tileset : this->mTilesets){
+		if(tileset->name == tilesetName){
+			return tileset;
 		}
+	}
+	Tileset* tileset = new Tileset();
+	this->mTilesets.push_back(tileset);
 
-		if (tiles_animation_timer%4 == 0){
+	tileset->name = tilesetName;
+	path.SetFile(tilesetName);
+	tileset->loadImage(path);
 
-			this->tileset1.animateWater(this->tiles_animation_timer);
-			if(this->tileset2){
-				this->tileset2.animateWater(this->tiles_animation_timer);
-			}
-			PDraw::rotate_palette(224,239);
+	return tileset;
+}
+
+Background* LevelClass::mLoadBackground(PFile::Path path, const std::string& backgroundName){
+	for(Background* background : this->mBackgrounds){
+		if(background->name == backgroundName){
+			return background;
 		}
-
 	}
 
-	this->tiles_animation_timer = 1 + this->tiles_animation_timer % 320;
+	Background* background = new Background();
+	this->mBackgrounds.push_back(background);
+
+	background->name = backgroundName;
+
+	path.SetFile(backgroundName);
+	background->load(path);
+
+	return background;
 }

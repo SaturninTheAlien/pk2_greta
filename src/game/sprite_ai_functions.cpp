@@ -850,7 +850,7 @@ void Teleporter(SpriteClass*s){
 			std::vector<SpriteClass*> portit;
 
 			// search for teleports of the same type
-			for (SpriteClass* sprite : Game->spritesHandler.Sprites_List)
+			for (SpriteClass* sprite : Game->playerSprite->level_sector->sprites.Sprites_List)
 				if (s->prototype == sprite->prototype && sprite != s)
 						portit.push_back(sprite);
 

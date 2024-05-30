@@ -1,23 +1,17 @@
 #include "sprites_handler.hpp"
 #include "spriteclass.hpp"
+
 #include "engine/PLog.hpp"
+#include "engine/PDraw.hpp"
+#include "engine/PInput.hpp"
+
 #include "physics.hpp"
-#include "game.hpp"
 #include "episode/episodeclass.hpp"
 #include <limits.h>
 #include <sstream>
-
-SpritesHandler::SpritesHandler()
-:prototypesHandler(true, true, Episode){
-	
-}
-
+#include "system.hpp"
 
 void SpritesHandler::clearAll(){
-    for (int i = 0; i < MAX_PROTOTYYPPEJA; i++) {
-		Level_Prototypes_List[i] = nullptr;
-	}
-
     for (SpriteClass* sprite : Sprites_List) {
 		if(sprite!=nullptr){
 			delete sprite;
@@ -28,47 +22,6 @@ void SpritesHandler::clearAll(){
 	bgSprites_List.clear();
 	fgSprites_List.clear();
 	Player_Sprite = nullptr;
-
-    this->prototypesHandler.clear();
-}
-
-PrototypeClass* SpritesHandler::getLevelPrototype(int index){
-    if(index<0 || index>= MAX_PROTOTYYPPEJA) return nullptr;
-	else return Level_Prototypes_List[index];
-}
-
-void SpritesHandler::loadLevelPrototype(const std::string& name, int id) {
-
-	if (id<0 || id >= MAX_PROTOTYYPPEJA) {
-		PLog::Write(PLog::ERR, "PK2", "Invalid prototype id");
-		return;
-	}
-
-	PrototypeClass* protot = this->prototypesHandler.loadPrototype(name);
-    this->Level_Prototypes_List[id] = protot;
-}
-
-
-void SpritesHandler::loadAllLevelPrototypes(const LevelClass& level){
-
-	std::size_t prototypes_number = level.sprite_prototype_names.size();
-	if(prototypes_number > MAX_PROTOTYYPPEJA){
-		std::ostringstream os;
-		os<<"Too many sprite prototypes: "<<prototypes_number<<std::endl;
-		os<<MAX_PROTOTYYPPEJA<<" is the current limit."<<std::endl;
-		os<< "Dependency sprites (ammo, transformation and so on)"
-		" do not count into the limit";
-
-		throw std::runtime_error(os.str());
-	}
-
-    for (u32 i = 0; i < prototypes_number; i++) {
-
-		const std::string& name = level.sprite_prototype_names[i];
-		if(!name.empty()){
-			this->loadLevelPrototype(name, i);
-		}
-	}
 }
 
 int Get_BG_Parallax_Score(SpriteClass* s){
@@ -155,7 +108,7 @@ void SpritesHandler::onEvent2(){
 	}
 }
 
-int SpritesHandler::onTickUpdate(){
+int SpritesHandler::onTickUpdate(int camera_x, int camera_y){
     if(Player_Sprite!=nullptr && Player_Sprite->energy>0){
 		AI_Functions::player_invisible = Player_Sprite;
 
@@ -182,10 +135,10 @@ int SpritesHandler::onTickUpdate(){
 		if(sprite->prototype->always_active){
 			sprite->active=true;
 		}
-		else if (sprite->x < Game->camera_x + 640 + ACTIVE_BORDER_X &&
-			sprite->x > Game->camera_x - ACTIVE_BORDER_X &&
-			sprite->y < Game->camera_y + 480 + ACTIVE_BORDER_y &&
-			sprite->y > Game->camera_y - ACTIVE_BORDER_y){
+		else if (sprite->x < camera_x + 640 + ACTIVE_BORDER_X &&
+			sprite->x > camera_x - ACTIVE_BORDER_X &&
+			sprite->y < camera_y + 480 + ACTIVE_BORDER_y &&
+			sprite->y > camera_y - ACTIVE_BORDER_y){
 				sprite->active = true;
 			}
 			
@@ -243,7 +196,7 @@ SpriteClass* SpritesHandler::mCreateSprite(PrototypeClass* prototype, bool playe
 		throw std::runtime_error("Cannot create a sprite from a null prototype");
 	}
 	
-	SpriteClass* sprite = new SpriteClass(prototype, player, x, y, parent_sprite);
+	SpriteClass* sprite = new SpriteClass(prototype, player, x, y, this->mLevelSector, parent_sprite);
 	this->Sprites_List.push_back(sprite);
 
 	for(const SpriteAI::AI_Class& ai: sprite->prototype->AI_f){
@@ -262,7 +215,7 @@ SpriteClass* SpritesHandler::mCreateSprite(PrototypeClass* prototype, bool playe
 	return sprite;
 }
 
-void SpritesHandler::addPlayer(PrototypeClass*prototype, double x, double y){
+SpriteClass* SpritesHandler::addPlayer(PrototypeClass*prototype, double x, double y){
 	SpriteClass* sprite = this->mCreateSprite(prototype, true, x, y, nullptr);
 	sprite->initial_update = true;
 	sprite->original = true;
@@ -289,6 +242,8 @@ void SpritesHandler::addPlayer(PrototypeClass*prototype, double x, double y){
 
 	sprite->orig_x = sprite->x;
 	sprite->orig_y = sprite->y;
+
+	return sprite;
 }
 
 void SpritesHandler::addLevelSprite(PrototypeClass*prototype, double x, double y){
@@ -376,5 +331,153 @@ bool SpritesHandler::spriteDestructed(SpriteClass* sprite) {
 	}
 
 	return false;
-	
+}
+
+
+static bool isSpriteVisible(const SpriteClass* sprite, int camera_x, int camera_y){
+	return (sprite->x - sprite->prototype->picture_frame_width/2  < camera_x + screen_width &&
+			sprite->x + sprite->prototype->picture_frame_width/2  > camera_x &&
+			sprite->y - sprite->prototype->picture_frame_height/2 < camera_y + screen_height &&
+			sprite->y + sprite->prototype->picture_frame_height/2 > camera_y);
+}
+
+void SpritesHandler::drawBGsprites(int camera_x, int camera_y, bool gamePaused, int& debug_drawn_sprites){
+	for (SpriteClass* sprite : this->bgSprites_List) {
+
+		double orig_x = sprite->orig_x;
+		double orig_y = sprite->orig_y;
+
+		double xl, yl;
+
+		if (sprite->prototype->parallax_type != 0) {
+
+			double parallax = double(sprite->prototype->parallax_type);
+
+			xl =  orig_x - camera_x-screen_width/2 - sprite->prototype->width/2;
+			xl /= parallax;
+			yl =  orig_y - camera_y-screen_height/2 - sprite->prototype->height/2;
+			yl /= parallax;
+		}
+		else {
+
+			xl = yl = 0;
+
+		}
+
+		UpdateBackgroundSprite(sprite, yl);
+
+		sprite->x = orig_x-xl;
+		sprite->y = orig_y-yl;
+
+		if (isSpriteVisible(sprite, camera_x, camera_y)) {
+			sprite->Draw(camera_x,camera_y);
+
+			if (!gamePaused)
+				sprite->HandleEffects();
+
+			sprite->hidden = false;
+			debug_drawn_sprites++;
+		} else {
+			if (!gamePaused)
+				sprite->Animoi();
+			sprite->hidden = true;
+		}
+	}
+}
+
+void SpritesHandler::drawFGsprites(int camera_x, int camera_y, bool gamePaused, int& debug_drawn_sprites){
+	for(SpriteClass* sprite : this->fgSprites_List){
+
+		double orig_x = sprite->orig_x;
+		double orig_y = sprite->orig_y;
+
+		double xl, yl;
+
+		if (sprite->prototype->parallax_type != 0) {
+
+			double parallax = double(-sprite->prototype->parallax_type);
+
+			xl =  orig_x - camera_x-screen_width/2 - sprite->prototype->width/2;
+			xl /= parallax;
+			
+			yl =  orig_y - camera_y-screen_height/2 - sprite->prototype->height/2;
+			yl /= parallax;
+		}
+		else {
+
+			xl = yl = 0;
+
+		}
+
+		UpdateBackgroundSprite(sprite, yl);
+
+		sprite->x = orig_x-xl;
+		sprite->y = orig_y-yl;
+
+
+		if (isSpriteVisible(sprite, camera_x, camera_y)) {
+			sprite->Draw(camera_x,camera_y);
+
+			if (!gamePaused)
+				sprite->HandleEffects();
+
+			sprite->hidden = false;
+			debug_drawn_sprites++;
+		} else {
+			if (!gamePaused)
+				sprite->Animoi();
+			sprite->hidden = true;
+		}
+	}
+}
+
+void SpritesHandler::drawSprites(int camera_x, int camera_y, bool gamePaused, int& debug_drawn_sprites){
+	for (SpriteClass* sprite : this->Sprites_List) {
+		if (sprite->prototype->type == TYPE_BACKGROUND || sprite->prototype->type == TYPE_FOREGROUND)
+			continue;
+		
+		if (sprite->removed)
+			continue;
+
+		if (isSpriteVisible(sprite, camera_x, camera_y)) {
+
+			// Draw impact circle
+			if (sprite->damage_timer > 0 && sprite->prototype->type != TYPE_BONUS && sprite->energy < 1){
+				int framex = ((degree%12)/3) * 58;
+				u32 hit_x = sprite->x-8;
+				u32 hit_y = sprite->y-8;
+				PDraw::image_cutclip(game_assets,hit_x-camera_x-28+8, hit_y-camera_y-27+8,1+framex,83,1+57+framex,83+55);
+			}
+
+			bool blinking = dev_mode && sprite->player && PInput::Keydown(PInput::Y);
+			if(!blinking || degree % 2 == 0){
+				sprite->Draw(camera_x, camera_y);
+			}
+
+			// Draw stars on dead sprite
+			if (sprite->energy < 1 && sprite->prototype->type != TYPE_PROJECTILE){
+				int sx = (int)sprite->x;
+				for (int stars=0; stars<3; stars++){
+					double star_x = sprite->x - 8  + sin_table((stars*120+degree)*2)      / 3;
+					double star_y = sprite->y - 18 + cos_table((stars*120+degree)*2 + sx) / 8;
+					PDraw::image_cutclip(game_assets,star_x-camera_x, star_y-camera_y,1,1,11,11);
+				}
+			}
+
+			if (!gamePaused)
+				sprite->HandleEffects();
+
+			debug_drawn_sprites++;
+
+		} else {
+
+			if (!gamePaused)
+				sprite->Animoi();
+
+			// Delete death body
+			if (sprite->energy < 1 && sprite->respawn_timer==0)
+				sprite->removed = true;
+			
+		}
+	}
 }

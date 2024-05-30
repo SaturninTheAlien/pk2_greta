@@ -15,6 +15,8 @@
 
 #include "prototype.hpp"
 
+class LevelSector;
+
 class SpriteClass{
 public:
 
@@ -28,7 +30,7 @@ public:
     double  y                = 0;               // sprite y location
     double  a                = 0;               // horizontal speed
     double  b                = 0;               // vertical speed
-    u32     sector_id           = 0;
+    LevelSector* level_sector = nullptr;
     bool    flip_x           = false;           // if it is flipped horizontally
     bool    flip_y           = false;           // if it is flipped vertically
     int     jump_timer       = 0;               // jump times: = 0 not jumping; > 0 jumping; < 0 falling
@@ -104,7 +106,7 @@ public:
 
     
     SpriteClass();
-    SpriteClass(PrototypeClass *prototype, bool player, double x, double y, SpriteClass*parent=nullptr);
+    SpriteClass(PrototypeClass *prototype, bool player, double x, double y, LevelSector*sector, SpriteClass*parent=nullptr);
     ~SpriteClass();
 
     void  Draw(int camera_x, int camera_y);   // animate and draw the sprite

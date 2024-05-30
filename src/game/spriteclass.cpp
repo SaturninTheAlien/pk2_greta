@@ -23,7 +23,11 @@
 /* -------- SpriteClass  ------------------------------------------------------------------ */
 
 SpriteClass::SpriteClass(){}
-SpriteClass::SpriteClass(PrototypeClass *prototype, bool player, double x, double y, SpriteClass*parent){
+SpriteClass::SpriteClass(PrototypeClass *prototype, bool player,
+ double x,
+ double y,
+ LevelSector*sector,
+ SpriteClass*parent){
 	if (prototype) {
 
 		this->prototype         = prototype;
@@ -36,6 +40,7 @@ SpriteClass::SpriteClass(PrototypeClass *prototype, bool player, double x, doubl
 
 		this->x              = x;
 		this->y              = y;
+		this->level_sector = sector;
 		
 		this->orig_x         = x;
 		this->orig_y         = y;

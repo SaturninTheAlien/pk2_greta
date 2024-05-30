@@ -25,7 +25,8 @@
 
 GameClass* Game = nullptr;
 
-GameClass::GameClass(int idx) {
+GameClass::GameClass(int idx):
+spritePrototypes(true, true, Episode){
 
 	this->level_id = idx;
 	this->map_file = Episode->levels_list[idx].tiedosto;
@@ -35,7 +36,8 @@ GameClass::GameClass(int idx) {
 
 }
 
-GameClass::GameClass(std::string map_file) {
+GameClass::GameClass(std::string map_file):
+spritePrototypes(true, true, Episode){
 
 	this->map_file = map_file;
 
@@ -58,7 +60,8 @@ GameClass::~GameClass(){
 
 	PSound::stop_music();
 	PDraw::pallete_set(default_palette);
-	this->spritesHandler.clearAll();
+	level.clear();
+	this->spritePrototypes.clear();
 
 	if(this->lua!=nullptr){
 		PK2lua::DestroyGameLuaVM(this->lua);
@@ -71,8 +74,6 @@ int GameClass::Start() {
 	if (this->started)
 		return 1;
 	
-	this->spritesHandler.clearAll(); //Reset prototypes and sprites
-
 	if(this->lua!=nullptr){
 		PK2lua::DestroyGameLuaVM(this->lua);
 		this->lua = nullptr;
@@ -128,7 +129,7 @@ int GameClass::Finish() {
 int GameClass::Open_Map() {
 	
 	PFile::Path path = Episode->Get_Dir(map_file);
-	level.Load(path);
+	level.load(path, false);
 
 	/**
 	 * @brief 
@@ -155,105 +156,154 @@ int GameClass::Open_Map() {
 		level.button3_time = SWITCH_INITIAL_VALUE;
 	}
 
+	/**
+	 * @brief 
+	 * TO DO
+	 */
 
-	spritesHandler.loadAllLevelPrototypes(this->level);
+	//spritesHandler.loadAllLevelPrototypes(this->level);
 
-	spritesHandler.prototypesHandler.loadSpriteAssets();
+	this->placeSprites();
+	this->level.calculateBlockTypes();
+	for(LevelSector* sector: this->level.sectors){
+		sector->calculateEdges();
+	}
 
-	Place_Sprites();
+	//Place_Sprites();
 
 	Particles_Clear();
-	Particles_LoadBG(&level.sectorPlaceholder);
+	/***
+	 * TO DO
+	*/
+	Particles_LoadBG(level.sectors[0]);
 
-	this->StartMusic();
+	level.sectors[0]->startMusic();
 	
 	return 0;
 }
 
-void GameClass::StartMusic(){
-	if (!level.music_name.empty()) {
+void GameClass::placeSprites() {
+	std::array<PrototypeClass*, 255> mapping;
 
-		PFile::Path music_path = Episode->Get_Dir(level.music_name);
+	//Load prototypes
+	std::size_t prototypes_number = this->level.sprite_prototype_names.size();
+	if(prototypes_number > mapping.size()){
+		std::ostringstream os;
+		os<<"Too many sprite prototypes: "<<prototypes_number<<std::endl;
+		os<<mapping.size()<<" is the current limit."<<std::endl;
+		os<< "Dependency sprites (ammo, transformation and so on)"
+		" do not count into the limit";
 
-		if (!FindAsset(&music_path, "music" PE_SEP)) {
-
-			PLog::Write(PLog::ERR, "PK2", "Can't find music \"%s\", trying \"song01.xm\"", music_path.GetFileName().c_str());
-			music_path = PFile::Path("music" PE_SEP "song01.xm");
-
-		}
-		
-		if (PSound::start_music(music_path) == -1)
-			PLog::Write(PLog::FATAL, "PK2", "Can't load any music file");
-
-	}
-	else{
-		PSound::stop_music();
-	}
-}
-
-void GameClass::Place_Sprites() {
-	PrototypeClass * prototype = this->spritesHandler.getLevelPrototype(level.player_sprite_index);
-
-	if(prototype==nullptr){
-		throw std::runtime_error("Null player prototype is quite serious error!");
+		throw std::runtime_error(os.str());
 	}
 
-	this->spritesHandler.addPlayer(prototype, 0, 0);
-	this->Select_Start();
+	for(std::size_t i=0;i<mapping.size();++i){
+		mapping[i] = nullptr;
+	}
 
-	for (u32 y = 0; y < level.sectorPlaceholder.getHeight(); y++){
-		for (u32 x = 0; x < level.sectorPlaceholder.getWidth(); x++) {
-		
-
-			int sprite = level.sectorPlaceholder.sprite_tiles[x+y*level.sectorPlaceholder.getWidth()];
-			if(sprite<0||sprite>=255) continue;
-
-			prototype = this->spritesHandler.getLevelPrototype(sprite);
-			if(prototype==nullptr) continue;
-
-			/**
-			 * @brief 
-			 * Count big apples
-			 */
-			if(prototype->big_apple){
-				this->apples_count++;
-			}
-
-			/**
-			 * @brief 
-			 * Count keys
-			 */
-			if (prototype->can_open_locks && 
-				!prototype->indestructible){
-				this->keys++;
-			}
-
-			/**
-			 * @brief 
-			 * Count enemies
-			 */
-			if(prototype->type == TYPE_GAME_CHARACTER
-			&& !prototype->indestructible
-			&& prototype->damage > 0 //to ignore switches, boxes and so on
-			&& prototype->enemy){
-				this->enemies++;
-			}
-
-			this->spritesHandler.addLevelSprite(prototype, x*32, y*32 - prototype->height+32);
+	for(std::size_t i=0;i<prototypes_number;++i){
+		const std::string& name = level.sprite_prototype_names[i];
+		if(!name.empty()){
+			mapping[i] =  this->spritePrototypes.loadPrototype(level.sprite_prototype_names[i]);
 		}
 	}
 
-	this->spritesHandler.sortBg();
+	// Load sprite assets
+	this->spritePrototypes.loadSpriteAssets();
+
+	// Player prototype
+	int player_index = level.player_sprite_index;
+	if(player_index<0 || player_index >= int(mapping.size())){
+		std::ostringstream os;
+		os<<"Incorrect player sprite index: "<<player_index;
+		throw PExcept::PException(os.str());
+	}
+
+
+	PrototypeClass* player_prototype = mapping[player_index];
+	if(player_prototype==nullptr){
+		throw PExcept::PException("Null player prototype is quite serious error!");
+	}
+
+	// Add player
+	{
+		double pos_x = 0;
+		double pos_y = 0;
+		u32 sector_id = 0;
+
+		this->selectStart(pos_x, pos_y, sector_id);
+		pos_x += player_prototype->width/2;
+		pos_y -= player_prototype->height/2;
+
+		this->camera_x = (int)pos_x;
+		this->camera_y = (int)pos_y;
+		this->dcamera_x = this->camera_x;
+		this->dcamera_y = this->camera_y;
+
+		this->playerSprite= this->level.sectors[sector_id]->sprites.addPlayer(player_prototype, pos_x, pos_y);
+		//this->updateCamera();
+	}
+
+	// Add other sprites
+	for(LevelSector* sector: this->level.sectors){
+
+
+		for (u32 y = 0; y < sector->getHeight(); y++){
+			for (u32 x = 0; x < sector->getWidth(); x++) {
+			
+
+				int sprite = sector->sprite_tiles[x+y*sector->getWidth()];
+				if(sprite<0||sprite>=255) continue;
+
+				PrototypeClass* prototype = mapping[sprite];
+				if(prototype==nullptr) continue;
+
+				/**
+				 * @brief 
+				 * Count big apples
+				 */
+				if(prototype->big_apple){
+					this->apples_count++;
+				}
+
+				/**
+				 * @brief 
+				 * Count keys
+				 */
+				if (prototype->can_open_locks && 
+					!prototype->indestructible){
+					this->keys++;
+				}
+
+				/**
+				 * @brief 
+				 * Count enemies
+				 */
+				if(prototype->type == TYPE_GAME_CHARACTER
+				&& !prototype->indestructible
+				&& prototype->damage > 0 //to ignore switches, boxes and so on
+				&& prototype->enemy){
+					this->enemies++;
+				}
+
+				sector->sprites.addLevelSprite(prototype, x*32, y*32 - prototype->height+32);
+			}
+		}
+
+		sector->sprites.sortBg();
+	}
 }
 
-void GameClass::Select_Start() {
+void GameClass::selectStart(double& pos_x, double& pos_y, u32 sector) {
 
-	double  pos_x = 320;
-	double  pos_y = 196;
+	pos_x = 320;
+	pos_y = 196;
 
 	std::vector<BlockPosition> startSigns;
 
-	level.sectorPlaceholder.countStartSigns(startSigns, 0);
+	for(u32 i=0; i<level.sectors.size(); ++i){
+		level.sectors[i]->countStartSigns(startSigns, i);
+	}
 
 	int selected_start = 0;
 	if(startSigns.size()>1){
@@ -264,24 +314,21 @@ void GameClass::Select_Start() {
 	if(startSigns.size()>0){
 		pos_x = startSigns[selected_start].x * 32;
 		pos_y = startSigns[selected_start].y * 32;
+		sector = startSigns[selected_start].sector;
 	}
-
-
-	SpriteClass * playerSprite = this->spritesHandler.Player_Sprite;
-	playerSprite->x = pos_x + playerSprite->prototype->width/2;
-	playerSprite->y = pos_y - playerSprite->prototype->height/2;
-
-	this->camera_x = (int)playerSprite->x;
-	this->camera_y = (int)playerSprite->y;
-	this->dcamera_x = this->camera_x;
-	this->dcamera_y = this->camera_y;
-
 }
 
 void GameClass::ExecuteEventsIfNeeded(){
 	if(this->change_skulls){
-		this->Change_SkullBlocks();
 		this->change_skulls = false;
+
+		this->vibration = 90;
+		PInput::Vibrate(1000);
+
+		for(LevelSector* sector: this->level.sectors){
+			sector->changeSkulls();
+			sector->sprites.onSkullBlocksChanged();
+		}
 
 		if(this->lua!=nullptr){
 			PK2lua::TriggerEventListeners(PK2lua::LUA_EVENT_SKULL_BLOCKS_CHANGED);
@@ -289,11 +336,15 @@ void GameClass::ExecuteEventsIfNeeded(){
 	}
 
 	if(this->event1){
+		this->event1 = false;
+
 		this->vibration = 90;
 		PInput::Vibrate(1000);
 
-		this->spritesHandler.onEvent1();
-		this->event1 = false;
+		for(LevelSector* sector: this->level.sectors){
+			sector->sprites.onEvent1();
+		}
+		
 
 		if(this->lua!=nullptr){
 			PK2lua::TriggerEventListeners(PK2lua::LUA_EVENT_1);
@@ -301,8 +352,12 @@ void GameClass::ExecuteEventsIfNeeded(){
 	}
 
 	if(this->event2){
-		this->spritesHandler.onEvent2();
 		this->event2 = false;
+
+		for(LevelSector* sector: this->level.sectors){
+			sector->sprites.onEvent2();
+		}
+		
 
 		if(this->lua!=nullptr){
 			PK2lua::TriggerEventListeners(PK2lua::LUA_EVENT_2);
@@ -311,38 +366,24 @@ void GameClass::ExecuteEventsIfNeeded(){
 
 	if(this->level.game_mode == GAME_MODE_KILL_ALL &&
 		this->enemies <= 0 &&
-		this->spritesHandler.Player_Sprite->damage_taken==0 && 
-		this->spritesHandler.Player_Sprite->damage_timer==0 && 
-		this->spritesHandler.Player_Sprite->energy>0){
+		this->playerSprite->damage_taken==0 && 
+		this->playerSprite->damage_timer==0 && 
+		this->playerSprite->energy>0){
 
 		this->Finish();
 	}
 }
 
-void GameClass::Change_SkullBlocks() {
-	this->level.sectorPlaceholder.changeSkulls();
-
-	//Put in game
-	this->vibration = 90;//60
-	PInput::Vibrate(1000);
-
-	level.Calculate_Edges();
-	this->spritesHandler.onSkullBlocksChanged();
-	//Sprites_changeSkullBlocks();
-}
-
 void GameClass::Open_Locks() {
-
-	this->level.sectorPlaceholder.openKeylocks();
-
 	//Put in game
 	this->vibration = 90;//60
 	PInput::Vibrate(1000);
 
 	Show_Info(tekstit->Get_Text(PK_txt.game_locksopen));
 
-	level.Calculate_Edges();
-
+	for(LevelSector* sector: this->level.sectors){
+		sector->openKeylocks();
+	}
 }
 
 void GameClass::Show_Info(const std::string& text) {
@@ -356,11 +397,10 @@ void GameClass::Show_Info(const std::string& text) {
 }
 
 void GameClass::updateCamera(){
-	SpriteClass* playerSprite = this->spritesHandler.Player_Sprite;
-	const LevelSector* sector = this->getLevelSector(playerSprite->sector_id);
+	this->camera_x = (int) this->playerSprite->x-screen_width / 2;
+	this->camera_y = (int) this->playerSprite->y-screen_height / 2;
 
-	this->camera_x = (int)playerSprite->x-screen_width / 2;
-	this->camera_y = (int)playerSprite->y-screen_height / 2;
+	LevelSector* sector = playerSprite->level_sector;
 	
 	if(dev_mode && PInput::MouseLeft() /*&& !PUtils::Is_Mobile()*/) {
 		this->camera_x += PInput::mouse_x - screen_width / 2;

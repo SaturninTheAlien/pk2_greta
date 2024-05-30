@@ -82,29 +82,26 @@ class GameClass {
 
 		void Show_Info(const std::string& text);
 
-		void Place_Sprites();
-		void Select_Start();
+		void placeSprites();
+		void selectStart(double& pos_x, double& pos_y, u32 sector);
+
 		void Open_Locks();
 
 		bool change_skulls=false;
 		bool event1 = false;
 		bool event2 = false;
 
-		SpritesHandler spritesHandler;
+		PrototypesHandler spritePrototypes;
+		SpriteClass* playerSprite;
 
-		void Change_SkullBlocks();
 		void ExecuteEventsIfNeeded();
-		void StartMusic();
 		
 		sol::state * lua = nullptr;
 		void updateCamera();
 
-		LevelSector* getLevelSector(u32){
-			/**
-			 * Placeholder
-			*/
+		/*LevelSector* getLevelSector(u32){
 			return &this->level.sectorPlaceholder;
-		}
+		}*/
 		bool isStarted()const{
 			return this->started;
 		}

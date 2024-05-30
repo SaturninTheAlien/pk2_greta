@@ -380,12 +380,12 @@ void convertToSpr2(const std::string& filename_in, const std::string& filename_o
 void convertLevel(const std::string& filename_in, const std::string& filename_out, bool bg_tiles){
 	try{
 		LevelClass level;
-		level.Load_Plain_Data(PFile::Path(filename_in), false);
+		level.load(PFile::Path(filename_in), false);
 		printf("Converting level \"%s\" to the new experimental format.\n", level.name.c_str());
-		if(bg_tiles){
+		/*if(bg_tiles){
 			level.tileset_bg_name = level.tileset_name.substr(0, level.tileset_name.size() - 4) + "_bg.bmp";
 			printf("Waring, assuming _bg tileset: %s!\n", level.tileset_bg_name.c_str());
-		}
+		}*/
 
 		level.SaveVersion15(PFile::Path(filename_out));
 		printf("Done!\n");

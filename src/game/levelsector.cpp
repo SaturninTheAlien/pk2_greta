@@ -6,10 +6,13 @@
 #include "engine/PDraw.hpp"
 #include "system.hpp"
 #include "gfx/effect.hpp"
+#include "episode/episodeclass.hpp"
+#include "engine/PSound.hpp"
+#include "engine/PLog.hpp"
 
 
-LevelSector::LevelSector(std::size_t height, std::size_t width):
-mHeight(height), mWidth(width){
+LevelSector::LevelSector(std::size_t width, std::size_t height):
+mWidth(width), mHeight(height), sprites(this){
     this->mSize = width * height;
     if(this->mSize>0){
         this->background_tiles = new u8[this->mSize];
@@ -44,6 +47,12 @@ LevelSector::~LevelSector(){
 	if(this->edges!=nullptr){
 		delete[] this->edges;
 		this->edges = nullptr;
+	}
+}
+
+void LevelSector::calculateColors(){
+	if(this->splash_color==-1){
+		this->splash_color = this->tileset1->calculateSplashColor();
 	}
 }
 
@@ -84,7 +93,7 @@ void LevelSector::calculateEdges(){
 
 				if (edge){
 					this->edges[x+y*this->mWidth] = true;
-					//this->background_tiles[x+y*PK2MAP_MAP_WIDTH] = 18; //Debug
+					//this->background_tiles[x+y*this->mWidth] = 18; //Debug
 				}
 			}
 		}
@@ -265,6 +274,7 @@ void LevelSector::openKeylocks(){
 			}
 		}
 	}
+	this->calculateEdges();
 }
 
 void LevelSector::changeSkulls(){
@@ -285,6 +295,8 @@ void LevelSector::changeSkulls(){
 				this->foreground_tiles[x+y*this->mWidth] = BLOCK_SKULL_FOREGROUND;
 		}
 	}
+
+	this->calculateEdges();
 }
 
 void LevelSector::countStartSigns(std::vector<BlockPosition>& vec, u32 sector_id)const{
@@ -295,5 +307,26 @@ void LevelSector::countStartSigns(std::vector<BlockPosition>& vec, u32 sector_id
 				vec.push_back(BlockPosition(x, y, sector_id));
 			}
 		}
+	}
+}
+
+void LevelSector::startMusic(){
+	if (!this->music_name.empty()) {
+
+		PFile::Path music_path = Episode->Get_Dir(this->music_name);
+
+		if (!FindAsset(&music_path, "music" PE_SEP)) {
+
+			PLog::Write(PLog::ERR, "PK2", "Can't find music \"%s\", trying \"song01.xm\"", music_path.GetFileName().c_str());
+			music_path = PFile::Path("music" PE_SEP "song01.xm");
+
+		}
+		
+		if (PSound::start_music(music_path) == -1)
+			PLog::Write(PLog::FATAL, "PK2", "Can't load any music file");
+
+	}
+	else{
+		PSound::stop_music();
 	}
 }

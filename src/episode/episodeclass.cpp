@@ -242,7 +242,7 @@ void EpisodeClass::Load() {
 			LevelClass temp;
 			char* mapname = this->levels_list[i].tiedosto;
 			strcpy(mapname, list[i].c_str());
-			temp.Load_Plain_Data(PFile::Path(path, mapname), true);
+			temp.load(PFile::Path(path, mapname), true);
 
 			strncpy(this->levels_list[i].nimi, temp.name.c_str(), 40);
 			this->levels_list[i].nimi[39] = '\0';

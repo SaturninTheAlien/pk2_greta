@@ -5,6 +5,7 @@
 #pragma once
 #include "tileset.hpp"
 #include "background.hpp"
+#include "sprites_handler.hpp"
 
 enum{
     TILES_COMPRESSION_NONE = 0,
@@ -31,7 +32,7 @@ public:
 
 class LevelSector{
 public:
-    LevelSector(std::size_t height, std::size_t width);
+    LevelSector(std::size_t width, std::size_t height);
     ~LevelSector();
 
     /**
@@ -52,7 +53,16 @@ public:
         return this->mSize;
     }
 
+    void calculateColors();
     void calculateEdges();
+    void animateTilesets(int animation_timer, int button1_timer){
+        this->tileset1->animate(animation_timer, button1_timer, this->fire_color_1, this->fire_color_2);
+        if(this->tileset2){
+            this->tileset2->animate(animation_timer, button1_timer, this->fire_color_1, this->fire_color_2);
+        }
+    }
+
+
     void drawBackgroundTiles(int camera_x, int camera_y, int block_animation_frame)const;
     void drawForegroundTiles(int camera_x, int camera_y, int block_animation_frame,
     int arrows_block_degree, int button1_timer_y, int button2_timer_y, int button3_timer_y)const;
@@ -65,6 +75,7 @@ public:
     void openKeylocks();
     void changeSkulls();
     void countStartSigns(std::vector<BlockPosition>& vec, u32 sector_id)const;
+    void startMusic();
 
     u8* background_tiles = nullptr;
     u8* foreground_tiles = nullptr;
@@ -74,6 +85,14 @@ public:
     Tileset* tileset1 = nullptr;
     Tileset* tileset2 = nullptr;
     Background* background = nullptr;
+
+    SpritesHandler sprites;
+
+    /**
+     * @brief 
+     * Temporary solution, redesign this to cache the music
+     */
+    std::string music_name;
 
 
     /*int background_scrolling = BACKGROUND_STATIC; // bg movemant type
@@ -97,6 +116,6 @@ public:
 
 
 private:
-    std::size_t mHeight, mWidth, mSize;
+    std::size_t mWidth, mHeight, mSize;
 
 };

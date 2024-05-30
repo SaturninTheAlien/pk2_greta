@@ -9,6 +9,7 @@
 #include "levelsector.hpp"
 
 #include "tileset.hpp"
+
 #include <vector>
 #include <string>
 
@@ -39,12 +40,7 @@ class LevelClass {
     /* Atributs ------------------------*/
 
     char     version[5]       = PK2MAP_LAST_VERSION;         // map version. eg "1.3"
-
-    std::string tileset_name = "blox.bmp";                  // path of block palette .bmp
-    std::string tileset_bg_name = "";                       // optional different tileset for the background layer
-
-    std::string background_name = "default.bmp";            // path of map bg .bmp
-    std::string music_name = "default.xm";                  // path of map music*/           
+            
 
     std::string name = "untitled";
     std::string author = "unknown";
@@ -61,7 +57,10 @@ class LevelClass {
     u32      button3_time   = SWITCH_INITIAL_VALUE;         // button 3 time
     int      player_sprite_index = 0;                            // player prototype
 
-    LevelSector sectorPlaceholder;
+
+    std::vector<LevelSector*> sectors;
+    
+    //LevelSector sectorPlaceholder;
 
     /*u8       background_tiles[PK2MAP_MAP_SIZE] = {255};              // map bg tiles 256*224
     u8       foreground_tiles[PK2MAP_MAP_SIZE] = {255};              // map fg tiles 256*224
@@ -72,44 +71,62 @@ class LevelClass {
     int      icon_x = 0;                                         // map icon x pos
 	int      icon_y = 0;                                         // map icon x pos
     int      icon_id = 0;                                      // map icon id
-
-    
+ 
 
     std::string lua_script = "main.lua";                        // lua script
     int game_mode = 0;                                          // game mode
 
 
-    Tileset tileset1; //tilset
+    /*Tileset tileset1; //tilset
     Tileset tileset2; //optional tileset for background
-    Background background; //
+    Background background; //*/
 
     std::array<PK2BLOCK, TILESET_SIZE> block_types;
     
     /* Metodit --------------------------*/
 
     LevelClass(); 
-    ~LevelClass();
-
-    void Load(PFile::Path path);
-    void Load_Plain_Data(PFile::Path path, bool headerOnly);
-
-    void DrawBackgroundTiles(int camera_x, int camera_y){
-        this->sectorPlaceholder.drawBackgroundTiles(camera_x, camera_y, this->block_animation_frame);
+    ~LevelClass(){
+        this->clear();
     }
-    void DrawForegroundTiles(int kamera_x, int kamera_y);
+
+    void clear();
+
+    void load(PFile::Path path, bool headerOnly);
+
+    void drawBackgroundTiles(int camera_x, int camera_y, LevelSector* sector){
+        sector->drawBackgroundTiles(camera_x, camera_y, this->block_animation_frame);
+    }
+    
+    void drawForegroundTiles(int camera_x, int camera_y, LevelSector* sector);
 
     void SetTilesAnimations(int degree, int anim, u32 aika1, u32 aika2, u32 aika3);
 
     void Calculate_Edges(){
-        this->sectorPlaceholder.calculateEdges();
+        for(LevelSector*sector:this->sectors){
+            sector->calculateEdges();
+        }
     }
 
     void SaveVersion15(PFile::Path path)const;
 
     void calculateBlockTypes();
     void moveBlocks(u32 button1, u32 button2, u32 button3);
-
+    //void placeSprites(PrototypesHandler& prototypes);
 private:
+
+    
+    
+    Tileset* mLoadTileset(PFile::Path path, const std::string& tilesetName);
+    Background* mLoadBackground(PFile::Path path, const std::string& backgroundName);
+
+    /**
+     * @brief 
+     * To prevent loading them multiple times
+     */
+    std::vector<Tileset*>mTilesets;
+    std::vector<Background*>mBackgrounds;
+
     static void ReadTiles(PFile::RW& file,
         u8 compression,
         u32 level_width,

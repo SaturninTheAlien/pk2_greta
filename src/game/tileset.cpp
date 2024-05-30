@@ -44,6 +44,19 @@ void Tileset::loadImage(PFile::Path path){
 	this->make254Transparent();
 }
 
+void Tileset::animate(int animation_timer, int button1_timer, int fire_color1, int fire_color2){
+	if(animation_timer%2 == 0){
+		this->animateFire(button1_timer, fire_color1, fire_color2);
+		this->animateWaterSurface();
+		this->animateWaterfall();
+		this->animateRollUp();
+
+		if(animation_timer%4 == 0){
+			this->animateWater(animation_timer);
+		}
+	}
+}
+
 void Tileset::animateFire(int button1_timer, int color1, int color2){
     u8 *buffer = NULL;
 	u32 width;

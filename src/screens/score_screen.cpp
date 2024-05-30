@@ -282,7 +282,7 @@ void ScoreScreen::Init() {
 	u32 temp_score = 0;
 	temp_score += Game->score;
 	temp_score += Game->timeout / 12; //(Game->timeout / 60) * 5;
-	temp_score += Game->spritesHandler.Player_Sprite->energy * 300;
+	temp_score += Game->playerSprite->energy * 300;
 	for (int i = 0; i < MAX_GIFTS; i++)
 		if (Gifts_Get(i) != nullptr)
 			temp_score += Gifts_Get(i)->score + 500;
@@ -361,12 +361,12 @@ void ScoreScreen::Loop() {
 				counting_delay = 50;
 			}
 
-		} else if (Game->spritesHandler.Player_Sprite->energy > 0) {
+		} else if (Game->playerSprite->energy > 0) {
 
 			counting_phase = COUNT_ENERGY;
 			counting_delay = 10;
 			energy_score+=300;
-			Game->spritesHandler.Player_Sprite->energy--;
+			Game->playerSprite->energy--;
 
 			Play_MenuSFX(Episode->sfx.score_sound, 70);
 
@@ -422,8 +422,8 @@ void ScoreScreen::Loop() {
 
 			time_score = Game->timeout / 12;
 
-			energy_score += Game->spritesHandler.Player_Sprite->energy * 300;
-			Game->spritesHandler.Player_Sprite->energy = 0;
+			energy_score += Game->playerSprite->energy * 300;
+			Game->playerSprite->energy = 0;
 
 			for (int i = 0; i < Gifts_Count(); i++)
 				gifts_score += Gifts_Get(i)->score + 500;

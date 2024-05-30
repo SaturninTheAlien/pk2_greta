@@ -83,20 +83,23 @@ public:
         return this->tiles;
     }
 
+    void animate(int animation_timer, int button1_timer, int fire_color1, int fire_color2);
+
+    operator bool()const{
+        return this->tiles != -1;
+    }
+
+    std::string name;
+    std::array<PK2BLOCKMASK, TILESET_SIZE> block_masks;
+private:
+
     void animateFire(int button1_timer, int color1, int color2);
     void animateWaterfall();
     void animateWaterSurface();
     void animateWater(int animation_timer);
     void animateRollUp();
 
-    
-    
-    operator bool()const{
-        return this->tiles != -1;
-    }
 
-    std::array<PK2BLOCKMASK, TILESET_SIZE> block_masks;
-private:
     void calculateBlockMasks();
     void make254Transparent();
 

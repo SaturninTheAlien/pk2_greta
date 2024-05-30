@@ -40,7 +40,7 @@ bool PlayingScreen::Is_Sprite_Visible(const SpriteClass* sprite)const {
 			sprite->y + sprite->prototype->picture_frame_height/2 > Game->camera_y);
 	
 }
-
+/*
 void PlayingScreen::Draw_InGame_BGSprites() {
 
 	for (SpriteClass* sprite : Game->spritesHandler.bgSprites_List) {
@@ -182,7 +182,7 @@ void PlayingScreen::Draw_InGame_Sprites() {
 			
 		}
 	}
-}
+}*/
 
 void PlayingScreen::Draw_InGame_DebugInfo() {
 	int vali, fy = 70;
@@ -190,7 +190,7 @@ void PlayingScreen::Draw_InGame_DebugInfo() {
 	PDraw::set_offset(640, 480);
 
 	vali = PDraw::font_write(fontti1,"sprites: ",10,fy);
-	PDraw::font_write(fontti1,std::to_string(Game->spritesHandler.Sprites_List.size()),10+vali,fy);
+	PDraw::font_write(fontti1,std::to_string(Game->spritePrototypes.size()),10+vali,fy);
 	fy += 10;
 
 	vali = PDraw::font_write(fontti1,"active sprites: ",10,fy);
@@ -203,7 +203,7 @@ void PlayingScreen::Draw_InGame_DebugInfo() {
 
 	for (std::size_t i = 0; i < 40; i++) {
 		PDraw::font_write(fontti1,std::to_string(i),410,10+i*10);
-		PrototypeClass*proto = Game->spritesHandler.prototypesHandler.get(i);
+		PrototypeClass*proto = Game->spritePrototypes.get(i);
 
 		if (proto == nullptr) {
 			PDraw::font_write(fontti1,"-",430,10+i*10);
@@ -226,7 +226,7 @@ void PlayingScreen::Draw_InGame_DebugInfo() {
 			PDraw::font_write(fontti1,Episode->levels_list[i].nimi,0,240+i*10);
 
 
-	SpriteClass* Player_Sprite = Game->spritesHandler.Player_Sprite;
+	SpriteClass* Player_Sprite = Game->playerSprite;
 	
 	PDraw::font_write(fontti1, std::to_string(Player_Sprite->x), 10, 410);
 	PDraw::font_write(fontti1, std::to_string(Player_Sprite->y), 10, 420);
@@ -386,7 +386,7 @@ void PlayingScreen::Draw_InGame_UI(){
 	/////////////////
 	vali = PDraw::font_write(fontti1,tekstit->Get_Text(PK_txt.game_energy),60,my);
 
-	SpriteClass* Player_Sprite = Game->spritesHandler.Player_Sprite;
+	SpriteClass* Player_Sprite = Game->playerSprite;
 	ShadowedText_Draw(std::to_string(Player_Sprite->energy), 60 + vali, my);
 
 	/////////////////
@@ -473,29 +473,27 @@ void PlayingScreen::Draw_InGame_UI(){
 }
 
 void PlayingScreen::Draw() {
-	SpriteClass* Player_Sprite = Game->spritesHandler.Player_Sprite;
+	SpriteClass* Player_Sprite = Game->playerSprite;
+	LevelSector* sector = Player_Sprite->level_sector;
 
 
 	debug_drawn_sprites = 0;
 
-	Game->level.sectorPlaceholder.drawBackground(Game->camera_x, Game->camera_y);
+	sector->drawBackground(Game->camera_x, Game->camera_y);
 
-	//Draw_InGame_BG();
-	
-	if (Settings.bg_sprites)
-		Draw_InGame_BGSprites();
+	sector->sprites.drawBGsprites(Game->camera_x, Game->camera_y, Game->paused, this->debug_drawn_sprites);
 
 	Particles_DrawBG(Game->camera_x, Game->camera_y);
 
-	Game->level.DrawBackgroundTiles(Game->camera_x,Game->camera_y);
+	Game->level.drawBackgroundTiles(Game->camera_x,Game->camera_y, sector);
 
-	Draw_InGame_Sprites();
+	sector->sprites.drawSprites(Game->camera_x, Game->camera_y, Game->paused, this->debug_drawn_sprites);
 
 	Particles_DrawFront(Game->camera_x, Game->camera_y);
 
-	Game->level.DrawForegroundTiles(Game->camera_x,Game->camera_y);
+	Game->level.drawForegroundTiles(Game->camera_x,Game->camera_y, sector);
 
-	Draw_InGame_FGSprites();
+	sector->sprites.drawFGsprites(Game->camera_x, Game->camera_y, Game->paused, this->debug_drawn_sprites);
 
 	if (Settings.draw_itembar)
 		Draw_InGame_Lower_Menu();
@@ -580,6 +578,10 @@ void PlayingScreen::Init(){
 }
 
 void PlayingScreen::Loop(){
+
+	LevelSector* sector = Game->playerSprite->level_sector;
+
+
 	if (!Game->level_clear && (!Game->has_time || Game->timeout > 0)) {
 		Game->level.SetTilesAnimations(degree, Game->palikka_animaatio/7, Game->button1, Game->button2, Game->button3);
 		Game->palikka_animaatio = 1 + Game->palikka_animaatio % 34;
@@ -593,7 +595,7 @@ void PlayingScreen::Loop(){
 		Particles_Update();
 
 		if (!Game->level_clear && (!Game->has_time || Game->timeout > 0)) {
-			debug_active_sprites = Game->spritesHandler.onTickUpdate();
+			debug_active_sprites = sector->sprites.onTickUpdate(Game->camera_x, Game->camera_y);
 			Game->frame_count++;
 		}
 		Fadetext_Update();
@@ -647,7 +649,7 @@ void PlayingScreen::Loop(){
 		}
 	}
 
-	SpriteClass * Player_Sprite = Game->spritesHandler.Player_Sprite;
+	SpriteClass * Player_Sprite = Game->playerSprite;
 
 	if (Player_Sprite->energy < 1) {
 		Game->game_over = true;
@@ -680,7 +682,7 @@ void PlayingScreen::Loop(){
 	if (key_delay == 0) {
 		if (!Game->game_over && !Game->level_clear) {
 			if (PInput::Keydown(Input->open_gift) || Gui_gift) {
-				Gifts_Use(Game->spritesHandler);
+				Gifts_Use(sector->sprites);
 				key_delay = 10;
 			}
 			
@@ -752,31 +754,32 @@ void PlayingScreen::Loop(){
 				key_delay = 20;
 			}
 			if (PInput::Keydown(PInput::K)) {
-				Game->Change_SkullBlocks();
+				Game->change_skulls = true;
 				key_delay = 20;
 			}
 			if (PInput::Keydown(PInput::I)) {
 				draw_debug_info = !draw_debug_info;
 				key_delay = 20;
 			}
-			if (PInput::Keydown(PInput::R)) {
+			/*if (PInput::Keydown(PInput::R)) {
 				Game->Select_Start();
 				Player_Sprite->energy = 10;
 				Player_Sprite->removed = false;
 				key_delay = 20;
-			}
+			}*/
 			if (PInput::Keydown(PInput::END)) {
 				key_delay = 20;
 				Game->Finish();
 			}
-			if (PInput::Keydown(PInput::A)/* && key_delay == 0*/) {
+			/*
+			if (PInput::Keydown(PInput::A)) {
 				//key_delay = 20;
 				PrototypeClass*proto = Game->spritesHandler.getLevelPrototype(Game->level.player_sprite_index);
 				if(proto!=nullptr){
 					*Player_Sprite = SpriteClass(proto, 1, Player_Sprite->x, Player_Sprite->y);
 					Effect_Stars(Player_Sprite->x, Player_Sprite->y, COLOR_VIOLET);
 				}
-			}
+			}*/
 		}
 		if (PInput::Keydown(PInput::U))
 			Player_Sprite->b = -10;
