@@ -12,7 +12,7 @@
 
 
 LevelSector::LevelSector(std::size_t width, std::size_t height):
-mWidth(width), mHeight(height), sprites(this){
+sprites(this), mWidth(width), mHeight(height){
     this->mSize = width * height;
     if(this->mSize>0){
         this->background_tiles = new u8[this->mSize];

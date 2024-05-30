@@ -16,10 +16,12 @@ void Background::load(PFile::Path path){
 	this->picture = p.first;
 	this->pallete = p.second;
 
-	PDraw::pallete_set(this->pallete);
-
 	if (this->picture == -1)
 		throw PExcept::PException("Cannot load the background!");
+}
+
+void Background::setPalette(){
+	PDraw::pallete_set(this->pallete);
 }
 
 void Background::clear(){

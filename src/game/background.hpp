@@ -28,6 +28,8 @@ public:
     void clear();
     void draw(int camera_x, int camera_y);
 
+    void setPalette();
+
     std::string name;
 private:
     int picture = -1;

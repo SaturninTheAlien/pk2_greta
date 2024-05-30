@@ -232,16 +232,12 @@ void GameClass::placeSprites() {
 		u32 sector_id = 0;
 
 		this->selectStart(pos_x, pos_y, sector_id);
-		pos_x += player_prototype->width/2;
-		pos_y -= player_prototype->height/2;
-
-		this->camera_x = (int)pos_x;
-		this->camera_y = (int)pos_y;
-		this->dcamera_x = this->camera_x;
-		this->dcamera_y = this->camera_y;
+		pos_x += 17;
 
 		this->playerSprite= this->level.sectors[sector_id]->sprites.addPlayer(player_prototype, pos_x, pos_y);
-		//this->updateCamera();
+
+		this->level.sectors[sector_id]->background->setPalette();
+		this->setCamera();
 	}
 
 	// Add other sprites
@@ -316,6 +312,51 @@ void GameClass::selectStart(double& pos_x, double& pos_y, u32 sector) {
 		pos_y = startSigns[selected_start].y * 32;
 		sector = startSigns[selected_start].sector;
 	}
+}
+
+SpriteClass* GameClass::selectTeleporter(SpriteClass* entryTelporter){
+	std::vector<SpriteClass*> teleporters;
+	for(LevelSector* sector: this->level.sectors){
+		for(SpriteClass* sprite: sector->sprites.Sprites_List){
+			if(sprite->prototype==entryTelporter->prototype && sprite!=entryTelporter){
+				teleporters.push_back(sprite);
+			}
+		}
+	}
+
+	if(teleporters.size()==0)return nullptr;
+	else if(teleporters.size()==1) return teleporters[0];
+	else return teleporters[rand()% teleporters.size()];
+}
+
+void GameClass::teleportPlayer(double x, double y, LevelSector*sector){
+	this->playerSprite->x = x;
+	this->playerSprite->y = y;
+
+	/**
+	 * @brief 
+	 * Change sector
+	 */
+	if(sector!=nullptr && this->playerSprite->level_sector!=sector){
+
+		LevelSector* previous_sector = this->playerSprite->level_sector;
+		previous_sector->sprites.Sprites_List.remove(this->playerSprite);
+
+		sector->sprites.Sprites_List.push_front(this->playerSprite);
+		this->playerSprite->level_sector=sector;
+
+		//Change palette
+		sector->background->setPalette();
+
+		//Change music
+		if(sector->music_name!=previous_sector->music_name){
+			sector->startMusic();
+		}
+	}
+
+	//Fade_in(FADE_NORMAL);
+
+	this->setCamera();
 }
 
 void GameClass::ExecuteEventsIfNeeded(){
@@ -394,6 +435,29 @@ void GameClass::Show_Info(const std::string& text) {
 		info_timer = INFO_TIME;
 	
 	}
+}
+
+void GameClass::setCamera(){
+
+	LevelSector* sector = this->playerSprite->level_sector;
+
+	this->camera_x = (int)this->playerSprite->x - screen_width/2;
+	this->camera_y = (int)this->playerSprite->y - screen_height/2;
+	
+	if (this->camera_x < 0)
+		this->camera_x = 0;
+
+	if (this->camera_y < 0)
+		this->camera_y = 0;
+
+	if (this->camera_x > int(sector->getWidth() -screen_width/32)*32)
+		this->camera_x = int(sector->getWidth()-screen_width/32)*32;
+
+	if (this->camera_y > int(sector->getHeight()-screen_height/32)*32)
+		this->camera_y = int(sector->getHeight()-screen_height/32)*32;
+
+	this->dcamera_x = this->camera_x;
+	this->dcamera_y = this->camera_y;
 }
 
 void GameClass::updateCamera(){

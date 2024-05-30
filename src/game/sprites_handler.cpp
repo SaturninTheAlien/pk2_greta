@@ -230,16 +230,6 @@ SpriteClass* SpritesHandler::addPlayer(PrototypeClass*prototype, double x, doubl
 		AI_Functions::player = nullptr;
 	}
 
-	/**
-	 * @brief 
-	 * Legacy feature
-	 * Why does it exist ?
-	 */
-	sprite->x = x + 16 + 1;
-	sprite->y += sprite->prototype->height/2;
-
-
-
 	sprite->orig_x = sprite->x;
 	sprite->orig_y = sprite->y;
 

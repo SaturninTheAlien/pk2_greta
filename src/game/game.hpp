@@ -84,6 +84,8 @@ class GameClass {
 
 		void placeSprites();
 		void selectStart(double& pos_x, double& pos_y, u32 sector);
+		SpriteClass* selectTeleporter(SpriteClass* entryTelporter);
+		void teleportPlayer(double x, double y, LevelSector*sector);
 
 		void Open_Locks();
 
@@ -97,6 +99,8 @@ class GameClass {
 		void ExecuteEventsIfNeeded();
 		
 		sol::state * lua = nullptr;
+
+		void setCamera();
 		void updateCamera();
 
 		/*LevelSector* getLevelSector(u32){

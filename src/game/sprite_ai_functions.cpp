@@ -847,43 +847,17 @@ void Teleporter(SpriteClass*s){
 			player_invisible->y <= s->y + s->prototype->height/2 && player_invisible->y >= s->y - s->prototype->height/2 )
 		{
 
-			std::vector<SpriteClass*> portit;
+			SpriteClass* dst = Game->selectTeleporter(s);
+			if(dst==nullptr)return;
 
-			// search for teleports of the same type
-			for (SpriteClass* sprite : Game->playerSprite->level_sector->sprites.Sprites_List)
-				if (s->prototype == sprite->prototype && sprite != s)
-						portit.push_back(sprite);
-
-			// if it didn't find any, search for all teleports
-			/*if (portit.size() == 0) {
-				for (SpriteClass* sprite : Sprites_List)
-					if (sprite->prototype->type == TYPE_TELEPORT && sprite != s)
-						portit.push_back(sprite);
-			}*/
-
-			// if you don't have any teleports (excluding the teleport itself), return
-			if (portit.size() == 0)return;
-
-			// arvotaan kohdeportti
-			SpriteClass* dst = portit[rand()%portit.size()];
-			
-			player_invisible->x = dst->x;
-			player_invisible->y = dst->y;
-			//charging_timer    = prototype->charge_time;
-			//attack1_timer = prototype->attack1_time;
-			//spritet[i].charging_timer    = spritet[i].prototype->charge_time;
 			dst->attack1_timer = dst->prototype->attack1_time;
 			dst->charging_timer = 0;
 			s->charging_timer = 0;
 
-			Game->camera_x = (int)AI_Functions::player_invisible->x;
-			Game->camera_y = (int)AI_Functions::player_invisible->y;
-			Game->dcamera_x = Game->camera_x-screen_width/2;
-			Game->dcamera_y = Game->camera_y-screen_height/2;
-			Fade_in(FADE_NORMAL);
+			Game->teleportPlayer(dst->x, dst->y, dst->level_sector);
+
 			if (s->prototype->sounds[SOUND_ATTACK2] != -1)
 				Play_MenuSFX(s->prototype->sounds[SOUND_ATTACK2], 100);
-
 		}
 	}
 }
