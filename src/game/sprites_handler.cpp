@@ -109,22 +109,6 @@ void SpritesHandler::onEvent2(){
 }
 
 int SpritesHandler::onTickUpdate(int camera_x, int camera_y){
-    if(Player_Sprite!=nullptr && Player_Sprite->energy>0){
-		AI_Functions::player_invisible = Player_Sprite;
-
-		if(Player_Sprite->invisible_timer>0){
-			AI_Functions::player = nullptr;
-		}
-		else{
-			AI_Functions::player = Player_Sprite;
-		}
-
-	}
-	else{
-		AI_Functions::player = nullptr;
-		AI_Functions::player_invisible = nullptr;
-	}
-	
 	const int ACTIVE_BORDER_X = 320;
 	const int ACTIVE_BORDER_y = 240;
 

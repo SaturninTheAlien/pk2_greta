@@ -579,6 +579,22 @@ void PlayingScreen::Init(){
 
 void PlayingScreen::Loop(){
 
+	if(Game->playerSprite!=nullptr && Game->playerSprite->energy>0){
+		AI_Functions::player_invisible = Game->playerSprite;
+
+		if(Game->playerSprite->invisible_timer>0){
+			AI_Functions::player = nullptr;
+		}
+		else{
+			AI_Functions::player = Game->playerSprite;
+		}
+
+	}
+	else{
+		AI_Functions::player = nullptr;
+		AI_Functions::player_invisible = nullptr;
+	}
+
 	LevelSector* sector = Game->playerSprite->level_sector;
 
 
