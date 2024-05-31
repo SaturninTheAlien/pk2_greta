@@ -85,6 +85,39 @@ static void DrawFlake4(const BgParticle& p, int cam_x, int cam_y) {
 	PDraw::screen_fill(kx,ky,kx+2,ky+2,20+(int)p.b);
 }
 
+/**
+ * @brief 
+ * New GE particles
+ */
+
+static void DrawDandelion1(const BgParticle& p, int cam_x, int cam_y){
+    int kx = int(p.x)-cam_x,
+		ky = int(p.y)-cam_y,
+		frame = (int(p.y/10)%4)*12;
+
+	PDraw::image_cutclip(game_assets,kx,ky,
+        1+frame,165, 10+frame, 176);
+}
+
+static void DrawDandelion2(const BgParticle& p, int cam_x, int cam_y){
+    
+    int kx = int(p.x)-cam_x,
+		ky = int(p.y)-cam_y,
+		frame = (int(p.y/5)%4)*12;
+
+	PDraw::image_cutclip(game_assets,kx,ky,
+        49+frame,165,58+frame,175);    
+}
+
+static void DrawDandelion3(const BgParticle& p, int cam_x, int cam_y){
+    
+    int kx = int(p.x)-cam_x,
+		ky = int(p.y)-cam_y,
+		frame = (int(p.y/5)%2)*9;
+
+	PDraw::image_cutclip(game_assets,kx,ky,
+        97+frame,165,103+frame,171);    
+}
 
 static void UpdateWaterdrop(BgParticle& p){
     p.y += p.b / 3.0 + 2.0;
@@ -136,6 +169,12 @@ static void UpdateFlake3(BgParticle& p) {
 static void UpdateFlake4(BgParticle& p) {
 	p.y += p.b / 9.0;
 }
+
+static void UpdateDandelion(BgParticle& p){
+    p.x += p.a + sin_table(p.y)/100.0;
+	p.y += p.b + sin_table(p.x)/100.0;
+}
+
 
 void BgParticle::checkScreenBorders(int cam_x, int cam_y){
     if ( x  >  cam_x + screen_width )
@@ -202,7 +241,29 @@ void BgParticle::setType(int type){
         this->mDraw = DrawFlake4;
         this->mUpdate = UpdateFlake4;
         break;
-    
+
+
+    /**
+     * @brief 
+     * New GE particles
+     */
+
+    case BGPARTICLE_DANDELION1:
+        this->mDraw = DrawDandelion1;
+        this->mUpdate = UpdateDandelion;
+        break;
+
+    case BGPARTICLE_DANDELION2:
+        this->mDraw = DrawDandelion2;
+        this->mUpdate = UpdateDandelion;
+        break;
+
+    case BGPARTICLE_DANDELION3:
+        this->mDraw = DrawDandelion3;
+        this->mUpdate = UpdateDandelion;
+        break;
+
+
     default:
         break;
     }

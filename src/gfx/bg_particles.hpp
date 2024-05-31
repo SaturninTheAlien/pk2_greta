@@ -6,6 +6,15 @@
 
 #define BACKGROUND_PARTICLES_NUMBER 300
 
+enum {
+
+    WEATHER_NORMAL, //0
+    WEATHER_RAIN, //1
+    WEATHER_LEAVES, //2
+    WEATHER_RAIN_LEAVES, //3
+    WEATHER_SNOW, //4 
+	WEATHER_DANDELIONS //5
+};
 
 namespace BG_Particles{
 

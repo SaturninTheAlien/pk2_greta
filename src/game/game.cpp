@@ -350,7 +350,7 @@ void GameClass::teleportPlayer(double x, double y, LevelSector*sector){
 		}
 	}
 
-	//Fade_in(FADE_NORMAL);
+	Fade_in(FADE_NORMAL);
 
 	this->setCamera();
 }
@@ -454,6 +454,9 @@ void GameClass::setCamera(){
 
 	this->dcamera_x = this->camera_x;
 	this->dcamera_y = this->camera_y;
+
+	this->dcamera_a = 0;
+	this->dcamera_b = 0;
 }
 
 void GameClass::updateCamera(){

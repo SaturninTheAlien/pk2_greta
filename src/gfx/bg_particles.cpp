@@ -7,17 +7,6 @@
 #include "bg_particle.hpp"
 #include "system.hpp"
 
-
-enum {
-
-    WEATHER_NORMAL,
-    WEATHER_RAIN,
-    WEATHER_LEAVES,
-    WEATHER_RAIN_LEAVES,
-    WEATHER_SNOW
-
-};
-
 namespace BG_Particles{
 
 
@@ -57,6 +46,14 @@ void Init(int weather){
 		while (i < bg_particles.size() / 2){
 			bg_particles[i].setType(BGPARTICLE_FLAKE4);
 			++i;
+		}
+	}
+
+	else if(weather == WEATHER_DANDELIONS){
+		for( std::size_t i = 0; i < bg_particles.size() / 6; i++){
+			bg_particles[i].setType(BGPARTICLE_DANDELION1 + rand() % 3);
+			bg_particles[i].b = double(rand()%18 - 7)/10;
+			bg_particles[i].a = double(rand()%17 - 8)/10;
 		}
 	}
 }

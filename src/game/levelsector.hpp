@@ -6,20 +6,11 @@
 #include "tileset.hpp"
 #include "background.hpp"
 #include "sprites_handler.hpp"
+#include "gfx/bg_particles.hpp"
 
 enum{
     TILES_COMPRESSION_NONE = 0,
     TILES_COMPRESSION_LEGACY = 1
-};
-
-enum {
-
-    WEATHER_NORMAL,
-    WEATHER_RAIN,
-    WEATHER_LEAVES,
-    WEATHER_RAIN_LEAVES,
-    WEATHER_SNOW
-
 };
 
 class BlockPosition{
