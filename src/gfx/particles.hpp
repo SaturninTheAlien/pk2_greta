@@ -13,8 +13,4 @@ void Particles_New(int type, double x, double y, double a, double b, int time, d
 
 void Particles_DrawFront(int cam_x, int cam_y);
 
-void Particles_DrawBG(int cam_x, int cam_y);
-
-void Particles_LoadBG(LevelSector* level);
-
 void Particles_Clear();

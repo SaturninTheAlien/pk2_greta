@@ -15,7 +15,10 @@
 #include "game/physics.hpp"
 
 #include "gfx/text.hpp"
+
 #include "gfx/particles.hpp"
+#include "gfx/bg_particles.hpp"
+
 #include "gfx/effect.hpp"
 #include "gui.hpp"
 #include "episode/episodeclass.hpp"
@@ -483,7 +486,7 @@ void PlayingScreen::Draw() {
 
 	sector->sprites.drawBGsprites(Game->camera_x, Game->camera_y, Game->paused, this->debug_drawn_sprites);
 
-	Particles_DrawBG(Game->camera_x, Game->camera_y);
+	BG_Particles::Draw(Game->camera_x, Game->camera_y);
 
 	Game->level.drawBackgroundTiles(Game->camera_x,Game->camera_y, sector);
 
@@ -609,6 +612,8 @@ void PlayingScreen::Loop(){
 	if (!Game->paused) {
 
 		Particles_Update();
+		BG_Particles::Update(Game->camera_x, Game->camera_y);
+
 
 		if (!Game->level_clear && (!Game->has_time || Game->timeout > 0)) {
 			debug_active_sprites = sector->sprites.onTickUpdate(Game->camera_x, Game->camera_y);

@@ -8,6 +8,7 @@
 #include "system.hpp"
 #include "gfx/text.hpp"
 #include "gfx/particles.hpp"
+#include "gfx/bg_particles.hpp"
 #include "episode/episodeclass.hpp"
 #include "settings.hpp"
 #include "gui.hpp"
@@ -156,13 +157,6 @@ int GameClass::Open_Map() {
 		level.button3_time = SWITCH_INITIAL_VALUE;
 	}
 
-	/**
-	 * @brief 
-	 * TO DO
-	 */
-
-	//spritesHandler.loadAllLevelPrototypes(this->level);
-
 	this->placeSprites();
 	this->level.calculateBlockTypes();
 	for(LevelSector* sector: this->level.sectors){
@@ -170,14 +164,13 @@ int GameClass::Open_Map() {
 	}
 
 	//Place_Sprites();
-
-	Particles_Clear();
 	/***
 	 * TO DO
 	*/
-	Particles_LoadBG(level.sectors[0]);
+	Particles_Clear();
 
-	level.sectors[0]->startMusic();
+	BG_Particles::Init(this->playerSprite->level_sector->weather);
+	this->playerSprite->level_sector->startMusic();
 	
 	return 0;
 }
@@ -347,6 +340,9 @@ void GameClass::teleportPlayer(double x, double y, LevelSector*sector){
 
 		//Change palette
 		sector->background->setPalette();
+
+		//Change weather
+		BG_Particles::Init(sector->weather);
 
 		//Change music
 		if(sector->music_name!=previous_sector->music_name){
