@@ -50,12 +50,12 @@ class GameClass {
 
 		int vibration = 0;
 
-		int camera_x;
-		int camera_y;
-		double dcamera_x;
-		double dcamera_y;
-		double dcamera_a;
-		double dcamera_b;
+		int camera_x = 0;
+		int camera_y = 0;
+		double dcamera_x = 0;
+		double dcamera_y = 0;
+		double dcamera_a = 0;
+		double dcamera_b = 0;
 
 		bool paused = false;
 		bool music_stopped = false;
