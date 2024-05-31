@@ -30,8 +30,19 @@ public:
 
     void setPalette();
 
+    int getWidth()const{
+        return this->width;        
+    }
+
+    int getHeight()const{
+        return this->height;
+    }
+
     std::string name;
 private:
+    int width = 0;
+    int height = 0;
+
     int picture = -1;
     int palette = -1;
 };
