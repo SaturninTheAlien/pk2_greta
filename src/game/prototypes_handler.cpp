@@ -163,6 +163,14 @@ PrototypeClass* PrototypesHandler::loadPrototype(const std::string& filename_in)
 			//Load transformation
 			if(!protot->transformation_str.empty()){
 				protot->transformation = this->loadPrototype(protot->transformation_str);
+
+				/**
+				 * @brief 
+				 * Fix red bonus stone not hurting enemies on fall
+				 */
+				if(protot->ambient && protot->transformation->type==TYPE_BONUS && !protot->enemy){
+					protot->ambient = false;
+				}
 			}
 
 			//Load bunus
