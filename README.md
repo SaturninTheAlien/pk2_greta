@@ -28,7 +28,7 @@ This game was tested on Windows, GNU/Linux, Mac OS (Apple Silicon).
 
 # Binary distibution
 Compiled binaries for MS Windows available here (64-bit):\
-https://drive.google.com/drive/folders/1tGwfXsvdTsnTQ29HcRmqSFKb__RW4mIW?usp=sharing 
+https://1drv.ms/f/s!AhAm7DASof3FkH6V8yoPsT8J4jgd?e=vVkHPc
 
 They were compiled using MS Visual Studio Community 2022 on MS Windows 10,
 so if there is any missing DLL file you perhaps need to install the latest Microsoft Visual C++ Redistributable:\
