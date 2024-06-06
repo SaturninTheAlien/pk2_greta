@@ -847,8 +847,20 @@ void Teleporter(SpriteClass*s){
 			player_invisible->y <= s->y + s->prototype->height/2 && player_invisible->y >= s->y - s->prototype->height/2 )
 		{
 
-			SpriteClass* dst = Game->selectTeleporter(s);
-			if(dst==nullptr)return;
+			PrototypeClass*exitPrototype = s->prototype;
+			if(exitPrototype->ammo1!=nullptr){
+				exitPrototype = exitPrototype->ammo1;
+			}
+
+			SpriteClass* dst = Game->selectTeleporter(s, exitPrototype);
+			if(dst==nullptr){
+				/**
+				 * To prevent the game lagging if there's only one teleporter.
+				*/
+				s->attack1_timer = s->prototype->attack1_time;
+
+				return;
+			}
 
 			dst->attack1_timer = dst->prototype->attack1_time;
 			dst->charging_timer = 0;

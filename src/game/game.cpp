@@ -307,11 +307,11 @@ void GameClass::selectStart(double& pos_x, double& pos_y, u32 sector) {
 	}
 }
 
-SpriteClass* GameClass::selectTeleporter(SpriteClass* entryTelporter){
+SpriteClass* GameClass::selectTeleporter(SpriteClass* entryTelporter, PrototypeClass* exitPrototype){
 	std::vector<SpriteClass*> teleporters;
 	for(LevelSector* sector: this->level.sectors){
 		for(SpriteClass* sprite: sector->sprites.Sprites_List){
-			if(sprite->prototype==entryTelporter->prototype && sprite!=entryTelporter){
+			if(sprite->prototype== exitPrototype && sprite!=entryTelporter){
 				teleporters.push_back(sprite);
 			}
 		}

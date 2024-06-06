@@ -84,7 +84,9 @@ class GameClass {
 
 		void placeSprites();
 		void selectStart(double& pos_x, double& pos_y, u32 sector);
-		SpriteClass* selectTeleporter(SpriteClass* entryTelporter);
+		SpriteClass* selectTeleporter(SpriteClass* entryTelporter, PrototypeClass* exitPrototype);
+
+
 		void teleportPlayer(double x, double y, LevelSector*sector);
 
 		void Open_Locks();

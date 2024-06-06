@@ -198,7 +198,7 @@ AI_Table::AI_Table(){
 
     Init_AI(AI_SELF_TRANSFORMATION, AI_TRIGGER_ALIVE, AI_Functions::Self_Transformation, true, true, true, true);
 
-    Init_AI(AI_TELEPORT, AI_TRIGGER_ALIVE, AI_Functions::Teleporter);
+    Init_AI(AI_TELEPORT, AI_TRIGGER_ALIVE, AI_Functions::Teleporter, true, false, false, true);
 
     Init_AI(AI_CLIMBER, AI_TRIGGER_ALIVE, AI_Functions::Climber);
     Init_AI(AI_CLIMBER2, AI_TRIGGER_ALIVE, AI_Functions::Climber2);
