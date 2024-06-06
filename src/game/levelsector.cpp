@@ -263,21 +263,24 @@ PK2BLOCK LevelSector::getBlock(u32 x, u32 y, const std::array<PK2BLOCK, TILESET_
 	return block;
 }
 
-void LevelSector::openKeylocks(){
+void LevelSector::openKeylocks(bool effect){
 	for (u32 y = 0; y < this->mHeight; y++){
 		for(u32 x = 0; x < this->mWidth; x++){
 			u8 block = this->foreground_tiles[x+y*this->mWidth];
 			
 			if (block == BLOCK_LOCK){
 				this->foreground_tiles[x+y*this->mWidth] = 255;
-				Effect_SmokeClouds(x*32+24,y*32+6);
+
+				if(effect){
+					Effect_SmokeClouds(x*32+24,y*32+6);
+				}
 			}
 		}
 	}
 	this->calculateEdges();
 }
 
-void LevelSector::changeSkulls(){
+void LevelSector::changeSkulls(bool effect){
 	for (u32 y = 0; y < this->mHeight; y++){
 		for(u32 x = 0; x < this->mWidth; x++){
 			
@@ -286,7 +289,7 @@ void LevelSector::changeSkulls(){
 
 			if (front == BLOCK_SKULL_FOREGROUND){
 				this->foreground_tiles[x+y*this->mWidth] = 255;
-				if (back != BLOCK_SKULL_FOREGROUND)
+				if (back != BLOCK_SKULL_FOREGROUND && effect)
 					Effect_SmokeClouds(x*32+24,y*32+6);
 
 			}

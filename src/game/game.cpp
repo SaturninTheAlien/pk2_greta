@@ -343,6 +343,7 @@ void GameClass::teleportPlayer(double x, double y, LevelSector*sector){
 
 		//Change weather
 		BG_Particles::Init(sector->weather);
+		Particles_Clear();
 
 		//Change music
 		if(sector->music_name!=previous_sector->music_name){
@@ -363,7 +364,7 @@ void GameClass::ExecuteEventsIfNeeded(){
 		PInput::Vibrate(1000);
 
 		for(LevelSector* sector: this->level.sectors){
-			sector->changeSkulls();
+			sector->changeSkulls(sector==this->playerSprite->level_sector);
 			sector->sprites.onSkullBlocksChanged();
 		}
 
@@ -419,7 +420,7 @@ void GameClass::Open_Locks() {
 	Show_Info(tekstit->Get_Text(PK_txt.game_locksopen));
 
 	for(LevelSector* sector: this->level.sectors){
-		sector->openKeylocks();
+		sector->openKeylocks(sector==this->playerSprite->level_sector);
 	}
 }
 

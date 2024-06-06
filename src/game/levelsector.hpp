@@ -63,8 +63,8 @@ public:
     }
 
     PK2BLOCK getBlock(u32 x, u32 y, const std::array<PK2BLOCK, TILESET_SIZE>& block_types)const;
-    void openKeylocks();
-    void changeSkulls();
+    void openKeylocks(bool effect);
+    void changeSkulls(bool effect);
     void countStartSigns(std::vector<BlockPosition>& vec, u32 sector_id)const;
     void startMusic();
 
