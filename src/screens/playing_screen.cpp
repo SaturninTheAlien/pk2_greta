@@ -712,9 +712,15 @@ void PlayingScreen::Loop(){
 			}
 			
 			if (PInput::Keydown(PInput::DEL)) {
-				Player_Sprite->damage_taken = Player_Sprite->energy;
-				Player_Sprite->damage_taken_type = DAMAGE_ALL;
-				Player_Sprite->self_destruction = true;
+				if(!configuration.silent_suicide){
+					Player_Sprite->damage_taken = Player_Sprite->energy;
+					Player_Sprite->damage_taken_type = DAMAGE_ALL;
+					Player_Sprite->self_destruction = true;
+				}
+				else{
+					Player_Sprite->energy = 0;
+					Player_Sprite->removed = true;
+				}
 			}
 
 			if (PInput::Keydown(PInput::TAB) || PInput::Keydown(PInput::JOY_GUIDE) || Gui_tab){

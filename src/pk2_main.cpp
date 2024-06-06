@@ -35,7 +35,15 @@
 #include <SDL.h>
 
 static const char default_config[] = 
-"-- Audio Buffer Size"
+"\r\n -- Silent suicide"
+"\r\n -- If set to \"yes\" the player has no destruction effect"
+"\r\n -- after commiting suicide by pressing delete key"
+"\r\n -- Some players requested it for \"psychological reasons\"."
+"\r\n -- disabled by default"
+"\r\n*silent_suicide:  no"
+"\r\n"
+"\r\n"
+"\r\n-- Audio Buffer Size"
 "\r\n-- low value = low audio latency; high value = less cpu usage"
 "\r\n-- Default is 1024"
 "\r\n-- Prefer a power of 2: 512 1024 2048 4096 default"
@@ -117,6 +125,18 @@ static void read_config() {
 		else if (strcmp(txt, "no") == 0)
 			configuration.transformation_offset = false;	
 	}
+	idx = conf.Search_Id("silent_suicide");
+	if(idx != -1){
+		const char* txt = conf.Get_Text(idx);
+
+		if (strcmp(txt, "default") == 0)
+			configuration.silent_suicide = false;
+		else if (strcmp(txt, "yes") == 0)
+			configuration.silent_suicide = true;
+		else if (strcmp(txt, "no") == 0)
+			configuration.silent_suicide = false;	
+	}
+
 	PLog::Write(PLog::DEBUG, "PK2", "Audio multi thread is %s", configuration.audio_multi_thread? "ON" : "OFF");
 
 }

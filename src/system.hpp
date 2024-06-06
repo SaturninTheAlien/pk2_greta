@@ -12,6 +12,7 @@
 
 class ConfigurationClass{
 public:
+    bool silent_suicide = false;
 	bool audio_multi_thread = true;
 	int audio_buffer_size = 1024;
 
