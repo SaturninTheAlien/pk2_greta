@@ -28,7 +28,7 @@ This game was tested on Windows, GNU/Linux, Mac OS (Apple Silicon).
 
 # Binary distibution
 Compiled binaries for MS Windows available here (64-bit):\
-https://1drv.ms/f/s!AhAm7DASof3FkH6V8yoPsT8J4jgd?e=vVkHPc
+https://1drv.ms/f/s!AhAm7DASof3FkH4uGUgf4msXCxHk
 
 They were compiled using MS Visual Studio Community 2022 on MS Windows 10,
 so if there is any missing DLL file you perhaps need to install the latest Microsoft Visual C++ Redistributable:\
@@ -68,7 +68,8 @@ Now just clone the code and run `make all` on pk2 directory and run `/bin/pekka-
 * Pistegamez site: https://www.pistegamez.net/
 
 # User made episodes:
-https://sites.google.com/view/makyuni/makyu-home/pekka-kana/makyunis-mapstore?authuser=0\
+https://sites.google.com/view/pekka-kana-fanpage/pk2-makyunis-mapstore
+
 To add an episode just download a zip file and put it into "/res/data/mapstore" ("/data/mapstore" on Windows).
 
 The game can be started with the "--dev" argument to enable the
