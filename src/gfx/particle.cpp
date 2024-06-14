@@ -125,7 +125,7 @@ void Particle::draw_smoke() {
 		if (frame > 16)
 			yplus = 32;
 
-		PDraw::image_cutclip(game_assets,x-cam_x,y-cam_y,1+xplus,338+yplus,34+xplus,366+yplus);
+		PDraw::image_cutclip(game_assets,x-cam_x,y-cam_y,1+xplus,338+yplus,34+xplus,367+yplus);
 		anim++;
 	}
 
