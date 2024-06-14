@@ -131,7 +131,7 @@ void LevelClass::ReadTiles(PFile::RW& file,
 		file.read(tiles, level_size);
 	}
 	break;
-	case TILES_COMPRESSION_LEGACY:{
+	case TILES_OFFSET_LEGACY:{
 		u32 width = 0, height = 0;
 		u32 offset_x = 0, offset_y = 0;
 
@@ -139,6 +139,31 @@ void LevelClass::ReadTiles(PFile::RW& file,
 		file.readLegacyStrU32(offset_y);
 		file.readLegacyStrU32(width);
 		file.readLegacyStrU32(height);
+
+		for (u32 y = offset_y; y <= offset_y + height; y++) {
+			u32 x_start = offset_x + y * level_width;
+			/**
+			 * @brief 
+			 * To prevent a memory leak
+			 */
+			if(x_start>=0 && x_start<level_size){
+				file.read(&tiles[x_start], width + 1);
+			}
+			else{
+				throw std::runtime_error("Malformed level file!");
+			}
+		}
+	}
+	break;
+
+	case TILES_OFFSET_NEW:{
+		u32 width = 0, height = 0;
+		u32 offset_x = 0, offset_y = 0;
+
+		file.read(offset_x);
+		file.read(offset_y);
+		file.read(width);
+		file.read(height);
 
 		for (u32 y = offset_y; y <= offset_y + height; y++) {
 			u32 x_start = offset_x + y * level_width;
@@ -250,19 +275,19 @@ void LevelClass::LoadVersion13(PFile::Path path, bool headerOnly){
 
 	// background_tiles
 
-	ReadTiles(file, TILES_COMPRESSION_LEGACY,
+	ReadTiles(file, TILES_OFFSET_LEGACY,
 		PK2MAP_MAP_WIDTH,
 		PK2MAP_MAP_SIZE,
 		sector->background_tiles);
 
 	// foreground_tiles
-	ReadTiles(file, TILES_COMPRESSION_LEGACY,
+	ReadTiles(file, TILES_OFFSET_LEGACY,
 		PK2MAP_MAP_WIDTH,
 		PK2MAP_MAP_SIZE,
 		sector->foreground_tiles);
 
 	// sprite_tiles
-	ReadTiles(file, TILES_COMPRESSION_LEGACY,
+	ReadTiles(file, TILES_OFFSET_LEGACY,
 		PK2MAP_MAP_WIDTH,
 		PK2MAP_MAP_SIZE,
 		sector->sprite_tiles);

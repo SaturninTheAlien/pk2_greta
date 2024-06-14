@@ -10,7 +10,8 @@
 
 enum{
     TILES_COMPRESSION_NONE = 0,
-    TILES_COMPRESSION_LEGACY = 1
+    TILES_OFFSET_NEW = 1,
+    TILES_OFFSET_LEGACY = 2
 };
 
 class BlockPosition{
