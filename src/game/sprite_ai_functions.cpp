@@ -645,8 +645,17 @@ void Transform_When_Energy_Under_2(SpriteClass* s){
 
 	PrototypeClass* transformation = s->prototype->transformation;
 
-	if (transformation!=nullptr&& s->energy < 2 && transformation != s->prototype) {
+	if (transformation!=nullptr&& !s->removed && s->energy < 2 && transformation != s->prototype) {
 		if(s->energy == 1 || !s->HasAI(AI_ROOSTER)){
+
+			/**
+			 * @brief 
+			 * For Yamano's lily pads
+			 */
+			if(transformation->legacy_projectile){
+				s->self_destruction = true;
+			}
+
 			s->prototype = transformation;
 			s->initial_weight = s->prototype->weight;
 		}
@@ -661,10 +670,7 @@ void Transform_When_Energy_Over_1(SpriteClass* s){
 		s->prototype = transformation;
 		s->initial_weight = s->prototype->weight;
 		Effect_By_ID(FX_DESTRUCT_SMOKE_GRAY, (u32)s->x, (u32)s->y);
-		//return true;
 	}
-
-	//return false;
 }
 
 void Self_Transformation(SpriteClass* s){
