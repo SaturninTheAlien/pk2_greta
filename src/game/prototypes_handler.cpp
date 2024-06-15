@@ -156,7 +156,7 @@ PrototypeClass* PrototypesHandler::loadPrototype(const std::string& filename_in)
 
 		if(this->mShouldLoadDependencies){
 			//Check if ambient
-			if(protot->indestructible && protot->damage==0){
+			if(protot->indestructible && protot->damage==0 && protot->type!=TYPE_BONUS){
 				protot->ambient=true;
 			}
 
