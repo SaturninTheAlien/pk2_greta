@@ -757,8 +757,8 @@ void PrototypeClass::LoadAssets(EpisodeClass*episode){
 
 	}
 
-	int bufferi = PDraw::image_load(image, false);
-	if (bufferi == -1) {
+	int texture = PDraw::image_load(image, false);
+	if (texture == -1) {
 		throw PExcept::FileNotFoundException(this->picture_filename, PExcept::MISSING_SPRITE_TEXTURE);
 	}
 
@@ -767,11 +767,11 @@ void PrototypeClass::LoadAssets(EpisodeClass*episode){
 
 		int w, h;
 		u8 color;
-		PDraw::image_getsize(bufferi,w,h);
+		PDraw::image_getsize(texture,w,h);
 
 		u8 *buffer = NULL;
 		u32 width;
-		PDraw::drawimage_start(bufferi, buffer, width);
+		PDraw::drawimage_start(texture, buffer, width);
 
 		for (int x = 0; x < w; x++)
 			for (int y = 0; y < h; y++)
@@ -781,29 +781,34 @@ void PrototypeClass::LoadAssets(EpisodeClass*episode){
 					buffer[x+y*width] = color;
 				}
 
-		PDraw::drawimage_end(bufferi);
+		PDraw::drawimage_end(texture);
 	}
 
 	int frame_x = picture_frame_x;
 	int frame_y = picture_frame_y;
 
+	int texture_width = 0;
+	int texture_height = 0;
+
+	PDraw::image_getsize(texture, texture_width, texture_height);
+
 	//Get each frame
 	for (int frame_i = 0; frame_i < frames_number; frame_i++) {
 
-		if (frame_x + picture_frame_width > 640) {
+		if (frame_x + picture_frame_width > texture_width) {
 			frame_y += this->picture_frame_height + 3;
 			frame_x = picture_frame_x;
 		}
 
-		this->frames[frame_i] = PDraw::image_cut(bufferi,frame_x,frame_y,picture_frame_width,picture_frame_height); //frames
-		this->frames_mirror[frame_i] = PDraw::image_cut(bufferi,frame_x,frame_y,picture_frame_width,picture_frame_height); //flipped frames
+		this->frames[frame_i] = PDraw::image_cut(texture,frame_x,frame_y,picture_frame_width,picture_frame_height); //frames
+		this->frames_mirror[frame_i] = PDraw::image_cut(texture,frame_x,frame_y,picture_frame_width,picture_frame_height); //flipped frames
 		PDraw::image_fliphori(this->frames_mirror[frame_i]);
 
 		frame_x += this->picture_frame_width + 3;
 	
 	}
 
-	PDraw::image_delete(bufferi);
+	PDraw::image_delete(texture);
 
 	for (int i = 0; i < SPRITE_SOUNDS_NUMBER; i++) {
 
