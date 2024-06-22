@@ -110,7 +110,9 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 		/**********************************************************************/
 		/* Examine if it touches the fire                                     */
 		/**********************************************************************/
-		if (block.id == BLOCK_FIRE && Game->button1 == 0 && sprite->damage_timer == 0){
+		if (block.id == BLOCK_FIRE && Game->button1 == 0 &&
+		sprite->damage_timer == 0 && sprite->damage_taken_type>=0){
+
 			sprite->damage_taken = 2;
 			sprite->damage_taken_type = DAMAGE_FIRE;
 		}
@@ -152,7 +154,8 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 		/**********************************************************************/
 		/* Examine if it touches the fire                                     */
 		/**********************************************************************/
-		if (block.id == BLOCK_FIRE && Game->button1 == 0 && sprite->damage_timer == 0){
+		if (block.id == BLOCK_FIRE && Game->button1 == 0 && sprite->damage_timer == 0
+		&& sprite->damage_taken_type>=0){
 			sprite->damage_taken = 2;
 			sprite->damage_taken_type = DAMAGE_FIRE;
 		}
@@ -299,7 +302,7 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 					sprite->can_move_up = false;
 
 					if (sprite_upper < block.bottom) {
-						if (block.id == BLOCK_LIFT_VERT && sprite->crouched) {
+						if (block.id == BLOCK_LIFT_VERT && sprite->crouched && sprite->damage_taken_type>=0) {
 							sprite->damage_taken = 2;
 							sprite->damage_taken_type = DAMAGE_IMPACT;
 						}

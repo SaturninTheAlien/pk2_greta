@@ -581,7 +581,7 @@ void Jump_If_Player_Above(SpriteClass*s){
 }
 
 void Damaged_by_Water(SpriteClass*s){
-	if (s->in_water){
+	if (s->in_water && s->damage_taken_type>=0){
 		s->damage_taken++;
 		s->damage_taken_type = DAMAGE_WATER;
 	}
@@ -1023,7 +1023,7 @@ void Attack_2_If_Damaged(SpriteClass*s){
 
 
 void InfiniteEnergy(SpriteClass*s){
-	if(s->damage_taken_type != DAMAGE_SELF_DESTRUCTION){
+	if(s->damage_taken_type >= 0){
 		s->damage_taken = 0;
 		s->energy = s->prototype->energy;
 	}
