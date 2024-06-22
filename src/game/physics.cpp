@@ -418,7 +418,7 @@ void SpriteOnDeath(SpriteClass* sprite){
 			sprite2->parent_sprite=nullptr;
 			if(sprite2->HasAI(AI_DIE_WITH_MOTHER_SPPRITE)){
 				sprite2->damage_taken = sprite2->energy;
-				sprite2->damage_taken_type = DAMAGE_ALL;
+				sprite2->damage_taken_type = DAMAGE_SELF_DESTRUCTION;
 			}
 		}
 	}
@@ -1072,10 +1072,7 @@ void UpdateSprite(SpriteClass* sprite){
 				&& sprite->parent_sprite != sprite2 &&
 				!sprite->prototype->ambient && !sprite2->prototype->ambient) {
 					
-					if (sprite2->prototype->type != TYPE_BACKGROUND &&
-						sprite->prototype->type   != TYPE_BACKGROUND &&
-						sprite2->prototype->type != TYPE_TELEPORT &&
-						sprite2->damage_timer == 0 &&
+					if (sprite2->damage_timer == 0 &&
 						sprite->damage_timer == 0 &&
 						sprite2->energy > 0 &&
 						sprite->energy > 0 &&
@@ -1095,7 +1092,6 @@ void UpdateSprite(SpriteClass* sprite){
 						else{
 							if (sprite2->b > 2 && sprite2->weight >= 0.5 &&
 								sprite2->y < sprite->y && !sprite->prototype->is_wall &&
-								!sprite->prototype->indestructible &&
 								sprite2->CanDamageOnCollision(sprite))
 							{
 								sprite->damage_taken = (int)(sprite2->weight+sprite2->b/4);
@@ -1106,7 +1102,7 @@ void UpdateSprite(SpriteClass* sprite){
 							}
 
 							// If there is another sprite damaging
-							if (sprite->prototype->damage > 0 && sprite2->prototype->type != TYPE_BONUS &&
+							if (sprite->prototype->damage > 0 &&
 							sprite->CanDamageOnCollision(sprite2)) {
 								
 								sprite2->damage_taken        = sprite->prototype->damage;
@@ -1144,7 +1140,7 @@ void UpdateSprite(SpriteClass* sprite){
 	/*****************************************************************************************/
 	if (sprite->damage_taken != 0 && sprite->energy > 0){
 
-		if(sprite->damage_taken_type == DAMAGE_ALL){
+		if(sprite->damage_taken_type == DAMAGE_SELF_DESTRUCTION){
 			SpriteOnDamage(sprite);
 		}
 		else if (
@@ -1293,7 +1289,7 @@ void UpdateSprite(SpriteClass* sprite){
 
 		sprite->y = sector->getHeight() *32 + sprite_height;
 		sprite->energy = 0;
-		sprite->damage_taken_type = DAMAGE_ALL;
+		sprite->damage_taken_type = DAMAGE_SELF_DESTRUCTION;
 		sprite->removed = true;
 
 		if (sprite->weight_button >= 1)
@@ -1761,7 +1757,7 @@ void UpdateBonusSprite(SpriteClass* sprite){
 	 * @brief 
 	 * To allow self destruction
 	 */
-	if(sprite->damage_taken_type == DAMAGE_ALL){
+	if(sprite->damage_taken_type == DAMAGE_SELF_DESTRUCTION){
 		sprite->damage_taken = 0;
 		sprite->damage_taken_type = DAMAGE_NONE;
 		sprite->energy = 0;
@@ -1811,7 +1807,7 @@ void UpdateBackgroundSprite(SpriteClass* sprite, double &yl){
 	 * @brief 
 	 * To allow self destruction
 	 */
-	if(sprite->damage_taken_type == DAMAGE_ALL){
+	if(sprite->damage_taken_type == DAMAGE_SELF_DESTRUCTION){
 		sprite->damage_taken = 0;
 		sprite->damage_taken_type = DAMAGE_NONE;
 		sprite->energy = 0;

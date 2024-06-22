@@ -827,6 +827,10 @@ void PrototypeClass::LoadAssets(EpisodeClass*episode){
 
 	SpriteAI::AI_Table::INSTANCE.InitSpritePrototypeAIs(this);
 
+	if(this->damage_type==DAMAGE_SELF_DESTRUCTION){
+		throw PExcept::PException("\"Self Destruction\" damage type is not allowed for the sprite damage type!");
+	}
+
 	/*SpriteAI::AI_Table::INSTANCE.InitSpriteAIs(this->AI_f, this->AI_v);
 	SpriteAI::AI_Table::INSTANCE.InitSpriteProjectileAIs(this->AI_p, this->AI_v);*/
 

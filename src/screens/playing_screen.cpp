@@ -714,7 +714,7 @@ void PlayingScreen::Loop(){
 			if (PInput::Keydown(PInput::DEL)) {
 				if(!configuration.silent_suicide){
 					Player_Sprite->damage_taken = Player_Sprite->energy;
-					Player_Sprite->damage_taken_type = DAMAGE_ALL;
+					Player_Sprite->damage_taken_type = DAMAGE_SELF_DESTRUCTION;
 					Player_Sprite->self_destruction = true;
 				}
 				else{

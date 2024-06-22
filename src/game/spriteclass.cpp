@@ -176,9 +176,14 @@ void SpriteClass::HandleEffects() {
 }
 
 bool SpriteClass::CanDamageOnCollision(const SpriteClass* target)const{
+
+	if(target->prototype->indestructible || target->prototype->type==TYPE_BONUS){
+		return false;
+	}
+
 	if(target->invisible_timer>0){
 		int damage_type = this->prototype->damage_type;
-		if(damage_type==DAMAGE_ALL){
+		if(damage_type==DAMAGE_SELF_DESTRUCTION){
 			return true;
 		}
 		else if(this->prototype->is_wall && (damage_type==DAMAGE_COMPRESSION||damage_type==DAMAGE_DROP)){
@@ -391,7 +396,7 @@ bool SpriteClass::TransformTo(PrototypeClass * transformation){
 
 			if(!this->prototype->indestructible){
 				this->damage_taken = this->prototype->energy;
-				this->damage_taken_type = DAMAGE_ALL;
+				this->damage_taken_type = DAMAGE_SELF_DESTRUCTION;
 				this->self_destruction = true;
 			}
 		}
@@ -404,7 +409,7 @@ bool SpriteClass::TransformTo(PrototypeClass * transformation){
 
 void SpriteClass::Die(){
 	this->damage_taken = this->energy + 1;
-	this->damage_taken_type = DAMAGE_ALL;
+	this->damage_taken_type = DAMAGE_SELF_DESTRUCTION;
 }
 
 void SpriteClass::StartThunder(){

@@ -60,7 +60,7 @@ public:
     bool    hidden         = false;           // if the sprite is hidden
     double  initial_weight   = 0;               // sprite's original weight - the same as that of the prototype
     int     damage_taken    = 0;               // damage taken
-    u8      damage_taken_type = DAMAGE_NONE; // damage taken type (e.g. snow).
+    int      damage_taken_type = DAMAGE_NONE; // damage taken type (e.g. snow).
     bool    enemy       = false;           // if it is a enemy
     PrototypeClass* ammo1   = nullptr;         // projectile 1
     PrototypeClass* ammo2   = nullptr;         // projectile 2

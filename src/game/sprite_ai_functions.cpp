@@ -124,7 +124,7 @@ void Projectile(SpriteClass*s){
 	{
 		if(!s->prototype->indestructible){
 			s->damage_taken = s->prototype->energy;
-			s->damage_taken_type = DAMAGE_ALL;
+			s->damage_taken_type = DAMAGE_SELF_DESTRUCTION;
 			s->self_destruction = true;
 		}
 		else{
@@ -445,7 +445,7 @@ void SelfDestruction(SpriteClass*s){
 	if (s->charging_timer == 1)
 	{
 		s->damage_taken = s->energy;
-		s->damage_taken_type = DAMAGE_ALL;
+		s->damage_taken_type = DAMAGE_SELF_DESTRUCTION;
 		s->self_destruction = true;
 	}
 }
@@ -755,7 +755,7 @@ void Destructed_Next_To_Player(SpriteClass* s) {
 	if (s->energy > 0 && dx*dx + dy*dy < dist*dist) {
 
 		s->damage_taken = s->prototype->energy;
-		s->damage_taken_type = DAMAGE_ALL;
+		s->damage_taken_type = DAMAGE_SELF_DESTRUCTION;
 		
 	}
 }
@@ -961,7 +961,7 @@ void DieIfTouchesWall(SpriteClass*s){
 		(!s->can_move_down && s->b >= 0) ||
 		(!s->can_move_up && s->b <= 0 )) {
 		s->damage_taken = s->energy;
-		s->damage_taken_type = DAMAGE_ALL;
+		s->damage_taken_type = DAMAGE_SELF_DESTRUCTION;
 	}
 }
 
@@ -1023,7 +1023,7 @@ void Attack_2_If_Damaged(SpriteClass*s){
 
 
 void InfiniteEnergy(SpriteClass*s){
-	if(s->damage_taken_type != DAMAGE_ALL){
+	if(s->damage_taken_type != DAMAGE_SELF_DESTRUCTION){
 		s->damage_taken = 0;
 		s->energy = s->prototype->energy;
 	}
@@ -1089,7 +1089,8 @@ void StartRight(SpriteClass*s){
 
 void DieIfSkullBlocksChanged(SpriteClass*sprite){
 	sprite->damage_taken = sprite->energy + 1;
-	sprite->damage_taken_type = DAMAGE_ALL;
+	sprite->damage_taken_type = DAMAGE_SELF_DESTRUCTION;
+	sprite->self_destruction = true;
 }
 
 /**

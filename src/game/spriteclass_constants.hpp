@@ -282,6 +282,8 @@ enum {
 
 enum { //Damage
 
+    DAMAGE_SELF_DESTRUCTION = -1,
+
     DAMAGE_NONE, //0
     DAMAGE_IMPACT, //1
     DAMAGE_DROP, //2
@@ -291,12 +293,11 @@ enum { //Damage
     DAMAGE_SNOW, //6
     DAMAGE_BONUS, //7
     DAMAGE_ELECTRIC, //8
-    DAMAGE_ITSARI, //9
+    DAMAGE_MAGIC, //9
     DAMAGE_COMPRESSION, //10
     DAMAGE_SMELL, //11
-    DAMAGE_ALL, //12
-    DAMAGE_STITCH, //13
-    DAMAGE_SUPERMODE //14
+    DAMAGE_SUPERMODE, //12
+    DAMAGE_STITCH //13
 };
 
 enum {
