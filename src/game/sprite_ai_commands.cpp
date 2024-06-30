@@ -20,6 +20,8 @@
 #include "game/game.hpp"
 #include "3rd_party/sol.hpp"
 
+#include "lua/lua_sprite_commands.hpp"
+
 namespace SpriteCommands{
 
 class WaypointX:public Command{
@@ -265,16 +267,7 @@ LuaCommand::LuaCommand(const std::string & funcName){
         throw std::runtime_error("Lua is disabled in this episode, cannot execute \"lua\" command");
     }
 
-    sol::state& lua = *Game->lua;
-    sol::object o = lua[funcName];
-    if(o.is<std::function<bool(SpriteClass*s)>>()){
-        this->l_function = sol::protected_function(o);
-    }
-    else{
-        std::ostringstream os;
-        os<<"Global Lua function: \""<<funcName<<"\" not defined!";
-        throw std::runtime_error(os.str());
-    }
+    this->l_function = PK2lua::GetCommandByName(funcName);
 }
 
 bool LuaCommand::execute(SpriteClass*sprite){

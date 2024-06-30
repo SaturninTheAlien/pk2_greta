@@ -15,15 +15,6 @@
 
 namespace PK2lua{
 
-enum{
-    LUA_EVENT_SKULL_BLOCKS_CHANGED,
-    LUA_EVENT_1,
-    LUA_EVENT_2,
-    LUA_EVENT_GAME_STARTED,
-};
-
-void ExposeGameAPI(sol::state& lua);
-void ClearEventListeners();
-void TriggerEventListeners(int event_type);
+void ExposeSpriteListAPI(sol::table& PK2_API);
 
 }

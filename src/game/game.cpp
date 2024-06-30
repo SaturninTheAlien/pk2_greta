@@ -20,7 +20,7 @@
 #include "engine/PDraw.hpp"
 #include "engine/PInput.hpp"
 #include "lua/pk2_lua.hpp"
-#include "lua/lua_game.hpp"
+#include "lua/lua_game_events.hpp"
 
 #include <cstring>
 

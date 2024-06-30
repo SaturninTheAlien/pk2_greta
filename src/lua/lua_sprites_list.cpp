@@ -7,7 +7,8 @@
  * @brief
  * Lua utils by SaturninTheAlien
  */
-#include "lua_game.hpp"
+#include "lua_sprites_list.hpp"
+
 #include "game/prototypes_handler.hpp"
 #include "game/sprites_handler.hpp"
 #include "game/game.hpp"
@@ -27,41 +28,6 @@ SpriteClass* AddSprite1(PrototypeClass* prototype, double x, double y, SpriteCla
 
 SpriteClass* AddSprite2(PrototypeClass* prototype, double x, double y){
     return Game->playerSprite->level_sector->sprites.addLuaSprite(prototype, x, y);
-}
-
-class LuaEventListener{
-public:
-    LuaEventListener(int event_type, sol::protected_function func):
-        event_type(event_type), func(func) {}
-
-    int event_type;
-    sol::protected_function func;
-};
-
-std::vector<LuaEventListener> mEventListeners;
-
-void ClearEventListeners(){
-    mEventListeners.clear();
-}
-
-void TriggerEventListeners(int event_type){
-    for(LuaEventListener listener: mEventListeners){
-        if(listener.event_type!=event_type) continue;
-
-        sol::protected_function_result res = listener.func();
-        if(!res.valid()){
-            throw res.get<sol::error>();
-        }
-    }
-}
-
-void AddEventListener(int event_type, sol::object o){
-    if(o.is<std::function<void()>>()){
-        mEventListeners.push_back(LuaEventListener(event_type, o));
-    }
-    else{
-        throw std::runtime_error("PK2Lua, not proper event listener function!");
-    }
 }
 
 
@@ -111,10 +77,7 @@ void ForEachSprite(sol::object o){
     }
 }
 
-void ExposeGameAPI(sol::state& lua){
-
-    sol::table PK2_API = lua.create_table();
-
+void ExposeSpriteListAPI(sol::table& PK2_API){
     /**
      * @brief 
      * Load sprite prototype (.spr2/.spr)
@@ -149,19 +112,6 @@ void ExposeGameAPI(sol::state& lua){
 
     /**
      * @brief 
-     * Lua events API
-     */
-
-    PK2_API["events"] = lua.create_table_with(
-        "SKULLS_CHANGED", LUA_EVENT_SKULL_BLOCKS_CHANGED,
-        "EVENT1", LUA_EVENT_1,
-        "EVENT2", LUA_EVENT_2,
-        "GAME_STARTED", LUA_EVENT_GAME_STARTED,
-        "add_listener", AddEventListener,
-        "clean_listeners", ClearEventListeners);
-
-    /**
-     * @brief 
      * Show info
      */
     PK2_API["show_info"] = [](const std::string& text){ Game->Show_Info(text);};
@@ -171,9 +121,7 @@ void ExposeGameAPI(sol::state& lua){
      * Spawn effect
      */
     
-    PK2_API["effect"] = Effect_By_ID;
-
-    lua["_pk2_api"] = PK2_API;
+    PK2_API["effect"] = Effect_By_ID;    
 }
 
 }

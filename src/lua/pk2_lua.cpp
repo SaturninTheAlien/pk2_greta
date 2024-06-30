@@ -12,8 +12,12 @@
 #include "pk2_lua.hpp"
 #include <string>
 
-#include "lua_sprites.hpp"
-#include "lua_game.hpp"
+#include "lua_sprite_class.hpp"
+#include "lua_sprites_list.hpp"
+
+#include "lua_game_events.hpp"
+#include "lua_sprite_commands.hpp"
+#include "lua_misc.hpp"
 
 #include "engine/PLog.hpp"
 #include "engine/PFile.hpp"
@@ -96,15 +100,27 @@ sol::state* CreateGameLuaVM(const std::string& main_lua_script){
     PLog::Write(PLog::INFO, "PK2lua", "Running main.lua");
     ExposePrototypeClass(*lua);
     ExposeSpriteClass(*lua);
-    ExposeGameAPI(*lua);
+
+
+    sol::table PK2_API = lua->create_table();
+
+    ExposeSpriteListAPI(PK2_API);
+    ExposeCommandsAPI(PK2_API);
+    ExposeEventsAPI(*lua, PK2_API);
+    ExposeMiscAPI(PK2_API);
+
+
+    (*lua)["_pk2_api"] = PK2_API;
 
     lua->safe_script(main_lua);
     return lua;
 }
 
-void DestroyGameLuaVM(sol::state * lua){
-    ClearEventListeners();
+void DestroyGameLuaVM(sol::state *& lua){
+    ClearEvents();
+    ClearCommands();
     delete lua;
+    lua = nullptr;
 }
 
 }

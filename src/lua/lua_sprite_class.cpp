@@ -8,7 +8,7 @@
  * Lua utils by SaturninTheAlien
  */
 
-#include "lua_sprites.hpp"
+#include "lua_sprite_class.hpp"
 #include "game/prototype.hpp"
 #include "game/spriteclass.hpp"
 namespace PK2lua{
