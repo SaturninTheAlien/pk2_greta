@@ -12,7 +12,6 @@
 #include "game/prototypes_handler.hpp"
 #include "game/sprites_handler.hpp"
 #include "game/game.hpp"
-#include "gfx/effect.hpp"
 #include <vector>
 
 namespace PK2lua{
@@ -116,12 +115,6 @@ void ExposeSpriteListAPI(sol::table& PK2_API){
      */
     PK2_API["show_info"] = [](const std::string& text){ Game->Show_Info(text);};
 
-    /**
-     * @brief 
-     * Spawn effect
-     */
-    
-    PK2_API["effect"] = Effect_By_ID;    
 }
 
 }

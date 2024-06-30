@@ -58,6 +58,7 @@ void ExposeEventsAPI(sol::state& lua, sol::table& PK2_API){
         "EVENT1", LUA_EVENT_1,
         "EVENT2", LUA_EVENT_2,
         "GAME_STARTED", LUA_EVENT_GAME_STARTED,
+        "GAME_TICK", LUA_EVENT_GAME_TICK,
         "add_listener", AddEventListener,
         "clean_listeners", ClearEvents);
 

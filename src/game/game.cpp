@@ -410,6 +410,10 @@ void GameClass::ExecuteEventsIfNeeded(){
 
 		this->Finish();
 	}
+
+	if(this->lua!=nullptr && !this->paused){
+		PK2lua::UpdateLua();
+	}
 }
 
 void GameClass::Open_Locks() {

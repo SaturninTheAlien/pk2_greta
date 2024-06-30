@@ -21,5 +21,6 @@ namespace PK2lua{
 
 sol::state* CreateGameLuaVM(const std::string& main_lua_script);
 void DestroyGameLuaVM(sol::state *& lua);
+void UpdateLua();
 
 }

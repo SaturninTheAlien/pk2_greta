@@ -19,6 +19,8 @@
 #include "lua_sprite_commands.hpp"
 #include "lua_misc.hpp"
 
+#include "life.hpp"
+
 #include "engine/PLog.hpp"
 #include "engine/PFile.hpp"
 
@@ -109,6 +111,8 @@ sol::state* CreateGameLuaVM(const std::string& main_lua_script){
     ExposeEventsAPI(*lua, PK2_API);
     ExposeMiscAPI(PK2_API);
 
+    ExposeGameOfLife(PK2_API);
+
 
     (*lua)["_pk2_api"] = PK2_API;
 
@@ -116,9 +120,15 @@ sol::state* CreateGameLuaVM(const std::string& main_lua_script){
     return lua;
 }
 
+void UpdateLua(){
+    UpdateGameOfLife();
+    TriggerEventListeners(LUA_EVENT_GAME_TICK);
+}
+
 void DestroyGameLuaVM(sol::state *& lua){
     ClearEvents();
     ClearCommands();
+    ClearGameOfLife();
     delete lua;
     lua = nullptr;
 }

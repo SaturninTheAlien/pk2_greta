@@ -19,6 +19,7 @@ enum{
     LUA_EVENT_1,
     LUA_EVENT_2,
     LUA_EVENT_GAME_STARTED,
+    LUA_EVENT_GAME_TICK
 };
 
 
