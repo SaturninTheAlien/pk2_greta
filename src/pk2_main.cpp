@@ -37,7 +37,7 @@
 static const char default_config[] = 
 "\r\n -- Silent suicide"
 "\r\n -- If set to \"yes\" the player has no destruction effect"
-"\r\n -- after commiting suicide by pressing delete key"
+"\r\n -- after committing suicide by pressing delete key"
 "\r\n -- Some players requested it for \"psychological reasons\"."
 "\r\n -- disabled by default"
 "\r\n*silent_suicide:  no"

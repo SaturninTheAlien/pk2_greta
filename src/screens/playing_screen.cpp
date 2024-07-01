@@ -711,7 +711,7 @@ void PlayingScreen::Loop(){
 				key_delay = 20;
 			}
 			
-			if (PInput::Keydown(PInput::DEL)) {
+			if (PInput::Keydown(PInput::DEL) && !Game->paused) {
 				if(!configuration.silent_suicide){
 					Player_Sprite->damage_taken = Player_Sprite->energy;
 					Player_Sprite->damage_taken_type = DAMAGE_SELF_DESTRUCTION;
