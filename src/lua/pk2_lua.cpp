@@ -12,6 +12,7 @@
 #include "pk2_lua.hpp"
 #include <string>
 
+#include "lua_level.hpp"
 #include "lua_sprite_class.hpp"
 #include "lua_sprites_list.hpp"
 
@@ -100,9 +101,10 @@ sol::state* CreateGameLuaVM(const std::string& main_lua_script){
     OverrideLuaRequire(*lua);
 
     PLog::Write(PLog::INFO, "PK2lua", "Running main.lua");
+
+    ExposeSectorClass(*lua);
     ExposePrototypeClass(*lua);
     ExposeSpriteClass(*lua);
-
 
     sol::table PK2_API = lua->create_table();
 

@@ -11,6 +11,7 @@
 #include "lua_sprite_class.hpp"
 #include "game/prototype.hpp"
 #include "game/spriteclass.hpp"
+#include "game/levelsector.hpp"
 namespace PK2lua{
 
 
@@ -117,7 +118,9 @@ void ExposeSpriteClass(sol::state& lua){
         "can_move_left", sol::readonly(&SpriteClass::can_move_left),
         "can_move_right", sol::readonly(&SpriteClass::can_move_right),
         "can_move_up", sol::readonly(&SpriteClass::can_move_up),
-        "can_move_down", sol::readonly(&SpriteClass::can_move_down)              
+        "can_move_down", sol::readonly(&SpriteClass::can_move_down),
+
+        "level_sector", sol::readonly(&SpriteClass::level_sector)
         
         );
 }

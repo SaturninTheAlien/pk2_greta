@@ -45,6 +45,11 @@ public:
         return this->mSize;
     }
 
+    bool isCorrectTilePos(int pos_x, int pos_y)const{
+        return pos_x>=0 && pos_y>=0 &&
+        pos_x<(int)this->getWidth() && pos_y<(int)this->getHeight();
+    }
+
     void calculateColors();
     void calculateEdges();
     void animateTilesets(int animation_timer, int button1_timer){

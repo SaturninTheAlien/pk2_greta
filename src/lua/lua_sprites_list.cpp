@@ -22,10 +22,12 @@ PrototypeClass* LoadSpritePrototype(const std::string& filename){
 }
 
 SpriteClass* AddSprite1(PrototypeClass* prototype, double x, double y, SpriteClass*parent){
+    if(prototype==nullptr)return nullptr;
     return Game->playerSprite->level_sector->sprites.addLuaSprite(prototype, x, y, parent);
 }
 
 SpriteClass* AddSprite2(PrototypeClass* prototype, double x, double y){
+    if(prototype==nullptr)return nullptr;
     return Game->playerSprite->level_sector->sprites.addLuaSprite(prototype, x, y);
 }
 

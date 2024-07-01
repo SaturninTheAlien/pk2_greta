@@ -11,8 +11,16 @@
 #include "lua_misc.hpp"
 #include "gfx/effect.hpp"
 #include "game/game.hpp"
+#include "game/levelsector.hpp"
 
 namespace PK2lua{
+
+LevelSector* GetSector(int id){
+    if(id>=0 && id<Game->level.sectors.size()){
+        return Game->level.sectors[id];
+    }
+    return nullptr;
+}
 
 void ExposeMiscAPI(sol::table& PK2_API){
 
@@ -28,6 +36,13 @@ void ExposeMiscAPI(sol::table& PK2_API){
      */
     
     PK2_API["effect"] = Effect_By_ID;
+
+    /**
+     * @brief 
+     * Get level sector
+     */
+
+    PK2_API["get_sector"] = GetSector;
 }
 
 
