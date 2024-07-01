@@ -16,7 +16,7 @@
 namespace PK2lua{
 
 LevelSector* GetSector(int id){
-    if(id>=0 && id<Game->level.sectors.size()){
+    if(id>=0 && id<(int)Game->level.sectors.size()){
         return Game->level.sectors[id];
     }
     return nullptr;

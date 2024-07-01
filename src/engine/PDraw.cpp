@@ -135,14 +135,14 @@ static int findfreepalette(){
 }
 
 void palette_set(int index){
-    if(index<0 || index>= paletteList.size() || paletteList[index]==nullptr)return;
+    if(index<0 || index>= (int)paletteList.size() || paletteList[index]==nullptr)return;
     mCurrentpaletteIndex = index;
     paletteList[index]->updateEffect();
 
 }
 
 void palette_delete(int& index){
-    if(index<0 || index>= paletteList.size() || paletteList[index]==nullptr)return;
+    if(index<0 || index>= (int)paletteList.size() || paletteList[index]==nullptr)return;
 
     if(index==mCurrentpaletteIndex){
         mCurrentpaletteIndex = -1;
