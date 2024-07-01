@@ -139,10 +139,16 @@ void MapScreen::Draw() {
 			int paluu = PK_Draw_Map_Button(x-5, y-10, type);
 
 			if (!Episode->ignore_collectable) {
-				if (Episode->level_status[i] & LEVEL_ALLAPPLES)
+				if (Episode->level_status[i] & LEVEL_ALLAPPLES){
 					PDraw::image_cutclip(game_assets2, 
 						x - 10,
 						y, 45, 379, 58, 394);
+				}
+				else if(Episode->level_status[i] & LEVEL_HAS_BIG_APPLES){
+					PDraw::image_cutclip(game_assets2, 
+						x - 10,
+						y, 45, 397, 58, 412);
+				}
 				//else //TODO - draw transparent apples
 				//	PDraw::image_cutcliptransparent(game_assets2, 
 				//		45, 379, 58-45, 394-379, x - 10, y, sin_table(degree)*3 - 10, COLOR_GRAY);

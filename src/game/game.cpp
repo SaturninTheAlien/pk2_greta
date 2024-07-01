@@ -114,9 +114,14 @@ int GameClass::Finish() {
 	if(!test_level){
 		Episode->level_status[this->level_id] |= LEVEL_PASSED;
 	
-		if (this->apples_count > 0)
-			if (this->apples_got >= this->apples_count)
+		if (this->apples_count > 0){
+			Episode->level_status[this->level_id] |= LEVEL_HAS_BIG_APPLES;
+
+			if (this->apples_got >= this->apples_count){
 				Episode->level_status[this->level_id] |= LEVEL_ALLAPPLES;
+			}
+		}
+			
 
 		Episode->Update_NextLevel();
 	}
