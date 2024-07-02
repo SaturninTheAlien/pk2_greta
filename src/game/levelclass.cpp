@@ -26,7 +26,7 @@
 #define PK2MAP_MAP_MAX_PROTOTYPES 100
 
 
-void LevelClass::SetTilesAnimations(int degree, int anim, u32 aika1, u32 aika2, u32 aika3) {
+void LevelClass::setTilesAnimations(int degree, int anim, u32 aika1, u32 aika2, u32 aika3) {
 
 	arrows_block_degree = degree;
 	block_animation_frame = anim;
@@ -85,14 +85,14 @@ void LevelClass::load(PFile::Path path, bool headerOnly) {
 		 * 1.4 intentionally skipped as it was used in PK2 Community Edition
 		 */
 		if(strcmp(version, "1.5")==0){
-			this->LoadVersion15(path, headerOnly);
+			this->loadVersion15(path, headerOnly);
 		}
 		/**
 		 * @brief 
 		 * Legacy PK2 level format.
 		 */
 		else if (strcmp(version,"1.3")==0) {
-			this->LoadVersion13(path, headerOnly);
+			this->loadVersion13(path, headerOnly);
 		}
 
 		else if (strcmp(version,"1.4")==0 ){
@@ -119,7 +119,7 @@ void LevelClass::load(PFile::Path path, bool headerOnly) {
 }
 
 
-void LevelClass::ReadTiles(PFile::RW& file,
+void LevelClass::readTiles(PFile::RW& file,
         u8 compression,
         u32 level_width,
         std::size_t level_size,
@@ -188,7 +188,7 @@ void LevelClass::ReadTiles(PFile::RW& file,
 	}
 }
 
-void LevelClass::LoadVersion13(PFile::Path path, bool headerOnly){
+void LevelClass::loadVersion13(PFile::Path path, bool headerOnly){
 	PFile::RW file = path.GetRW2("r");
 	file.read(version,      sizeof(version));
 
@@ -275,19 +275,19 @@ void LevelClass::LoadVersion13(PFile::Path path, bool headerOnly){
 
 	// background_tiles
 
-	ReadTiles(file, TILES_OFFSET_LEGACY,
+	readTiles(file, TILES_OFFSET_LEGACY,
 		PK2MAP_MAP_WIDTH,
 		PK2MAP_MAP_SIZE,
 		sector->background_tiles);
 
 	// foreground_tiles
-	ReadTiles(file, TILES_OFFSET_LEGACY,
+	readTiles(file, TILES_OFFSET_LEGACY,
 		PK2MAP_MAP_WIDTH,
 		PK2MAP_MAP_SIZE,
 		sector->foreground_tiles);
 
 	// sprite_tiles
-	ReadTiles(file, TILES_OFFSET_LEGACY,
+	readTiles(file, TILES_OFFSET_LEGACY,
 		PK2MAP_MAP_WIDTH,
 		PK2MAP_MAP_SIZE,
 		sector->sprite_tiles);
@@ -297,7 +297,7 @@ void LevelClass::LoadVersion13(PFile::Path path, bool headerOnly){
 }
 
 
-void LevelClass::LoadVersion15(PFile::Path path, bool headerOnly){
+void LevelClass::loadVersion15(PFile::Path path, bool headerOnly){
 
 	using namespace PJson;
 	PFile::RW file = path.GetRW2("r");
@@ -389,20 +389,20 @@ void LevelClass::LoadVersion15(PFile::Path path, bool headerOnly){
 
 
 		// Background tiles
-		ReadTiles(file, compression, sector->getWidth(), sector->size(), sector->background_tiles);
+		readTiles(file, compression, sector->getWidth(), sector->size(), sector->background_tiles);
 
 		// Foreground tiles
-		ReadTiles(file, compression, sector->getWidth(), sector->size(), sector->foreground_tiles);
+		readTiles(file, compression, sector->getWidth(), sector->size(), sector->foreground_tiles);
 
 		// Sprite tiles
-		ReadTiles(file, compression, sector->getWidth(), sector->size(), sector->sprite_tiles);
+		readTiles(file, compression, sector->getWidth(), sector->size(), sector->sprite_tiles);
 	}
 	file.close();
 }
 
 
 // TO DO
-void LevelClass::SaveVersion15(PFile::Path path)const{
+void LevelClass::saveVersion15(PFile::Path path)const{
 
 	PFile::RW file = path.GetRW2("w");
 	char version[5] = "1.5";

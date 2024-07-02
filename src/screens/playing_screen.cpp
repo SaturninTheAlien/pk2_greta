@@ -35,158 +35,6 @@ PlayingScreen::~PlayingScreen(){
 	
 }
 
-bool PlayingScreen::Is_Sprite_Visible(const SpriteClass* sprite)const {
-
-	return (sprite->x - sprite->prototype->picture_frame_width/2  < Game->camera_x + screen_width &&
-			sprite->x + sprite->prototype->picture_frame_width/2  > Game->camera_x &&
-			sprite->y - sprite->prototype->picture_frame_height/2 < Game->camera_y + screen_height &&
-			sprite->y + sprite->prototype->picture_frame_height/2 > Game->camera_y);
-	
-}
-/*
-void PlayingScreen::Draw_InGame_BGSprites() {
-
-	for (SpriteClass* sprite : Game->spritesHandler.bgSprites_List) {
-
-		double orig_x = sprite->orig_x;
-		double orig_y = sprite->orig_y;
-
-		double xl, yl;
-
-		if (sprite->prototype->parallax_type != 0) {
-
-			double parallax = double(sprite->prototype->parallax_type);
-
-			xl =  orig_x - Game->camera_x-screen_width/2 - sprite->prototype->width/2;
-			xl /= parallax;
-			yl =  orig_y - Game->camera_y-screen_height/2 - sprite->prototype->height/2;
-			yl /= parallax;
-		}
-		else {
-
-			xl = yl = 0;
-
-		}
-
-		UpdateBackgroundSprite(sprite, yl);
-
-		sprite->x = orig_x-xl;
-		sprite->y = orig_y-yl;
-
-		if (Is_Sprite_Visible(sprite)) {
-			sprite->Draw(Game->camera_x,Game->camera_y);
-
-			if (!Game->paused)
-				sprite->HandleEffects();
-
-			sprite->hidden = false;
-			debug_drawn_sprites++;
-		} else {
-			if (!Game->paused)
-				sprite->Animoi();
-			sprite->hidden = true;
-		}
-	}
-}
-
-void PlayingScreen::Draw_InGame_FGSprites(){
-
-	for(SpriteClass* sprite : Game->spritesHandler.fgSprites_List){
-
-		double orig_x = sprite->orig_x;
-		double orig_y = sprite->orig_y;
-
-		double xl, yl;
-
-		if (sprite->prototype->parallax_type != 0) {
-
-			double parallax = double(-sprite->prototype->parallax_type);
-
-			xl =  orig_x - Game->camera_x-screen_width/2 - sprite->prototype->width/2;
-			xl /= parallax;
-			
-			yl =  orig_y - Game->camera_y-screen_height/2 - sprite->prototype->height/2;
-			yl /= parallax;
-		}
-		else {
-
-			xl = yl = 0;
-
-		}
-
-		UpdateBackgroundSprite(sprite, yl);
-
-		sprite->x = orig_x-xl;
-		sprite->y = orig_y-yl;
-
-
-		if (Is_Sprite_Visible(sprite)) {
-			sprite->Draw(Game->camera_x,Game->camera_y);
-
-			if (!Game->paused)
-				sprite->HandleEffects();
-
-			sprite->hidden = false;
-			debug_drawn_sprites++;
-		} else {
-			if (!Game->paused)
-				sprite->Animoi();
-			sprite->hidden = true;
-		}
-	}
-
-}
-
-void PlayingScreen::Draw_InGame_Sprites() {
-
-	for (SpriteClass* sprite : Game->spritesHandler.Sprites_List) {
-		if (sprite->prototype->type == TYPE_BACKGROUND || sprite->prototype->type == TYPE_FOREGROUND)
-			continue;
-		
-		if (sprite->removed)
-			continue;
-
-		if (Is_Sprite_Visible(sprite)) {
-
-			// Draw impact circle
-			if (sprite->damage_timer > 0 && sprite->prototype->type != TYPE_BONUS && sprite->energy < 1){
-				int framex = ((degree%12)/3) * 58;
-				u32 hit_x = sprite->x-8;
-				u32 hit_y = sprite->y-8;
-				PDraw::image_cutclip(game_assets,hit_x-Game->camera_x-28+8, hit_y-Game->camera_y-27+8,1+framex,83,1+57+framex,83+55);
-			}
-
-			if (!(dev_mode && sprite->player && PInput::Keydown(PInput::Y) && degree % 2 == 0))
-				sprite->Draw(Game->camera_x,Game->camera_y);
-
-			// Draw stars on dead sprite
-			if (sprite->energy < 1 && sprite->prototype->type != TYPE_PROJECTILE){
-				int sx = (int)sprite->x;
-				for (int stars=0; stars<3; stars++){
-					double star_x = sprite->x - 8  + sin_table((stars*120+degree)*2)      / 3;
-					double star_y = sprite->y - 18 + cos_table((stars*120+degree)*2 + sx) / 8;
-					PDraw::image_cutclip(game_assets,star_x-Game->camera_x, star_y-Game->camera_y,1,1,11,11);
-				}
-			}
-
-			if (!Game->paused)
-				sprite->HandleEffects();
-
-			debug_drawn_sprites++;
-
-		} else {
-
-			if (!Game->paused)
-				sprite->Animoi();
-
-			// Delete death body
-			if (sprite->energy < 1 && sprite->respawn_timer==0)
-				sprite->removed = true;
-			
-		}
-	}
-}*/
-
 void PlayingScreen::Draw_InGame_DebugInfo() {
 	int vali, fy = 70;
 
@@ -439,12 +287,12 @@ void PlayingScreen::Draw_InGame_UI(){
 	/////////////////
 	if (Player_Sprite->ammo2 != nullptr){
 		PDraw::font_write(fontti1,tekstit->Get_Text(PK_txt.game_attack1), screen_width-170,my);
-		Player_Sprite->ammo2->Draw(screen_width-170,my+10,0);
+		Player_Sprite->ammo2->draw(screen_width-170,my+10,0);
 	}
 
 	if (Player_Sprite->ammo1 != nullptr){
 		PDraw::font_write(fontti1,tekstit->Get_Text(PK_txt.game_attack2), screen_width-90,my+15);
-		Player_Sprite->ammo1->Draw(screen_width-90,my+25,0);
+		Player_Sprite->ammo1->draw(screen_width-90,my+25,0);
 	}
 
 	/////////////////
@@ -570,7 +418,7 @@ void PlayingScreen::Init(){
 
 	if (!Game->isStarted()) {
 
-		Game->Start();
+		Game->start();
 		degree = 0;
 	
 	} else {
@@ -582,45 +430,7 @@ void PlayingScreen::Init(){
 
 void PlayingScreen::Loop(){
 
-	if(Game->playerSprite!=nullptr && Game->playerSprite->energy>0){
-		AI_Functions::player_invisible = Game->playerSprite;
-
-		if(Game->playerSprite->invisible_timer>0){
-			AI_Functions::player = nullptr;
-		}
-		else{
-			AI_Functions::player = Game->playerSprite;
-		}
-
-	}
-	else{
-		AI_Functions::player = nullptr;
-		AI_Functions::player_invisible = nullptr;
-	}
-
-	LevelSector* sector = Game->playerSprite->level_sector;
-
-
-	if (!Game->level_clear && (!Game->has_time || Game->timeout > 0)) {
-		Game->level.SetTilesAnimations(degree, Game->palikka_animaatio/7, Game->button1, Game->button2, Game->button3);
-		Game->palikka_animaatio = 1 + Game->palikka_animaatio % 34;
-	}
-
-	Game->updateCamera();
-	Update_GameSFX();
-
-	if (!Game->paused) {
-
-		if(Settings.draw_weather)BG_Particles::Update(Game->camera_x, Game->camera_y);
-		Particles_Update();
-
-		if (!Game->level_clear && (!Game->has_time || Game->timeout > 0)) {
-			debug_active_sprites = sector->sprites.onTickUpdate(Game->camera_x, Game->camera_y);
-			Game->frame_count++;
-		}
-		Fadetext_Update();
-
-	}
+	Game->update(this->debug_active_sprites);
 
 	static bool skip_frame = false;
 
@@ -629,106 +439,8 @@ void PlayingScreen::Loop(){
 
 	if (!skip_frame) {
 
-		Draw();
-
-	} else {
-
-		Piste::ignore_frame();
-
-	}
-	
-	Game->moveBlocks();
-
-	if (!Game->paused) {
-
-		degree = 1 + degree % 360;//359;
-
-		if (Game->button1 > 0)
-			Game->button1 --;
-
-		if (Game->button2 > 0)
-			Game->button2 --;
-
-		if (Game->button3 > 0)
-			Game->button3 --;
-
-		if (Game->info_timer > 0)
-			Game->info_timer--;
-
-		if (Game->score_increment > 0){
-			Game->score++;
-			Game->score_increment--;
-		}
-
-		if (Game->has_time && !Game->level_clear) {
-			if (Game->timeout > 0)
-				Game->timeout--;
-			else
-				Game->game_over = true;
-			
-		}
-	}
-
-	SpriteClass * Player_Sprite = Game->playerSprite;
-
-	if (Player_Sprite->energy < 1) {
-		Game->game_over = true;
-		//SpriteOnDeath(Player_Sprite);
-	}
-
-	if (Game->level_clear || Game->game_over) {
-
-		if (Game->exit_timer > 1)
-			Game->exit_timer--;
-
-		if (Game->exit_timer == 0)
-			Game->exit_timer = 700;//800;//2000;
-
-		if (PInput::Keydown(Input->attack1) || PInput::Keydown(Input->attack2) ||
-			PInput::Keydown(Input->jump) || Clicked() ||
-			Gui_egg || Gui_doodle || Gui_gift || Gui_up || Gui_down || Gui_menu)
-			if (Game->exit_timer > 2 && Game->exit_timer < 500/*600*//*1900*/ && key_delay == 0)
-				Game->exit_timer = 2;
-
-		if (Game->exit_timer == 2) {
-			
-			Fade_out(FADE_NORMAL);
-			if (Game->game_over)
-				PSound::set_musicvolume(0);
-		
-		}
-	}
-
-	if (key_delay == 0) {
-		if (!Game->game_over && !Game->level_clear) {
-			if (PInput::Keydown(Input->open_gift) || Gui_gift) {
-				Gifts_Use(sector->sprites);
-				key_delay = 10;
-			}
-			
-			if (PInput::Keydown(PInput::P)) {
-				Game->paused = !Game->paused;
-				key_delay = 20;
-			}
-			
-			if (PInput::Keydown(PInput::DEL) && !Game->paused) {
-				if(!configuration.silent_suicide){
-					Player_Sprite->damage_taken = Player_Sprite->energy;
-					Player_Sprite->damage_taken_type = DAMAGE_SELF_DESTRUCTION;
-					Player_Sprite->self_destruction = true;
-				}
-				else{
-					Player_Sprite->energy = 0;
-					Player_Sprite->removed = true;
-				}
-			}
-
-			if (PInput::Keydown(PInput::TAB) || PInput::Keydown(PInput::JOY_GUIDE) || Gui_tab){
-				Gifts_ChangeOrder();
-				key_delay = 10;
-			}
-
-			if (!skip_frame) {
+		if (!skip_frame) {
+			if(key_delay==0 && !Game->game_over&&!Game->level_clear){
 				if (PInput::Keydown(PInput::ESCAPE) || PInput::Keydown(PInput::JOY_START) || Gui_menu || Gui_touch) {
 					if(test_level)
 						Fade_Quit();
@@ -738,92 +450,27 @@ void PlayingScreen::Loop(){
 					}
 					key_delay = 20;
 				}
-			}
-		}
 
-		if (!dev_mode)
-			if (PInput::Keydown(PInput::I)) {
-				show_fps = !show_fps;
-				key_delay = 20;
-			}
-	}
+				if (PInput::Keydown(PInput::I)) {
 
-	if (dev_mode){ //Debug
-		if (key_delay == 0) {
-			if (PInput::Keydown(PInput::F)) {
-				show_fps = !show_fps;
-				key_delay = 20;
-			}
-			if (PInput::Keydown(PInput::Z)) {
-				if (Game->button1 < Game->level.button1_time - 64) Game->button1 = Game->level.button1_time;
-				if (Game->button2 < Game->level.button2_time - 64) Game->button2 = Game->level.button2_time;
-				if (Game->button3 < Game->level.button3_time - 64) Game->button3 = Game->level.button3_time;
-				key_delay = 20;
-			}
-			if (PInput::Keydown(PInput::X)) {
-				if (Game->button1 > 64) Game->button1 = 64;
-				if (Game->button2 > 64) Game->button2 = 64;
-				if (Game->button3 > 64) Game->button3 = 64;
-				key_delay = 20;
-			}
-			if (PInput::Keydown(PInput::T)) {
-				Settings.double_speed = !Settings.double_speed;
-				key_delay = 20;
-			}
-			if (PInput::Keydown(PInput::G)) {
-				Settings.draw_transparent = !Settings.draw_transparent;
-				key_delay = 20;
-			}
-			if (PInput::Keydown(PInput::L)) {
-				Game->keys = 0;
-				Game->Open_Locks();
-				key_delay = 20;
-			}
-			if (PInput::Keydown(PInput::K)) {
-				Game->change_skulls = true;
-				key_delay = 20;
-			}
-			if (PInput::Keydown(PInput::I)) {
-				draw_debug_info = !draw_debug_info;
-				key_delay = 20;
-			}
-			/*if (PInput::Keydown(PInput::R)) {
-				Game->Select_Start();
-				Player_Sprite->energy = 10;
-				Player_Sprite->removed = false;
-				key_delay = 20;
-			}*/
-			if (PInput::Keydown(PInput::END)) {
-				key_delay = 20;
-				Game->Finish();
-			}
-			/*
-			if (PInput::Keydown(PInput::A)) {
-				//key_delay = 20;
-				PrototypeClass*proto = Game->spritesHandler.getLevelPrototype(Game->level.player_sprite_index);
-				if(proto!=nullptr){
-					*Player_Sprite = SpriteClass(proto, 1, Player_Sprite->x, Player_Sprite->y);
-					Effect_Stars(Player_Sprite->x, Player_Sprite->y, COLOR_VIOLET);
+					if(dev_mode){
+						draw_debug_info = !draw_debug_info;
+					}
+					else{
+						show_fps = !show_fps;
+					}					
+					key_delay = 20;
 				}
-			}*/
+			}
 		}
-		if (PInput::Keydown(PInput::U))
-			Player_Sprite->b = -10;
-		if (PInput::Keydown(PInput::E)) {
-			Player_Sprite->energy = 10;
-			Game->game_over = false;
-		} if (PInput::Keydown(PInput::V))
-			Player_Sprite->invisible_timer = 3000;
-		if (PInput::Keydown(PInput::S)) {
-			//PSound::play_overlay_music();   // this does the exact same thing as start_music()
-			PSound::start_music(PFile::Path("music" PE_SEP "super.xm"));   // the problem is this will most likely overwrite the current music, fixlater
-			Player_Sprite->super_mode_timer = 490;
-			key_delay = 30;
-		}
+
+		this->Draw();
+
+	} else {
+
+		Piste::ignore_frame();
 
 	}
-
-	Game->ExecuteEventsIfNeeded();
 	
 	if (Game->exit_timer == 1 && !Is_Fading()) {
 		if (Game->level_clear) {

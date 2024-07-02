@@ -18,7 +18,7 @@ PrototypeClass* Gifts_Get(int i) {
 
 void Gifts_Draw(int i, int x, int y) {
 	PrototypeClass* prot = gifts_list[i];
-	prot->Draw(x - prot->width / 2, y - prot->height / 2, 0);
+	prot->draw(x - prot->width / 2, y - prot->height / 2, 0);
 }
 
 void Gifts_Clean() {

@@ -135,12 +135,12 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 			{
 			case GAME_MODE_STANDARD:
 				if(sprite == Game->playerSprite){
-					Game->Finish();
+					Game->finish();
 				}
 				break;
 			case GAME_MODE_CHICK:
 				if(sprite->HasAI(AI_CHICK)){
-					Game->Finish();
+					Game->finish();
 				}
 				break;
 			default:
@@ -195,7 +195,7 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 			if (!sprite->prototype->indestructible) {
 				Game->keys--;
 				if (Game->keys < 1)
-					Game->Open_Locks();
+					Game->openLocks();
 			}
 
 			Effect_Explosion(block.left+16, block.top+10, 0);
@@ -470,7 +470,7 @@ void PotionTransformation(SpriteClass* sprite, PrototypeClass* intended_prototyp
 		if(sprite==Game->playerSprite){
 			int infotext = Episode->infos.Search_Id("pekka transformed");
 			if (infotext != -1)
-				Game->Show_Info(Episode->infos.Get_Text(infotext));
+				Game->showInfo(Episode->infos.Get_Text(infotext));
 		}
 
 		for(const SpriteAI::AI_Class& ai: sprite->prototype->AI_f){
@@ -520,7 +520,7 @@ void BonusSpriteCollected(SpriteClass* sprite, SpriteClass* collector){
 				Game->keys--;
 
 				if (Game->keys < 1)
-					Game->Open_Locks();
+					Game->openLocks();
 			}
 
 			sprite->removed = true;
@@ -584,7 +584,7 @@ void BonusSpriteCollected(SpriteClass* sprite, SpriteClass* collector){
 
 		if (sprite->prototype->bonus != nullptr)
 			if (Gifts_Add(sprite->prototype->bonus))
-				Game->Show_Info(tekstit->Get_Text(PK_txt.game_newitem));
+				Game->showInfo(tekstit->Get_Text(PK_txt.game_newitem));
 
 		if (sprite->prototype->transformation != nullptr){
 			PotionTransformation(collector, sprite->prototype->transformation);
@@ -598,9 +598,9 @@ void BonusSpriteCollected(SpriteClass* sprite, SpriteClass* collector){
 
 				int infotext = Episode->infos.Search_Id("new doodle attack");
 				if (infotext != -1)
-					Game->Show_Info(Episode->infos.Get_Text(infotext));
+					Game->showInfo(Episode->infos.Get_Text(infotext));
 				else
-					Game->Show_Info(tekstit->Get_Text(PK_txt.game_newdoodle));
+					Game->showInfo(tekstit->Get_Text(PK_txt.game_newdoodle));
 			}
 		}
 
@@ -612,9 +612,9 @@ void BonusSpriteCollected(SpriteClass* sprite, SpriteClass* collector){
 
 				int infotext = Episode->infos.Search_Id("new egg attack");
 				if (infotext != -1)
-					Game->Show_Info(Episode->infos.Get_Text(infotext));
+					Game->showInfo(Episode->infos.Get_Text(infotext));
 				else
-					Game->Show_Info(tekstit->Get_Text(PK_txt.game_newegg));
+					Game->showInfo(tekstit->Get_Text(PK_txt.game_newegg));
 			}
 		}
 
@@ -1095,7 +1095,7 @@ void UpdateSprite(SpriteClass* sprite){
 						else{
 							if (sprite2->b > 2 && sprite2->weight >= 0.5 &&
 								sprite2->y < sprite->y && !sprite->prototype->is_wall &&
-								sprite2->CanDamageOnCollision(sprite))
+								sprite2->canDamageOnCollision(sprite))
 							{
 								sprite->damage_taken = (int)(sprite2->weight+sprite2->b/4);
 								sprite->damage_taken_type = DAMAGE_DROP;
@@ -1106,7 +1106,7 @@ void UpdateSprite(SpriteClass* sprite){
 
 							// If there is another sprite damaging
 							if (sprite->prototype->damage > 0 &&
-							sprite->CanDamageOnCollision(sprite2)) {
+							sprite->canDamageOnCollision(sprite2)) {
 								
 								sprite2->damage_taken        = sprite->prototype->damage;
 								sprite2->damage_taken_type = sprite->prototype->damage_type;
@@ -1114,7 +1114,7 @@ void UpdateSprite(SpriteClass* sprite){
 								if ( !(sprite2->player && sprite2->invisible_timer) ) //If sprite2 isn't a invisible player
 									sprite->attack1_timer = sprite->prototype->attack1_time; //Then sprite attack??
 
-								if (sprite2->prototype->type == TYPE_PROJECTILE && sprite2->CanDamageOnCollision(sprite)) {
+								if (sprite2->prototype->type == TYPE_PROJECTILE && sprite2->canDamageOnCollision(sprite)) {
 									sprite->damage_taken = sprite2->prototype->damage;
 									sprite->damage_taken_type = sprite2->prototype->damage_type;
 								}

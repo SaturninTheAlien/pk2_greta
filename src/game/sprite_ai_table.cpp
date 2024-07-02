@@ -302,7 +302,7 @@ AI_Table::AI_Table(){
 
     Init_AI(AI_ATTACK_1_IF_DAMAGED, AI_TRIGGER_DAMAGE, AI_Functions::Attack_1_If_Damaged);
     Init_AI(AI_ATTACK_2_IF_DAMAGED, AI_TRIGGER_DAMAGE, AI_Functions::Attack_2_If_Damaged);
-    Init_AI(AI_TRANSFORM_IF_DAMAGED, AI_TRIGGER_DAMAGE, [](SpriteClass*s){s->Transform();}, true, true, true, true);
+    Init_AI(AI_TRANSFORM_IF_DAMAGED, AI_TRIGGER_DAMAGE, [](SpriteClass*s){s->transform();}, true, true, true, true);
 
     Init_AI(AI_INFINITE_ENERGY, AI_TRIGGER_DAMAGE, AI_Functions::InfiniteEnergy);
 
@@ -329,7 +329,7 @@ AI_Table::AI_Table(){
      */
 
     Init_AI(AI_DIE_IF_SKULL_BLOCKS_CHANGED, AI_TRIGGER_SKULLS_CHANGED, AI_Functions::DieIfSkullBlocksChanged, true, true, true, true);
-    Init_AI(AI_TRANSFORM_IF_SKULL_BLOCKS_CHANGED, AI_TRIGGER_SKULLS_CHANGED, [](SpriteClass*s){s->Transform();}, true, true, true, true);
+    Init_AI(AI_TRANSFORM_IF_SKULL_BLOCKS_CHANGED, AI_TRIGGER_SKULLS_CHANGED, [](SpriteClass*s){s->transform();}, true, true, true, true);
 
     /**
      * @brief 
@@ -337,7 +337,7 @@ AI_Table::AI_Table(){
      */
 
     Init_AI(AI_DIE_IF_EVENT1, AI_TRIGGER_EVENT1, AI_Functions::DieIfSkullBlocksChanged, true, true, true, true);
-    Init_AI(AI_TRANSFORM_IF_EVENT1, AI_TRIGGER_EVENT1, [](SpriteClass*s){s->Transform();}, true, true, true, true);
+    Init_AI(AI_TRANSFORM_IF_EVENT1, AI_TRIGGER_EVENT1, [](SpriteClass*s){s->transform();}, true, true, true, true);
 
     /**
      * @brief 
@@ -345,7 +345,7 @@ AI_Table::AI_Table(){
      */
 
     Init_AI(AI_DIE_IF_EVENT2, AI_TRIGGER_EVENT2, AI_Functions::DieIfSkullBlocksChanged, true, true, true, true);
-    Init_AI(AI_TRANSFORM_IF_EVENT2, AI_TRIGGER_EVENT2, [](SpriteClass*s){s->Transform();}, true, true, true, true);
+    Init_AI(AI_TRANSFORM_IF_EVENT2, AI_TRIGGER_EVENT2, [](SpriteClass*s){s->transform();}, true, true, true, true);
 
     /**
      * @brief 

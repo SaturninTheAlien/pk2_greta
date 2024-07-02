@@ -34,7 +34,7 @@ private:
 };
 
 bool WaypointX::execute(SpriteClass*sprite){
-    return sprite->FlyToWaypointX(this->target_x);
+    return sprite->flyToWaypointX(this->target_x);
 }
 
 
@@ -48,7 +48,7 @@ private:
 };
 
 bool WaypointRX::execute(SpriteClass*sprite){
-    return sprite->FlyToWaypointX(this->target_x + sprite->orig_x);
+    return sprite->flyToWaypointX(this->target_x + sprite->orig_x);
 }
 
 class WaypointY:public Command{
@@ -61,7 +61,7 @@ private:
 };
 
 bool WaypointY::execute(SpriteClass*sprite){
-    return sprite->FlyToWaypointY(this->target_y);
+    return sprite->flyToWaypointY(this->target_y);
 }
 
 
@@ -75,7 +75,7 @@ private:
 };
 
 bool WaypointRY::execute(SpriteClass*sprite){
-    return sprite->FlyToWaypointY(this->target_y + sprite->orig_y);
+    return sprite->flyToWaypointY(this->target_y + sprite->orig_y);
 }
 
 
@@ -89,7 +89,7 @@ private:
 };
 
 bool Waypoint::execute(SpriteClass*sprite){
-    return sprite->FlyToWaypointXY(this->target_x, this->target_y);
+    return sprite->flyToWaypointXY(this->target_x, this->target_y);
 }
 
 
@@ -103,7 +103,7 @@ private:
 };
 
 bool WaypointR::execute(SpriteClass*sprite){
-    return sprite->FlyToWaypointXY(this->target_x + sprite->orig_x, this->target_y + sprite->orig_y);
+    return sprite->flyToWaypointXY(this->target_x + sprite->orig_x, this->target_y + sprite->orig_y);
 }
 
 
@@ -120,7 +120,7 @@ bool WaypointSeenPlayer::execute(SpriteClass*sprite){
             sprite->seen_player_y = AI_Functions::player->y;
         }
 
-        success = sprite->FlyToWaypointXY(sprite->seen_player_x, sprite->seen_player_y);
+        success = sprite->flyToWaypointXY(sprite->seen_player_x, sprite->seen_player_y);
     }
 
     if(success){
@@ -139,7 +139,7 @@ public:
 
 
 bool WaypointOrigXY::execute(SpriteClass*sprite){
-    return sprite->FlyToWaypointXY(sprite->orig_x, sprite->orig_y);
+    return sprite->flyToWaypointXY(sprite->orig_x, sprite->orig_y);
 }
 
 
@@ -150,7 +150,7 @@ public:
 
 
 bool TransformationCommand::execute(SpriteClass*sprite){
-    return !sprite->Transform();
+    return !sprite->transform();
 };
 
 class SelfDestructionCommand: public Command{
@@ -295,7 +295,7 @@ bool ChasePlayerCommand::execute(SpriteClass*sprite){
 
     if(AI_Functions::player!=nullptr){
 
-        sprite->FlyToWaypointXY(AI_Functions::player->x, AI_Functions::player->y);
+        sprite->flyToWaypointXY(AI_Functions::player->x, AI_Functions::player->y);
 
         if(sprite->command_timer==-1){
             sprite->command_timer = this->mTimer;

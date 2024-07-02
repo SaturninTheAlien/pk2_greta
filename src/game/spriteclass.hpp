@@ -102,35 +102,35 @@ public:
      */
     bool    original = false;
 
-    bool CanDamageOnCollision(const SpriteClass* target)const;
+    bool canDamageOnCollision(const SpriteClass* target)const;
 
     
     SpriteClass();
     SpriteClass(PrototypeClass *prototype, bool player, double x, double y, LevelSector*sector, SpriteClass*parent=nullptr);
     ~SpriteClass();
 
-    void  Draw(int camera_x, int camera_y);   // animate and draw the sprite
+    void  draw(int camera_x, int camera_y);   // animate and draw the sprite
     void  SetAnimation(int anim_i, bool reset);  // set sprite animation
     int  Animoi();                             // animate the sprite
     void HandleEffects();                      // create sprite effects
     bool HasAI(int AI)const{
-        return prototype->HasAI(AI);
+        return prototype->hasAI(AI);
     };
     
     void AI_Move_X(double dx);
     void AI_Move_Y(double dy);
 
-    bool FlyToWaypointX(double target_x);
-    bool FlyToWaypointY(double target_y);
-    bool FlyToWaypointXY(double target_x, double target_y);
+    bool flyToWaypointX(double target_x);
+    bool flyToWaypointY(double target_y);
+    bool flyToWaypointXY(double target_x, double target_y);
 
-    bool Transform(){
-        return this->TransformTo(this->prototype->transformation);
+    bool transform(){
+        return this->transformTo(this->prototype->transformation);
     }
 
-    bool TransformTo(PrototypeClass* transformation);
+    bool transformTo(PrototypeClass* transformation);
 
-    void Die();
+    void die();
 
     void StartThunder();
 

@@ -543,7 +543,7 @@ void Transform_If_Player_Above(SpriteClass*s){
 			(player->y < s->y && s->y - player->y < 350))
 		{
 			if(s->prototype->charge_time==0){
-				s->Transform();
+				s->transform();
 			}
 			else{
 				Self_Transformation(s);
@@ -558,7 +558,7 @@ void Transform_If_Player_Bellow(SpriteClass*s){
 			(player->y > s->y && player->y - s->y < 350))
 		{
 			if(s->prototype->charge_time==0){
-				s->Transform();
+				s->transform();
 			}
 			else{
 				Self_Transformation(s);
@@ -683,7 +683,7 @@ void Self_Transformation(SpriteClass* s){
 
 		if (s->mutation_timer/*charging_timer*/ == 1)
 		{
-			s->Transform();
+			s->transform();
 
 			s->charging_timer = 0;
 			s->animation_index = -1;
@@ -702,7 +702,7 @@ void Self_Transformation_Random_Prototype(SpriteClass* s){
 		if (s->mutation_timer/*charging_timer*/ == 1)
 		{
 			PrototypeClass* transformation = rand() % 2 == 0 ? s->prototype->transformation : s->prototype->ammo2;
-			if(s->TransformTo(transformation)){
+			if(s->transformTo(transformation)){
 				s->charging_timer = 0;
 				s->animation_index = -1;
 				s->SetAnimation(ANIMATION_IDLE,true);
@@ -712,7 +712,7 @@ void Self_Transformation_Random_Prototype(SpriteClass* s){
 
 	else{
 		PrototypeClass* transformation = rand() % 2 == 0 ? s->prototype->transformation : s->prototype->ammo2;
-		if(s->TransformTo(transformation)){
+		if(s->transformTo(transformation)){
 			s->charging_timer = 0;
 			s->animation_index = -1;
 			s->SetAnimation(ANIMATION_IDLE,true);
@@ -1168,9 +1168,9 @@ void DisplayInfo(SpriteClass* sprite){
 
 	int index = Episode->infos.Search_Id(sinfo.c_str());
 	if (index != -1)
-		Game->Show_Info(Episode->infos.Get_Text(index));
+		Game->showInfo(Episode->infos.Get_Text(index));
 	else if(info<100)
-		Game->Show_Info(tekstit->Get_Text(PK_txt.infos[info]));
+		Game->showInfo(tekstit->Get_Text(PK_txt.infos[info]));
 }
 
 void DisplayInfoIfTouchesPlayer(SpriteClass* sprite){

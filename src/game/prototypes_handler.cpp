@@ -96,7 +96,7 @@ PrototypeClass* PrototypesHandler::loadPrototype(const std::string& filename_in)
 				 * @brief 
 				 * TO DO Redesign it 
 				 */
-				protot->LoadPrototypeJSON(path_j,
+				protot->loadPrototypeJSON(path_j,
 					[&](const std::string& filename_in){return this->loadPrototype(filename_in);});
 			}
 			else if(legacy_spr){
@@ -106,7 +106,7 @@ PrototypeClass* PrototypesHandler::loadPrototype(const std::string& filename_in)
 				}
 				path_j = path;
 				protot = new PrototypeClass();
-				protot->LoadPrototypeLegacy(path);
+				protot->loadPrototypeLegacy(path);
 			}
 			else{
 				throw PExcept::FileNotFoundException(filename_j, PExcept::MISSING_SPRITE_PROTOTYPE);
@@ -116,7 +116,7 @@ PrototypeClass* PrototypesHandler::loadPrototype(const std::string& filename_in)
 			PFile::Path path = this->mGetDir(filename_clean);
 			if(this->mFindSprite(path)){
 				protot = new PrototypeClass();
-				protot->LoadPrototypeLegacy(path);
+				protot->loadPrototypeLegacy(path);
 			}
 			else{
 				throw PExcept::FileNotFoundException(filename_clean, PExcept::MISSING_SPRITE_PROTOTYPE);
@@ -130,7 +130,7 @@ PrototypeClass* PrototypesHandler::loadPrototype(const std::string& filename_in)
 				 * @brief 
 				 * TO DO Redesign it 
 				 */
-				protot->LoadPrototypeJSON(path,
+				protot->loadPrototypeJSON(path,
 					[&](const std::string& filename_in){return this->loadPrototype(filename_in);});
 			}
 			else{
@@ -246,14 +246,14 @@ void PrototypesHandler::loadSpriteAssets(){
 	}
 
     for(PrototypeClass* prototype: this->mPrototypes){
-		prototype->LoadAssets(this->mEpisode);
+		prototype->loadAssets(this->mEpisode);
 	}
 
 	this->mAssetsLoaded = true;
 }
 void PrototypesHandler::unloadSpriteAssets(){
 	for(PrototypeClass* prototype: this->mPrototypes){
-		prototype->UnloadAssets();
+		prototype->unloadAssets();
 	}
 
 	this->mAssetsLoaded = false;

@@ -100,15 +100,15 @@ class LevelClass {
     
     void drawForegroundTiles(int camera_x, int camera_y, LevelSector* sector);
 
-    void SetTilesAnimations(int degree, int anim, u32 aika1, u32 aika2, u32 aika3);
+    void setTilesAnimations(int degree, int anim, u32 aika1, u32 aika2, u32 aika3);
 
-    void Calculate_Edges(){
+    void calculateEdges(){
         for(LevelSector*sector:this->sectors){
             sector->calculateEdges();
         }
     }
 
-    void SaveVersion15(PFile::Path path)const;
+    void saveVersion15(PFile::Path path)const;
 
     void calculateBlockTypes();
     void moveBlocks(u32 button1, u32 button2, u32 button3);
@@ -127,12 +127,12 @@ private:
     std::vector<Tileset*>mTilesets;
     std::vector<Background*>mBackgrounds;
 
-    static void ReadTiles(PFile::RW& file,
+    static void readTiles(PFile::RW& file,
         u8 compression,
         u32 level_width,
         std::size_t level_size,
         u8* tiles);
 
-    void LoadVersion13(PFile::Path path, bool headerOnly);
-    void LoadVersion15(PFile::Path path, bool headerOnly);
+    void loadVersion13(PFile::Path path, bool headerOnly);
+    void loadVersion15(PFile::Path path, bool headerOnly);
 };

@@ -70,10 +70,293 @@ GameClass::~GameClass(){
 	}
 }
 
-int GameClass::Start() {
+void GameClass::update(int& debug_active_sprites){
+	if(this->playerSprite!=nullptr && this->playerSprite->energy>0){
+		AI_Functions::player_invisible = this->playerSprite;
+
+		if(this->playerSprite->invisible_timer>0){
+			AI_Functions::player = nullptr;
+		}
+		else{
+			AI_Functions::player = this->playerSprite;
+		}
+
+	}
+	else{
+		AI_Functions::player = nullptr;
+		AI_Functions::player_invisible = nullptr;
+	}
+
+	LevelSector* sector = this->playerSprite->level_sector;
+
+
+	if (!this->level_clear && (!this->has_time || this->timeout > 0)) {
+		this->level.setTilesAnimations(degree, this->palikka_animaatio/7, this->button1, this->button2, this->button3);
+		this->palikka_animaatio = 1 + this->palikka_animaatio % 34;
+	}
+
+	this->updateCamera();
+	Update_GameSFX();
+
+	/***
+	 * Execute events
+	 */
+
+	if(this->change_skulls){
+		this->change_skulls = false;
+
+		this->vibration = 90;
+		PInput::Vibrate(1000);
+
+		for(LevelSector* sector: this->level.sectors){
+			sector->changeSkulls(sector==this->playerSprite->level_sector);
+			sector->sprites.onSkullBlocksChanged();
+		}
+
+		if(this->lua!=nullptr){
+			PK2lua::TriggerEventListeners(PK2lua::LUA_EVENT_SKULL_BLOCKS_CHANGED);
+		}
+	}
+
+	if(this->event1){
+		this->event1 = false;
+
+		this->vibration = 90;
+		PInput::Vibrate(1000);
+
+		for(LevelSector* sector: this->level.sectors){
+			sector->sprites.onEvent1();
+		}
+		
+
+		if(this->lua!=nullptr){
+			PK2lua::TriggerEventListeners(PK2lua::LUA_EVENT_1);
+		}
+	}
+
+	if(this->event2){
+		this->event2 = false;
+
+		for(LevelSector* sector: this->level.sectors){
+			sector->sprites.onEvent2();
+		}
+		
+
+		if(this->lua!=nullptr){
+			PK2lua::TriggerEventListeners(PK2lua::LUA_EVENT_2);
+		}
+	}
+
+	if (!this->paused) {
+
+		/**
+		 * @brief 
+		 * Kill all the enemies mode
+		 */
+
+		if(this->level.game_mode == GAME_MODE_KILL_ALL &&
+			this->enemies <= 0 &&
+			this->playerSprite->damage_taken==0 && 
+			this->playerSprite->damage_timer==0 && 
+			this->playerSprite->energy>0){
+
+			this->finish();
+		}
+
+		/**
+		 * @brief 
+		 * Update Lua
+		 */
+
+		if(this->lua!=nullptr){
+			PK2lua::UpdateLua();
+		}
+
+		/**
+		 * @brief 
+		 * Update particles
+		 */
+
+		if(Settings.draw_weather)BG_Particles::Update(this->camera_x, this->camera_y);
+		Particles_Update();
+
+		/***
+		 * Update sprites
+		 */
+
+		if (!this->level_clear && (!this->has_time || this->timeout > 0)) {
+			debug_active_sprites = sector->sprites.onTickUpdate(this->camera_x, this->camera_y);
+			this->frame_count++;
+		}
+
+		Fadetext_Update();
+
+		this->moveBlocks();
+
+		degree = (1 + degree) % 360;
+
+		if (this->button1 > 0)
+			this->button1 --;
+
+		if (this->button2 > 0)
+			this->button2 --;
+
+		if (this->button3 > 0)
+			this->button3 --;
+
+		if (this->info_timer > 0)
+			this->info_timer--;
+
+		if (this->score_increment > 0){
+			this->score++;
+			this->score_increment--;
+		}
+
+		if (this->has_time && !this->level_clear) {
+			if (this->timeout > 0)
+				this->timeout--;
+			else
+				this->game_over = true;
+			
+		}
+	}
+	
+	SpriteClass * Player_Sprite = this->playerSprite;
+
+	if (Player_Sprite->energy < 1) {
+		this->game_over = true;
+	}
+
+	if (this->level_clear || this->game_over) {
+
+		if (this->exit_timer > 1)
+			this->exit_timer--;
+
+		if (this->exit_timer == 0)
+			this->exit_timer = 700;//800;//2000;
+
+		if (PInput::Keydown(Input->attack1) || PInput::Keydown(Input->attack2) ||
+			PInput::Keydown(Input->jump) || Clicked() ||
+			Gui_egg || Gui_doodle || Gui_gift || Gui_up || Gui_down || Gui_menu)
+			if (this->exit_timer > 2 && this->exit_timer < 500/*600*//*1900*/ && key_delay == 0)
+				this->exit_timer = 2;
+
+		if (this->exit_timer == 2) {
+			
+			Fade_out(FADE_NORMAL);
+			if (this->game_over)
+				PSound::set_musicvolume(0);
+		
+		}
+	}
+
+	if (key_delay == 0) {
+		if (!this->game_over && !this->level_clear) {
+			if (PInput::Keydown(Input->open_gift) || Gui_gift) {
+				Gifts_Use(sector->sprites);
+				key_delay = 10;
+			}
+			
+			if (PInput::Keydown(PInput::P)) {
+				this->paused = !this->paused;
+				key_delay = 20;
+			}
+			
+			if (PInput::Keydown(PInput::DEL) && !this->paused) {
+				if(!configuration.silent_suicide){
+					Player_Sprite->damage_taken = Player_Sprite->energy;
+					Player_Sprite->damage_taken_type = DAMAGE_SELF_DESTRUCTION;
+					Player_Sprite->self_destruction = true;
+				}
+				else{
+					Player_Sprite->energy = 0;
+					Player_Sprite->removed = true;
+				}
+			}
+
+			if (PInput::Keydown(PInput::TAB) || PInput::Keydown(PInput::JOY_GUIDE) || Gui_tab){
+				Gifts_ChangeOrder();
+				key_delay = 10;
+			}			
+		}			
+	}
+
+	if (dev_mode){ //Debug
+		if (key_delay == 0) {
+			if (PInput::Keydown(PInput::F)) {
+				show_fps = !show_fps;
+				key_delay = 20;
+			}
+			if (PInput::Keydown(PInput::Z)) {
+				if (this->button1 < this->level.button1_time - 64) this->button1 = this->level.button1_time;
+				if (this->button2 < this->level.button2_time - 64) this->button2 = this->level.button2_time;
+				if (this->button3 < this->level.button3_time - 64) this->button3 = this->level.button3_time;
+				key_delay = 20;
+			}
+			if (PInput::Keydown(PInput::X)) {
+				if (this->button1 > 64) this->button1 = 64;
+				if (this->button2 > 64) this->button2 = 64;
+				if (this->button3 > 64) this->button3 = 64;
+				key_delay = 20;
+			}
+			if (PInput::Keydown(PInput::T)) {
+				Settings.double_speed = !Settings.double_speed;
+				key_delay = 20;
+			}
+			if (PInput::Keydown(PInput::G)) {
+				Settings.draw_transparent = !Settings.draw_transparent;
+				key_delay = 20;
+			}
+			if (PInput::Keydown(PInput::L)) {
+				this->keys = 0;
+				this->openLocks();
+				key_delay = 20;
+			}
+			if (PInput::Keydown(PInput::K)) {
+				this->change_skulls = true;
+				key_delay = 20;
+			}
+			/*if (PInput::Keydown(PInput::R)) {
+				this->Select_Start();
+				Player_Sprite->energy = 10;
+				Player_Sprite->removed = false;
+				key_delay = 20;
+			}*/
+			if (PInput::Keydown(PInput::END)) {
+				key_delay = 20;
+				this->finish();
+			}
+			/*
+			if (PInput::Keydown(PInput::A)) {
+				//key_delay = 20;
+				PrototypeClass*proto = this->spritesHandler.getLevelPrototype(this->level.player_sprite_index);
+				if(proto!=nullptr){
+					*Player_Sprite = SpriteClass(proto, 1, Player_Sprite->x, Player_Sprite->y);
+					Effect_Stars(Player_Sprite->x, Player_Sprite->y, COLOR_VIOLET);
+				}
+			}*/
+		}
+		if (PInput::Keydown(PInput::U))
+			Player_Sprite->b = -10;
+		if (PInput::Keydown(PInput::E)) {
+			Player_Sprite->energy = 10;
+			this->game_over = false;
+		} if (PInput::Keydown(PInput::V))
+			Player_Sprite->invisible_timer = 3000;
+		if (PInput::Keydown(PInput::S)) {
+			//PSound::play_overlay_music();   // this does the exact same thing as start_music()
+			PSound::start_music(PFile::Path("music" PE_SEP "super.xm"));   // the problem is this will most likely overwrite the current music, fixlater
+			Player_Sprite->super_mode_timer = 490;
+			key_delay = 30;
+		}
+
+	}
+}
+
+void GameClass::start() {
 
 	if (this->started)
-		return 1;
+		return;
 	
 	if(this->lua!=nullptr){
 		PK2lua::DestroyGameLuaVM(this->lua);
@@ -96,15 +379,12 @@ int GameClass::Start() {
 	}
 
 	this->started = true;
-	
-	return 0;
-	
 }
 
-int GameClass::Finish() {
+void GameClass::finish() {
 
 	if (this->level_clear)
-		return -1;
+		return;
 	
 	this->level_clear = true;
 
@@ -127,9 +407,6 @@ int GameClass::Finish() {
 	}
 	
 	PSound::set_musicvolume_now(Settings.music_max_volume);
-
-	return 0;
-
 }
 
 int GameClass::Open_Map() {
@@ -168,10 +445,6 @@ int GameClass::Open_Map() {
 		sector->calculateEdges();
 	}
 
-	//Place_Sprites();
-	/***
-	 * TO DO
-	*/
 	Particles_Clear();
 
 	BG_Particles::Init(this->playerSprite->level_sector->weather);
@@ -361,79 +634,19 @@ void GameClass::teleportPlayer(double x, double y, LevelSector*sector){
 	this->setCamera();
 }
 
-void GameClass::ExecuteEventsIfNeeded(){
-	if(this->change_skulls){
-		this->change_skulls = false;
-
-		this->vibration = 90;
-		PInput::Vibrate(1000);
-
-		for(LevelSector* sector: this->level.sectors){
-			sector->changeSkulls(sector==this->playerSprite->level_sector);
-			sector->sprites.onSkullBlocksChanged();
-		}
-
-		if(this->lua!=nullptr){
-			PK2lua::TriggerEventListeners(PK2lua::LUA_EVENT_SKULL_BLOCKS_CHANGED);
-		}
-	}
-
-	if(this->event1){
-		this->event1 = false;
-
-		this->vibration = 90;
-		PInput::Vibrate(1000);
-
-		for(LevelSector* sector: this->level.sectors){
-			sector->sprites.onEvent1();
-		}
-		
-
-		if(this->lua!=nullptr){
-			PK2lua::TriggerEventListeners(PK2lua::LUA_EVENT_1);
-		}
-	}
-
-	if(this->event2){
-		this->event2 = false;
-
-		for(LevelSector* sector: this->level.sectors){
-			sector->sprites.onEvent2();
-		}
-		
-
-		if(this->lua!=nullptr){
-			PK2lua::TriggerEventListeners(PK2lua::LUA_EVENT_2);
-		}
-	}
-
-	if(this->level.game_mode == GAME_MODE_KILL_ALL &&
-		this->enemies <= 0 &&
-		this->playerSprite->damage_taken==0 && 
-		this->playerSprite->damage_timer==0 && 
-		this->playerSprite->energy>0){
-
-		this->Finish();
-	}
-
-	if(this->lua!=nullptr && !this->paused){
-		PK2lua::UpdateLua();
-	}
-}
-
-void GameClass::Open_Locks() {
+void GameClass::openLocks() {
 	//Put in game
 	this->vibration = 90;//60
 	PInput::Vibrate(1000);
 
-	Show_Info(tekstit->Get_Text(PK_txt.game_locksopen));
+	showInfo(tekstit->Get_Text(PK_txt.game_locksopen));
 
 	for(LevelSector* sector: this->level.sectors){
 		sector->openKeylocks(sector==this->playerSprite->level_sector);
 	}
 }
 
-void GameClass::Show_Info(const std::string& text) {
+void GameClass::showInfo(const std::string& text) {
 
 	if (info_text.compare(text) != 0 || info_timer == 0) {
 

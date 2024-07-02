@@ -407,7 +407,7 @@ void convertLevel(const std::string& filename_in, const std::string& filename_ou
 			printf("Waring, assuming _bg tileset: %s!\n", level.tileset_bg_name.c_str());
 		}*/
 
-		level.SaveVersion15(PFile::Path(filename_out));
+		level.saveVersion15(PFile::Path(filename_out));
 		printf("Done!\n");
 	}
 	catch(const std::exception& e){

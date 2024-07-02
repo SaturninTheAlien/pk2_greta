@@ -72,15 +72,17 @@ class GameClass {
 		GameClass(std::string map_file);
 		~GameClass();
 
-		int Start();
-		int Finish();
+		void update(int& debug_active_sprites);
+
+		void start();
+		void finish();
 
 		void moveBlocks(){
 			this->level.moveBlocks(this->button1, this->button2, this->button3);
 		}
 
 
-		void Show_Info(const std::string& text);
+		void showInfo(const std::string& text);
 
 		void placeSprites();
 		void selectStart(double& pos_x, double& pos_y, u32 sector);
@@ -89,7 +91,7 @@ class GameClass {
 
 		void teleportPlayer(double x, double y, LevelSector*sector);
 
-		void Open_Locks();
+		void openLocks();
 
 		bool change_skulls=false;
 		bool event1 = false;
@@ -97,9 +99,7 @@ class GameClass {
 
 		PrototypesHandler spritePrototypes;
 		SpriteClass* playerSprite;
-
-		void ExecuteEventsIfNeeded();
-		
+	
 		sol::state * lua = nullptr;
 
 		void setCamera();

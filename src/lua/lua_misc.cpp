@@ -28,7 +28,7 @@ void ExposeMiscAPI(sol::table& PK2_API){
      * @brief 
      * Show info
      */
-    PK2_API["show_info"] = [](const std::string& text){ Game->Show_Info(text);};
+    PK2_API["show_info"] = [](const std::string& text){ Game->showInfo(text);};
 
     /**
      * @brief 

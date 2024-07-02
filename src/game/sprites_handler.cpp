@@ -344,7 +344,7 @@ void SpritesHandler::drawBGsprites(int camera_x, int camera_y, bool gamePaused, 
 		sprite->y = orig_y-yl;
 
 		if (isSpriteVisible(sprite, camera_x, camera_y)) {
-			sprite->Draw(camera_x,camera_y);
+			sprite->draw(camera_x,camera_y);
 
 			if (!gamePaused)
 				sprite->HandleEffects();
@@ -390,7 +390,7 @@ void SpritesHandler::drawFGsprites(int camera_x, int camera_y, bool gamePaused, 
 
 
 		if (isSpriteVisible(sprite, camera_x, camera_y)) {
-			sprite->Draw(camera_x,camera_y);
+			sprite->draw(camera_x,camera_y);
 
 			if (!gamePaused)
 				sprite->HandleEffects();
@@ -425,7 +425,7 @@ void SpritesHandler::drawSprites(int camera_x, int camera_y, bool gamePaused, in
 
 			bool blinking = dev_mode && sprite->player && PInput::Keydown(PInput::Y);
 			if(!blinking || degree % 2 == 0){
-				sprite->Draw(camera_x, camera_y);
+				sprite->draw(camera_x, camera_y);
 			}
 
 			// Draw stars on dead sprite

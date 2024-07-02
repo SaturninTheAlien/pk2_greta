@@ -119,7 +119,7 @@ int SpriteClass::Animoi(){
 
 	return frame;
 }
-void SpriteClass::Draw(int kamera_x, int kamera_y){
+void SpriteClass::draw(int kamera_x, int kamera_y){
 
 	if(this->respawn_timer>0 && this->prototype->destruction_effect<100)return;
 
@@ -175,7 +175,7 @@ void SpriteClass::HandleEffects() {
 		}
 }
 
-bool SpriteClass::CanDamageOnCollision(const SpriteClass* target)const{
+bool SpriteClass::canDamageOnCollision(const SpriteClass* target)const{
 
 	if(target->prototype->indestructible || target->prototype->type==TYPE_BONUS){
 		return false;
@@ -364,7 +364,7 @@ void SpriteClass::Animation_Egg() {
 	SetAnimation(uusi_animaatio, alusta);
 }
 
-bool SpriteClass::TransformTo(PrototypeClass * transformation){
+bool SpriteClass::transformTo(PrototypeClass * transformation){
 
 	if(transformation!=nullptr && transformation!=this->prototype){
 		this->prototype = transformation;
@@ -407,7 +407,7 @@ bool SpriteClass::TransformTo(PrototypeClass * transformation){
 	return false;
 }
 
-void SpriteClass::Die(){
+void SpriteClass::die(){
 	this->damage_taken = this->energy + 1;
 	this->damage_taken_type = DAMAGE_SELF_DESTRUCTION;
 }
@@ -418,7 +418,7 @@ void SpriteClass::StartThunder(){
 }
 
 
-bool SpriteClass::FlyToWaypointX(double target_x){
+bool SpriteClass::flyToWaypointX(double target_x){
 	double max_speed = this->prototype->max_speed / 3.5;
     double dx = this->x - target_x;
     
@@ -438,7 +438,7 @@ bool SpriteClass::FlyToWaypointX(double target_x){
     return false;
 }
 
-bool SpriteClass::FlyToWaypointY(double target_y){
+bool SpriteClass::flyToWaypointY(double target_y){
 	double max_speed = this->prototype->max_speed / 3.5;
     double dy = this->y - target_y;
 
@@ -459,7 +459,7 @@ bool SpriteClass::FlyToWaypointY(double target_y){
     return false;
 }
 
-bool SpriteClass::FlyToWaypointXY(double target_x, double target_y){
+bool SpriteClass::flyToWaypointXY(double target_x, double target_y){
 	double velocity = this->prototype->max_speed / 3.5;
     double dx = this->x - target_x;
     double dy = this->y - target_y;

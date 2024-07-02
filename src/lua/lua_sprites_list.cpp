@@ -110,13 +110,6 @@ void ExposeSpriteListAPI(sol::table& PK2_API){
      */
     PK2_API["for_each_creature"] = ForEachCreature;    
     PK2_API["for_each_sprite"] = ForEachSprite;
-
-    /**
-     * @brief 
-     * Show info
-     */
-    PK2_API["show_info"] = [](const std::string& text){ Game->Show_Info(text);};
-
 }
 
 }

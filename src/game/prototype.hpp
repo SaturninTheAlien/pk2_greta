@@ -198,41 +198,41 @@ public:
      * @brief 
      * Load JSON sprite prototype
      */
-    void     LoadPrototypeJSON(PFile::Path path,
+    void     loadPrototypeJSON(PFile::Path path,
         std::function<PrototypeClass*(const std::string&)> fn_loadPrototype=nullptr);
     /**
      * @brief 
      * Load legacy sprite prototype
      */
-    void     LoadPrototypeLegacy(PFile::Path path);
+    void     loadPrototypeLegacy(PFile::Path path);
 
     /**
      * @brief 
      * Load sprite assets like texture, sounds, etc.
      */
-    void     LoadAssets(EpisodeClass* episode);
+    void     loadAssets(EpisodeClass* episode);
 
     /**
      * @brief 
      * Unload sprite assets
      */
-    void    UnloadAssets();
+    void    unloadAssets();
 
     
-    void     Draw(int x, int y, int frame)const;
-    bool    HasAI(int AI)const;
+    void     draw(int x, int y, int frame)const;
+    bool    hasAI(int AI)const;
 
     std::vector<SpriteCommands::Command*>commands;
     nlohmann::json commands_json;
 
     friend void to_json(nlohmann::json& j, const PrototypeClass& c);
 private:
-    void    SetProto10(PrototypeClass10 &proto);
-    void    SetProto11(PrototypeClass11 &proto);
-    void    SetProto12(PrototypeClass12 &proto);
-    void    SetProto13(PrototypeClass13 &proto);
+    void    setProto10(PrototypeClass10 &proto);
+    void    setProto11(PrototypeClass11 &proto);
+    void    setProto12(PrototypeClass12 &proto);
+    void    setProto13(PrototypeClass13 &proto);
 
-    void    SetProto20(const nlohmann::json& j);
+    void    setProto20(const nlohmann::json& j);
 
     bool    mAssetsLoaded = false;
 };

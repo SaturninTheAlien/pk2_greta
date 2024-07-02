@@ -68,11 +68,11 @@ PrototypeClass::PrototypeClass(){}
 
 PrototypeClass::~PrototypeClass(){
 	if(this->mAssetsLoaded){
-		this->UnloadAssets();
+		this->unloadAssets();
 	}
 }
 
-void PrototypeClass::SetProto10(PrototypeClass10 &proto){
+void PrototypeClass::setProto10(PrototypeClass10 &proto){
 	this->picture_filename = ReadLegacyString(proto.picture, 13);
 	this->name = ReadLegacyString(proto.name, 30);
 
@@ -126,7 +126,7 @@ void PrototypeClass::SetProto10(PrototypeClass10 &proto){
 		this->animations[i] = proto.animaatiot[i];
 	}
 }
-void PrototypeClass::SetProto11(PrototypeClass11 &proto){
+void PrototypeClass::setProto11(PrototypeClass11 &proto){
 	this->picture_filename = ReadLegacyString(proto.picture, 13);
 	this->name = ReadLegacyString(proto.name, 30);
 
@@ -192,7 +192,7 @@ void PrototypeClass::SetProto11(PrototypeClass11 &proto){
 		this->animations[i] = proto.animaatiot[i];
 	}
 }
-void PrototypeClass::SetProto12(PrototypeClass12 &proto){
+void PrototypeClass::setProto12(PrototypeClass12 &proto){
 
 	this->picture_filename = ReadLegacyString(proto.picture, 13);
 	this->name = ReadLegacyString(proto.name, 30);
@@ -270,7 +270,7 @@ void PrototypeClass::SetProto12(PrototypeClass12 &proto){
 
 
 
-void PrototypeClass::SetProto13(PrototypeClass13 &proto){
+void PrototypeClass::setProto13(PrototypeClass13 &proto){
 	this->picture_filename = ReadLegacyString(proto.picture, 100); //proto.picture;
 	this->name = ReadLegacyString(proto.name, 30); //proto.name;
 
@@ -386,7 +386,7 @@ const std::map<std::string,u8> PrototypeClass::ColorsDict={
 	{"normal", COLOR_NORMAL}
 };
 
-void PrototypeClass::SetProto20(const nlohmann::json& j){
+void PrototypeClass::setProto20(const nlohmann::json& j){
 	using namespace PJson;
 
 	if(j.contains("ai")){
@@ -644,7 +644,7 @@ void to_json(nlohmann::json& j, const PrototypeClass& c){
 	}
 }
 
-void PrototypeClass::LoadPrototypeJSON(PFile::Path path,
+void PrototypeClass::loadPrototypeJSON(PFile::Path path,
 	std::function<PrototypeClass*(const std::string&)> fn_loadPrototype){
 
 	const nlohmann::json proto = path.GetJSON();
@@ -670,14 +670,14 @@ void PrototypeClass::LoadPrototypeJSON(PFile::Path path,
 			}
 		}
 
-		this->SetProto20(proto);
+		this->setProto20(proto);
 	}
 	else{
 		throw UnsupportedSpriteVersionException(version);
 	}
 }
 
-void PrototypeClass::LoadPrototypeLegacy(PFile::Path path){
+void PrototypeClass::loadPrototypeLegacy(PFile::Path path){
 
 	try{
 		PFile::RW file = path.GetRW2("r");
@@ -687,22 +687,22 @@ void PrototypeClass::LoadPrototypeLegacy(PFile::Path path){
 		if (strcmp(versio,"1.0") == 0){
 			PrototypeClass10 proto;
 			file.read(&proto, sizeof(proto));
-			this->SetProto10(proto);
+			this->setProto10(proto);
 		}
 		else if (strcmp(versio,"1.1") == 0){
 			PrototypeClass11 proto;
 			file.read(&proto, sizeof(proto));
-			this->SetProto11(proto);
+			this->setProto11(proto);
 		}
 		else if (strcmp(versio,"1.2") == 0){
 			PrototypeClass12 proto;
 			file.read(&proto, sizeof(proto));
-			this->SetProto12(proto);
+			this->setProto12(proto);
 		}
 		else if (strcmp(versio,"1.3") == 0){
 			PrototypeClass13 proto;
 			file.read(&proto, sizeof(proto));
-			this->SetProto13(proto);
+			this->setProto13(proto);
 		}
 		else {
 			file.close();
@@ -720,7 +720,7 @@ void PrototypeClass::LoadPrototypeLegacy(PFile::Path path){
 }
 
 
-void PrototypeClass::LoadAssets(EpisodeClass*episode){
+void PrototypeClass::loadAssets(EpisodeClass*episode){
 
 	/**
 	 * @brief 
@@ -839,7 +839,7 @@ void PrototypeClass::LoadAssets(EpisodeClass*episode){
 	}
 }
 
-void PrototypeClass::UnloadAssets(){
+void PrototypeClass::unloadAssets(){
 	for(int& frame_index: this->frames){
 		if(frame_index>0){
 			PDraw::image_delete(frame_index);
@@ -867,9 +867,9 @@ void PrototypeClass::UnloadAssets(){
 	this->mAssetsLoaded=false;
 }
 
-void PrototypeClass::Draw(int x, int y, int frame)const{
+void PrototypeClass::draw(int x, int y, int frame)const{
 	PDraw::image_clip(this->frames[frame], x, y);
 }
-bool PrototypeClass::HasAI(int ai)const{
+bool PrototypeClass::hasAI(int ai)const{
 	return std::find(this->AI_v.begin(), this->AI_v.end(), ai) != this->AI_v.end();
 }
