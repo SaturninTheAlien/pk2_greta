@@ -167,6 +167,7 @@ AI_Table::AI_Table(){
     Init_AI(AI_TRANSFORM_IF_PLAYER_ABOVE, AI_TRIGGER_ALIVE, AI_Functions::Transform_If_Player_Above); //TO DO Redesign
     
     Init_AI(AI_JUMP_IF_PLAYER_ABOVE, AI_TRIGGER_ALIVE, AI_Functions::Jump_If_Player_Above); //TO DO Redesign
+    Init_AI(AI_JUMP_IF_PLAYER_IN_FRONT, AI_TRIGGER_ALIVE, AI_Functions::Jump_If_Player_in_Front);  //TO DO Redesign
 
     Init_AI(AI_DAMAGED_BY_WATER, AI_TRIGGER_ALIVE, AI_Functions::Damaged_by_Water, true, true);
 

@@ -570,12 +570,27 @@ void Transform_If_Player_Bellow(SpriteClass*s){
 
 
 void Jump_If_Player_Above(SpriteClass*s){
-	if (s->jump_timer == 0 && player!=nullptr)
-	{
+	if (s->jump_timer == 0 && player!=nullptr){
+
 		if ((player->x - s->x < s->prototype->width && player->x - s->x > -s->prototype->width) &&
-			(player->y < s->y && s->y - player->y < 350))
-		{
+			(player->y < s->y && s->y - player->y < 350)){
+
 			s->jump_timer = 1;
+		}
+	}
+}
+
+
+void Jump_If_Player_in_Front(SpriteClass*s){
+	if (s->jump_timer == 0 && player!=nullptr){
+		
+		if ((player->x - s->x < 200 && player->x - s->x > -200) &&
+			(player->y - s->y < s->prototype->height && player->y - s->y > -s->prototype->height)){
+
+			if ((player->x < s->x && s->flip_x) || (player->x > s->x && !s->flip_x)){
+
+				s->jump_timer = 1;
+			}
 		}
 	}
 }

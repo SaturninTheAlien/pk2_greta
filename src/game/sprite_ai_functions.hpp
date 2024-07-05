@@ -41,7 +41,10 @@ void Attack_1_If_Player_Above(SpriteClass*s);
 void Attack_2_If_Player_Above(SpriteClass*s);
 void Transform_If_Player_Above(SpriteClass*s);
 void Transform_If_Player_Bellow(SpriteClass*s);
+
 void Jump_If_Player_Above(SpriteClass*s);
+void Jump_If_Player_in_Front(SpriteClass*s);
+
 void Damaged_by_Water(SpriteClass*s);
 void Friction_Effect(SpriteClass*s);
 void Hiding(SpriteClass*s);
