@@ -26,11 +26,17 @@ void Look_For_Cliffs(SpriteClass*s);
 void Random_Change_Dir_H(SpriteClass*s);
 void Random_Turning(SpriteClass*s);
 void Random_Jump(SpriteClass*s);
+
 void Follow_Player(SpriteClass*s);
 void Follow_Player_If_Seen(SpriteClass*s);
 void Follow_Player_Vert_Hori(SpriteClass*s);
 void Follow_Player_If_Seen_Vert_Hori(SpriteClass*s);
+void Look_at_Player(SpriteClass* s);
+
+
 void Run_Away_From_Player(SpriteClass*s);
+void Run_Away_From_Supermode_Player(SpriteClass*s);
+
 void SelfDestruction(SpriteClass*s);
 void Attack_1_Nonstop(SpriteClass*s);
 void Attack_2_Nonstop(SpriteClass*s);

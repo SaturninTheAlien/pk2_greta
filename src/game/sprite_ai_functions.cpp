@@ -415,6 +415,12 @@ void Follow_Player_If_Seen_Vert_Hori(SpriteClass*s){
 	}
 }
 
+void Look_at_Player(SpriteClass*s){
+	if(player!=nullptr){
+		s->flip_x = player->x < s->x;
+	}
+}
+
 void Run_Away_From_Player(SpriteClass*s){
 	if (player!=nullptr)
 	{
@@ -437,6 +443,25 @@ void Run_Away_From_Player(SpriteClass*s){
 	}
 }
 
+void Run_Away_From_Supermode_Player(SpriteClass*s){
+	if(player_invisible!=nullptr && player_invisible->super_mode_timer!=0){		
+		if ((player_invisible->x - s->x < 300 && player_invisible->x - s->x > -300) &&
+			(player_invisible->y - s->y < s->prototype->height && player_invisible->y - s->y > -s->prototype->height))
+		{
+			double max = s->prototype->max_speed / 2.5;
+
+			if (s->x > player_invisible->x) {
+				s->a = max;
+				s->flip_x = false;
+			}
+
+			if (s->x < player_invisible->x) {
+				s->a = max * -1;
+				s->flip_x = true;
+			}
+		}
+	}
+}
 
 void SelfDestruction(SpriteClass*s){
 	if (s->charging_timer == 0)

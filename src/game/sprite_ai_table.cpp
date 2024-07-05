@@ -148,7 +148,10 @@ AI_Table::AI_Table(){
 
     Init_AI(AI_FOLLOW_PLAYER_IF_IN_FRONT_VERT_HORI, AI_TRIGGER_ALIVE, AI_Functions::Follow_Player_If_Seen_Vert_Hori);
 
+    Init_AI(AI_LOOK_AT_PLAYER, AI_TRIGGER_ALIVE, AI_Functions::Look_at_Player);
+
     Init_AI(AI_RUN_AWAY_FROM_PLAYER, AI_TRIGGER_ALIVE, AI_Functions::Run_Away_From_Player);
+    Init_AI(AI_RUN_AWAY_FROM_SUPERMODE_PLAYER, AI_TRIGGER_ALIVE, AI_Functions::Run_Away_From_Supermode_Player);
     
     Init_AI(AI_SELF_DESTRUCTION, AI_TRIGGER_ALIVE, AI_Functions::SelfDestruction, true, false, true, true);
 
