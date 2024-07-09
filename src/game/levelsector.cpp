@@ -57,6 +57,7 @@ void LevelSector::calculateColors(){
 }
 
 void LevelSector::calculateEdges(){
+	memset(this->edges, false, this->mSize);
 	u8 tile1, tile2, tile3;
 	for (u32 y = 0; y < this->mHeight - 1; y++){
 		for (u32 x = 1; x < this->mWidth - 1; x++){
