@@ -307,6 +307,8 @@ bool SpritesHandler::spriteDestructed(SpriteClass* sprite) {
 
 
 static bool isSpriteVisible(const SpriteClass* sprite, int camera_x, int camera_y){
+	if(sprite->respawn_timer>0 && sprite->prototype->destruction_effect < 100) return false;
+
 	return (sprite->x - sprite->prototype->picture_frame_width/2  < camera_x + screen_width &&
 			sprite->x + sprite->prototype->picture_frame_width/2  > camera_x &&
 			sprite->y - sprite->prototype->picture_frame_height/2 < camera_y + screen_height &&

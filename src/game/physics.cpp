@@ -369,6 +369,9 @@ void SpriteOnRespawn(SpriteClass* sprite){
 	sprite->removed = false;
 	sprite->energy = sprite->prototype->energy;
 	sprite->charging_timer = 0;
+	sprite->damage_timer = 0;
+	sprite->attack1_timer = 0;
+	sprite->attack2_timer = 0;
 }
 
 void SpriteOnDeath(SpriteClass* sprite){
@@ -402,8 +405,7 @@ void SpriteOnDeath(SpriteClass* sprite){
 	if (destruction_effect >= FX_DESTRUCT_ANIMATED){
 		destruction_effect -= FX_DESTRUCT_ANIMATED;
 	}
-		
-	else
+	else if(sprite->respawn_timer==0)
 		sprite->removed = true;
 
 	Effect_By_ID(destruction_effect, (u32)sprite->x, (u32)sprite->y);
@@ -626,11 +628,6 @@ void BonusSpriteCollected(SpriteClass* sprite, SpriteClass* collector){
 }
 
 void UpdateSprite(SpriteClass* sprite){
-	
-	if (!sprite->prototype){
-		throw PExcept::PException("Sprite with null prototype is not acceptable!");
-	}
-
 	LevelSector * sector = sprite->level_sector;
 
 	sprite_width  = sprite->prototype->width;

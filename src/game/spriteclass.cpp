@@ -120,9 +120,6 @@ int SpriteClass::Animoi(){
 	return frame;
 }
 void SpriteClass::draw(int kamera_x, int kamera_y){
-
-	if(this->respawn_timer>0 && this->prototype->destruction_effect<100)return;
-
 	// Tehdaan apumuuttujia
 	int	l = (int)prototype->picture_frame_width/2,//width
 		h = (int)prototype->picture_frame_height/2,
