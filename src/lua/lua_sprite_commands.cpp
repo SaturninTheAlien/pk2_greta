@@ -48,7 +48,7 @@ void AddCommand(const std::string& name, sol::object o){
 }
 
 void ExposeCommandsAPI(sol::table& PK2_API){
-    PK2_API["add_command"] = AddCommand;
+    PK2_API["addCommand"] = AddCommand;
 }
 
 

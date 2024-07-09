@@ -28,7 +28,7 @@ void ExposeMiscAPI(sol::table& PK2_API){
      * @brief 
      * Show info
      */
-    PK2_API["show_info"] = [](const std::string& text){ Game->showInfo(text);};
+    PK2_API["showInfo"] = [](const std::string& text){ Game->showInfo(text);};
 
     /**
      * @brief 
@@ -42,7 +42,7 @@ void ExposeMiscAPI(sol::table& PK2_API){
      * Get level sector
      */
 
-    PK2_API["get_sector"] = GetSector;
+    PK2_API["getSector"] = GetSector;
 }
 
 

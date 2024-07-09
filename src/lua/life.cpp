@@ -343,12 +343,12 @@ void ExposeGameOfLife(sol::table& PK2_API){
 		"GameOfLife",
 		sol::no_constructor,
 		"start", &GameOfLife::start,
-		"place_rle", &GameOfLife::placeRLE,
-		"place_cell", &GameOfLife::placeCell,
-		"next_state", &GameOfLife::nextState
+		"placeRle", &GameOfLife::placeRLE,
+		"placeCell", &GameOfLife::placeCell,
+		"nextState", &GameOfLife::nextState
 	);
 
-	PK2_API["prepare_life"] = prepare_game_of_life;
+	PK2_API["prepareLife"] = prepare_game_of_life;
 }
 
 void UpdateGameOfLife(){

@@ -34,13 +34,13 @@ void ExposePrototypeClass(sol::state& lua){
         "height", sol::readonly(&PrototypeClass::height),
         "weight", sol::readonly(&PrototypeClass::weight),
         "enemy", sol::readonly(&PrototypeClass::enemy),
-        "hostile_to_everyone", sol::readonly(&PrototypeClass::hostile_to_everyone),
+        "hostileToEveryone", sol::readonly(&PrototypeClass::hostile_to_everyone),
         "indestructible", sol::readonly(&PrototypeClass::indestructible),
 
         "color", sol::readonly(&PrototypeClass::color),
-        "destruction_effect", sol::readonly(&PrototypeClass::destruction_effect),
+        "destructionEffect", sol::readonly(&PrototypeClass::destruction_effect),
         "energy", sol::readonly(&PrototypeClass::energy),
-        "max_speed", sol::readonly(&PrototypeClass::max_speed));
+        "maxSpeed", sol::readonly(&PrototypeClass::max_speed));
 }
 
 void ExposeSpriteClass(sol::state& lua){
@@ -54,12 +54,12 @@ void ExposeSpriteClass(sol::state& lua){
          */
 
         "transform", &SpriteClass::transform,
-        "transform_to", &SpriteClass::transformTo,
+        "transformTo", &SpriteClass::transformTo,
 
         "die", &SpriteClass::die,
-        "fly_to_target_x", &SpriteClass::flyToWaypointX,
-        "fly_to_target_y", &SpriteClass::flyToWaypointY,
-        "fly_to_target_xy", &SpriteClass::flyToWaypointXY,
+        "flyToWaypointX", &SpriteClass::flyToWaypointX,
+        "flyToWaypointY", &SpriteClass::flyToWaypointY,
+        "flyToWaypointXY", &SpriteClass::flyToWaypointXY,
 
         /**
          * @brief 
@@ -75,18 +75,18 @@ void ExposeSpriteClass(sol::state& lua){
         "a", &SpriteClass::a, // x velocity
         "b", &SpriteClass::b, // y velocity
 
-        "flip_x", &SpriteClass::flip_x,
-        "flip_y", &SpriteClass::flip_y,
+        "flipX", &SpriteClass::flip_x,
+        "flipY", &SpriteClass::flip_y,
 
         "energy", &SpriteClass::energy,
         "weight", &SpriteClass::weight,
         "crouched", &SpriteClass::crouched,
 
-        "damage_timer", &SpriteClass::damage_timer,
-        "invisible_timer", &SpriteClass::invisible_timer,
-        "super_mode_timer", &SpriteClass::super_mode_timer,
-        "attack1_timer", &SpriteClass::attack1_timer,
-        "attack2_timer", &SpriteClass::attack2_timer,
+        "damageTimer", &SpriteClass::damage_timer,
+        "invisibleTimer", &SpriteClass::invisible_timer,
+        "superModeTimer", &SpriteClass::super_mode_timer,
+        "attack1Timer", &SpriteClass::attack1_timer,
+        "attack2Timer", &SpriteClass::attack2_timer,
 
         "enemy", &SpriteClass::enemy,
         "ammo1", &SpriteClass::ammo1,
@@ -101,26 +101,26 @@ void ExposeSpriteClass(sol::state& lua){
         //"player", sol::readonly(&SpriteClass::player),
         "player", &SpriteClass::player,
 
-        "orig_x", sol::readonly(&SpriteClass::orig_x),
-        "orig_y", sol::readonly(&SpriteClass::orig_y),
+        "origX", sol::readonly(&SpriteClass::orig_x),
+        "origY", sol::readonly(&SpriteClass::orig_y),
 
-        "in_water", sol::readonly(&SpriteClass::in_water),
+        "inWater", sol::readonly(&SpriteClass::in_water),
         "swimming", sol::readonly(&SpriteClass::swimming),
 
         "hidden", sol::readonly(&SpriteClass::hidden),
-        "initial_weight", sol::readonly(&SpriteClass::initial_weight),
-        "jump_timer", &SpriteClass::jump_timer,
+        "initialWeight", sol::readonly(&SpriteClass::initial_weight),
+        "jumpTimer", &SpriteClass::jump_timer,
 
-        "seen_player_x", sol::readonly(&SpriteClass::seen_player_x),
-        "seen_player_y", sol::readonly(&SpriteClass::seen_player_y),
+        "seenPlayerX", sol::readonly(&SpriteClass::seen_player_x),
+        "seenPlayerY", sol::readonly(&SpriteClass::seen_player_y),
         
 
-        "can_move_left", sol::readonly(&SpriteClass::can_move_left),
-        "can_move_right", sol::readonly(&SpriteClass::can_move_right),
-        "can_move_up", sol::readonly(&SpriteClass::can_move_up),
-        "can_move_down", sol::readonly(&SpriteClass::can_move_down),
+        "canMoveLeft", sol::readonly(&SpriteClass::can_move_left),
+        "canMoveRight", sol::readonly(&SpriteClass::can_move_right),
+        "canMoveUp", sol::readonly(&SpriteClass::can_move_up),
+        "canMoveDown", sol::readonly(&SpriteClass::can_move_down),
 
-        "level_sector", sol::readonly(&SpriteClass::level_sector)
+        "levelSector", sol::readonly(&SpriteClass::level_sector)
         
         );
 }

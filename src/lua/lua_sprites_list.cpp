@@ -84,32 +84,32 @@ void ExposeSpriteListAPI(sol::table& PK2_API){
      * Load sprite prototype (.spr2/.spr)
      */
 
-    PK2_API["load_sprite_prototype"] = LoadSpritePrototype;
+    PK2_API["loadSpritePrototype"] = LoadSpritePrototype;
     /**
      * @brief 
      * Add a new sprite
      */
-    PK2_API["add_sprite"] = sol::overload(AddSprite1, AddSprite2);
+    PK2_API["addSprite"] = sol::overload(AddSprite1, AddSprite2);
 
     /**
      * @brief 
      * Get the player sprite
      */
-    PK2_API["get_player"] = [](){return Game->playerSprite;};
+    PK2_API["getPlayer"] = [](){return Game->playerSprite;};
 
     /**
      * @brief 
      * If player is alive and not invisible
      * nil otherwise
      */
-    PK2_API["get_player_if_accessible"] = [](){return AI_Functions::player;};
+    PK2_API["getPlayerIfAccessible"] = [](){return AI_Functions::player;};
 
     /**
      * @brief 
      * Execute a Lua function for all the sprites
      */
-    PK2_API["for_each_creature"] = ForEachCreature;    
-    PK2_API["for_each_sprite"] = ForEachSprite;
+    PK2_API["forEachCreature"] = ForEachCreature;    
+    PK2_API["forEachSprite"] = ForEachSprite;
 }
 
 }

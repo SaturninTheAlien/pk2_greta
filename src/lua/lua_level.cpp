@@ -57,13 +57,13 @@ void ExposeSectorClass(sol::state& lua){
     lua.new_usertype<LevelSector>(
         "LevelSector",
         sol::no_constructor,
-        "get_bg_tile", getBGTile,
-        "get_fg_tile", getFGTile,
-        "set_bg_tile", setBGTile,
-        "set_fg_tile", setFGTile,
-        "get_width", &LevelSector::getWidth,
-        "get_height", &LevelSector::getHeight,
-        "add_sprite", sol::overload(AddSprite3, AddSprite4)
+        "getBgTile", getBGTile,
+        "getFgTile", getFGTile,
+        "setBgTile", setBGTile,
+        "setFgTile", setFGTile,
+        "getWidth", &LevelSector::getWidth,
+        "getHeight", &LevelSector::getHeight,
+        "addSprite", sol::overload(AddSprite3, AddSprite4)
     );
 }
 
