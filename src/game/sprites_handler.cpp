@@ -154,9 +154,7 @@ int SpritesHandler::onTickUpdate(int camera_x, int camera_y){
 
 	for (SpriteClass* sprite : Sprites_List) {
 		if (sprite->active && !sprite->removed) {
-			if (sprite->prototype->type != TYPE_BONUS
-			&& sprite->prototype->type != TYPE_BACKGROUND
-			&& sprite->prototype->type != TYPE_BLACK_HOLE) {
+			if (sprite->prototype->type <= TYPE_TELEPORT) {
 
 				if(sprite->respawn_timer==0 || sprite->prototype->destruction_effect>=100){
 					UpdateSprite(sprite);

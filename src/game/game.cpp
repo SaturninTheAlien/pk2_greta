@@ -514,10 +514,8 @@ void GameClass::placeSprites() {
 	// Add other sprites
 	for(LevelSector* sector: this->level.sectors){
 
-
-		for (u32 y = 0; y < sector->getHeight(); y++){
-			for (u32 x = 0; x < sector->getWidth(); x++) {
-			
+		for (u32 x = 0; x < sector->getWidth(); x++) {
+			for (u32 y = 0; y < sector->getHeight(); y++){		
 
 				int sprite = sector->sprite_tiles[x+y*sector->getWidth()];
 				if(sprite<0||sprite>=255) continue;
