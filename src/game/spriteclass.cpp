@@ -174,16 +174,13 @@ void SpriteClass::HandleEffects() {
 
 bool SpriteClass::canDamageOnCollision(const SpriteClass* target)const{
 
-	if(target->prototype->indestructible || target->prototype->type==TYPE_BONUS){
+	if(target->prototype->indestructible || target->prototype->type==TYPE_BONUS
+	||target->damage_taken_type == DAMAGE_SELF_DESTRUCTION){
 		return false;
 	}
-
-	if(target->invisible_timer>0){
+	else if(target->invisible_timer>0){
 		int damage_type = this->prototype->damage_type;
-		if(damage_type==DAMAGE_SELF_DESTRUCTION){
-			return true;
-		}
-		else if(this->prototype->is_wall && (damage_type==DAMAGE_COMPRESSION||damage_type==DAMAGE_DROP)){
+		if(this->prototype->is_wall && (damage_type==DAMAGE_COMPRESSION||damage_type==DAMAGE_DROP)){
 			return true;
 		}
 		else{

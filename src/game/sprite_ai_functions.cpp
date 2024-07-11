@@ -124,7 +124,7 @@ void Projectile(SpriteClass*s){
 	{
 		if(!s->prototype->indestructible){
 			s->damage_taken = s->prototype->energy;
-			s->damage_taken_type = DAMAGE_SELF_DESTRUCTION;
+			s->damage_taken_type = DAMAGE_WEAK_SELF_DESTRUCTION;
 			s->self_destruction = true;
 		}
 		else{
@@ -621,7 +621,7 @@ void Jump_If_Player_in_Front(SpriteClass*s){
 }
 
 void Damaged_by_Water(SpriteClass*s){
-	if (s->in_water && s->damage_taken_type>=0){
+	if (s->in_water && s->damage_taken_type > DAMAGE_SELF_DESTRUCTION){
 		s->damage_taken++;
 		s->damage_taken_type = DAMAGE_WATER;
 	}
@@ -795,8 +795,7 @@ void Destructed_Next_To_Player(SpriteClass* s) {
 	if (s->energy > 0 && dx*dx + dy*dy < dist*dist) {
 
 		s->damage_taken = s->prototype->energy;
-		s->damage_taken_type = DAMAGE_SELF_DESTRUCTION;
-		
+		s->damage_taken_type = DAMAGE_SELF_DESTRUCTION;		
 	}
 }
 

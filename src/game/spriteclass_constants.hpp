@@ -284,9 +284,10 @@ enum {
 
 enum { //Damage
 
-    DAMAGE_SELF_DESTRUCTION = -1,
+    DAMAGE_SELF_DESTRUCTION = -2,
+    DAMAGE_WEAK_SELF_DESTRUCTION = -1,
 
-    DAMAGE_NONE, //0
+    DAMAGE_NONE = 0, //0
     DAMAGE_IMPACT, //1
     DAMAGE_DROP, //2
     DAMAGE_NOISE, //3
