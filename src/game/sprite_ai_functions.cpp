@@ -1090,11 +1090,16 @@ void StartFacingThePlayer(SpriteClass*sprite){
 
 	if(player==nullptr) return;
 
-	if (sprite->x < player->x)
+	if(sprite->prototype->max_speed==0){
+		sprite->flip_x = sprite->x > player->x;
+	}
+	else{
+		if (sprite->x < player->x)
 		sprite->a = sprite->prototype->max_speed / 3.5;
 
-	if (sprite->x > player->x)
-		sprite->a = (sprite->prototype->max_speed * -1) / 3.5;
+		if (sprite->x > player->x)
+			sprite->a = (sprite->prototype->max_speed * -1) / 3.5;
+	}
 }
 
 void StartFacingThePlayerVert(SpriteClass*sprite){

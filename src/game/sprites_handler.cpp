@@ -271,6 +271,10 @@ void SpritesHandler::addProjectileSprite(PrototypeClass* prototype, double x, do
 
 	SpriteClass* sprite  = this->mCreateSprite(prototype, false, x, y, shooter);
 
+	/**
+	 * @brief 
+	 * To fix the beehive bug
+	 */
 	if(prototype->type==TYPE_GAME_CHARACTER && shooter->HasAI(AI_BONUS)){
 		sprite->damage_timer = 2;
 	}
@@ -283,6 +287,18 @@ void SpritesHandler::addProjectileSprite(PrototypeClass* prototype, double x, do
 			sprite->a = sprite->prototype->max_speed;
 		else
 			sprite->a = -sprite->prototype->max_speed;
+
+		/**
+		 * @brief 
+		 * To fix spikeballs from "The Revenant - Pekka’s Prison" 
+		 */
+		if(shooter->prototype->is_wall && shooter->prototype->is_wall_up
+		&& !shooter->self_destruction && prototype->check_tiles){
+			sprite->y -= shooter->prototype->height/2;
+			sprite->y -= prototype->height/2;
+
+			sprite->a /= 3.5;
+		}
 	}
 	else{
 		for(const SpriteAI::ProjectileAIClass& ai: prototype->AI_p){
