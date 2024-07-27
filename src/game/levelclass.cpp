@@ -146,7 +146,7 @@ void LevelClass::readTiles(PFile::RW& file,
 			 * @brief 
 			 * To prevent a memory leak
 			 */
-			if(x_start>=0 && x_start<level_size){
+			if(x_start>=0 && x_start + width < level_size){
 				file.read(&tiles[x_start], width + 1);
 			}
 			else{
@@ -171,7 +171,7 @@ void LevelClass::readTiles(PFile::RW& file,
 			 * @brief 
 			 * To prevent a memory leak
 			 */
-			if(x_start>=0 && x_start<level_size){
+			if(x_start>=0 && x_start + width <level_size){
 				file.read(&tiles[x_start], width + 1);
 			}
 			else{
@@ -210,7 +210,7 @@ void LevelClass::loadVersion13(PFile::Path path, bool headerOnly){
 	 * ???
 	 * What's the purpose of this??
 	 */
-	for (int i = 38; i > 0 && (name[i] == (char)0xCD); i--)
+	for (int i = 38; i > 0 && (name_buffer[i] == (char)0xCD); i--)
 		name_buffer[i] = 0;
 
 	this->name = name_buffer;
