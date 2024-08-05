@@ -306,15 +306,19 @@ void LevelClass::loadVersion15(PFile::Path path, bool headerOnly){
 
 	u32 sectors_number = 1; //placeholder;
 
+	u32 compression = TILES_COMPRESSION_NONE;
+
 	//Read level header
 	{
 		const nlohmann::json j = file.readCBOR();
 		jsonReadString(j, "name", this->name);
 		jsonReadString(j, "author", this->author);
-		jsonReadInt(j, "level_number", this->level_number);
+		jsonReadInt(j, "number", this->level_number);
 		jsonReadInt(j, "icon_x", this->icon_x);
 		jsonReadInt(j, "icon_y", this->icon_y);
 		jsonReadInt(j, "icon_id", this->icon_id);
+
+		jsonReadU32(j, "compression", compression);
 
 		/**
 		 * @brief
@@ -322,14 +326,14 @@ void LevelClass::loadVersion15(PFile::Path path, bool headerOnly){
 		 */
 		if(headerOnly)return;
 
-		jsonReadU32(j, "regions", sectors_number);
+		jsonReadU32(j, "sectors", sectors_number);
 
 		if(j.contains("sprite_prototypes")){
 			this->sprite_prototype_names = j["sprite_prototypes"].get<std::vector<std::string>>();
 		}
 
 		jsonReadInt(j, "player_index", this->player_sprite_index);
-		jsonReadInt(j, "map_time", this->map_time);
+		jsonReadInt(j, "time", this->map_time);
 		jsonReadString(j, "lua_script", this->lua_script);
 		jsonReadInt(j, "game_mode", this->game_mode);
 	}
@@ -342,13 +346,11 @@ void LevelClass::loadVersion15(PFile::Path path, bool headerOnly){
 	for(u32 i=0;i<sectors_number;++i){
 		u32 width = 0; // placeholder
 		u32 height = 0; //placeholder
-		u32 compression = 0;
 
 		// Read sector header
 		const nlohmann::json j = file.readCBOR();
 		jsonReadU32(j, "width", width);
 		jsonReadU32(j, "height", height);
-		jsonReadU32(j, "compression", compression);
 
 		LevelSector*& sector = this->sectors[i];
 		sector = new LevelSector(width, height);
@@ -413,7 +415,7 @@ void LevelClass::saveVersion15(PFile::Path path)const{
 		nlohmann::json j;
 		j["name"] = this->name;
 		j["author"] = this->author;
-		j["level_number"] = this->level_number;
+		j["number"] = this->level_number;
 		j["icon_id"] = this->icon_id;
 		j["icon_x"] = this->icon_x;
 		j["icon_y"] = this->icon_y;
@@ -421,10 +423,12 @@ void LevelClass::saveVersion15(PFile::Path path)const{
 		j["sprite_prototypes"] = this->sprite_prototype_names;
 		j["player_index"] = this->player_sprite_index;
 
-		j["regions"] = u32(this->sectors.size());
-		j["map_time"] = this->map_time;
+		j["sectors"] = u32(this->sectors.size());
+		j["time"] = this->map_time;
 		j["lua_script"] = this->lua_script;
 		j["game_mode"] = this->game_mode;
+
+		j["compression"] = TILES_COMPRESSION_NONE;
 
 		file.writeCBOR(j);
 	}
@@ -434,8 +438,7 @@ void LevelClass::saveVersion15(PFile::Path path)const{
 		nlohmann::json j;
 
 		j["width"] = PK2MAP_MAP_WIDTH;
-		j["height"]= PK2MAP_MAP_HEIGHT;
-		j["compression"] = TILES_COMPRESSION_NONE;
+		j["height"]= PK2MAP_MAP_HEIGHT;		
 
 		j["tileset"] = sector->tileset1->name;
 		if(sector->tileset2!=nullptr){

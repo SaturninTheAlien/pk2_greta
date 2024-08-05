@@ -896,13 +896,13 @@ void RW::write(s64 val) {
 
 void RW::writeCBOR(const nlohmann::json& j){
 	std::vector<std::uint8_t> v_cbor = nlohmann::json::to_cbor(j);
-	u64 size = v_cbor.size();
+	u32 size = (u32)v_cbor.size();
 	this->write(size);
 	this->write(v_cbor.data(), size);
 }
 
 nlohmann::json RW::readCBOR(){
-	u64 size;
+	u32 size;
 	this->read(size);
 
 	std::vector<std::uint8_t> v_cbor;
