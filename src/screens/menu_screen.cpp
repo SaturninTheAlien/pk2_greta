@@ -5,7 +5,7 @@
 #include <sstream>
 #include "menu_screen.hpp"
 
-#include "settings.hpp"
+#include "settings/settings.hpp"
 #include "gui.hpp"
 #include "game/game.hpp"
 #include "gfx/text.hpp"

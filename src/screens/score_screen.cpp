@@ -14,7 +14,7 @@
 #include "episode/episodeclass.hpp"
 #include "sfx.hpp"
 #include "system.hpp"
-#include "settings.hpp"
+#include "settings/settings.hpp"
 #include "save.hpp"
 
 #include "engine/PDraw.hpp"

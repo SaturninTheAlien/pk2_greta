@@ -4,26 +4,15 @@
 //#########################
 #pragma once
 
+/**
+ * TODO
+ * Completely redesign this file and system.cpp
+ */
+
+
 #include "engine/PFile.hpp"
 #include "engine/platform.hpp"
 #include <string>
-
-// settings text (shouldn't change during execution)
-
-class ConfigurationClass{
-public:
-    bool silent_suicide = false;
-	bool audio_multi_thread = true;
-	int audio_buffer_size = 1024;
-
-    /**
-     * @brief 
-     * Deprecated features, they can be removed
-     */
-    bool transformation_offset = false;
-};
-
-extern ConfigurationClass configuration;
 
 extern int screen_width;
 extern int screen_height;

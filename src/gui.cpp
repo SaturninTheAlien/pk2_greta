@@ -5,7 +5,7 @@
 #include "gui.hpp"
 
 #include "system.hpp"
-#include "settings.hpp"
+#include "settings/settings.hpp"
 #include "game/gifts.hpp"
 #include "game/game.hpp"
 #include "engine/PRender.hpp"

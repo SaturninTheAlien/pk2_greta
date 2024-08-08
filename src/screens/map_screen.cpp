@@ -17,7 +17,7 @@
 
 #include "game/game.hpp"
 #include "game/spriteclass.hpp"
-#include "settings.hpp"
+#include "settings/settings.hpp"
 #include "gfx/text.hpp"
 #include "language.hpp"
 #include "gui.hpp"

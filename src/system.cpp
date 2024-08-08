@@ -9,14 +9,11 @@
 #include "engine/PInput.hpp"
 #include "engine/PDraw.hpp"
 #include "engine/PRender.hpp"
-#include "settings.hpp"
+#include "settings/settings.hpp"
 
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <string>
-
-
-ConfigurationClass configuration;
 
 int screen_width  = 800;
 int screen_height = 480;

@@ -8,7 +8,7 @@
 #include "exceptions.hpp"
 
 #include "system.hpp"
-#include "settings.hpp"
+#include "settings/settings.hpp"
 #include "game/game.hpp"
 
 #include "engine/PLog.hpp"

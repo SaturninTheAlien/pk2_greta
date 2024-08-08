@@ -8,7 +8,10 @@
 #include "game/game.hpp"
 
 #include "game/gifts.hpp"
-#include "settings.hpp"
+
+#include "settings/settings.hpp"
+#include "settings/config_txt.hpp"
+
 #include "gfx/particles.hpp"
 #include "gfx/effect.hpp"
 #include "gfx/text.hpp"
@@ -461,7 +464,7 @@ void PotionTransformation(SpriteClass* sprite, PrototypeClass* intended_prototyp
 		 * @brief 
 		 * Transformation offset
 		 */
-		if(configuration.transformation_offset){
+		if(config_txt.transformation_offset){
 			sprite->y -= sprite->prototype->height/2;
 		}
 

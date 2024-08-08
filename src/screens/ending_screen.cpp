@@ -10,7 +10,7 @@
 #include "game/game.hpp"
 #include "language.hpp"
 #include "system.hpp"
-#include "settings.hpp"
+#include "settings/settings.hpp"
 #include "exceptions.hpp"
 
 #include "engine/PLog.hpp"

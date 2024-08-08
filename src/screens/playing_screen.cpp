@@ -25,7 +25,7 @@
 #include "language.hpp"
 #include "sfx.hpp"
 #include "system.hpp"
-#include "settings.hpp"
+#include "settings/settings.hpp"
 
 PlayingScreen::PlayingScreen(){
 

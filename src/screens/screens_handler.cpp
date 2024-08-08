@@ -7,7 +7,7 @@
 
 #include "exceptions.hpp"
 #include "sfx.hpp"
-#include "settings.hpp"
+#include "settings/settings.hpp"
 #include "gui.hpp"
 #include "language.hpp"
 #include "gfx/text.hpp"

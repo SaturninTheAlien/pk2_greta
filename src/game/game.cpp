@@ -10,7 +10,10 @@
 #include "gfx/particles.hpp"
 #include "gfx/bg_particles.hpp"
 #include "episode/episodeclass.hpp"
-#include "settings.hpp"
+
+#include "settings/settings.hpp"
+#include "settings/config_txt.hpp"
+
 #include "gui.hpp"
 #include "language.hpp"
 #include "exceptions.hpp"
@@ -263,7 +266,7 @@ void GameClass::update(int& debug_active_sprites){
 			}
 			
 			if (PInput::Keydown(PInput::DEL) && !this->paused) {
-				if(!configuration.silent_suicide){
+				if(!config_txt.silent_suicide){
 					Player_Sprite->damage_taken = Player_Sprite->energy;
 					Player_Sprite->damage_taken_type = DAMAGE_SELF_DESTRUCTION;
 					Player_Sprite->self_destruction = true;

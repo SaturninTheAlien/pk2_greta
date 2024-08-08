@@ -6,7 +6,7 @@
 
 #include "engine/PDraw.hpp"
 
-#include "settings.hpp"
+#include "settings/settings.hpp"
 #include "system.hpp"
 
 Particle::Particle(int type, double x, double y, double a, double b, int anim, int time, double weight, int color) {

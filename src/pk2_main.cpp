@@ -23,7 +23,10 @@
 #include "gui.hpp"
 #include "system.hpp"
 #include "language.hpp"
-#include "settings.hpp"
+
+#include "settings/settings.hpp"
+#include "settings/config_txt.hpp"
+
 #include <filesystem>
 #include <algorithm>
 
@@ -34,118 +37,20 @@
 
 #include <SDL.h>
 
-static const char default_config[] = 
-"\r\n -- Silent suicide"
-"\r\n -- If set to \"yes\" the player has no destruction effect"
-"\r\n -- after committing suicide by pressing delete key"
-"\r\n -- Some players requested it for \"psychological reasons\"."
-"\r\n -- disabled by default"
-"\r\n*silent_suicide:  no"
-"\r\n"
-"\r\n"
-"\r\n-- Audio Buffer Size"
-"\r\n-- low value = low audio latency; high value = less cpu usage"
-"\r\n-- Default is 1024"
-"\r\n-- Prefer a power of 2: 512 1024 2048 4096 default"
-"\r\n---------------"
-"\r\n*audio_buffer_size:    default"
-"\r\n"
-"\r\n"
-"\r\n-- Multi thread audio"
-"\r\n-- Probably causes \"Segmentation Fault\", don't turn it on"
-"\r\n-- Change frequency in another thread"
-"\r\n-- Default is no"
-"\r\n---------------"
-"\r\n*audio_multi_thread_x:    no"
-"\r\n"
-"\r\n"
-"\r\n-- For the compatibility with some older episodes"
-"\r\n-- Don't turn it on without a good reason!"
-"\r\n-- On the legacy PK2, the player used to move a bit upwards after using a transformation potion."
-"\r\n-- If you are a mapmaker, please don't use it intentionally."
-"\r\n--"
-"\r\n-- This feature may be removed completely in the future."
-"\r\n---------------"
-"\r\n*potion_transformation_offset:    no"
-"\r\n"
-"\r\n"
-"\r\n";
 
 
-static void read_config() {
-
-	PLang conf = PLang();
-	PFile::Path path = PFile::Path(data_path + "config.txt");
-	
-	bool ok = conf.Read_File(path);
-	if (!ok) {
-		
-		PFile::RW rw = path.GetRW2("w");
-		rw.write(default_config, sizeof(default_config) - 1);
-		rw.close();
-		return;
-	}
-
-	PLog::Write(PLog::DEBUG, "PK2", "Found config file");
-
-	int idx = conf.Search_Id("audio_buffer_size");
-	if (idx != -1) {
-		const char* txt = conf.Get_Text(idx);
-		int val = atoi(txt);
-
-		if (val > 0) {
-			configuration.audio_buffer_size = val;
-			
-
-		}
-	}
-	PLog::Write(PLog::DEBUG, "PK2", "Audio buffer size set to %i", configuration.audio_buffer_size);
-
-	idx = conf.Search_Id("audio_multi_thread_x");
-	if (idx != -1) {
-		const char* txt = conf.Get_Text(idx);
-
-		if (strcmp(txt, "default") == 0)
-			configuration.audio_multi_thread = false;
-		else if (strcmp(txt, "yes") == 0)
-			configuration.audio_multi_thread = true;
-		else if (strcmp(txt, "no") == 0)
-			configuration.audio_multi_thread = false;
-
-		
-	}
-	idx = conf.Search_Id("potion_transformation_offset");
-	if (idx != -1) {
-		const char* txt = conf.Get_Text(idx);
-
-		if (strcmp(txt, "default") == 0)
-			configuration.transformation_offset = false;
-		else if (strcmp(txt, "yes") == 0)
-			configuration.transformation_offset = true;
-		else if (strcmp(txt, "no") == 0)
-			configuration.transformation_offset = false;	
-	}
-	idx = conf.Search_Id("silent_suicide");
-	if(idx != -1){
-		const char* txt = conf.Get_Text(idx);
-
-		if (strcmp(txt, "default") == 0)
-			configuration.silent_suicide = false;
-		else if (strcmp(txt, "yes") == 0)
-			configuration.silent_suicide = true;
-		else if (strcmp(txt, "no") == 0)
-			configuration.silent_suicide = false;	
-	}
-
-	PLog::Write(PLog::DEBUG, "PK2", "Audio multi thread is %s", configuration.audio_multi_thread? "ON" : "OFF");
-
-}
 
 static void start_test(const char* arg) {
 	
 	if (arg == NULL) return;
 
 	PFile::Path path(arg);
+
+	/**
+	 * @brief 
+	 * TODO
+	 * Not to load the whole episode while testing a level
+	 */
 
 	episode_entry episode;
 	episode.name = path.GetDirectory();
@@ -300,13 +205,10 @@ static void log_data() {
 	PLog::Write(PLog::DEBUG, "PK2", "Data path - %s", data_path.c_str());
 
 }
+
 bool pk2_setAssetsPath(const std::string& path){
 	PFile::SetAssetsPath(path);
 	return true;
-}
-
-std::string pk2_get_version(){
-	return PK2_VERSION_STR;
 }
 
 void pk2_init(){
@@ -325,11 +227,11 @@ void pk2_main(bool _dev_mode, bool _show_fps, bool _test_level, const std::strin
 	log_data();
 	
 	Settings_Open();
-	
-	read_config();
+
+	config_txt.readFile();
 
 	Piste::init(screen_width, screen_height, PK2_NAME, "gfx" PE_SEP "icon_new.png",
-	configuration.audio_buffer_size);
+	config_txt.audio_buffer_size);
 	
 	if (!Piste::is_ready()) {
 
@@ -487,4 +389,132 @@ void pk2_updateSprites(const std::string& dir){
 			}
 		}
 	}
+}
+
+
+int main(int argc, char **argv) {
+
+	bool test_level = false;
+	bool dev_mode = false;
+	bool show_fps = false;
+	bool converting_sprite = false;
+	bool converting_level_with_bg_tiles = false;
+	bool updating_sprites = false;
+
+	std::string filename_in;
+	std::string filename_out;
+	std::string test_path;
+
+	int state = 0;
+	for(int i=1;i<argc;++i){
+		std::string arg = argv[i];
+		switch (state)
+		{
+		case 0:{
+			if(arg=="--help" || arg=="-h"){
+				printf("Pekka Kana 2 (Pekka the Rooster 2) is a jump 'n run game made "
+				"in the spirit of classic platformers such as Super Mario, SuperTux, Sonic the Hedgehog,"
+				" Jazz Jackrabbit, Super Frog and so on.\n"
+				"Available command arguments are:\n"
+				"-h / --help -> print help,\n"
+				"-v / --version -> print version string,\n"
+				"-t / --test \"episode/level\" -> test/play particular level\n"
+				"(e.g ./pekka-kana-2 --test \"rooster island 2/level13.map\"),\n"
+				"-d / --dev -> enable the cheats and the debug tools,\n"
+				"--fps -> enable the FPS counter.\n"
+				);
+				return 0;
+			}
+			else if(arg=="--version" || arg=="-v"){
+				printf("%s\n", PK2_VERSION_STR);
+				return 0;
+			}
+			else if(arg=="--dev" || arg=="-d" || arg=="dev"){
+				dev_mode = true;
+				//Piste::set_debug(true);
+			}
+			else if(arg=="--test" || arg=="-t" || arg=="test"){
+				state = 1;				
+			}
+			else if(arg=="--path" || arg=="-p"){
+				state = 2;
+			}
+			else if(arg=="--fps"){
+				show_fps= true;
+			}
+			/*else if (arg=="--mobile") {
+				PUtils::Force_Mobile();
+			}*/
+			else if	(arg=="--convert"){
+				filename_in = "";
+				filename_out = "";
+				state=3;
+				converting_sprite = true;
+			}
+			else if (arg=="--update-sprites"){
+				filename_in = ".";
+				filename_out = "";
+				state=5;
+				updating_sprites = true;
+			}
+			else if(arg=="--convert-bg"){
+				converting_level_with_bg_tiles = true;
+				filename_in = "";
+				filename_out = "";
+				state=3;
+				converting_sprite = true;
+			}
+			else {
+				printf("Invalid arg\n");
+				return 1;
+			}
+		}
+		break;
+		case 1:{
+			test_path = arg;
+			test_level = true;
+			state = 0;
+		}
+		break;
+		case 2:{
+			if(!pk2_setAssetsPath(arg)){
+				return 1;
+			}
+			state = 0;
+		}
+		break;
+		case 3:{
+			filename_in = arg;
+			state = 4;			
+		}
+		break;
+		case 4:{
+			filename_out = arg;
+			state = 0;
+		}
+		break;
+		case 5:{
+			filename_in = arg;
+			state = 0;
+		}
+		break;
+
+		default:
+			printf("Invalid arg\n");
+			return 1;
+		}
+	}
+
+	pk2_init();
+
+	if(updating_sprites){
+		pk2_updateSprites(filename_in);
+	}
+	else if(converting_sprite){
+		pk2_convertToNewFormat(filename_in, filename_out, converting_level_with_bg_tiles);
+	}
+	else{
+		pk2_main(dev_mode, show_fps, test_level, test_path);
+	}
+	return 0;
 }

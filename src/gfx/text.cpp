@@ -6,7 +6,7 @@
 
 #include "system.hpp"
 #include "game/game.hpp"
-#include "settings.hpp"
+#include "settings/settings.hpp"
 
 #include "engine/PLog.hpp"
 #include "engine/PDraw.hpp"
