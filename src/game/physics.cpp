@@ -1113,6 +1113,10 @@ void UpdateSprite(SpriteClass* sprite){
 
 								if (sprite2->prototype->type == TYPE_PROJECTILE && sprite2->canDamageOnCollision(sprite)) {
 									sprite->damage_taken = sprite2->prototype->damage;
+									if(sprite->damage_taken==0){
+										sprite->damage_taken = 1;
+									}
+									
 									sprite->damage_taken_type = sprite2->prototype->damage_type;
 								}
 
