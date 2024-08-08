@@ -6,7 +6,7 @@
 #include "menu_screen.hpp"
 
 #include "settings/settings.hpp"
-#include "gui.hpp"
+#include "gfx/touchscreen.hpp"
 #include "game/game.hpp"
 #include "gfx/text.hpp"
 #include "sfx.hpp"

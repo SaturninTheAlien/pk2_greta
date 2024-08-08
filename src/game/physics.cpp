@@ -19,7 +19,7 @@
 #include "sfx.hpp"
 #include "system.hpp"
 #include "episode/episodeclass.hpp"
-#include "gui.hpp"
+#include "gfx/touchscreen.hpp"
 #include "exceptions.hpp"
 
 

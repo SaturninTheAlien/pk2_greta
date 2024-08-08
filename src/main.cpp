@@ -9,8 +9,6 @@
 //	"./pekka-kana-2 dev test rooster\ island\ 2/level13.map"
 //	Starts the level13.map on dev mode
 //#########################
-#include "pk2_main.hpp"
-
 #include "engine/Piste.hpp"
 #include "version.hpp"
 
@@ -20,7 +18,7 @@
 #include "episode/episodeclass.hpp"
 #include "episode/mapstore.hpp"
 #include "save.hpp"
-#include "gui.hpp"
+#include "gfx/touchscreen.hpp"
 #include "system.hpp"
 #include "language.hpp"
 
@@ -37,7 +35,7 @@
 
 #include <SDL.h>
 
-
+#include "utils/file_converter.hpp"
 
 
 static void start_test(const char* arg) {
@@ -267,138 +265,12 @@ void pk2_main(bool _dev_mode, bool _show_fps, bool _test_level, const std::strin
 	quit();
 }
 
-void replaceObsoleteAIs(PrototypeClass* prototype){
-
-	bool is_info = false;
-	std::vector<int>& vec = prototype->AI_v;
-
-	for(const int& ai: vec){
-		if(ai>=AI_LEGACY_INFOS_BEGIN && ai<=AI_LEGACY_INFOS_END){
-			prototype->info_id = ai - AI_LEGACY_INFOS_BEGIN + 1;
-			is_info = true;
-		}
-	}
-
-	if(is_info){
-		vec.erase(std::remove_if(vec.begin(), vec.end(), [](int ai) { return ai>=201 && ai<=302; }), vec.end());
-		vec.push_back(302);
-	}
-}
-
-void convertToSpr2(const std::string& filename_in, const std::string& filename_out){
-	PrototypesHandler handler(false, false, nullptr);
-	try{
-		PrototypeClass* prototype = handler.loadPrototype(filename_in);
-		replaceObsoleteAIs(prototype);
-		nlohmann::json j = *prototype;
-		handler.savePrototype(prototype, filename_out);
-		PLog::Write(PLog::INFO, "PK2", "Sprite %s converted to %s\n", filename_in.c_str(), filename_out.c_str());
-	}
-	catch(const std::exception&e){
-		printf("%s\n", e.what());
-	}
-}
-
-void convertLevel(const std::string& filename_in, const std::string& filename_out, bool bg_tiles){
-	try{
-		LevelClass level;
-		level.load(PFile::Path(filename_in), false);
-		printf("Converting level \"%s\" to the new experimental format.\n", level.name.c_str());
-		/*if(bg_tiles){
-			level.tileset_bg_name = level.tileset_name.substr(0, level.tileset_name.size() - 4) + "_bg.bmp";
-			printf("Waring, assuming _bg tileset: %s!\n", level.tileset_bg_name.c_str());
-		}*/
-
-		level.saveVersion15(PFile::Path(filename_out));
-		printf("Done!\n");
-	}
-	catch(const std::exception& e){
-		printf("%s\n", e.what());
-	}
-}
-
-bool pk2_convertToNewFormat(const std::string& filename_in, const std::string& filename_out, bool bg_tiles){
-
-	PLog::Init(PLog::ALL, PFile::Path(data_path + "log.txt"));
-	if(filename_in.empty()){
-		printf("You have to specify the sprite to convert!");
-		return false;
-	}
-
-	
-	/**
-	 * @brief 
-	 * Sprite
-	 */
-	if(filename_in.size()>4 && filename_in.substr(filename_in.size()-4,4)==".spr"){
-		std::string filename_out2;
-		if(filename_out.empty()){
-			filename_out2 = filename_in + "2";
-		}
-		else{
-			filename_out2 = filename_out;
-		}
-		convertToSpr2(filename_in, filename_out2);
-		return true;
-	}
-	else if(filename_in.size()>5 && filename_in.substr(filename_in.size()-5,5)==".spr2"){
-		std::string filename_out2;
-		if(filename_out.empty()){
-			filename_out2 = filename_in;
-		}
-		convertToSpr2(filename_in, filename_out2);
-		return true;
-	}
-
-	/**
-	 * @brief 
-	 * Level
-	 */
-	else if(filename_in.size()>4 && filename_in.substr(filename_in.size()-4,4)==".map"){
-		std::string filename_out2;
-		if(filename_out.empty()){
-			filename_out2 = filename_in.substr(0,filename_in.size()-4) + ".pk2lev";
-		}
-		else{
-			filename_out2 = filename_out;
-		}
-		convertLevel(filename_in, filename_out2, bg_tiles);
-		return true;
-	}
-
-	printf("Unsupported file format to convert");
-	
-	return false;
-}
-
-/**
- * @brief 
- * A temporary function for updating sprites.
- */
-
-void pk2_updateSprites(const std::string& dir){
-	printf("%s\n", dir.c_str());
-	
-	for (const auto & entry : std::filesystem::directory_iterator(dir)){
-        if(entry.is_regular_file()){
-            std::filesystem::path p = entry.path();
-            std::string s = p.string();
-			printf("%s\n", s.c_str());
-            if(s.size()>5 && s.substr(s.size()-5,5)==".spr2"){
-				convertToSpr2(s, s);	
-			}
-		}
-	}
-}
-
-
 int main(int argc, char **argv) {
 
 	bool test_level = false;
 	bool dev_mode = false;
 	bool show_fps = false;
 	bool converting_sprite = false;
-	bool converting_level_with_bg_tiles = false;
 	bool updating_sprites = false;
 
 	std::string filename_in;
@@ -457,13 +329,6 @@ int main(int argc, char **argv) {
 				state=5;
 				updating_sprites = true;
 			}
-			else if(arg=="--convert-bg"){
-				converting_level_with_bg_tiles = true;
-				filename_in = "";
-				filename_out = "";
-				state=3;
-				converting_sprite = true;
-			}
 			else {
 				printf("Invalid arg\n");
 				return 1;
@@ -511,7 +376,7 @@ int main(int argc, char **argv) {
 		pk2_updateSprites(filename_in);
 	}
 	else if(converting_sprite){
-		pk2_convertToNewFormat(filename_in, filename_out, converting_level_with_bg_tiles);
+		pk2_convertToNewFormat(filename_in, filename_out);
 	}
 	else{
 		pk2_main(dev_mode, show_fps, test_level, test_path);

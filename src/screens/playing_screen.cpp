@@ -20,7 +20,7 @@
 #include "gfx/bg_particles.hpp"
 
 #include "gfx/effect.hpp"
-#include "gui.hpp"
+#include "gfx/touchscreen.hpp"
 #include "episode/episodeclass.hpp"
 #include "language.hpp"
 #include "sfx.hpp"

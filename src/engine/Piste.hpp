@@ -4,7 +4,6 @@
 //#########################
 #pragma once
 
-#include "engine/PDLL.hpp"
 #include "engine/platform.hpp"
 
 #include "engine/PDraw.hpp"
@@ -20,8 +19,8 @@
 
 namespace Piste {
 
-void PK2_EXPORT init(int width, int height, const char* name, const char* icon, int audio_buffer_size);
-void PK2_EXPORT terminate();
+void init(int width, int height, const char* name, const char* icon, int audio_buffer_size);
+void terminate();
 
 void loop(std::function<void()> GameLogic);
 void stop();

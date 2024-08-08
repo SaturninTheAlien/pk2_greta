@@ -73,7 +73,7 @@ class LevelClass {
     int      icon_id = 0;                                      // map icon id
  
 
-    std::string lua_script = "main.lua";                        // lua script
+    std::string lua_script;                        // lua script
     int game_mode = 0;                                          // game mode
 
 

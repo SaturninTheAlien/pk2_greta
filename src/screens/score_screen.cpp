@@ -10,7 +10,7 @@
 #include "language.hpp"
 #include "game/game.hpp"
 #include "game/gifts.hpp"
-#include "gui.hpp"
+#include "gfx/touchscreen.hpp"
 #include "episode/episodeclass.hpp"
 #include "sfx.hpp"
 #include "system.hpp"

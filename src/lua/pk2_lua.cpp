@@ -81,13 +81,16 @@ void OverrideLuaRequire(sol::state& lua){
 }
 
 sol::state* CreateGameLuaVM(const std::string& main_lua_script){
-    std::string main_lua = PK2GetLuaFile(main_lua_script);
-
-    if(main_lua.empty()){
+    if(main_lua_script.empty()){
         PLog::Write(PLog::INFO, "PK2lua", "No Lua scripting in this level");
         return nullptr;
     }
 
+    std::string main_lua = PK2GetLuaFile(main_lua_script);
+    if(main_lua.empty()){
+        throw std::runtime_error("Lua script: \""+main_lua_script+"\" not found!");
+    }
+    
     PLog::Write(PLog::INFO, "PK2lua", "Creating lua VM");
     sol::state* lua = new sol::state();
     lua->open_libraries(sol::lib::base,

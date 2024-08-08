@@ -20,7 +20,7 @@
 #include "settings/settings.hpp"
 #include "gfx/text.hpp"
 #include "language.hpp"
-#include "gui.hpp"
+#include "gfx/touchscreen.hpp"
 #include "episode/episodeclass.hpp"
 #include "sfx.hpp"
 #include "save.hpp"

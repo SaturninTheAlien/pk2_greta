@@ -5,7 +5,7 @@
 #include "intro_screen.hpp"
 
 #include "gfx/text.hpp"
-#include "gui.hpp"
+#include "gfx/touchscreen.hpp"
 #include "game/game.hpp"
 #include "language.hpp"
 #include "system.hpp"

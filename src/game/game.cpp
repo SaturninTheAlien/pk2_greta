@@ -14,7 +14,7 @@
 #include "settings/settings.hpp"
 #include "settings/config_txt.hpp"
 
-#include "gui.hpp"
+#include "gfx/touchscreen.hpp"
 #include "language.hpp"
 #include "exceptions.hpp"
 

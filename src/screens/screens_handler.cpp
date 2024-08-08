@@ -8,7 +8,7 @@
 #include "exceptions.hpp"
 #include "sfx.hpp"
 #include "settings/settings.hpp"
-#include "gui.hpp"
+#include "gfx/touchscreen.hpp"
 #include "language.hpp"
 #include "gfx/text.hpp"
 #include "save.hpp"
