@@ -683,6 +683,10 @@ RW Path::GetRW2(const char* mode)const {
 	}
 }
 
+std::string Path::getPath()const{
+	return mGetAssetPath(this->path);
+}
+
 nlohmann::json Path::GetJSON()const{
 	
 	if(this->zip_file!=nullptr){

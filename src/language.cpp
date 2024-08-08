@@ -15,7 +15,7 @@ std::vector<std::string> langlist;
 PLang *tekstit;
 LANGUAGE PK_txt;
 
-const char* Language_Name() {
+const char* GetDefaultLanguageName() {
 
 	char loc[4];
 	PUtils::GetLanguage(loc);
@@ -107,7 +107,7 @@ const char* Language_Name() {
 
 }
 
-int Load_Language(const char* language) {
+int Load_Language(const std::string& language) {
 	
 	PFile::Path path(std::string("language" PE_SEP) + language);
 	

@@ -352,7 +352,7 @@ void MapScreen::Loop() {
 
 	} else {
 	
-		if (!PUtils::Is_Mobile() || !Settings.gui)
+		if (!PUtils::Is_Mobile() || !Settings.touchscreen_controls)
 			Draw_Cursor(PInput::mouse_x, PInput::mouse_y);
 
 	}

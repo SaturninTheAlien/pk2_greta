@@ -334,7 +334,7 @@ void PlayingScreen::Draw() {
 
 	sector->sprites.drawBGsprites(Game->camera_x, Game->camera_y, Game->paused, this->debug_drawn_sprites);
 
-	if(Settings.draw_weather)BG_Particles::Draw(Game->camera_x, Game->camera_y);
+	BG_Particles::Draw(Game->camera_x, Game->camera_y);
 
 	Game->level.drawBackgroundTiles(Game->camera_x,Game->camera_y, sector);
 
@@ -408,7 +408,7 @@ void PlayingScreen::Draw() {
 void PlayingScreen::Init(){
 
 	if(PUtils::Is_Mobile()) {
-		if (Settings.gui)
+		if (Settings.touchscreen_controls)
 			GUI_Change(UI_GAME_BUTTONS);
 		else 
 			GUI_Change(UI_TOUCH_TO_START);

@@ -282,7 +282,7 @@ int Fadetext_Draw(){
 			int x = text.x - Game->camera_x;
 			int y = text.y - Game->camera_y;
 
-			if (Settings.draw_transparent && pros < 100)
+			if (pros < 100)
 				PDraw::font_writealpha_s(text.fontti, text.teksti, x, y, pros);
 			else
 				PDraw::font_write(text.fontti, text.teksti, x, y);

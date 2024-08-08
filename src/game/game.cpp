@@ -180,7 +180,7 @@ void GameClass::update(int& debug_active_sprites){
 		 * Update particles
 		 */
 
-		if(Settings.draw_weather)BG_Particles::Update(this->camera_x, this->camera_y);
+		BG_Particles::Update(this->camera_x, this->camera_y);
 		Particles_Update();
 
 		/***
@@ -306,10 +306,10 @@ void GameClass::update(int& debug_active_sprites){
 				Settings.double_speed = !Settings.double_speed;
 				key_delay = 20;
 			}
-			if (PInput::Keydown(PInput::G)) {
+			/*if (PInput::Keydown(PInput::G)) {
 				Settings.draw_transparent = !Settings.draw_transparent;
 				key_delay = 20;
-			}
+			}*/
 			if (PInput::Keydown(PInput::L)) {
 				this->keys = 0;
 				this->openLocks();

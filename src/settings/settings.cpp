@@ -10,43 +10,19 @@
 #include "engine/PLog.hpp"
 #include "engine/PInput.hpp"
 #include "engine/PUtils.hpp"
+#include "engine/PJson.hpp"
 
 #include <ctime>
 #include <cstring>
 #include <string>
+#include <fstream>
 
 #include <SDL_timer.h>
 
-#define SETTINGS_FILE "settings.ini"
+const char* SETTINGS_FILE = "settings.json";
 
 PK2SETTINGS Settings;
-GAME_CONTROLS* Input;
-
-int Settings_GetId(PFile::Path path, u32& id) {
-
-	try{
-		PFile::RW file = path.GetRW2("r");
-		char version[4];
-
-		file.read(version, 4);
-		if (strncmp(version, SETTINGS_VERSION, 4) != 0) {
-
-			id = 0;
-			file.close();
-			return 2;
-
-		}
-
-		file.read(id);
-		file.close();
-		return 0;
-
-	}
-	catch(const PFile::PFileException& e){
-		PLog::Write(PLog::WARN, "PK2 Settings", e.what());
-		return 1;
-	}
-}
+GAME_CONTROLS* Input = nullptr;
 
 void Settings_Init() {
 
@@ -64,13 +40,13 @@ void Settings_Init() {
 	Settings.id <<= 1;
 	Settings.id ^= rand();
 
-	strcpy(Settings.language, Language_Name());
+	Settings.language = GetDefaultLanguageName();
 
-	Settings.draw_transparent = true;
 	Settings.transparent_text = false;
-	Settings.draw_weather = true;
 	Settings.draw_itembar = true;
-	Settings.bg_sprites = true;
+
+	Settings.draw_gui = true;
+	Settings.touchscreen_controls = false;
 
 	Settings.fps = SETTINGS_60FPS;//SETTINGS_VSYNC;
 	Settings.isFullScreen = true;
@@ -102,159 +78,123 @@ void Settings_Init() {
 	Settings.music_max_volume = 30;
 	Settings.sfx_max_volume = 95;
 
-	Settings.gui = true;
-
 	Id_To_String(Settings.id, id_code, 8);
 
 }
 
-int Settings_Open() {
+
+void from_json(const nlohmann::json& j, GAME_CONTROLS& controls){
+	j.at("left").get_to(controls.left);
+	j.at("right").get_to(controls.right);
+	j.at("up").get_to(controls.up);
+	j.at("down").get_to(controls.down);
+
+	j.at("jump").get_to(controls.jump);
+	j.at("walk_slow").get_to(controls.walk_slow);
+	j.at("attack1").get_to(controls.attack1);
+	j.at("attack2").get_to(controls.attack2);
+	j.at("open_gift").get_to(controls.open_gift);
+	
+}
+
+void to_json(nlohmann::json& j, const GAME_CONTROLS& controls){
+	j["left"] = controls.left;
+	j["right"] = controls.right;
+	j["up"] = controls.up;
+	j["down"] = controls.down;
+
+	j["jump"] = controls.jump;
+	j["walk_slow"] = controls.walk_slow;
+	j["attack1"] = controls.attack1;
+	j["attack2"] = controls.attack2;
+
+	j["open_gift"] = controls.open_gift;	
+}
+
+
+void from_json(const nlohmann::json& j, PK2SETTINGS& s){
+	j.at("language").get_to(s.language);
+	j.at("gui").get_to(s.draw_gui);
+	j.at("touchscreen").get_to(s.touchscreen_controls);
+	j.at("fps").get_to(s.fps);
+	j.at("fullscreen").get_to(s.isFullScreen);
+	j.at("double_speed").get_to(s.double_speed);
+
+	j.at("keyboard").get_to(s.keyboard);
+	j.at("using_controller").get_to(s.using_controller);
+	j.at("vibration").get_to(s.vibration);
+
+	j.at("joystick").get_to(s.joystick);
+
+	j.at("music_max_volume").get_to(s.music_max_volume);
+
+	j.at("sfx_max_volume").get_to(s.sfx_max_volume);
+
+	j.at("transparent_text").get_to(s.transparent_text);
+
+	j.at("filtering").get_to(s.shader_type);
+}
+
+void to_json(nlohmann::json& j, const PK2SETTINGS& s){
+	j["language"] = s.language;
+	j["gui"] = s.draw_gui;
+
+	j["touchscreen"] = s.touchscreen_controls;
+	j["fps"] = s.fps;
+
+	j["fullscreen"] = s.isFullScreen;
+	j["double_speed"] = s.double_speed;
+
+	j["keyboard"] = s.keyboard;
+	j["using_controller"] = s.using_controller;
+
+
+	j["vibration"] = s.vibration;
+	j["joystick"] = s.joystick;
+
+	j["music_max_volume"] = s.music_max_volume;
+	j["sfx_max_volume"] = s.sfx_max_volume;
+	j["transparent_text"] = s.transparent_text;
+
+	j["filtering"] = s.shader_type;
+}
+
+
+void Settings_Open() {
 
 	PFile::Path path(data_path, SETTINGS_FILE);
 
 	try{
-		PFile::RW file = path.GetRW2("r");
-		/*if (file == nullptr) {
+		if(path.Find()){
+			Settings = path.GetJSON().get<PK2SETTINGS>();
+		}
+		else{
+			PLog::Write(PLog::DEBUG, "PK2", "No settings found");
 			Settings_Init();
 			Settings_Save();
-			return 1;
-		}*/
-
-		char version[4];
-		file.read(version, 4);
-		
-		if (strncmp(version, SETTINGS_VERSION, 4) != 0) { 
-			// If settings isn't in current version
-			Settings_Init();
-			Settings_Save();
-			return 2;
 		}
-
-		file.read(Settings.id);
-		file.read(Settings.language, sizeof(Settings.language));
-
-		file.read(Settings.draw_transparent);
-		file.read(Settings.transparent_text);
-		file.read(Settings.draw_weather);
-		file.read(Settings.draw_itembar);
-		file.read(Settings.bg_sprites);
-		
-		file.read(Settings.fps);
-		file.read(Settings.isFullScreen);
-		file.read(Settings.double_speed);
-		file.read(Settings.shader_type);
-		
-		file.read(Settings.keyboard.left);
-		file.read(Settings.keyboard.right);
-		file.read(Settings.keyboard.up);
-		file.read(Settings.keyboard.down);
-		file.read(Settings.keyboard.jump);
-		file.read(Settings.keyboard.walk_slow);
-		file.read(Settings.keyboard.attack1);
-		file.read(Settings.keyboard.attack2);
-		file.read(Settings.keyboard.open_gift);
-
-		file.read(Settings.using_controller);
-		file.read(Settings.vibration);
-		file.read(Settings.joystick.left);
-		file.read(Settings.joystick.right);
-		file.read(Settings.joystick.up);
-		file.read(Settings.joystick.down);
-		file.read(Settings.joystick.jump);
-		file.read(Settings.joystick.walk_slow);
-		file.read(Settings.joystick.attack1);
-		file.read(Settings.joystick.attack2);
-		file.read(Settings.joystick.open_gift);
-
-		file.read(Settings.music_max_volume);
-		file.read(Settings.sfx_max_volume);
-
-		file.read(Settings.gui);
-		
-		file.close();
-
-		Id_To_String(Settings.id, id_code, 8);
-
-		if (Settings.shader_type == SETTINGS_MODE_CRT) {
-			screen_width = 640;
-			screen_height = 480;
-		}
-		PLog::Write(PLog::DEBUG, "PK2", "Opened settings");
-
+		//
 	}
 	catch(const PFile::PFileException& e){
-		PLog::Write(PLog::DEBUG, "PK2", e.what());
 		PLog::Write(PLog::DEBUG, "PK2", "No settings found");
+		Settings_Init();
+		Settings_Save();		
 		
+	}
+	catch(const std::exception& e){
+		PLog::Write(PLog::ERR, "PK2", e.what());
 		Settings_Init();
 		Settings_Save();
-		return 1;
 	}
-	
-	return 0;
 
 }
 
-int Settings_Save() {
+void Settings_Save() {
 
 	PFile::Path path(data_path, SETTINGS_FILE);
+	nlohmann::json j = Settings;
+	std::ofstream f(path.getPath());
 
-	PFile::RW file = path.GetRW2("w");
-	/*if (file == nullptr) {
-
-		PLog::Write(PLog::ERR, "PK2", "Can't save settings");
-		return 1;
-	
-	}*/
-	
-	// Save value by value, this defines the file structure
-	file.write(SETTINGS_VERSION, sizeof(SETTINGS_VERSION));
-
-	file.write(Settings.id);
-	file.write(Settings.language, sizeof(Settings.language));
-
-	file.write(Settings.draw_transparent);
-	file.write(Settings.transparent_text);
-	file.write(Settings.draw_weather);
-	file.write(Settings.draw_itembar);
-	file.write(Settings.bg_sprites);
-	
-	file.write(Settings.fps);
-	file.write(Settings.isFullScreen);
-	file.write(Settings.double_speed);
-	file.write(Settings.shader_type);
-	
-	file.write(Settings.keyboard.left);
-	file.write(Settings.keyboard.right);
-	file.write(Settings.keyboard.up);
-	file.write(Settings.keyboard.down);
-	file.write(Settings.keyboard.jump);
-	file.write(Settings.keyboard.walk_slow);
-	file.write(Settings.keyboard.attack1);
-	file.write(Settings.keyboard.attack2);
-	file.write(Settings.keyboard.open_gift);
-
-	file.write(Settings.using_controller);
-	file.write(Settings.vibration);
-	file.write(Settings.joystick.left);
-	file.write(Settings.joystick.right);
-	file.write(Settings.keyboard.up);
-	file.write(Settings.joystick.down);
-	file.write(Settings.joystick.jump);
-	file.write(Settings.joystick.walk_slow);
-	file.write(Settings.joystick.attack1);
-	file.write(Settings.joystick.attack2);
-	file.write(Settings.joystick.open_gift);
-
-	file.write(Settings.music_max_volume);
-	file.write(Settings.sfx_max_volume);
-
-	file.write(Settings.gui);
-	
-	file.close();
-	
-	PLog::Write(PLog::DEBUG, "PK2", "Saved settings");
-
-	return 0;
-
+	f << j.dump(4)<<std::endl;
+	f.close();
 }

@@ -65,7 +65,7 @@ void Particle::draw_dot() {
 
 void Particle::draw_star() {
 
-	if (alpha > 99 || !Settings.draw_transparent)
+	if (alpha > 99)
 		PDraw::image_cutclip(game_assets, x-cam_x, y-cam_y, 1, 1, 11, 11);
 	else
 		PDraw::image_cutcliptransparent(game_assets, 2, 2, 10, 10, x-cam_x, y-cam_y, alpha, color);
@@ -79,29 +79,11 @@ void Particle::draw_hit() {
 }
 
 void Particle::draw_light() {
-
-	if (Settings.draw_transparent)
-		PDraw::image_cutcliptransparent(game_assets, 1, 14, 13, 13, x-cam_x, y-cam_y, alpha, color);
-	else{
-		int vx = (color/32) * 14;
-		PDraw::image_cutclip(game_assets,x-cam_x, y-cam_y,1+vx,14+14,14+vx,27+14);
-	}
-
+	PDraw::image_cutcliptransparent(game_assets, 1, 14, 13, 13, x-cam_x, y-cam_y, alpha, color);
 }
 
 void Particle::draw_spark() {
-
-	if (Settings.draw_transparent) {
-	
-		PDraw::image_cutcliptransparent(game_assets, 99, 14, 7, 7, x-cam_x, y-cam_y, alpha, color);
-	
-	} else {
-
-		int vx = (color/32) * 8;
-		PDraw::image_cutclip(game_assets,x-cam_x, y-cam_y,99+vx,14+14,106+vx,21+14);
-	
-	}
-
+	PDraw::image_cutcliptransparent(game_assets, 99, 14, 7, 7, x-cam_x, y-cam_y, alpha, color);
 }
 
 void Particle::draw_feather() {
@@ -133,7 +115,7 @@ void Particle::draw_smoke() {
 
 void Particle::draw_dust() {
 
-	if (alpha > 99 || !Settings.draw_transparent)
+	if (alpha > 99)
 		PDraw::image_cutclip(game_assets,x-cam_x,y-cam_y,226,2,224,49);
 	else
 		PDraw::image_cutcliptransparent(game_assets, 226, 2, 18, 19, int(x)-cam_x, int(y)-cam_y, alpha, color);

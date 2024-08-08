@@ -89,6 +89,8 @@ private:
 
 };
 
+// TODO
+// Delete this class and replace with std::filesystem
 class Path {
 
     public: 
@@ -106,6 +108,9 @@ class Path {
     const std::string& str()const{
         return this->path;
     }
+
+
+    std::string getPath()const;
 
     //type:
     // ""  - all files and directories

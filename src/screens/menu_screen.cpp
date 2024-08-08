@@ -770,7 +770,7 @@ void MenuScreen::Draw_Menu_Graphics() {
 	}
 	else {
 
-		if (Settings.draw_transparent){
+		/*if (Settings.draw_transparent){
 			if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.gfx_tfx_on),180,my)) {
 				Settings.draw_transparent = false;
 				save_settings = true;
@@ -785,7 +785,7 @@ void MenuScreen::Draw_Menu_Graphics() {
 			Settings.draw_transparent = !Settings.draw_transparent;
 			save_settings = true;
 		}
-		my += 30;
+		my += 30;*/
 
 
 		if (Settings.transparent_text){
@@ -824,7 +824,7 @@ void MenuScreen::Draw_Menu_Graphics() {
 		my += 30;
 
 
-		if (Settings.draw_weather){
+		/*if (Settings.draw_weather){
 			if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.gfx_weather_on),180,my)) {
 				Settings.draw_weather = false;
 				save_settings = true;
@@ -839,10 +839,10 @@ void MenuScreen::Draw_Menu_Graphics() {
 			Settings.draw_weather = !Settings.draw_weather;
 			save_settings = true;
 		}
-		my += 30;
+		my += 30;*/
 
 
-		if (Settings.bg_sprites){
+		/*if (Settings.bg_sprites){
 			if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.gfx_bgsprites_on),180,my)) {
 				Settings.bg_sprites = false;
 				save_settings = true;
@@ -857,7 +857,7 @@ void MenuScreen::Draw_Menu_Graphics() {
 			Settings.bg_sprites = !Settings.bg_sprites;
 			save_settings = true;
 		}
-		my += 30;
+		my += 30;*/
 
 
 		if (Settings.double_speed){
@@ -1105,16 +1105,16 @@ void MenuScreen::Draw_Menu_Controls() {
 
 	if (PUtils::Is_Mobile()) {
 
-		if (Settings.gui) {
-			if (Draw_Menu_Text("turn off gui",100,my)) {
+		if (Settings.touchscreen_controls) {
+			if (Draw_Menu_Text("turn off touchscreen controls",100,my)) {
 			
-				Settings.gui = false;
+				Settings.touchscreen_controls = false;
 				save_settings = true;
 			}
 		} else { 
-			if (Draw_Menu_Text("turn on gui",100,my)) {
+			if (Draw_Menu_Text("turn on touchscreen controls",100,my)) {
 		
-				Settings.gui = true;
+				Settings.touchscreen_controls = true;
 				save_settings = true;
 		
 			}
@@ -1262,7 +1262,7 @@ void MenuScreen::Draw_Menu_Language() {
 
 		if(Draw_Menu_Text(langlist[i].c_str(),150,my,'.')) {
 
-			Load_Language(langlist[i].c_str());
+			Load_Language(langlist[i]);
 			
 			if (Load_Fonts(tekstit) == -1) {
 
@@ -1271,7 +1271,7 @@ void MenuScreen::Draw_Menu_Language() {
 
 			} else {
 
-				strcpy(Settings.language, langlist[i].c_str());
+				Settings.language = langlist[i];
 				Settings_Save();
 
 			}
@@ -1376,7 +1376,7 @@ void MenuScreen::Draw() {
 		PDraw::font_write(fontti1, PK2_VERSION_STR_MENU, 0, 470);
 
 	if (!mouse_hidden)
-		if (!PUtils::Is_Mobile() || !Settings.gui)
+		if (!PUtils::Is_Mobile() || !Settings.touchscreen_controls)
 			Draw_Cursor(PInput::mouse_x, PInput::mouse_y);
 }
 

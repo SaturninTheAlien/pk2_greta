@@ -53,8 +53,8 @@ ScreensHandler::ScreensHandler():
 	tekstit = new PLang();
 	if (Load_Language(Settings.language) != 0) {
 
-		PLog::Write(PLog::ERR, "PK2", "Could not find %s!", Settings.language);
-		strcpy(Settings.language, "english.txt");
+		PLog::Write(PLog::ERR, "PK2", "Could not find %s!", Settings.language.c_str());
+		Settings.language = "english.txt";
 		
 		if(Load_Language(Settings.language) != 0) {
 			throw PExcept::FileNotFoundException("english.txt", PExcept::MISSING_ENGLISH_TEXT);

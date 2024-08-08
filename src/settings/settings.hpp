@@ -7,6 +7,7 @@
 #include "engine/platform.hpp"
 
 #include "engine/PFile.hpp"
+#include <string>
 
 enum {
 	SETTINGS_VSYNC,
@@ -31,8 +32,8 @@ enum {
 
 #define SETTINGS_VERSION "1.8"
 
-struct GAME_CONTROLS { 
-
+class GAME_CONTROLS {
+public:
 	u32 left;
 	u32 right;
 	u32 up;
@@ -44,23 +45,26 @@ struct GAME_CONTROLS {
 	u32 attack2;
 	u32 open_gift;
 
+	friend void from_json(const nlohmann::json& j, GAME_CONTROLS& controls);
+	friend void to_json(nlohmann::json& j, const GAME_CONTROLS& controls);
+
 };
 
-struct PK2SETTINGS {
-	
+class PK2SETTINGS {
+public:	
 	u32  id;
-	char language[PE_PATH_SIZE];
 
-	// Graphips
-	bool  draw_transparent;
-	bool  transparent_text;
-	bool  draw_weather;
-	bool  draw_itembar;
-	bool  bg_sprites;
+	std::string language;
+
+	bool  transparent_text = false;
+	bool  draw_itembar = true;
+
+	bool  draw_gui = false;
+	bool  touchscreen_controls = false;
 	
-	s32   fps;
-	bool  isFullScreen;
-	bool  double_speed;
+	int   fps;
+	bool  isFullScreen = true;
+	bool  double_speed = false;
 	u8    shader_type;
 
 	// Controls
@@ -74,14 +78,16 @@ struct PK2SETTINGS {
 	u8  sfx_max_volume;
 
 	// GUI
-	bool gui;
+	//bool gui;
 
+	friend void from_json(const nlohmann::json& j, PK2SETTINGS& settings);
+	friend void to_json(nlohmann::json& j, const PK2SETTINGS& settings); 
 };
 
 extern PK2SETTINGS Settings;
 extern GAME_CONTROLS* Input;
 
-int Settings_GetId(PFile::Path path, u32& id);
+//int Settings_GetId(PFile::Path path, u32& id);
 
-int Settings_Open();
-int Settings_Save();
+void Settings_Open();
+void Settings_Save();

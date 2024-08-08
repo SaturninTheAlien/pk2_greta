@@ -148,5 +148,5 @@ extern LANGUAGE PK_txt;
 
 extern std::vector<std::string> langlist;
 
-const char* Language_Name();
-int Load_Language(const char* language);
+const char* GetDefaultLanguageName();
+int Load_Language(const std::string& language);
