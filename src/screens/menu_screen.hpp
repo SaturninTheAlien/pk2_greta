@@ -51,6 +51,10 @@ private:
     int  Draw_BackNext(int x, int y);
     int  Draw_Radio(int x, int y, int num, int sel);
 
+    int  my = 0;
+    //bool changed = false;
+    void drawBoolBoxGroup(bool& value, bool& changed, const char* text_true, const char* text_false);
+
     void Draw_Menu_Main();
     void Draw_Menu_Name();
     void Draw_Menu_Load();

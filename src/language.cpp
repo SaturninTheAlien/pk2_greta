@@ -177,16 +177,20 @@ int Load_Language(const std::string& language) {
 	PK_txt.controls_gp6def			= tekstit->Search_Id("controls menu gamepad6");
 
 	PK_txt.gfx_title				= tekstit->Search_Id("graphics menu title");
-	PK_txt.gfx_tfx_on				= tekstit->Search_Id("graphics menu transparency fx on");
-	PK_txt.gfx_tfx_off				= tekstit->Search_Id("graphics menu transparency fx off");
+	
+	// PK_txt.gfx_tfx_on				= tekstit->Search_Id("graphics menu transparency fx on");
+	// PK_txt.gfx_tfx_off				= tekstit->Search_Id("graphics menu transparency fx off");
+
 	PK_txt.gfx_tmenus_on			= tekstit->Search_Id("graphics menu menus are transparent");
 	PK_txt.gfx_tmenus_off			= tekstit->Search_Id("graphics menu menus are not transparent");
 	PK_txt.gfx_items_on				= tekstit->Search_Id("graphics menu item bar is visible");
 	PK_txt.gfx_items_off			= tekstit->Search_Id("graphics menu item bar is not visible");
-	PK_txt.gfx_weather_on			= tekstit->Search_Id("graphics menu weather fx on");
-	PK_txt.gfx_weather_off			= tekstit->Search_Id("graphics menu weather fx off");
-	PK_txt.gfx_bgsprites_on			= tekstit->Search_Id("graphics menu bg sprites on");
-	PK_txt.gfx_bgsprites_off		= tekstit->Search_Id("graphics menu bg sprites off");
+
+	// PK_txt.gfx_weather_on			= tekstit->Search_Id("graphics menu weather fx on");
+	// PK_txt.gfx_weather_off			= tekstit->Search_Id("graphics menu weather fx off");
+	// PK_txt.gfx_bgsprites_on			= tekstit->Search_Id("graphics menu bg sprites on");
+	// PK_txt.gfx_bgsprites_off		= tekstit->Search_Id("graphics menu bg sprites off");
+
 	PK_txt.gfx_speed_normal			= tekstit->Search_Id("graphics menu game speed normal");
 	PK_txt.gfx_speed_double			= tekstit->Search_Id("graphics menu game speed double");
 

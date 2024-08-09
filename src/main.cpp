@@ -228,7 +228,7 @@ void pk2_main(bool _dev_mode, bool _show_fps, bool _test_level, const std::strin
 
 	config_txt.readFile();
 
-	Piste::init(screen_width, screen_height, PK2_NAME, "gfx" PE_SEP "icon_new.png",
+	Piste::init(screen_width, screen_height, PK2_NAME_STR, "gfx" PE_SEP "icon_new.png",
 	config_txt.audio_buffer_size);
 	
 	if (!Piste::is_ready()) {

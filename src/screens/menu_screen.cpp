@@ -133,6 +133,26 @@ bool MenuScreen::Draw_BoolBox(int x, int y, bool muuttuja, bool active) {
 	return false;
 }
 
+void MenuScreen::drawBoolBoxGroup(bool& value, bool&changed, const char* text_true, const char* text_false){
+	if (value){
+		if (Draw_Menu_Text(text_true,180,my)) {
+			value = false;
+			changed = true;
+		}
+	} else{
+		if (Draw_Menu_Text(text_false,180,my)) {
+			value = true;
+			changed = true;
+		}
+	}
+	if (Draw_BoolBox(100, my, value, true)) {
+		value = !value;
+		changed = true;
+	}
+	my += 30;
+}
+
+
 int MenuScreen::Draw_BackNext(int x, int y) {
 	int val = 45;
 
@@ -612,7 +632,11 @@ void MenuScreen::Draw_Menu_Save() {
 
 void MenuScreen::Draw_Menu_Graphics() {
 
-	int mx = 0, my = 150, option;
+	//int mx = 0, my = 150, option;
+
+	int mx = 0, option;
+	this->my = 150;
+	
 	static bool moreOptions = false;
 	bool save_settings = false;
 
@@ -665,12 +689,14 @@ void MenuScreen::Draw_Menu_Graphics() {
 			mx += 15 + 51;
 			PDraw::font_write(fontti1, "linear", mx, my);
 			mx += 15 + 51;
-			PDraw::font_write(fontti1, "crt", mx, my);
-			mx += 15 + 51;
-			PDraw::font_write(fontti1, "hqx", mx, my);
+
+			/*  Temporarily disabled  */
+			// PDraw::font_write(fontti1, "crt", mx, my);
+			// mx += 15 + 51;
+			// PDraw::font_write(fontti1, "hqx", mx, my);
 			my += 10;
 
-			option = Draw_Radio(100, my, 4, Settings.shader_type);
+			option = Draw_Radio(100, my, 2, Settings.shader_type);
 
 			if (option != -1) {
 				if (option != Settings.shader_type) {
@@ -712,55 +738,8 @@ void MenuScreen::Draw_Menu_Graphics() {
 				Settings.fps = SETTINGS_60FPS;
 				if (oldfps == SETTINGS_60FPS)
 					save_settings = false;
-			}
-			
+			}	
 		}
-
-		/*#ifdef __ANDROID__
-
-		//If the data directory change, it will copy all data from one place to another
-		if (wasexternal != external_dir) {
-
-			if (external_dir) {
-				
-				PLog::Write(PLog::DEBUG, "PK2", "Android write state: %i", SDL_AndroidGetExternalStorageState());
-
-				//Wait for permission
-				if (SDL_AndroidGetExternalStorageState() | SDL_ANDROID_EXTERNAL_STORAGE_WRITE) {
-					if (SDL_AndroidRequestPermission("android.permission.WRITE_EXTERNAL_STORAGE"))
-						PLog::Write(PLog::DEBUG, "PK2", "External writing permitted");
-					else {
-						PLog::Write(PLog::DEBUG, "PK2", "External writing blocked");
-					}
-				}
-				
-				if (SDL_AndroidGetExternalStorageState() | SDL_ANDROID_EXTERNAL_STORAGE_WRITE) {
-					
-					//Copy from internal to external
-					Move_DataPath(External_Path);
-					
-				} else {
-					
-					external_dir = false;
-					
-				}
-
-			} else {
-				if (SDL_AndroidGetExternalStorageState() | SDL_ANDROID_EXTERNAL_STORAGE_WRITE) {
-
-					//Copy from external to internal
-					Move_DataPath(Internal_Path);
-
-				} else {
-				
-					PLog::Write(PLog::ERR, "PK2", "Can't get files from external");
-
-				}
-			}
-
-		}
-
-		#endif*/
 
 		if (Draw_Menu_Text("back",100,360)) {
 			moreOptions = false;
@@ -769,113 +748,32 @@ void MenuScreen::Draw_Menu_Graphics() {
 
 	}
 	else {
+		this->my = 150;
 
-		/*if (Settings.draw_transparent){
-			if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.gfx_tfx_on),180,my)) {
-				Settings.draw_transparent = false;
-				save_settings = true;
-			}
-		} else{
-			if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.gfx_tfx_off),180,my)) {
-				Settings.draw_transparent = true;
-				save_settings = true;
-			}
-		}
-		if (Draw_BoolBox(100, my, Settings.draw_transparent, true)) {
-			Settings.draw_transparent = !Settings.draw_transparent;
-			save_settings = true;
-		}
-		my += 30;*/
+		this->drawBoolBoxGroup(Settings.transparent_text,
+							save_settings,
+							tekstit->Get_Text(PK_txt.gfx_tmenus_on),
+							tekstit->Get_Text(PK_txt.gfx_tmenus_off));
 
+		this->drawBoolBoxGroup(Settings.draw_itembar,
+							save_settings,
+							tekstit->Get_Text(PK_txt.gfx_items_on),
+							tekstit->Get_Text(PK_txt.gfx_items_off));
+		
+		this->drawBoolBoxGroup(Settings.draw_gui,
+							save_settings,
+							"In-Game GUI is enabled",
+							"In-Game GUI is disabled");
 
-		if (Settings.transparent_text){
-			if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.gfx_tmenus_on),180,my)) {
-				Settings.transparent_text = false;
-				save_settings = true;
-			}
-		} else{
-			if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.gfx_tmenus_off),180,my)) {
-				Settings.transparent_text = true;
-				save_settings = true;
-			}
-		}
-		if (Draw_BoolBox(100, my, Settings.transparent_text, true)) {
-			Settings.transparent_text = !Settings.transparent_text;
-			save_settings = true;
-		}
-		my += 30;
+		this->drawBoolBoxGroup(Settings.touchscreen_controls,
+							save_settings,
+							"Touchscreen controls are enabled",
+							"Touchscreen controls are disabled");
 
-
-		if (Settings.draw_itembar){
-			if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.gfx_items_on),180,my)) {
-				Settings.draw_itembar = false;
-				save_settings = true;
-			}
-		} else{
-			if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.gfx_items_off),180,my)) {
-				Settings.draw_itembar = true;
-				save_settings = true;
-			}
-		}
-		if (Draw_BoolBox(100, my, Settings.draw_itembar, true)) {
-			Settings.draw_itembar = !Settings.draw_itembar;
-			save_settings = true;
-		}
-		my += 30;
-
-
-		/*if (Settings.draw_weather){
-			if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.gfx_weather_on),180,my)) {
-				Settings.draw_weather = false;
-				save_settings = true;
-			}
-		} else{
-			if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.gfx_weather_off),180,my)) {
-				Settings.draw_weather = true;
-				save_settings = true;
-			}
-		}
-		if (Draw_BoolBox(100, my, Settings.draw_weather, true)) {
-			Settings.draw_weather = !Settings.draw_weather;
-			save_settings = true;
-		}
-		my += 30;*/
-
-
-		/*if (Settings.bg_sprites){
-			if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.gfx_bgsprites_on),180,my)) {
-				Settings.bg_sprites = false;
-				save_settings = true;
-			}
-		} else{
-			if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.gfx_bgsprites_off),180,my)) {
-				Settings.bg_sprites = true;
-				save_settings = true;
-			}
-		}
-		if (Draw_BoolBox(100, my, Settings.bg_sprites, true)) {
-			Settings.bg_sprites = !Settings.bg_sprites;
-			save_settings = true;
-		}
-		my += 30;*/
-
-
-		if (Settings.double_speed){
-			if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.gfx_speed_double),180,my)) {
-				Settings.double_speed = false;
-				save_settings = true;
-			}
-		} else {
-			if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.gfx_speed_normal),180,my)) {
-				Settings.double_speed = true;
-				save_settings = true;
-			}
-		}
-		if (Draw_BoolBox(100, my, Settings.double_speed, true)) {
-			Settings.double_speed = !Settings.double_speed;
-			save_settings = true;
-		}
-		my += 30;
+		this->drawBoolBoxGroup(Settings.double_speed,
+							save_settings,
+							tekstit->Get_Text(PK_txt.gfx_speed_double),
+							tekstit->Get_Text(PK_txt.gfx_speed_normal));
 
 		//if (!PUtils::Is_Mobile())
 			if (Draw_Menu_Text("more",100,360)){

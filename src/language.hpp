@@ -68,16 +68,22 @@ struct LANGUAGE {
 		controls_gp6def,
 
 		gfx_title,
-		gfx_tfx_on,
-		gfx_tfx_off,
+		
+		// gfx_tfx_on,
+		// gfx_tfx_off,
+
 		gfx_tmenus_on,
 		gfx_tmenus_off,
+		
 		gfx_items_on,
 		gfx_items_off,
-		gfx_weather_on,
-		gfx_weather_off,
-		gfx_bgsprites_on,
-		gfx_bgsprites_off,
+
+		// gfx_weather_on,
+		// gfx_weather_off,
+
+		// gfx_bgsprites_on,
+		// gfx_bgsprites_off,
+
 		gfx_speed_normal,
 		gfx_speed_double,
 
