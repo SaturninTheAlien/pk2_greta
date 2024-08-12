@@ -16,8 +16,10 @@ void RemoveSpace(char* string);
 
 void GetLanguage(char* lang);
 
-void Force_Mobile();
-bool Is_Mobile();
+/*void Force_Mobile();
+bool Is_Mobile();*/
+
+
 int Alphabetical_Compare(const char *a, const char *b);
 bool NoCaseCompare(const char* a, const char* b);
 

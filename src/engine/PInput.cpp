@@ -430,7 +430,7 @@ void UpdateMouse(bool keyMove, bool relative) {
 	int off_x, off_y;
 	PDraw::get_offset(&off_x, &off_y);
 
-	if (!relative || PUtils::Is_Mobile()) {
+	if (!relative) {
 		SDL_SetRelativeMouseMode(SDL_FALSE);
 
 		int tmpx, tmpy;

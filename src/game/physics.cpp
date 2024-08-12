@@ -683,20 +683,20 @@ void UpdateSprite(SpriteClass* sprite){
 	if (sprite->player && sprite->energy > 0){
 		/* SLOW WALK */
 		if (PInput::Keydown(Input->walk_slow)
-		|| Gui_pad_button == 1 || Gui_pad_button == 3)
+		|| TouchScreenControls.pad_button == 1 || TouchScreenControls.pad_button == 3)
 			add_speed = false;
 
 		/* ATTACK 1 */
-		if ((PInput::Keydown(Input->attack1) || Gui_egg) && sprite->charging_timer == 0 && sprite->ammo1 != nullptr)
+		if ((PInput::Keydown(Input->attack1) || TouchScreenControls.egg) && sprite->charging_timer == 0 && sprite->ammo1 != nullptr)
 			sprite->attack1_timer = sprite->prototype->attack1_time;
 		/* ATTACK 2 */
-		else if ((PInput::Keydown(Input->attack2) || Gui_doodle) && sprite->charging_timer == 0 && sprite->ammo2 != nullptr)
+		else if ((PInput::Keydown(Input->attack2) || TouchScreenControls.doodle) && sprite->charging_timer == 0 && sprite->ammo2 != nullptr)
 				sprite->attack2_timer = sprite->prototype->attack2_time;
 
 		/* CROUCH */
 		sprite->crouched = false;
 		bool axis_couch = (Input == &Settings.joystick) && (PInput::GetAxis(1) > 0.5);
-		if ((PInput::Keydown(Input->down) || Gui_down || axis_couch) && !sprite->can_move_down) {
+		if ((PInput::Keydown(Input->down) || TouchScreenControls.down || axis_couch) && !sprite->can_move_down) {
 			sprite->crouched = true;
 			sprite_upper += sprite_height/1.5;
 		}
@@ -707,9 +707,9 @@ void UpdateSprite(SpriteClass* sprite){
 		if (Input == &Settings.joystick)
 			navigation = PInput::GetAxis(0) * 100;
 
-		if (Gui_pad_button == 0 || Gui_pad_button == 1)
+		if (TouchScreenControls.pad_button == 0 || TouchScreenControls.pad_button == 1)
 			navigation = -100;
-		else if (Gui_pad_button == 3 || Gui_pad_button == 4)
+		else if (TouchScreenControls.pad_button == 3 || TouchScreenControls.pad_button == 4)
 			navigation = 100;
 
 		if (PInput::Keydown(Input->right))
@@ -747,7 +747,7 @@ void UpdateSprite(SpriteClass* sprite){
 
 		/* JUMPING */
 		if (sprite->prototype->weight > 0 && !sprite->swimming) {
-			if (PInput::Keydown(Input->jump) || Gui_up) {
+			if (PInput::Keydown(Input->jump) || TouchScreenControls.up) {
 				if (!sprite->crouched) {
 					if (sprite->jump_timer == 0)
 						Play_GameSFX(Episode->sfx.jump_sound, 100, (int)sprite->x, (int)sprite->y,
@@ -763,7 +763,7 @@ void UpdateSprite(SpriteClass* sprite){
 
 			/* dripping quietly down */
 			bool axis_up = (Input == &Settings.joystick) && (PInput::GetAxis(1) < -0.5);
-			if ((PInput::Keydown(Input->jump) || Gui_up || axis_up) && sprite->jump_timer >= 150/*90+20*/ &&
+			if ((PInput::Keydown(Input->jump) || TouchScreenControls.up || axis_up) && sprite->jump_timer >= 150/*90+20*/ &&
 				sprite->prototype->can_glide)
 				gliding = true;
 		}
@@ -774,10 +774,10 @@ void UpdateSprite(SpriteClass* sprite){
 			if (sprite->max_speed_available)
 				speed *= max_speed;
 
-			if (PInput::Keydown(Input->jump) || Gui_up)
+			if (PInput::Keydown(Input->jump) || TouchScreenControls.up)
 				sprite->b -= speed;
 
-			if (PInput::Keydown(Input->down) || Gui_down)
+			if (PInput::Keydown(Input->down) || TouchScreenControls.down)
 				sprite->b += speed;
 
 			sprite->jump_timer = 0;

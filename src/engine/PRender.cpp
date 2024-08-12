@@ -3,6 +3,7 @@
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
 #include "engine/PRender.hpp"
+#include <stdexcept>
 
 #include "engine/PDraw.hpp"
 #include "engine/PLog.hpp"
@@ -44,9 +45,7 @@ void load_ui_texture(PFile::Path file) {
 }
 
 void render_ui(FRECT src, FRECT dst, float alpha) {
-
 	renderer->render_ui(src, dst, alpha);
-
 }
 
 void set_screen_fill(bool set) {

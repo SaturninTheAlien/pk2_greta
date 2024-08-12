@@ -240,7 +240,7 @@ void GameClass::update(int& debug_active_sprites){
 
 		if (PInput::Keydown(Input->attack1) || PInput::Keydown(Input->attack2) ||
 			PInput::Keydown(Input->jump) || Clicked() ||
-			Gui_egg || Gui_doodle || Gui_gift || Gui_up || Gui_down || Gui_menu)
+			TouchScreenControls.any)
 			if (this->exit_timer > 2 && this->exit_timer < 500/*600*//*1900*/ && key_delay == 0)
 				this->exit_timer = 2;
 
@@ -255,7 +255,7 @@ void GameClass::update(int& debug_active_sprites){
 
 	if (key_delay == 0) {
 		if (!this->game_over && !this->level_clear) {
-			if (PInput::Keydown(Input->open_gift) || Gui_gift) {
+			if (PInput::Keydown(Input->open_gift) || TouchScreenControls.gift) {
 				Gifts_Use(sector->sprites);
 				key_delay = 10;
 			}
@@ -277,7 +277,7 @@ void GameClass::update(int& debug_active_sprites){
 				}
 			}
 
-			if (PInput::Keydown(PInput::TAB) || PInput::Keydown(PInput::JOY_GUIDE) || Gui_tab){
+			if (PInput::Keydown(PInput::TAB) || PInput::Keydown(PInput::JOY_GUIDE) || TouchScreenControls.tab){
 				Gifts_ChangeOrder();
 				key_delay = 10;
 			}			
@@ -368,7 +368,7 @@ void GameClass::start() {
 
 	Gifts_Clean(); //Reset gifts
 	Fadetext_Init(); //Reset fade text
-	GUI_Reset(); //Reset GUI
+	TouchScreenControls.reset();
 
 	if (this->Open_Map() == 1)
 		throw PExcept::PException("Can't load level");

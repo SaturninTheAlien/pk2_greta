@@ -113,9 +113,8 @@ void EndingScreen::Draw_EndGame(){
 }
 
 void EndingScreen::Init() {
-	
-	if(PUtils::Is_Mobile())
-		GUI_Change(UI_TOUCH_TO_START);
+
+	TouchScreenControls.change(UI_TOUCH_TO_START);
 	
 	PDraw::set_offset(640, 480);
 
@@ -158,7 +157,7 @@ void EndingScreen::Loop(){
 	}
 
 	if (key_delay == 0) {
-		if (Clicked() || Gui_touch) {
+		if (Clicked() || TouchScreenControls.touch) {
 			change_to_next_screen = true;
 			PSound::set_musicvolume(0);
 			Fade_out(FADE_SLOW);

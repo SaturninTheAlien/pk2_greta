@@ -47,8 +47,7 @@ ScreensHandler::ScreensHandler():
 
 	Fadetext_Init();
 
-	if(PUtils::Is_Mobile())
-		GUI_Load();
+	TouchScreenControls.load();
 
 	tekstit = new PLang();
 	if (Load_Language(Settings.language) != 0) {
@@ -95,24 +94,16 @@ ScreensHandler::ScreensHandler():
 
 	ret = -1;
 
-	if (PUtils::Is_Mobile()) {
-	
+	if (Settings.fps == SETTINGS_VSYNC)
 		ret = Piste::set_fps(-1);
-	
-	} else {
-
-		if (Settings.fps == SETTINGS_VSYNC)
-			ret = Piste::set_fps(-1);
-		else if (Settings.fps == SETTINGS_30FPS)
-			ret = Piste::set_fps(30);
-		else if (Settings.fps == SETTINGS_60FPS)
-			ret = Piste::set_fps(60);
-		else if (Settings.fps == SETTINGS_85FPS)
-			ret = Piste::set_fps(85);
-		else if (Settings.fps == SETTINGS_120FPS)
-			ret = Piste::set_fps(120);
-
-	}
+	else if (Settings.fps == SETTINGS_30FPS)
+		ret = Piste::set_fps(30);
+	else if (Settings.fps == SETTINGS_60FPS)
+		ret = Piste::set_fps(60);
+	else if (Settings.fps == SETTINGS_85FPS)
+		ret = Piste::set_fps(85);
+	else if (Settings.fps == SETTINGS_120FPS)
+		ret = Piste::set_fps(120);
 
 	if (ret != 0) {
 		PLog::Write(PLog::ERR, "PK2", "FPS mode not supported, changing to 60fps");
@@ -185,8 +176,8 @@ void ScreensHandler::Loop() {
 
 	PInput::UpdateMouse(this->current_screen->keys_move, Settings.isFullScreen);
 	
-	if (PUtils::Is_Mobile())
-		GUI_Update();
+	if (Settings.touchscreen_controls)
+		TouchScreenControls.update();
 
 	this->current_screen->Loop();
 

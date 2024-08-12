@@ -61,15 +61,9 @@ static void start_test(const char* arg) {
 
 }
 
-// Clean memory (needed?)
 static void quit() {
 
-	//Settings_Save();
-
 	PSound::stop_music();
-
-	if (PUtils::Is_Mobile())
-		GUI_Exit();
 
 	if (Game!=nullptr){
 		delete Game;

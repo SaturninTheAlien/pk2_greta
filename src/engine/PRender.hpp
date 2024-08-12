@@ -8,16 +8,15 @@
 
 namespace PRender {
 
-struct FRECT {
-	
-	float x, y, w, h;
+class FRECT {
+public:
+	float x=0, y=0, w=0, h=0;
 
 };
 
-struct RECT {
-	
-	int x, y, w, h;
-
+class RECT {
+public:	
+	int x=0, y=0, w=0, h=0;
 };
 
 class Renderer {

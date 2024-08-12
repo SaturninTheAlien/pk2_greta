@@ -14,7 +14,6 @@
 #include "engine/PLang.hpp"
 #include "engine/PLog.hpp"
 #include "engine/PFile.hpp"
-#include "engine/PGui.hpp"
 #include <functional>
 
 namespace Piste {

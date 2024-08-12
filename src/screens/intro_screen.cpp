@@ -86,9 +86,8 @@ void IntroScreen::Draw(){
 }
 
 void IntroScreen::Init() {
-	
-	if(PUtils::Is_Mobile())
-		GUI_Change(UI_TOUCH_TO_START);
+
+	TouchScreenControls.change(UI_TOUCH_TO_START);
 	
 	PDraw::set_offset(640, 480);
 
@@ -115,7 +114,7 @@ void IntroScreen::Loop() {
 
 	if (!closing_intro) {
 
-		if (Clicked() || Gui_touch || intro_counter >= 3500){
+		if (Clicked() || TouchScreenControls.touch || intro_counter >= 3500){
 			closing_intro = true;
 			Fade_out(FADE_SLOW);
 		}

@@ -291,8 +291,7 @@ void MapScreen::Init() {
 		throw PExcept::PException("Episode not started!");
 	}
 
-	if(PUtils::Is_Mobile())
-		GUI_Change(UI_CURSOR);
+	TouchScreenControls.change(UI_CURSOR);
 
 	mouse_hidden = false;
 	
@@ -352,8 +351,7 @@ void MapScreen::Loop() {
 
 	} else {
 	
-		if (!PUtils::Is_Mobile() || !Settings.touchscreen_controls)
-			Draw_Cursor(PInput::mouse_x, PInput::mouse_y);
+		Draw_Cursor(PInput::mouse_x, PInput::mouse_y);
 
 	}
 

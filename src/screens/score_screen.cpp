@@ -245,8 +245,7 @@ int ScoreScreen::Draw_ScoreCount() {
 		Fade_out(FADE_SLOW);
 	}
 
-	if (!PUtils::Is_Mobile() || !Settings.touchscreen_controls)
-		Draw_Cursor(PInput::mouse_x, PInput::mouse_y);
+	Draw_Cursor(PInput::mouse_x, PInput::mouse_y);
 
 	return 0;
 }
@@ -262,8 +261,7 @@ ScoreScreen::~ScoreScreen(){
 
 void ScoreScreen::Init() {
 
-	if(PUtils::Is_Mobile())
-		GUI_Change(UI_CURSOR);
+	TouchScreenControls.change(UI_CURSOR);
 	
 	PDraw::set_offset(640, 480);
 

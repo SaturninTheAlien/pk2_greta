@@ -256,7 +256,10 @@ int MenuScreen::Draw_Radio(int x, int y, int num, int sel) {
 }
 
 void MenuScreen::Draw_Menu_Main() {
-	int my = PUtils::Is_Mobile()? 260 : 240;//250;
+
+	//TODO Test it!
+	//int my = Settings.touchscreen_controls? 260 : 240;//250;
+	int my = 240;
 
 	Draw_BGSquare(160, 200, 640-180, 410, 224);
 
@@ -301,19 +304,10 @@ void MenuScreen::Draw_Menu_Main() {
 	}
 	my += 20;
 
-	if (PUtils::Is_Mobile()) {
-		if (Draw_Menu_Text("manage data",180,my)){
-			menu_nyt = MENU_DATA;
-		}
-		my += 20;
+	if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_controls),180,my)){
+		menu_nyt = MENU_CONTROLS;
 	}
-
-	//if (!PUtils::Is_Mobile()) {
-		if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_controls),180,my)){
-			menu_nyt = MENU_CONTROLS;
-		}
-		my += 20;
-	//}
+	my += 20;
 
 	if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_graphics),180,my)){
 		menu_nyt = MENU_GRAPHICS;
@@ -325,7 +319,7 @@ void MenuScreen::Draw_Menu_Main() {
 	}
 	my += 20;
 
-	if (PUtils::Is_Mobile() && Game) {
+	if (Settings.touchscreen_controls && Game) {
 		if (Draw_Menu_Text("map",180,my)) {
 			next_screen = SCREEN_MAP;
 
@@ -335,11 +329,9 @@ void MenuScreen::Draw_Menu_Main() {
 		my += 20;
 	}
 
-	if (!PUtils::Is_Mobile()) {
-		if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_exit),180,my))
-			Fade_Quit();
+	if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_exit),180,my))
+		Fade_Quit();
 		my += 20;
-	}
 
 }
 
@@ -348,16 +340,18 @@ void MenuScreen::Draw_Menu_Name() {
 	bool mouse_on_text = false;
 	size_t nameSize = strlen(menu_name);
 
-	int keyboard_size;
-	if(/*editing_name &&*/ PUtils::Is_Mobile())
+	int keyboard_size = 0;
+	Draw_BGSquare(90, 160, 640-90, 480-80, 224);
+
+	/*if(Settings.touchscreen_controls)
 		keyboard_size = 180;
 	else
 		keyboard_size = 0;
 
-	if (/*editing_name &&*/ PUtils::Is_Mobile())
+	if (Settings.touchscreen_controls)
 		Draw_BGSquare(90, 20, 640-90, 220, 224);
 	else
-		Draw_BGSquare(90, 160, 640-90, 480-80, 224);
+		Draw_BGSquare(90, 160, 640-90, 480-80, 224);*/
 	
 	int tx_start = 180;
 	int tx_end = tx_start + 15*20;
@@ -648,7 +642,7 @@ void MenuScreen::Draw_Menu_Graphics() {
 		bool wasFullScreen = Settings.isFullScreen;
 		int  oldfps = Settings.fps;
 
-		if (!PUtils::Is_Mobile()) {
+		if (!Settings.touchscreen_controls) {
 			if (Settings.isFullScreen){
 				if (Draw_Menu_Text("fullscreen mode is on",180,my)){
 					Settings.isFullScreen = false;
@@ -683,7 +677,7 @@ void MenuScreen::Draw_Menu_Graphics() {
 
 		my += 31 + 5;
 
-		if (!PUtils::Is_Mobile()) {
+		if (!Settings.touchscreen_controls) {
 			mx = 100;
 			PDraw::font_write(fontti1, "nearest", mx, my);
 			mx += 15 + 51;
@@ -767,15 +761,15 @@ void MenuScreen::Draw_Menu_Graphics() {
 
 		this->drawBoolBoxGroup(Settings.touchscreen_controls,
 							save_settings,
-							"Touchscreen controls are enabled",
-							"Touchscreen controls are disabled");
+							"Touchscreen controls on",
+							"Touchscreen controls off");
 
 		this->drawBoolBoxGroup(Settings.double_speed,
 							save_settings,
 							tekstit->Get_Text(PK_txt.gfx_speed_double),
 							tekstit->Get_Text(PK_txt.gfx_speed_normal));
 
-		//if (!PUtils::Is_Mobile())
+		//if (!Settings.touchscreen_controls)
 			if (Draw_Menu_Text("more",100,360)){
 				moreOptions = true;
 				chosen_menu_id = 0; //Set menu cursor to 0
@@ -999,27 +993,6 @@ void MenuScreen::Draw_Menu_Controls() {
 			save_settings = true;
 		}
 	}
-	my += 20;
-
-	if (PUtils::Is_Mobile()) {
-
-		if (Settings.touchscreen_controls) {
-			if (Draw_Menu_Text("turn off touchscreen controls",100,my)) {
-			
-				Settings.touchscreen_controls = false;
-				save_settings = true;
-			}
-		} else { 
-			if (Draw_Menu_Text("turn on touchscreen controls",100,my)) {
-		
-				Settings.touchscreen_controls = true;
-				save_settings = true;
-		
-			}
-		}
-		my += 20;
-	}
-
 	my += 20;
 	if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_return),180,my)){
 		menu_nyt = MENU_MAIN;
@@ -1274,16 +1247,14 @@ void MenuScreen::Draw() {
 		PDraw::font_write(fontti1, PK2_VERSION_STR_MENU, 0, 470);
 
 	if (!mouse_hidden)
-		if (!PUtils::Is_Mobile() || !Settings.touchscreen_controls)
-			Draw_Cursor(PInput::mouse_x, PInput::mouse_y);
+		Draw_Cursor(PInput::mouse_x, PInput::mouse_y);
 }
 
 
 
 void MenuScreen::Init() {
 
-	if(PUtils::Is_Mobile())
-		GUI_Change(UI_CURSOR);
+	TouchScreenControls.change(UI_CURSOR);
 	
 	PDraw::set_offset(640, 480);
 	

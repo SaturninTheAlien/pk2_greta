@@ -407,12 +407,7 @@ void PlayingScreen::Draw() {
 
 void PlayingScreen::Init(){
 
-	if(PUtils::Is_Mobile()) {
-		if (Settings.touchscreen_controls)
-			GUI_Change(UI_GAME_BUTTONS);
-		else 
-			GUI_Change(UI_TOUCH_TO_START);
-	}
+	TouchScreenControls.change(UI_GAME_BUTTONS);
 	
 	PDraw::set_offset(screen_width, screen_height);
 
@@ -441,7 +436,8 @@ void PlayingScreen::Loop(){
 
 		if (!skip_frame) {
 			if(key_delay==0 && !Game->game_over&&!Game->level_clear){
-				if (PInput::Keydown(PInput::ESCAPE) || PInput::Keydown(PInput::JOY_START) || Gui_menu || Gui_touch) {
+				if (PInput::Keydown(PInput::ESCAPE) || PInput::Keydown(PInput::JOY_START) ||
+				TouchScreenControls.menu || TouchScreenControls.touch) {
 					if(test_level)
 						Fade_Quit();
 					else {

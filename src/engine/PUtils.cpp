@@ -21,8 +21,6 @@
 
 namespace PUtils {
 
-bool force_mobile = false;
-
 void Lower(char* string) {
 
 	for(; *string != '\0'; string++)
@@ -109,21 +107,7 @@ void GetLanguage(char* lang) {
 	lang[2] = '\0';
 }
 
-void Force_Mobile() {
-
-	force_mobile = true;
-
-}
-
-bool Is_Mobile() {
-
-	#ifdef __ANDROID__
-		return true;
-	#else
-		return force_mobile;
-	#endif
-
-}
+// TODO Test this
 
 #ifdef __ANDROID__
 bool ExternalWriteable() {
