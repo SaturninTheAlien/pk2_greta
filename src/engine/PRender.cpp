@@ -35,12 +35,12 @@ void load_ui_texture(PFile::Path file) {
 
 	try{
 		PFile::RW rw = file.GetRW2("r");
-		SDL_Surface* surface = IMG_Load_RW((SDL_RWops*)(rw._rwops), 1);
+		SDL_Surface* surface = IMG_Load_RW((SDL_RWops*)(rw._rwops), 0);
 		renderer->load_ui_texture(surface);
 	}
 	catch(const PFile::PFileException& e){
 		PLog::Write(PLog::ERR,"PRender", e.what());
-		throw std::runtime_error("Cannot load UI Texture!");
+		throw std::runtime_error("Cannot load touchscreen texture!");
 	}
 }
 

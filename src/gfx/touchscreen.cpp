@@ -87,16 +87,15 @@ void PK2TouchScreenControls::change(int ui_mode) {
 }
 
 void PK2TouchScreenControls::load() {
+	if(loaded)return;
 
 	int button_w = 230, button_h = 220;
 
 	int w = button_w * 0.8;
 	int h = button_h * 0.8;
 
-	PFile::Path path("mobile" PE_SEP "all.png");
-	std::cout<<"A"<<std::endl;
-	//PRender::load_ui_texture(path);
-	std::cout<<"B"<<std::endl;
+	PFile::Path path("gfx" PE_SEP "touchscreen.png");
+	PRender::load_ui_texture(path);
 
 	PRender::RECT src, dst;
 
@@ -153,8 +152,6 @@ void PK2TouchScreenControls::load() {
 bool PK2TouchScreenControls::readGui(const PK2TouchScreenButton& gui) {
 	if (!gui.active)
 		return false;
-
-	gui.draw();
 
 	for (PInput::touch_t touch : PInput::touchlist) {
 
@@ -308,6 +305,10 @@ void PK2TouchScreenControls::reset(){
 
 void PK2TouchScreenControls::update() {
 
+	if(!this->loaded){
+		this->load();
+	}
+
 	const int DELTA = 5;
 
 	this->pad_button = 2;
@@ -391,6 +392,16 @@ void PK2TouchScreenControls::update() {
 
 	this->any = egg || doodle || gift || up || down || menu || tab;
 
+	this->gui_doodle.draw();
+	this->gui_down.draw();
+	this->gui_egg.draw();
+	this->gui_gift.draw();
+	this->gui_menu.draw();
+	this->gui_padbg.draw();
+	this->gui_padbt.draw();
+	this->gui_tab.draw();
+	this->gui_touch.draw();
+	this->gui_up.draw();
 }
 
 PK2TouchScreenControls TouchScreenControls;

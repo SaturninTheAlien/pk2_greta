@@ -403,6 +403,14 @@ void PlayingScreen::Draw() {
 		Wavetext_Draw(tekstit->Get_Text(PK_txt.game_tryagain),fontti2,screen_width/2-75,screen_height/2-9+10);
 	
 	}
+
+	/**
+	 * @brief 
+	 * For debugging touchscreen controls
+	 */
+	if(dev_mode && Settings.touchscreen_controls){
+		Draw_Cursor(PInput::mouse_x, PInput::mouse_y);
+	}
 }
 
 void PlayingScreen::Init(){

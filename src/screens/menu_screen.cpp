@@ -319,7 +319,7 @@ void MenuScreen::Draw_Menu_Main() {
 	}
 	my += 20;
 
-	if (Settings.touchscreen_controls && Game) {
+	/*if (Settings.touchscreen_controls && Game) {
 		if (Draw_Menu_Text("map",180,my)) {
 			next_screen = SCREEN_MAP;
 
@@ -327,7 +327,7 @@ void MenuScreen::Draw_Menu_Main() {
 			Game = nullptr;
 		}
 		my += 20;
-	}
+	}*/
 
 	if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_exit),180,my))
 		Fade_Quit();
@@ -642,21 +642,19 @@ void MenuScreen::Draw_Menu_Graphics() {
 		bool wasFullScreen = Settings.isFullScreen;
 		int  oldfps = Settings.fps;
 
-		if (!Settings.touchscreen_controls) {
-			if (Settings.isFullScreen){
-				if (Draw_Menu_Text("fullscreen mode is on",180,my)){
-					Settings.isFullScreen = false;
-				}
-			} else{
-				if (Draw_Menu_Text("fullscreen mode is off",180,my)){
-					Settings.isFullScreen = true;
-				}
+		if (Settings.isFullScreen){
+			if (Draw_Menu_Text("fullscreen mode is on",180,my)){
+				Settings.isFullScreen = false;
 			}
-			if (Draw_BoolBox(100, my, Settings.isFullScreen, true)) {
-				Settings.isFullScreen = !Settings.isFullScreen;
+		} else{
+			if (Draw_Menu_Text("fullscreen mode is off",180,my)){
+				Settings.isFullScreen = true;
 			}
-			my += 40;
 		}
+		if (Draw_BoolBox(100, my, Settings.isFullScreen, true)) {
+			Settings.isFullScreen = !Settings.isFullScreen;
+		}
+		my += 40;
 
 		//TODO - Fix touch position when screen fit
 

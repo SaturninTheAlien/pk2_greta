@@ -62,6 +62,8 @@ private:
 	PK2TouchScreenButton gui_touch;
 	PK2TouchScreenButton gui_tab;
 
+	bool loaded = false;
+
 	int UI_mode = UI_NONE;
 
 	int pad_id = 0;

@@ -159,10 +159,6 @@ int Clicked() {
 
 void Draw_Cursor(int x, int y) {
 	PDraw::image_cutclip(game_assets,x,y,621,461,640,480);
-
-	//if(!Settings.touchscreen_controls || dev_mode){
-		//PDraw::image_cutclip(game_assets,x,y,621,461,640,480);
-	//}	
 }
 
 void Prepare_DataPath() {

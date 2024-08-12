@@ -46,8 +46,9 @@ ScreensHandler::ScreensHandler():
 	Calculate_SinCos();
 
 	Fadetext_Init();
-
-	TouchScreenControls.load();
+	if(Settings.touchscreen_controls){
+		TouchScreenControls.load();
+	}
 
 	tekstit = new PLang();
 	if (Load_Language(Settings.language) != 0) {

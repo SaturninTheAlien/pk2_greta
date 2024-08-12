@@ -245,8 +245,10 @@ int ScoreScreen::Draw_ScoreCount() {
 		Fade_out(FADE_SLOW);
 	}
 
-	Draw_Cursor(PInput::mouse_x, PInput::mouse_y);
-
+	if(!Settings.touchscreen_controls || dev_mode){
+		Draw_Cursor(PInput::mouse_x, PInput::mouse_y);
+	}
+	
 	return 0;
 }
 

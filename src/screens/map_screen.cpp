@@ -350,9 +350,10 @@ void MapScreen::Loop() {
 		degree_temp = degree;
 
 	} else {
-	
-		Draw_Cursor(PInput::mouse_x, PInput::mouse_y);
 
+		if(!Settings.touchscreen_controls || dev_mode){
+			Draw_Cursor(PInput::mouse_x, PInput::mouse_y);
+		}
 	}
 
 	if (going_to_game && !Is_Fading()) {

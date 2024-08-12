@@ -689,7 +689,7 @@ void GameClass::updateCamera(){
 
 	LevelSector* sector = playerSprite->level_sector;
 	
-	if(dev_mode && PInput::MouseLeft() /*&& !PUtils::Is_Mobile()*/) {
+	if(dev_mode && PInput::MouseLeft() && !Settings.touchscreen_controls) {
 		this->camera_x += PInput::mouse_x - screen_width / 2;
 		this->camera_y += PInput::mouse_y - screen_height / 2;
 	}
