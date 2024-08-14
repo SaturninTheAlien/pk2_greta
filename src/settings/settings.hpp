@@ -60,7 +60,7 @@ public:
 	bool  draw_itembar = true;
 
 	bool  draw_gui = false;
-	bool  touchscreen_controls = false;
+	bool  touchscreen_mode = false;
 	
 	int   fps;
 	bool  isFullScreen = true;

@@ -46,7 +46,7 @@ void Settings_Init() {
 	Settings.draw_itembar = true;
 
 	Settings.draw_gui = true;
-	Settings.touchscreen_controls = false;
+	Settings.touchscreen_mode = false;
 
 	Settings.fps = SETTINGS_60FPS;//SETTINGS_VSYNC;
 	Settings.isFullScreen = true;
@@ -115,7 +115,7 @@ void to_json(nlohmann::json& j, const GAME_CONTROLS& controls){
 void from_json(const nlohmann::json& j, PK2SETTINGS& s){
 	j.at("language").get_to(s.language);
 	j.at("gui").get_to(s.draw_gui);
-	j.at("touchscreen").get_to(s.touchscreen_controls);
+	j.at("touchscreen").get_to(s.touchscreen_mode);
 	j.at("fps").get_to(s.fps);
 	j.at("fullscreen").get_to(s.isFullScreen);
 	j.at("double_speed").get_to(s.double_speed);
@@ -139,7 +139,7 @@ void to_json(nlohmann::json& j, const PK2SETTINGS& s){
 	j["language"] = s.language;
 	j["gui"] = s.draw_gui;
 
-	j["touchscreen"] = s.touchscreen_controls;
+	j["touchscreen"] = s.touchscreen_mode;
 	j["fps"] = s.fps;
 
 	j["fullscreen"] = s.isFullScreen;

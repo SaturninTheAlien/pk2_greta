@@ -258,7 +258,7 @@ int MenuScreen::Draw_Radio(int x, int y, int num, int sel) {
 void MenuScreen::Draw_Menu_Main() {
 
 	//TODO Test it!
-	//int my = Settings.touchscreen_controls? 260 : 240;//250;
+	//int my = Settings.touchscreen_mode? 260 : 240;//250;
 	int my = 240;
 
 	Draw_BGSquare(160, 200, 640-180, 410, 224);
@@ -319,7 +319,7 @@ void MenuScreen::Draw_Menu_Main() {
 	}
 	my += 20;
 
-	/*if (Settings.touchscreen_controls && Game) {
+	/*if (Settings.touchscreen_mode && Game) {
 		if (Draw_Menu_Text("map",180,my)) {
 			next_screen = SCREEN_MAP;
 
@@ -343,12 +343,12 @@ void MenuScreen::Draw_Menu_Name() {
 	int keyboard_size = 0;
 	Draw_BGSquare(90, 160, 640-90, 480-80, 224);
 
-	/*if(Settings.touchscreen_controls)
+	/*if(Settings.touchscreen_mode)
 		keyboard_size = 180;
 	else
 		keyboard_size = 0;
 
-	if (Settings.touchscreen_controls)
+	if (Settings.touchscreen_mode)
 		Draw_BGSquare(90, 20, 640-90, 220, 224);
 	else
 		Draw_BGSquare(90, 160, 640-90, 480-80, 224);*/
@@ -675,7 +675,7 @@ void MenuScreen::Draw_Menu_Graphics() {
 
 		my += 31 + 5;
 
-		if (!Settings.touchscreen_controls) {
+		if (!Settings.touchscreen_mode) {
 			mx = 100;
 			PDraw::font_write(fontti1, "nearest", mx, my);
 			mx += 15 + 51;
@@ -757,17 +757,17 @@ void MenuScreen::Draw_Menu_Graphics() {
 							"In-Game GUI is enabled",
 							"In-Game GUI is disabled");
 
-		this->drawBoolBoxGroup(Settings.touchscreen_controls,
+		this->drawBoolBoxGroup(Settings.touchscreen_mode,
 							save_settings,
-							"Touchscreen controls on",
-							"Touchscreen controls off");
+							"Touchscreen mode on",
+							"Touchscreen mode off");
 
 		this->drawBoolBoxGroup(Settings.double_speed,
 							save_settings,
 							tekstit->Get_Text(PK_txt.gfx_speed_double),
 							tekstit->Get_Text(PK_txt.gfx_speed_normal));
 
-		//if (!Settings.touchscreen_controls)
+		//if (!Settings.touchscreen_mode)
 			if (Draw_Menu_Text("more",100,360)){
 				moreOptions = true;
 				chosen_menu_id = 0; //Set menu cursor to 0

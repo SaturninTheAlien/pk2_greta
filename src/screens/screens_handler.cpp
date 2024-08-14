@@ -46,7 +46,7 @@ ScreensHandler::ScreensHandler():
 	Calculate_SinCos();
 
 	Fadetext_Init();
-	if(Settings.touchscreen_controls){
+	if(Settings.touchscreen_mode){
 		TouchScreenControls.load();
 	}
 
@@ -177,7 +177,7 @@ void ScreensHandler::Loop() {
 
 	PInput::UpdateMouse(this->current_screen->keys_move, Settings.isFullScreen);
 	
-	if (Settings.touchscreen_controls)
+	if (Settings.touchscreen_mode)
 		TouchScreenControls.update();
 
 	this->current_screen->Loop();

@@ -408,7 +408,7 @@ void PlayingScreen::Draw() {
 	 * @brief 
 	 * For debugging touchscreen controls
 	 */
-	if(dev_mode && Settings.touchscreen_controls){
+	if(dev_mode && Settings.touchscreen_mode){
 		Draw_Cursor(PInput::mouse_x, PInput::mouse_y);
 	}
 }

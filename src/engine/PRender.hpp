@@ -10,12 +10,18 @@ namespace PRender {
 
 class FRECT {
 public:
+	FRECT() = default;
+	FRECT(float x, float y, float w, float h)
+	:x(x), y(y), w(w), h(h){}
 	float x=0, y=0, w=0, h=0;
 
 };
 
 class RECT {
-public:	
+public:
+	RECT() = default;
+	RECT(int x, int y, int w, int h)
+	:x(x), y(y), w(w), h(h){}
 	int x=0, y=0, w=0, h=0;
 };
 

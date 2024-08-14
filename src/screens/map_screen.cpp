@@ -351,7 +351,7 @@ void MapScreen::Loop() {
 
 	} else {
 
-		if(!Settings.touchscreen_controls || dev_mode){
+		if(!Settings.touchscreen_mode || dev_mode){
 			Draw_Cursor(PInput::mouse_x, PInput::mouse_y);
 		}
 	}

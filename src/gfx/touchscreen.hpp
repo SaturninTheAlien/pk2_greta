@@ -18,7 +18,6 @@ public:
 	PK2TouchScreenButton()=default;
 	PK2TouchScreenButton(PRender::RECT src, PRender::RECT dst, u8 alpha);
 	void draw()const;
-	bool active = false;
     PRender::RECT src, dst;
     u8 alpha = 0;
 };
@@ -46,8 +45,6 @@ private:
 	bool readGui(const PK2TouchScreenButton& gui);
 	float holdPad(float pos_x, int* button);
 	int getPad();
-
-	void set(bool flag);
 
 	PK2TouchScreenButton gui_padbg;
 	PK2TouchScreenButton gui_padbt;
