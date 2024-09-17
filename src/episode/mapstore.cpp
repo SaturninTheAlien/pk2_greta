@@ -9,6 +9,7 @@
 #include "engine/PUtils.hpp"
 #include "engine/PFile.hpp"
 #include "engine/PLog.hpp"
+#include "engine/PZip.hpp"
 
 #include <cstring>
 #include <algorithm>
@@ -35,29 +36,23 @@ void Search_Episodes() {
 	
 	list = PFile::Path(mapstore_path).scandir(".zip");
 	for (std::string zip : list) {
-		
-		PFile::Zip* zp = PFile::OpenZip(mapstore_path + zip);
-		if (zp == nullptr) {
+		try{
+			PFile::PZip zp(mapstore_path + zip);
+			std::vector<std::string> zip_list = PFile::Path(&zp, "episodes" PE_SEP).scandir("/");
 
-			PLog::Write(PLog::ERR, "PK2", "Can't open zip file %s", zip.c_str());
-			continue;
+			for (std::string ep : zip_list) {
+				episode_entry e;
+				e.name = ep;
+				e.is_zip = true;
+				e.zipfile = zip;
+				episodes.push_back(e);
+				
+			}
 
 		}
-
-		std::vector<std::string> zip_list = PFile::Path(zp, "episodes" PE_SEP).scandir("/");
-
-		for (std::string ep : zip_list) {
-
-			episode_entry e;
-			e.name = ep;
-			e.is_zip = true;
-			e.zipfile = zip;
-			episodes.push_back(e);
-			
-		}
-
-		PFile::CloseZip(zp);
-		
+		catch(const std::exception& e){
+			PLog::Write(PLog::ERR, "PK2", e.what());
+		}		
 	}
 
 	#endif

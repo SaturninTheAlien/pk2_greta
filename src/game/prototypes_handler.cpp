@@ -1,8 +1,13 @@
 #include "prototypes_handler.hpp"
 
 #include <fstream>
+#include <filesystem>
+
 #include "engine/PLog.hpp"
+#include "engine/PString.hpp"
+#include "engine/PFilesystem.hpp"
 #include "episode/episodeclass.hpp"
+
 #include "exceptions.hpp"
 #include "system.hpp"
 
@@ -17,201 +22,116 @@ void PrototypesHandler::clear(){
 	mPrototypes.clear();
 }
 
-PFile::Path PrototypesHandler::mGetDir(const std::string& filename)const{
-	if(this->mEpisode!=nullptr){
-		return this->mEpisode->Get_Dir(filename);
-	}
-	else if(this->mSearchingDirectory.empty()){
-		return PFile::Path(filename);
-	}
-	else{
-		std::string path(this->mSearchingDirectory + PE_SEP + filename);
-		return PFile::Path(path);
-	} 
-}
-
-bool PrototypesHandler::mFindSprite(PFile::Path& path)const{
-	return FindAsset(&path, "sprites" PE_SEP);
-}
-
-PrototypeClass* PrototypesHandler::loadPrototype(const std::string& filename_in){
+PrototypeClass* PrototypesHandler::loadPrototype(const std::string& filename_cAsE){
 
 	if(this->mAssetsLoaded){
 		throw PExcept::PException("Cannot load a sprite prototype after loading sprite assets!");
 	}
+	std::string filename = PString::rtrim(PString::lowercase(filename_cAsE));
 
 
-    bool legacy_spr = true; //try to load legacy .spr file
-	std::string filename_clean; //filename without .spr
-
-	if(filename_in.size()>4 && filename_in.substr(filename_in.size()-4,4)==".spr"){
-		filename_clean = filename_in.substr(0, filename_in.size() -4);
-	}
-	else if(filename_in.size()>5 && filename_in.substr(filename_in.size()-5,5)==".spr2"){
-		legacy_spr = false;
-		filename_clean = filename_in.substr(0, filename_in.size() -5);
-	}
-	else if(filename_in.size()>4 && filename_in.substr(filename_in.size()-4,4)==".SPR"){
-		filename_clean = filename_in.substr(0, filename_in.size() -4);
-	}
-
-	else if(filename_in.size()>0){
-		legacy_spr = false;
-		filename_clean = filename_in;
-	}
-	else{
-		return nullptr;
-	}
-	
-
-	if(!this->mJsonPriority){
-		if(legacy_spr){
-			filename_clean+=".spr";
-		}
-		else{
-			filename_clean+=".spr2";
-		}
-	}
-
+	std::string filename_stem =  std::filesystem::path(filename).stem().string();	
 	/**
 	 * @brief Verify if the sprite is already loaded.
 	 * It's completely necessary because it prevents infinite recursive loop in some cases.
 	 */
 	for(PrototypeClass* prot:mPrototypes){
-		if(prot->filename==filename_clean){
+		if(prot->filename==filename_stem){
 			return prot;
 		}
 	}
+	
+	std::string extension = std::filesystem::path(filename).extension().string();
 
-	PrototypeClass* protot = nullptr;
+	std::optional<PFile::Path> path;
 
-	try{
+	if(extension==".spr2"){
+		path = PFilesystem::FindAsset(filename, PFilesystem::SPRITES_DIR);
+	}
+	else if(extension==".spr"){
+		path = PFilesystem::FindAsset(filename + "2", PFilesystem::SPRITES_DIR, ".spr");
+	}
+	else{
+		path = PFilesystem::FindAsset(filename + ".spr2", PFilesystem::SPRITES_DIR);
+	}
 
-		if(this->mJsonPriority){
-			std::string filename_j = filename_clean + ".spr2";
-			PFile::Path path_j = this->mGetDir(filename_j);
-			if(this->mFindSprite(path_j)){
-				protot = new PrototypeClass();
-				/**
-				 * @brief 
-				 * TO DO Redesign it 
-				 */
-				protot->loadPrototypeJSON(path_j,
-					[&](const std::string& filename_in){return this->loadPrototype(filename_in);});
-			}
-			else if(legacy_spr){
-				PFile::Path path = this->mGetDir(filename_in);
-				if (!this->mFindSprite(path)) {
-					throw PExcept::FileNotFoundException(filename_clean, PExcept::MISSING_SPRITE_PROTOTYPE);
-				}
-				path_j = path;
-				protot = new PrototypeClass();
-				protot->loadPrototypeLegacy(path);
-			}
-			else{
-				throw PExcept::FileNotFoundException(filename_j, PExcept::MISSING_SPRITE_PROTOTYPE);
-			}
+	if(!path.has_value()){
+		throw PExcept::FileNotFoundException(filename_cAsE, PExcept::MISSING_SPRITE_PROTOTYPE);
+	}
+
+	extension = PString::lowercase(std::filesystem::path(path->str()).extension().string());
+
+
+	PrototypeClass* protot = new PrototypeClass();
+
+	if(extension==".spr2"){
+		/**
+		 * @brief 
+		 * TO DO Redesign it 
+		 */
+		protot->loadPrototypeJSON(*path,
+			[&](const std::string& filename_in){return this->loadPrototype(filename_in);});
+	}
+	else if(extension==".spr"){
+		protot->loadPrototypeLegacy(*path);
+	}
+	else{
+		throw PExcept::PException("Unknown sprite extension \""+extension+"\"");
+	}
+	protot->filename = filename_stem;
+	mPrototypes.push_back(protot);
+
+	if(this->mEpisode!=nullptr && !this->mEpisode->ignore_collectable){
+		const std::string& collectable_name = this->mEpisode->collectable_name;
+		if(protot->name.compare(0, collectable_name.size(), collectable_name)==0){
+			protot->big_apple = true;
 		}
-		else if(legacy_spr){
-			PFile::Path path = this->mGetDir(filename_clean);
-			if(this->mFindSprite(path)){
-				protot = new PrototypeClass();
-				protot->loadPrototypeLegacy(path);
-			}
-			else{
-				throw PExcept::FileNotFoundException(filename_clean, PExcept::MISSING_SPRITE_PROTOTYPE);
-			}
-		}
-		else{
-			PFile::Path path = this->mGetDir(filename_clean);
-			if(this->mFindSprite(path)){
-				protot = new PrototypeClass();
-				/**
-				 * @brief 
-				 * TO DO Redesign it 
-				 */
-				protot->loadPrototypeJSON(path,
-					[&](const std::string& filename_in){return this->loadPrototype(filename_in);});
-			}
-			else{
-				throw PExcept::FileNotFoundException(filename_clean, PExcept::MISSING_SPRITE_PROTOTYPE);
-			}
-		}
+	}
 
-		protot->filename = filename_clean;
+	
 
-		mPrototypes.push_back(protot);
+	//Check if ambient
+	if(protot->type==TYPE_BACKGROUND || protot->type==TYPE_FOREGROUND || protot->type==TYPE_TELEPORT){
+		protot->ambient = true;
+	}
+	else if(protot->indestructible && protot->damage==0 && protot->type!=TYPE_BONUS){
+		protot->ambient=true;
+	}
 
-		if(this->mEpisode!=nullptr && !this->mEpisode->ignore_collectable){
-			const std::string& collectable_name = this->mEpisode->collectable_name;
-			if(protot->name.compare(0, collectable_name.size(), collectable_name)==0){
-				protot->big_apple = true;
-			}
-		}
+	/**
+	 * @brief 
+	 * Load dependecies
+	 */
+
+	//Load transformation
+	if(!protot->transformation_str.empty()){
+		protot->transformation = this->loadPrototype(protot->transformation_str);
 
 		/**
 		 * @brief 
-		 * Load dependecies
+		 * Fix red bonus stone not hurting enemies on fall
 		 */
-
-		if(this->mShouldLoadDependencies){
-			//Check if ambient
-			if(protot->type==TYPE_BACKGROUND || protot->type==TYPE_FOREGROUND || protot->type==TYPE_TELEPORT){
-				protot->ambient = true;
-			}
-			else if(protot->indestructible && protot->damage==0 && protot->type!=TYPE_BONUS){
-				protot->ambient=true;
-			}
-
-			//Load transformation
-			if(!protot->transformation_str.empty()){
-				protot->transformation = this->loadPrototype(protot->transformation_str);
-
-				/**
-				 * @brief 
-				 * Fix red bonus stone not hurting enemies on fall
-				 */
-				if(protot->ambient && protot->transformation->type==TYPE_BONUS && !protot->enemy){
-					protot->ambient = false;
-				}
-			}
-
-			//Load bunus
-			if(!protot->bonus_str.empty()){
-				protot->bonus = this->loadPrototype(protot->bonus_str);
-			}
-
-			//Load ammo1
-			if(!protot->ammo1_str.empty()){
-				protot->ammo1 = this->loadPrototype(protot->ammo1_str);
-			}
-
-			//Load ammo2
-			if(!protot->ammo2_str.empty()){
-				protot->ammo2 = this->loadPrototype(protot->ammo2_str);
-			}
+		if(protot->ambient && protot->transformation->type==TYPE_BONUS && !protot->enemy){
+			protot->ambient = false;
 		}
-		return protot;
-
-	}
-	catch(const std::exception& e){
-		PLog::Write(PLog::ERR, "PK2 Sprites", e.what());
-		if(protot!=nullptr){
-			auto it = std::find(mPrototypes.begin(), mPrototypes.end(), protot);
-			if(it!=mPrototypes.end()){
-				mPrototypes.erase(it);
-			}
-			delete protot;
-			protot = nullptr;
-		}
-
-		std::string s1 = "SpritePrototypes: ";
-		s1 += e.what();
-
-		throw PExcept::PException(s1);
 	}
 
-	return nullptr;
+	//Load bunus
+	if(!protot->bonus_str.empty()){
+		protot->bonus = this->loadPrototype(protot->bonus_str);
+	}
+
+	//Load ammo1
+	if(!protot->ammo1_str.empty()){
+		protot->ammo1 = this->loadPrototype(protot->ammo1_str);
+	}
+
+	//Load ammo2
+	if(!protot->ammo2_str.empty()){
+		protot->ammo2 = this->loadPrototype(protot->ammo2_str);
+	}
+	
+	return protot;
 }
 
 void PrototypesHandler::savePrototype(PrototypeClass*prototype, const std::string& filename)const{

@@ -27,6 +27,12 @@ EpisodeClass* Episode = nullptr;
 
 #define VERSION "1.1"
 
+
+
+EpisodeClass::~EpisodeClass(){
+	PFilesystem::SetEpisode("");
+}
+
 void EpisodeClass::Clear_Scores() {
 
 	memset(&this->scores, 0, sizeof(this->scores));
@@ -201,7 +207,8 @@ void EpisodeClass::Load() {
 
 #ifdef PK2_USE_ZIP
 	if (entry.is_zip)
-		this->source_zip = PFile::OpenZip(data_path + "mapstore" PE_SEP + entry.zipfile);
+		//this->source_zip =  PFile::OpenZip(data_path + "mapstore" PE_SEP + entry.zipfile);
+		this->source_zip.open(data_path + "mapstore" PE_SEP + entry.zipfile);
 #endif
 
 	PFilesystem::SetEpisode(entry.name);
@@ -357,24 +364,15 @@ EpisodeClass::EpisodeClass(const char* player_name, episode_entry entry) {
 	
 }
 
-EpisodeClass::~EpisodeClass() {
-
-#ifdef PK2_USE_ZIP
-	if (this->entry.is_zip)
-		PFile::CloseZip(this->source_zip);
-#endif
-
-}
-
 PFile::Path EpisodeClass::Get_Dir(const std::string& file)const {
 
 	std::string path("episodes" PE_SEP);
 	path += entry.name + PE_SEP + file;
 
-#ifdef PK2_USE_ZIP
+/*#ifdef PK2_USE_ZIP
 	if (this->entry.is_zip)
-		return PFile::Path(this->source_zip, path);
-#endif
+		return PFile::Path( &this->source_zip, path);
+#endif*/
 
 	return PFile::Path(path);
 

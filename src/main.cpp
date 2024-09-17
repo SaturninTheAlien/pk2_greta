@@ -96,7 +96,13 @@ static void set_paths() {
 
 	#ifdef PK2_PORTABLE
 
-	data_path = "data" PE_SEP;
+	/**
+	 * @brief 
+	 * TODO
+	 * Redesign it
+	 */
+
+	data_path =  (std::filesystem::path(PFilesystem::GetAssetsPath()) / "data").string() + "/";
 	PFilesystem::CreateDirectory(data_path);
 
 	#else

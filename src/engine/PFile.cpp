@@ -23,6 +23,8 @@
 
 #include <SDL.h>
 
+#include "PZip.hpp"
+
 #ifdef PK2_USE_ZIP
 #include <zip.h>
 #endif
@@ -68,65 +70,6 @@ std::string mGetAssetPath(const std::string& path){
 }
 
 
-
-#ifdef PK2_USE_ZIP
-struct Zip {
-	std::string name;
-	zip_t *zip;
-	zip_source* src;
-	
-
-};
-void CloseZip(Zip* zp) {
-	if (zp) {
-	
-		//zip_close(zp->zip);
-		zip_source_close(zp->src);
-		zip_discard(zp->zip);	
-		delete zp;
-		
-	}
-}
-
-Zip* OpenZip(std::string path) {
-
-	std::string path_a = mGetAssetPath(path);
-	
-	SDL_RWops* rw = SDL_RWFromFile(path_a.c_str(), "r");
-	if (rw == NULL) {
-
-        PLog::Write(PLog::ERR, "PFile", "Can't open %s", path_a.c_str());
-		return nullptr;
-
-    }
-
-	int size = SDL_RWsize(rw);
-
-	void* buffer = malloc(size);
-	SDL_RWread(rw, buffer, size, 1);
-	SDL_RWclose(rw);
-
-	zip_error err;
-	zip_source_t* src = zip_source_buffer_create(buffer, size, 1, &err);
-    
-    zip_t* zip = zip_open_from_source(src, ZIP_RDONLY, &err);
-	
-
-	std::string name = path.substr(path.find_last_of(PE_SEP) + 1);
-
-	Zip* ret = new Zip;
-	ret->name = name;
-	
-	ret->src = src;
-	ret->zip = zip;
-
-    return ret;
-
-	return nullptr;
-}
-
-#endif
-
 void Path::FixSep() {
 
 	const char* nosep = PE_NOSEP;
@@ -145,7 +88,7 @@ Path::Path(std::string path) {
 
 }
 
-Path::Path(Zip* zip_file, std::string path) {
+Path::Path(PZip* zip_file, std::string path) {
 
 	if(zip_file == nullptr) {
 
@@ -232,30 +175,6 @@ bool is_type(const char* file, const char* type) {
 }
 
 #ifdef PK2_USE_ZIP
-
-static int zip_get_index(zip_t* z, const char* filename, int* size) {
-
-	struct zip_stat st;
-    zip_stat_init(&st);
-
-	int sz = zip_get_num_entries(z, 0);
-    for (int i = 0; i < sz; i++) {
-
-		zip_stat_index(z, i, 0, &st);
-
-		if ( PUtils::NoCaseCompare(st.name, filename) ) {
-			
-			*size = st.size;
-			return i;
-
-		}
-
-	}
-
-	return -1;
-
-}
-
 static bool pathcomp(const char* path, const char* entry) {
 
 	while(*path != '\0') {
@@ -278,7 +197,7 @@ static bool pathcomp(const char* path, const char* entry) {
 
 }
 
-std::vector<std::string> scan_zip(Zip* zip_file, const char* path, const char* type) {
+std::vector<std::string> scan_zip(PZip* zip_file, const char* path, const char* type) {
 
     std::vector<std::string> result;
 
@@ -287,10 +206,10 @@ std::vector<std::string> scan_zip(Zip* zip_file, const char* path, const char* t
     struct zip_stat st;
     zip_stat_init(&st);
     
-    int sz = zip_get_num_entries(zip_file->zip, 0);
+    int sz = zip_get_num_entries((zip_t*)zip_file->zip, 0);
     for (int i = 0; i < sz; i++) {
         
-        zip_stat_index(zip_file->zip, i, 0, &st);
+        zip_stat_index((zip_t*)zip_file->zip, i, 0, &st);
 
 		if( pathcomp(path, st.name) ) {
 
@@ -538,42 +457,13 @@ std::string Path::GetFileName()const {
 	return p.filename().u8string();
 }
 
-#ifdef PK2_USE_ZIP
-
-zip_file_t* mOpenZipFile(Zip* zip_file, const char*filename, int&size){
-	int index = zip_get_index(zip_file->zip, filename, &size);
-	if (index < 0 || size<=0) {
-
-		std::ostringstream os;
-		os<<"Can't get RW from zip \""<<zip_file->name<<
-		"\", file \""<<filename<<"\"";
-
-		throw PFileException(os.str());
-	}
-
-	zip_file_t* zfile = zip_fopen_index(zip_file->zip, index, 0);
-	if (!zfile) {
-
-		std::ostringstream os;
-		os<<"RW from zip \""<<zip_file->name<<"\", file \""<<
-		filename<<"\" is NULL";
-
-
-		throw PFileException(os.str());
-
-	}
-
-	return zfile;
-}
-
-#endif
 
 void Path::getBuffer(std::vector<char>& bytes)const{
 	if(this->zip_file != nullptr){
 		#ifdef PK2_USE_ZIP
 
 		int size = 0;
-		zip_file_t* zfile = mOpenZipFile(this->zip_file, this->path.c_str(), size);
+		zip_file_t* zfile = (zip_file_t*)this->zip_file->readFile(this->path, size);
 		bytes.resize(size);
 		zip_fread(zfile, bytes.data(), size);
 		zip_fclose(zfile);	
@@ -616,7 +506,7 @@ RW Path::GetRW2(const char* mode)const {
 		#ifdef PK2_USE_ZIP
 		
 		int size = 0;
-		zip_file_t* zfile = mOpenZipFile(this->zip_file, this->path.c_str(), size);
+		zip_file_t* zfile = (zip_file_t*)this->zip_file->readFile(this->path, size);
 		void* buffer = SDL_malloc(size);
 		zip_fread(zfile, buffer, size);
 		zip_fclose(zfile);
@@ -659,7 +549,7 @@ nlohmann::json Path::GetJSON()const{
 		#ifdef PK2_USE_ZIP
 
 		int size = 0;
-		zip_file_t* zfile = mOpenZipFile(this->zip_file, this->path.c_str(), size);
+		zip_file_t* zfile = (zip_file_t*)this->zip_file->readFile(this->path, size);
 		char* buffer = new char[size+1];
 		buffer[size] = '\0';
 		
@@ -689,7 +579,7 @@ std::string Path::GetContentAsString()const{
 		#ifdef PK2_USE_ZIP
 
 		int size = 0;
-		zip_file_t* zfile = mOpenZipFile(this->zip_file, this->path.c_str(), size);
+		zip_file_t* zfile = (zip_file_t*)this->zip_file->readFile(this->path, size);
 		char* buffer = new char[size+1];
 		buffer[size] = '\0';
 		

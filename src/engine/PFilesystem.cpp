@@ -14,8 +14,8 @@
 
 #include <SDL.h>
 
-#include <filesystem>
 #include <iostream>
+#include <filesystem>
 #include <sstream>
 
 namespace fs = std::filesystem;
@@ -91,13 +91,8 @@ void SetDefaultAssetsPath() {
         throw PFile::PFileException(os.str());
 	}
 
-    std::cout<<"BASE PATH: "<<c_path<<std::endl;
-
 	#ifndef _WIN32
-
     fs::path executable_dir = fs::path(c_path).parent_path();
-
-    std::cout<<"EXECUTABLE DIR: "<<executable_dir<<std::endl;
     if(executable_dir.filename().string() == "bin"){
         SetAssetsPath( (executable_dir.parent_path() / "res").string());
     }
@@ -105,19 +100,8 @@ void SetDefaultAssetsPath() {
         SetAssetsPath(executable_dir.string());
     }
 
-
-	/*std::filesystem::path p(c_path);
-	std::filesystem::path p1 = p.parent_path();
-
-	if(std::string(p.parent_path().filename())=="bin"){
-		std::string s1 = p1.parent_path();
-		SetAssetsPath(  s1 + PE_SEP "res");
-	}*/
-
 	#else
-
 	SetAssetsPath(c_path);
-
 	#endif
 
 	SDL_free(c_path);

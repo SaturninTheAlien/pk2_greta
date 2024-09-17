@@ -8,7 +8,6 @@
  * Lua utils by SaturninTheAlien
  */
 
-#include <iostream>
 #include "pk2_lua.hpp"
 #include <string>
 

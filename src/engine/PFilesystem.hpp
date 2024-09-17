@@ -36,6 +36,9 @@ bool SetAssetsPath(const std::string& name);
 void SetDefaultAssetsPath();
 
 std::string GetAssetsPath();
+
+
+
 void SetEpisode(const std::string& episodeName, void* zip_file=nullptr);
 bool FindAsset_s(std::string& name, const std::string& default_dir, const std::string& alt_extension);
 

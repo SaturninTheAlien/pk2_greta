@@ -30,7 +30,7 @@
 GameClass* Game = nullptr;
 
 GameClass::GameClass(int idx):
-spritePrototypes(true, true, Episode){
+spritePrototypes(Episode){
 
 	this->level_id = idx;
 	this->map_file = Episode->levels_list[idx].tiedosto;
@@ -41,7 +41,7 @@ spritePrototypes(true, true, Episode){
 }
 
 GameClass::GameClass(std::string map_file):
-spritePrototypes(true, true, Episode){
+spritePrototypes(Episode){
 
 	this->map_file = map_file;
 

@@ -10,6 +10,10 @@
 #include "engine/PFile.hpp"
 #include "engine/PLang.hpp"
 
+#ifdef PK2_USE_ZIP
+#include "engine/PZip.hpp"
+#endif
+
 #include "sfx.hpp"
 
 const int EPISODI_MAX_LEVELS = 100; //50;
@@ -69,7 +73,7 @@ class EpisodeClass {
 	
 		episode_entry entry;
 #ifdef PK2_USE_ZIP
-		PFile::Zip* source_zip;
+		PFile::PZip source_zip;
 #endif
 		char player_name[20] = " ";
 		u32 player_score = 0;

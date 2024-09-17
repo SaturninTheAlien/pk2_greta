@@ -27,7 +27,7 @@ private:
     std::string message;
 };
 
-struct Zip;
+class PZip;
 
 class RW {
 public:
@@ -95,7 +95,7 @@ class Path {
 public: 
 
     Path(std::string path);
-    Path(Zip* zip_file, std::string path);
+    Path(PZip* zip_file, std::string path);
     Path(Path path, std::string file);
     ~Path();
 
@@ -144,11 +144,8 @@ public:
 
 private:   
     std::string path;
-    Zip* zip_file;
+    PZip* zip_file;
 
 };
-
-Zip* OpenZip(std::string path);
-void CloseZip(Zip* zp);
 
 }
