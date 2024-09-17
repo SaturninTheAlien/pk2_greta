@@ -4,6 +4,8 @@
 //#########################
 #include "system.hpp"
 
+#include "engine/PFilesystem.hpp"
+
 #include "engine/PLog.hpp"
 #include "engine/PUtils.hpp"
 #include "engine/PInput.hpp"
@@ -163,9 +165,9 @@ void Draw_Cursor(int x, int y) {
 
 void Prepare_DataPath() {
 
-	PFile::CreateDirectory(data_path);
-	PFile::CreateDirectory(data_path + "scores" PE_SEP);
-	PFile::CreateDirectory(data_path + "mapstore" PE_SEP);
+	PFilesystem::CreateDirectory(data_path);
+	PFilesystem::CreateDirectory(data_path + "scores" PE_SEP);
+	PFilesystem::CreateDirectory(data_path + "mapstore" PE_SEP);
 }
 
 //TODO - Receive Episode, organize this

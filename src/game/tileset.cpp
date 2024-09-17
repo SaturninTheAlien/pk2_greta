@@ -4,8 +4,11 @@
 //#########################
 #include <sstream>
 #include "tileset.hpp"
+
 #include "engine/PDraw.hpp"
 #include "engine/PFile.hpp"
+#include "engine/PFilesystem.hpp"
+
 #include "system.hpp"
 #include "exceptions.hpp"
 #include <array>
@@ -17,14 +20,13 @@ void Tileset::clear(){
 }
 
 
-void Tileset::loadImage(PFile::Path path){
-	//PFile::Path path=name;
-
-	if (!FindAsset(&path, "gfx" PE_SEP "tiles" PE_SEP)){
-		throw PExcept::FileNotFoundException(path.c_str(), PExcept::MISSING_TILESET);
+void Tileset::loadImage(const std::string& name){
+	std::optional<PFile::Path> path = PFilesystem::FindAsset(name, PFilesystem::TILES_DIR);
+	if(!path.has_value()){
+		throw PExcept::FileNotFoundException(name, PExcept::MISSING_TILESET);
 	}
 
-	PDraw::image_load(this->tiles, path, true);
+	PDraw::image_load(this->tiles, *path, true);
 	if(this->tiles==-1){
 		throw PExcept::PException("Unable to load tileset image!");
 	}

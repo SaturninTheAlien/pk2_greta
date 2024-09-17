@@ -13,6 +13,8 @@
 #include "engine/PLog.hpp"
 #include "engine/PUtils.hpp"
 #include "engine/PFile.hpp"
+#include "engine/PFilesystem.hpp"
+
 #include "engine/PDraw.hpp"
 
 #include "lua/pk2_lua.hpp"
@@ -173,55 +175,26 @@ void EpisodeClass::Load_Info() {
 
 //TODO - don't load the same image again
 void EpisodeClass::Load_Assets() {
-	PFile::Path path = this->Get_Dir("pk2stuff.png");
-	if(!FindAsset(&path, "gfx" PE_SEP)){
-		path = this->Get_Dir("pk2stuff.bmp");
-		if (FindAsset(&path, "gfx" PE_SEP)) {
 
-			PDraw::image_load(game_assets, path, true);
+	std::optional<PFile::Path> path = PFilesystem::FindAsset("pk2stuff.png",
+		PFilesystem::GFX_DIR, ".bmp");
 
-		} else {
-
-			PLog::Write(PLog::ERR, "PK2", "Can't load pk2stuff"); //"Can't load map bg"
-
-		}
+	if(!path.has_value()){
+		PLog::Write(PLog::ERR, "PK2", "Can't load pk2stuff"); //"Can't load map bg"
 	}
 	else{
-		PDraw::image_load(game_assets, path, true);
+		PDraw::image_load(game_assets, *path, true);
 	}
 
-	path = this->Get_Dir("pk2stuff2.png");
-	if(!FindAsset(&path, "gfx" PE_SEP)){
-		path = this->Get_Dir("pk2stuff2.bmp");
-		if (FindAsset(&path, "gfx" PE_SEP)) {
+	path = PFilesystem::FindAsset("pk2stuff2.png",
+		PFilesystem::GFX_DIR, ".bmp");
 
-			PDraw::image_load(game_assets2, path, true);
-
-		} else {
-
-			PLog::Write(PLog::ERR, "PK2", "Can't load pk2stuff2"); //"Can't load map bg"
-
-		}
-	}
-	else{
-		PDraw::image_load(game_assets2, path, true);
-	}
-	
-	
-	
-	
-
-	/*path = this->Get_Dir("pk2stuff2.bmp");
-	if (FindAsset(&path, "gfx" PE_SEP)) {
-
-		PDraw::image_load(game_assets2, path, true);
-
-	} else {
-
+	if(!path.has_value()){
 		PLog::Write(PLog::ERR, "PK2", "Can't load pk2stuff2"); //"Can't load map bg"
-
-	}*/
-
+	}
+	else{
+		PDraw::image_load(game_assets2, *path, true);
+	}
 }
 
 void EpisodeClass::Load() {
@@ -230,6 +203,8 @@ void EpisodeClass::Load() {
 	if (entry.is_zip)
 		this->source_zip = PFile::OpenZip(data_path + "mapstore" PE_SEP + entry.zipfile);
 #endif
+
+	PFilesystem::SetEpisode(entry.name);
 
 	PFile::Path path = this->Get_Dir("");
 	std::vector<std::string> list = path.scandir(".map");

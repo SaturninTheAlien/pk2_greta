@@ -15,8 +15,7 @@
 namespace PFile {
 
 void SetAssetsPath(const std::string& _assetsPath);
-void SetDefaultAssetsPath();
-void CreateDirectory(const std::string& path);
+//void SetDefaultAssetsPath();
 
 class PFileException:public std::exception{
 public:
@@ -93,7 +92,7 @@ private:
 // Delete this class and replace with std::filesystem
 class Path {
 
-    public: 
+public: 
 
     Path(std::string path);
     Path(Zip* zip_file, std::string path);

@@ -10,6 +10,7 @@
 //	Starts the level13.map on dev mode
 //#########################
 #include "engine/Piste.hpp"
+#include "engine/PFilesystem.hpp"
 #include "version.hpp"
 
 #include "screens/screens_handler.hpp"
@@ -89,14 +90,14 @@ static void quit() {
 
 static void set_paths() {
 
-	PFile::SetDefaultAssetsPath();
+	PFilesystem::SetDefaultAssetsPath();
 	
 	#ifndef __ANDROID__
 
 	#ifdef PK2_PORTABLE
 
 	data_path = "data" PE_SEP;
-	PFile::CreateDirectory(data_path);
+	PFilesystem::CreateDirectory(data_path);
 
 	#else
 

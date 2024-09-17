@@ -243,8 +243,8 @@ void LevelClass::loadVersion13(PFile::Path path, bool headerOnly){
 	LevelSector* sector = new LevelSector(PK2MAP_MAP_WIDTH, PK2MAP_MAP_HEIGHT);
 	this->sectors.push_back(sector);
 
-	sector->background = this->mLoadBackground(path, background_name);
-	sector->tileset1 = this->mLoadTileset(path, tileset_name);
+	sector->background = this->mLoadBackground(background_name);
+	sector->tileset1 = this->mLoadTileset(tileset_name);
 	sector->music_name = music_name;
 
 	sector->background->scrolling = scrolling;
@@ -359,7 +359,7 @@ void LevelClass::loadVersion15(PFile::Path path, bool headerOnly){
 		 * @brief 
 		 * Tileset
 		 */
-		sector->tileset1 = this->mLoadTileset(path, j["tileset"].get<std::string>());
+		sector->tileset1 = this->mLoadTileset(j["tileset"].get<std::string>());
 
 		/**
 		 * @brief 
@@ -369,7 +369,7 @@ void LevelClass::loadVersion15(PFile::Path path, bool headerOnly){
 		if(j.contains("tileset_bg") && j["tileset_bg"].is_string()){
 			std::string tileset_bg_name = j["tileset_bg"].get<std::string>();
 			if(!tileset_bg_name.empty()){
-				sector->tileset2 = this->mLoadTileset(path, tileset_bg_name);
+				sector->tileset2 = this->mLoadTileset(tileset_bg_name);
 			}
 		}
 
@@ -377,7 +377,7 @@ void LevelClass::loadVersion15(PFile::Path path, bool headerOnly){
 		 * @brief 
 		 * background
 		 */
-		sector->background = this->mLoadBackground(path, j["background"].get<std::string>());
+		sector->background = this->mLoadBackground(j["background"].get<std::string>());
 
 
 		jsonReadString(j, "music", sector->music_name);
@@ -673,7 +673,7 @@ void LevelClass::drawForegroundTiles(int camera_x, int camera_y, LevelSector* se
 }
 
 
-Tileset* LevelClass::mLoadTileset(PFile::Path path, const std::string& tilesetName){
+Tileset* LevelClass::mLoadTileset(const std::string& tilesetName){
 	for(Tileset* tileset : this->mTilesets){
 		if(tileset->name == tilesetName){
 			return tileset;
@@ -683,13 +683,12 @@ Tileset* LevelClass::mLoadTileset(PFile::Path path, const std::string& tilesetNa
 	this->mTilesets.push_back(tileset);
 
 	tileset->name = tilesetName;
-	path.SetFile(tilesetName);
-	tileset->loadImage(path);
+	tileset->loadImage(tilesetName);
 
 	return tileset;
 }
 
-Background* LevelClass::mLoadBackground(PFile::Path path, const std::string& backgroundName){
+Background* LevelClass::mLoadBackground(const std::string& backgroundName){
 	for(Background* background : this->mBackgrounds){
 		if(background->name == backgroundName){
 			return background;
@@ -700,9 +699,7 @@ Background* LevelClass::mLoadBackground(PFile::Path path, const std::string& bac
 	this->mBackgrounds.push_back(background);
 
 	background->name = backgroundName;
-
-	path.SetFile(backgroundName);
-	background->load(path);
+	background->load(backgroundName);
 
 	return background;
 }

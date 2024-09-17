@@ -10,6 +10,7 @@
 #include "engine/PLog.hpp"
 #include "engine/PUtils.hpp"
 #include "engine/platform.hpp"
+#include "engine/PString.hpp"
 
 #include <cstring>
 #include <sys/stat.h>
@@ -37,11 +38,9 @@ namespace PFile {
 
 
 std::string mAssetsPath;
-bool mAssetsPathSet = false;
 
 void SetAssetsPath(const std::string& _assetsPath){
 	mAssetsPath = _assetsPath;
-	mAssetsPathSet = true;
 
 	if(!mAssetsPath.empty())
 	{
@@ -49,13 +48,6 @@ void SetAssetsPath(const std::string& _assetsPath){
 		if(c1=='/'||c1=='\\'){
 			mAssetsPath = mAssetsPath.substr(0, mAssetsPath.size()-1);
 		}
-	}
-}
-
-void CreateDirectory(const std::string& path){
-	std::string pathFixed = mAssetsPath + PE_SEP + path;
-	if(!std::filesystem::exists(pathFixed) || !std::filesystem::is_directory(pathFixed)){
-		std::filesystem::create_directory(pathFixed);
 	}
 }
 
@@ -75,34 +67,7 @@ std::string mGetAssetPath(const std::string& path){
 	}
 }
 
-void SetDefaultAssetsPath() {
-	if(mAssetsPathSet)return;
 
-	char* c_path = SDL_GetBasePath();
-	if(c_path==nullptr){
-		PLog::Write(PLog::ERR, "PK2", "Cannot set the default assets path");
-		PLog::Write(PLog::ERR, "SDL2", SDL_GetError());
-		return;
-	}
-
-	#ifndef _WIN32
-
-	std::filesystem::path p(c_path);
-	std::filesystem::path p1 = p.parent_path();
-
-	if(std::string(p.parent_path().filename())=="bin"){
-		std::string s1 = p1.parent_path();
-		SetAssetsPath(s1 + PE_SEP "res");
-	}
-
-	#else
-
-	SetAssetsPath(c_path);
-
-	#endif
-
-	SDL_free(c_path);
-}
 
 #ifdef PK2_USE_ZIP
 struct Zip {
