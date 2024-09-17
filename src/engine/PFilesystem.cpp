@@ -28,6 +28,8 @@ const std::string TILES_DIR = (fs::path(GFX_DIR) / "tiles").string();
 const std::string SCENERY_DIR = (fs::path(GFX_DIR) / "scenery").string();
 
 const std::string LANGUAGE_DIR = "language";
+const std::string FONTS_DIR = (fs::path(LANGUAGE_DIR) / "fonts").string();
+
 const std::string SFX_DIR = "sfx";
 const std::string SPRITES_DIR = "sprites";
 const std::string MUSIC_DIR = "music";
@@ -198,5 +200,15 @@ std::optional<PFile::Path> FindAsset(std::string name, const std::string& defaul
 
     return {};
 }
+
+std::optional<PFile::Path> FindVanillaAsset(std::string name, const std::string& dir){
+
+    fs::path p = mAssetsPath / dir / name;
+    if(fs::exists(p)){
+        return PFile::Path(p);
+    }
+    return {};
+}
+
 
 }

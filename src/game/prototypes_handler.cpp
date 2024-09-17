@@ -166,7 +166,7 @@ void PrototypesHandler::loadSpriteAssets(){
 	}
 
     for(PrototypeClass* prototype: this->mPrototypes){
-		prototype->loadAssets(this->mEpisode);
+		prototype->loadAssets();
 	}
 
 	this->mAssetsLoaded = true;

@@ -43,20 +43,21 @@ static void start_test(const char* arg) {
 	
 	if (arg == NULL) return;
 
-	PFile::Path path(arg);
-
 	/**
 	 * @brief 
 	 * TODO
 	 * Not to load the whole episode while testing a level
 	 */
 
+	std::filesystem::path path(arg);
+
+	//PFile::Path path(arg);
 	episode_entry episode;
-	episode.name = path.GetDirectory();
+	episode.name = path.parent_path().filename().string();
 	episode.is_zip = false;
 	Episode = new EpisodeClass("test", episode);
 
-	Game = new GameClass(path.GetFileName());
+	Game = new GameClass(path.filename().string());
 
 	PLog::Write(PLog::DEBUG, "PK2", "Testing episode '%s' level '%s'", episode.name.c_str(), Game->map_file.c_str());
 

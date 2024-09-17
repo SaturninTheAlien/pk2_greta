@@ -3,6 +3,7 @@
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
 #include <sstream>
+#include <iostream>
 #include <algorithm>
 #include <filesystem>
 #include "engine/PFile.hpp"
@@ -199,9 +200,11 @@ static bool pathcomp(const char* path, const char* entry) {
 
 std::vector<std::string> scan_zip(PZip* zip_file, const char* path, const char* type) {
 
+	std::cout<<"Scanning zip: "<<zip_file->getName()<<std::endl;	
+
     std::vector<std::string> result;
 
-    int path_size = strlen(path);
+    /*int path_size = strlen(path);
 
     struct zip_stat st;
     zip_stat_init(&st);
@@ -210,6 +213,8 @@ std::vector<std::string> scan_zip(PZip* zip_file, const char* path, const char* 
     for (int i = 0; i < sz; i++) {
         
         zip_stat_index((zip_t*)zip_file->zip, i, 0, &st);
+
+		std::cout<<i<<" "<<st.crc<<":->"<<st.name<<std::endl;
 
 		if( pathcomp(path, st.name) ) {
 
@@ -237,6 +242,8 @@ std::vector<std::string> scan_zip(PZip* zip_file, const char* path, const char* 
         }
 
     }
+
+	exit(10);*/
 
     //PLog::Write(PLog::DEBUG, "PFile", "Scanned zip \"%s\" on \"%s\" for \"%s\". Found %i matches", zip_file->name.c_str(), path, type, (int)result.size());
     return result;

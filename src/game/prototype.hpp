@@ -210,7 +210,7 @@ public:
      * @brief 
      * Load sprite assets like texture, sounds, etc.
      */
-    void     loadAssets(EpisodeClass* episode);
+    void     loadAssets();
 
     /**
      * @brief 

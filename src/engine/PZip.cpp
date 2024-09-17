@@ -110,6 +110,17 @@ void* PZip::readFile(const std::string& path, int&size){
 	return zfile;
 }
 
+
+bool PZip::findFile(const std::string& dir,
+const std::string& name_cAsE,
+std::string& res,
+const std::string& alt_extension){
+
+	
+	
+	return false;
+}
+
 /*
 static bool pathcomp(const char* path, const char* entry) {
 

@@ -9,6 +9,7 @@
 #include "engine/PInput.hpp"
 #include "engine/PSound.hpp"
 #include "engine/PUtils.hpp"
+#include "engine/PFilesystem.hpp"
 
 #include <array>
 #include <string>
@@ -302,11 +303,10 @@ void MapScreen::Init() {
 	// Load custom assets (should be done when creating Episode)
 	Episode->Load_Assets();
 
-	PFile::Path path = Episode->Get_Dir("map.bmp");
+	std::optional<PFile::Path> path = PFilesystem::FindAsset("map.bmp", PFilesystem::GFX_DIR, ".png");
 
-	if (FindAsset(&path, "gfx" PE_SEP)) {
-
-		PDraw::image_load_with_palette(bg_screen, default_palette, path, true);
+	if (path.has_value()) {
+		PDraw::image_load_with_palette(bg_screen, default_palette, *path, true);
 		PDraw::palette_set(default_palette);
 
 	} else {

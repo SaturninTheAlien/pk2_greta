@@ -36,13 +36,19 @@ public:
     
     void* readFile(const std::string& name, int&size);
     //std::vector<std::string> scan(const std::string& path, const std::string& type);
-    
-//private:
-    int getIndex(const std::string& filename, int& size);
+
+    bool findFile(const std::string& dir,
+        const std::string& name_cAsE,
+        std::string& res,
+        const std::string& alt_extension);
 
     std::string name;
     void * zip = nullptr;
     void * src = nullptr;
+
+private:
+    int getIndex(const std::string& filename, int& size);
+
 };
 
 }

@@ -170,7 +170,7 @@ void Prepare_DataPath() {
 	PFilesystem::CreateDirectory(data_path + "mapstore" PE_SEP);
 }
 
-//TODO - Receive Episode, organize this
+/*//TODO - Receive Episode, organize this
 bool FindAsset(PFile::Path* path, const char* default_dir) {
 
 	if(path->Find()){
@@ -206,7 +206,7 @@ bool FindAsset(PFile::Path* path, const char* default_dir) {
 
 	PLog::Write(PLog::INFO, "PK2", "Can't find %s", path->c_str());
 	return false;
-}
+}*/
 
 int Set_Screen_Size(int w, int h) {
 

@@ -3,11 +3,11 @@
 
 #include "engine/PDraw.hpp"
 #include "engine/PSound.hpp"
+#include "engine/PLog.hpp"
+#include "engine/PFilesystem.hpp"
+
 #include "exceptions.hpp"
 #include <sstream>
-
-#include "engine/PLog.hpp"
-#include "system.hpp"
 #include "episode/episodeclass.hpp"
 
 SpriteAnimation::SpriteAnimation(const LegacySprAnimation& anim){
@@ -720,7 +720,7 @@ void PrototypeClass::loadPrototypeLegacy(PFile::Path path){
 }
 
 
-void PrototypeClass::loadAssets(EpisodeClass*episode){
+void PrototypeClass::loadAssets(){
 
 	/**
 	 * @brief 
@@ -749,17 +749,18 @@ void PrototypeClass::loadAssets(EpisodeClass*episode){
 		throw std::runtime_error("The 0 value of frames_number is not allowed");
 	}
 
-	PFile::Path image = episode->Get_Dir(this->picture_filename);
-	
-	if (!FindAsset(&image, "sprites" PE_SEP)) {
+	std::optional<PFile::Path> imagePath = PFilesystem::FindAsset(this->picture_filename,
+	PFilesystem::SPRITES_DIR);
 
+	if(!imagePath.has_value()){
 		throw PExcept::FileNotFoundException(this->picture_filename, PExcept::MISSING_SPRITE_TEXTURE);
-
 	}
 
-	int texture = PDraw::image_load(image, false);
+	int texture = PDraw::image_load(*imagePath, false);
 	if (texture == -1) {
-		throw PExcept::FileNotFoundException(this->picture_filename, PExcept::MISSING_SPRITE_TEXTURE);
+		std::ostringstream os;
+		os<<"Unable to load sprite texture: \""<<this->picture_filename<<"\"";
+		throw PExcept::PException(os.str());
 	}
 
 	//Change sprite colors
@@ -813,10 +814,13 @@ void PrototypeClass::loadAssets(EpisodeClass*episode){
 	for (int i = 0; i < SPRITE_SOUNDS_NUMBER; i++) {
 
 		if(!this->sound_files[i].empty()){
-			PFile::Path sound = episode->Get_Dir(this->sound_files[i]);
-			if (FindAsset(&sound, "sprites" PE_SEP)) {
 
-				this->sounds[i] = PSound::load_sfx(sound);
+			std::optional<PFile::Path> soundPath = PFilesystem::FindAsset(this->sound_files[i],
+			PFilesystem::SPRITES_DIR);
+
+			if (soundPath.has_value()) {
+
+				this->sounds[i] = PSound::load_sfx(*soundPath);
 
 			} else {
 

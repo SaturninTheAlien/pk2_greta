@@ -50,8 +50,8 @@ void Init(u8 level, PFile::Path file) {
         log_file = nullptr;
     }
 
-    if (file.GetFileName().size() > 0)
-        log_file = new PFile::RW(file.GetRW2("w"));
+    //if (file.GetFileName().size() > 0)
+    log_file = new PFile::RW(file.GetRW2("w"));
     
     #ifndef _WIN32
 		print_to_stdout = true;

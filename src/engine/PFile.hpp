@@ -123,26 +123,27 @@ public:
     bool Is_Zip()const{
         return this->zip_file!=nullptr;
     };
-    bool Is_Absolute()const;
+    
 
+    std::string GetContentAsString()const;
+    RW GetRW2(const char* mode)const;
+    nlohmann::json GetJSON()const;
+    void getBuffer(std::vector<char>& bytes)const;
     void SetFile(std::string file);
-    void SetPath(std::string path);
 
-    void SetSubpath(std::string sub_path);
+private:
+
+    
+    void SetPath(std::string path);
+    void SetSubpath(std::string sub_path);   
 
     void FixSep();
+
+    bool Is_Absolute()const;
 
     std::string GetDirectory()const;
     std::string GetFileName()const;
 
-    std::string GetContentAsString()const;
-
-    RW GetRW2(const char* mode)const;
-    nlohmann::json GetJSON()const;
-
-    void getBuffer(std::vector<char>& bytes)const;
-
-private:   
     std::string path;
     PZip* zip_file;
 
