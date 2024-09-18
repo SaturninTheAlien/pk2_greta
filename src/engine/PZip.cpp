@@ -11,7 +11,9 @@
 #include <sstream>
 #include <filesystem>
 
-namespace PFile{
+namespace fs = std::filesystem;
+
+namespace PZip{
 
 PZip::PZip(PZip&& pzip)
 :name(std::move(pzip.name)), zip(pzip.zip), src(pzip.src){
@@ -24,7 +26,7 @@ void PZip::open(const std::string& path){
 	if (rw == NULL) {
         std::ostringstream os;
         os<<"Can't open \""<<path<<"\"";       
-        throw PFileException(os.str());
+        throw PZipException(os.str());
     }
 
 	int size = SDL_RWsize(rw);
@@ -65,83 +67,52 @@ void PZip::close(){
     this->name = "";
 }
 
-int PZip::getIndex(const std::string& filename, int& size) {
-
-    std::string filename_lowercase = PString::rtrim(PString::lowercase(filename));
-   
+std::optional<PZipEntry> PZip::getEntry(const std::string& cAsE_path){
+	std::string lower_path = PString::unwindowsPath(PString::lowercase(PString::rtrim(cAsE_path)));
 
 	struct zip_stat st;
-    zip_stat_init(&st);
+	zip_stat_init(&st);
 
 	int sz = zip_get_num_entries((zip_t*)this->zip , 0);
-
-    for (int i = 0; i < sz; ++i) {
-
+	for (int i = 0; i < sz; ++i) {
 		zip_stat_index((zip_t*)this->zip, i, 0, &st);
-        if(filename_lowercase == PString::lowercase(st.name)){
-            size = st.size;
-			return i;
-        }
+		if(st.name==nullptr)continue;
+
+		std::string st_name = st.name;
+		if(lower_path==PString::lowercase(st_name)){
+			return PZipEntry(
+				st_name,
+				i,
+				st.size
+			);
+		}
 	}
 
-    size = 0;
-	return -1;
+	return {};
 }
 
 void* PZip::readFile(const std::string& path, int&size){
 
-    int index = this->getIndex(path, size);;
-	if (index < 0 || size<=0) {
+	std::optional<PZipEntry> entry = this->getEntry(path);
+
+	if (!entry.has_value()) {
 
 		std::ostringstream os;
 		os<<"Can't find the file: \""<<path<<"\" in zip \""<<this->name<<"\"";
-		throw PFileException(os.str());
+		throw PZipException(os.str());
 	}
 
-	zip_file_t* zfile = zip_fopen_index((zip_t*)this->zip, index, 0);
+	zip_file_t* zfile = zip_fopen_index((zip_t*)this->zip, entry->index, 0);
+	size = entry->size;
 
 	if (!zfile) {
 
 		std::ostringstream os;
 		os<<"Zfile from zip \""<<this->name<<"\", file \""<<
 		path<<"\" is NULL";
-		throw PFileException(os.str());
+		throw PZipException(os.str());
 	}
 	return zfile;
 }
-
-
-bool PZip::findFile(const std::string& dir,
-const std::string& name_cAsE,
-std::string& res,
-const std::string& alt_extension){
-
-	
-	
-	return false;
-}
-
-/*
-static bool pathcomp(const char* path, const char* entry) {
-
-	while(*path != '\0') {
-
-		char a = *path;
-		char b = *entry;
-
-		if (a == '\\') a = '/';
-		if (b == '\\') b = '/';
-
-		if ( (a | ' ') != (b | ' ') )
-			return false;
-		
-		path++;
-		entry++;
-
-	}
-
-	return true;
-
-}*/
 
 }

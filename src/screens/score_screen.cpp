@@ -21,6 +21,9 @@
 #include "engine/PInput.hpp"
 #include "engine/PSound.hpp"
 #include "engine/PUtils.hpp"
+#include "engine/PFilesystem.hpp"
+
+#include <stdexcept>
 
 #include <cstring>
 
@@ -267,7 +270,12 @@ void ScoreScreen::Init() {
 	
 	PDraw::set_offset(640, 480);
 
-	PDraw::image_load_with_palette(bg_screen, default_palette, PFile::Path("gfx" PE_SEP "menu.bmp"), false);
+	std::optional<PFile::Path> menu_path = PFilesystem::FindAsset("menu.bmp", PFilesystem::GFX_DIR, ".png");
+	if(!menu_path.has_value()){
+		throw std::runtime_error("\"menu.bmp\" not found!");
+	}
+
+	PDraw::image_load_with_palette(bg_screen, default_palette, *menu_path, false);
 	PDraw::palette_set(default_palette);
 
 	PDraw::create_shadow(bg_screen, 640, 480);

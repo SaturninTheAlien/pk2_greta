@@ -129,13 +129,22 @@ void EndingScreen::Init() {
 		PDraw::palette_set(default_palette);
 
 	} else {
-
-		PLog::Write(PLog::ERR, "PK2", "Can't load ending bg"); //"Can't load map bg"
-
+		throw PExcept::PException("\"ending.bmp\" not found!");
 	}
 
-	if (PSound::start_music(PFile::Path("music" PE_SEP "intro.xm")) == -1)
-		throw PExcept::PException("Can't load intro.xm");
+	path = PFilesystem::FindVanillaAsset("intro.xm", PFilesystem::MUSIC_DIR);
+	if(!path.has_value()){
+		throw PExcept::PException("\"intro.xm\" not found!");
+	}
+	else{
+
+		if (PSound::start_music(*path) == -1){
+			PLog::Write(PLog::ERR, "PK2", "Cannot load \"intro.xm\"!");
+		}
+	}
+
+	
+		
 
 	PSound::set_musicvolume(Settings.music_max_volume);
 

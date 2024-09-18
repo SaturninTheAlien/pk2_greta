@@ -11,6 +11,9 @@
 #include <string>
 #include <stdexcept>
 
+namespace PZip{
+    class PZip;
+}
 
 namespace PFile {
 
@@ -24,7 +27,6 @@ private:
     std::string message;
 };
 
-class PZip;
 
 class RW {
 public:
@@ -92,7 +94,7 @@ class Path {
 public: 
 
     Path(std::string path);
-    Path(PZip* zip_file, std::string path);
+    Path(PZip::PZip* zip_file, std::string path);
     Path(Path path, std::string file);
     ~Path();
 
@@ -106,16 +108,6 @@ public:
     }
 
 
-    //std::string getPath()const;
-
-    //type:
-    // ""  - all files and directories
-    // "/" - directory
-    // ".exe" - *.exe
-    
-    
-    
-
     std::string GetContentAsString()const;
     RW GetRW2(const char* mode)const;
     nlohmann::json GetJSON()const;
@@ -123,20 +115,8 @@ public:
     bool exists()const;
 
 private:
-
-    bool Is_Zip()const{
-        return this->zip_file!=nullptr;
-    };
-
-    std::vector<std::string> scandir(const char* type);
-    void SetFile(std::string file);
-    bool NoCaseFind(); 
-
-    std::string GetDirectory()const;
-    std::string GetFileName()const;
-
     std::string path;
-    PZip* zip_file;
+    PZip::PZip* zip_file;
 
 };
 

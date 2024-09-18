@@ -59,7 +59,7 @@ Path::Path(std::string path) {
 	this->zip_file = nullptr;
 }
 
-Path::Path(PZip* zip_file, std::string path) {
+Path::Path(PZip::PZip* zip_file, std::string path) {
 
 	if(zip_file == nullptr) {
 
@@ -139,113 +139,6 @@ bool is_type(const char* file, const char* type) {
 
 }
 
-#ifdef PK2_USE_ZIP
-static bool pathcomp(const char* path, const char* entry) {
-
-	while(*path != '\0') {
-
-		char a = *path;
-		char b = *entry;
-
-		if (a == '\\') a = '/';
-		if (b == '\\') b = '/';
-
-		if ( (a | ' ') != (b | ' ') )
-			return false;
-		
-		path++;
-		entry++;
-
-	}
-
-	return true;
-
-}
-
-std::vector<std::string> scan_zip(PZip* zip_file, const char* path, const char* type) {
-
-	std::cout<<"Scanning zip: "<<zip_file->getName()<<std::endl;	
-
-    std::vector<std::string> result;
-
-    /*int path_size = strlen(path);
-
-    struct zip_stat st;
-    zip_stat_init(&st);
-    
-    int sz = zip_get_num_entries((zip_t*)zip_file->zip, 0);
-    for (int i = 0; i < sz; i++) {
-        
-        zip_stat_index((zip_t*)zip_file->zip, i, 0, &st);
-
-		std::cout<<i<<" "<<st.crc<<":->"<<st.name<<std::endl;
-
-		if( pathcomp(path, st.name) ) {
-
-			std::string filename(st.name + path_size + 1);
-			filename = filename.substr(0, filename.find("/")); //PE_SEP?
-
-			if(filename.size() == 0)
-				continue;
-			
-            if(is_type(filename.c_str(), type)) {
-
-				//needed?
-				bool repeated = false;
-				for (std::string st : result)
-					if (st == filename) {
-						repeated = true;
-						break;
-					}
-				
-				if (!repeated)
-                	result.push_back(filename);
-
-            }
-
-        }
-
-    }
-
-	exit(10);*/
-
-    //PLog::Write(PLog::DEBUG, "PFile", "Scanned zip \"%s\" on \"%s\" for \"%s\". Found %i matches", zip_file->name.c_str(), path, type, (int)result.size());
-    return result;
-
-}
-
-#endif
-
-//Scans directory to find file based on case
-bool Path::NoCaseFind() {
-
-	std::string filename = this->GetFileName();
-	this->SetFile("");
-
-	std::vector<std::string> list = this->scandir("");
-
-	int sz = list.size();
-	for(int i = 0; i < sz; i++) {
-		
-		std::string name = list[i];
-		
-		if(PUtils::NoCaseCompare(name.c_str(), filename.c_str())) {
-
-			this->SetFile(name);
-			PLog::Write(PLog::DEBUG, "PFile", "Found on %s", this->path.c_str());
-
-			return true;
-		}
-
-	}
-
-	this->SetFile(filename);
-	//PLog::Write(PLog::INFO, "PFile", "%s not found", this->path.c_str());
-
-	return false;
-
-}
-
 #ifdef __ANDROID__
 /**
  * Is it necessary?
@@ -312,64 +205,6 @@ std::vector<std::string> scan_apk(const char* dir, const char* type) {
 }
 
 #endif
-
-
-
-std::vector<std::string> scan_file(const char* dir, const char* type){
-	
-	std::vector<std::string> result;
-	for (const auto & entry : fs::directory_iterator(dir)){
-		std::string filename = entry.path().filename().string();
-
-		//std::cout<<filename<<std::endl;
-		if(filename[0]!='.'){
-
-			if(type[0] == '/' && entry.is_directory()) {
-
-				result.push_back(filename);
-				continue;
-
-			} else if(type[0] == '\0') {
-			
-				result.push_back(filename);
-				continue;
-			
-			} else {
-
-				const char* ext = Get_Extension(filename.c_str());
-				if(strcmp(ext, type) == 0) {
-
-					result.push_back(filename);
-					continue;
-
-				}
-
-			}
-
-		}
-	}
-	std::sort(result.begin(), result.end());
-	//PLog::Write(PLog::DEBUG, "PFile", "Scanned on \"%s\" for \"%s\". Found %i matches", dir, type, (int)result.size());
-
-	return result;
-}
-
-
-void Path::SetFile(std::string file) {
-	this->path = this->GetDirectory() + PE_SEP  + file;
-}
-
-std::string Path::GetDirectory()const {
-	std::filesystem::path p(this->path);
-	return p.parent_path().u8string();
-
-}
-
-std::string Path::GetFileName()const {
-	std::filesystem::path p(this->path);
-	return p.filename().u8string();
-}
-
 
 void Path::getBuffer(std::vector<char>& bytes)const{
 	if(this->zip_file != nullptr){
@@ -514,23 +349,6 @@ RW::RW(RW&& source){
 	source._rwops = nullptr;
 	source._mem_buffer = nullptr;
 }
-
-/*
-int RW::read(std::string& str) {
-
-	str.clear();
-
-	while(1) {
-		u8 c = SDL_ReadU8((SDL_RWops*)(this->_rwops));
-
-		if (c == '\0')
-			return str.size();
-		
-		str += c;
-	
-	}
-
-}*/
 
 int RW::read(void* val, size_t size) {
 
@@ -733,68 +551,5 @@ void RW::close() {
 
 }
 
-std::unordered_map<std::string, std::vector<std::string>> scan_cache;
-//std::unordered_map<std::string, std::vector<std::string>> scan_cache_zip; //TODO
-
-std::vector<std::string> Path::scandir(const char* type) {
-    
-	std::vector<std::string> ret;
-
-	std::string dir = this->GetDirectory(); //this->path.substr(0, this->path.find_last_of(PE_SEP));
-
-	if(!this->Is_Zip()){
-		if(!fs::exists(dir) || !fs::is_directory(dir)){
-			return ret;
-		}
-	}
-
-	if(dir.empty()){
-		dir = ".";
-	}
-
-	std::string cache_entry(dir + type);
-	
-	const char* cstr = dir.c_str();
-	
-	if (this->zip_file != nullptr) {
-
-    	#ifdef PK2_USE_ZIP
-        
-		return scan_zip(this->zip_file, cstr, type);
-		
-		#else
-		
-		return ret;
-		
-		#endif
-
-	}
-	
-	// Look the cache	
-	auto it = scan_cache.find(cache_entry);
-	if (it != scan_cache.end()) {
-
-		//PLog::Write(PLog::DEBUG, "PFile", "Got cache on \"%s\" for \"%s\"", cstr, type);
-		return it->second;
-
-	}
-
-    #ifdef __ANDROID__
-
-    if (cstr[0] != '/') {
-
-		ret = scan_apk(cstr, type);
-		scan_cache[cache_entry] = ret;
-        return ret;
-
-	}
-
-    #endif
-	
-	ret = scan_file(cstr, type);
-	scan_cache[cache_entry] = ret;
-	return ret;
-
-}
 
 };

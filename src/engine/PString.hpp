@@ -14,6 +14,6 @@ namespace PString{
 
 std::string lowercase(const std::string& src);
 std::string rtrim(const std::string & src);
-
+std::string unwindowsPath(const std::string& path);
 
 }

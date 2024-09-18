@@ -32,4 +32,15 @@ std::string rtrim(const std::string & src){
     return src.substr(0, i);
 }
 
+std::string unwindowsPath(const std::string& path){
+    std::string res = path;
+    std::size_t n = path.size();
+    for(std::size_t i=0;i<n;++i){
+        if(res[i]=='\\'){
+            res[i]='/';
+        }
+    }
+    return res;
+}
+
 }

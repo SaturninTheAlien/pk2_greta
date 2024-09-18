@@ -393,8 +393,16 @@ void GameClass::finish() {
 	
 	this->level_clear = true;
 
-	if (PSound::start_music(PFile::Path("music" PE_SEP "hiscore.xm")) == -1)
-		throw PExcept::PException("Can't find hiscore.xm");
+	std::optional<PFile::Path> music_path = PFilesystem::FindAsset("hiscore.xm", PFilesystem::MUSIC_DIR, ".ogg");
+
+	if(!music_path.has_value()){
+		throw PExcept::PException("\"hiscore.xm\" not found!");
+	}
+
+	if (PSound::start_music(*music_path) == -1){
+		PLog::Write(PLog::ERR, "Can't play \"hiscore.xm\"");
+	}
+
 
 	if(!test_level){
 		Episode->level_status[this->level_id] |= LEVEL_PASSED;

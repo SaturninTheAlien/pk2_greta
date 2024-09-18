@@ -9,10 +9,7 @@
 #include "engine/platform.hpp"
 #include "engine/PFile.hpp"
 #include "engine/PLang.hpp"
-
-#ifdef PK2_USE_ZIP
 #include "engine/PZip.hpp"
-#endif
 
 #include "sfx.hpp"
 
@@ -72,9 +69,8 @@ class EpisodeClass {
 	public:
 	
 		episode_entry entry;
-#ifdef PK2_USE_ZIP
-		PFile::PZip source_zip;
-#endif
+		PZip::PZip source_zip;
+
 		char player_name[20] = " ";
 		u32 player_score = 0;
 

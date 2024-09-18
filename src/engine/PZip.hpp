@@ -6,8 +6,36 @@
 
 #include <string>
 #include <vector>
+#include <optional>
 
-namespace PFile{
+
+
+namespace PZip{
+
+
+class PZipException:public std::exception{
+public:
+    PZipException(const std::string& message):message(message){}
+    const char* what() const noexcept{
+        return message.c_str();
+    }
+private:
+    std::string message;
+};
+
+class PZipEntry{
+public:
+    PZipEntry()=default;
+    PZipEntry(const std::string& name, int index, int size):
+    name(name), index(index), size(size){
+
+    }
+
+    std::string name;
+    int index=0;
+    int size=0;
+};
+
 
 class PZip{
 public:
@@ -33,22 +61,16 @@ public:
     
     void open(const std::string& path);
     void close();
-    
-    void* readFile(const std::string& name, int&size);
-    //std::vector<std::string> scan(const std::string& path, const std::string& type);
 
-    bool findFile(const std::string& dir,
-        const std::string& name_cAsE,
-        std::string& res,
-        const std::string& alt_extension);
+    std::optional<PZipEntry> getEntry(const std::string& cAsE_path);
+
+
+    /*int getIndex(const std::string& filename, int& size, std::string& name);*/
+    void* readFile(const std::string& name, int&size);
 
     std::string name;
     void * zip = nullptr;
     void * src = nullptr;
-
-private:
-    int getIndex(const std::string& filename, int& size);
-
 };
 
 }
