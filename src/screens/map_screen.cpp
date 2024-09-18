@@ -244,11 +244,6 @@ void MapScreen::Draw() {
 }
 
 void MapScreen::Play_Music() {
-
-	PFile::Path mapmus = Episode->Get_Dir("");
-	bool music_found = false;
-	//for(const std::s)
-
 	static const std::array<std::string, 6> map_music_filenames = {
 		"map.xm",
 		"map.ogg",
@@ -258,27 +253,25 @@ void MapScreen::Play_Music() {
 		"map.it",
 	};
 
+	std::optional<PFile::Path> mapmus = {};
+
 	for(const std::string& music_name:map_music_filenames){
-		mapmus.SetFile(music_name);
-		if(mapmus.Find()){
-			//PLog::Write(PLog::DEBUG, "Found map music");
-			music_found = true;
-			break;
-		}
+		mapmus = PFilesystem::FindEpisodeAsset(music_name, "");
+
+		if(mapmus.has_value())break;
 	}
-	if(!music_found){
-		mapmus = PFile::Path("music" PE_SEP);
+	if(!mapmus.has_value()){
+		//mapmus =   PFile::Path("music" PE_SEP);
 		for(const std::string& music_name:map_music_filenames){
-			mapmus.SetFile(music_name);
-			if(mapmus.Find()){
-				music_found = true;
-				break;
-			}
+			//mapmus.SetFile(music_name);
+
+			mapmus = PFilesystem::FindVanillaAsset(music_name, PFilesystem::MUSIC_DIR);
+			if(mapmus.has_value())break;
 		}
 	}
 
-	if(music_found){
-		PSound::start_music(mapmus);
+	if(mapmus.has_value()){
+		PSound::start_music(*mapmus);
 		PSound::set_musicvolume_now(Settings.music_max_volume);
 	}
 	else{

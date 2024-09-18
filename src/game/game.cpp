@@ -22,6 +22,8 @@
 #include "engine/PLog.hpp"
 #include "engine/PDraw.hpp"
 #include "engine/PInput.hpp"
+#include "engine/PFilesystem.hpp"
+
 #include "lua/pk2_lua.hpp"
 #include "lua/lua_game_events.hpp"
 
@@ -413,9 +415,12 @@ void GameClass::finish() {
 }
 
 int GameClass::Open_Map() {
-	
-	PFile::Path path = Episode->Get_Dir(map_file);
-	level.load(path, false);
+
+	std::optional<PFile::Path> levelPath = PFilesystem::FindEpisodeAsset(map_file, "");
+	if(!levelPath.has_value()){
+		throw PExcept::PException("Cannot find the level file: \""+map_file+"\"!");
+	}
+	level.load(*levelPath, false);
 
 	/**
 	 * @brief 
@@ -436,11 +441,11 @@ int GameClass::Open_Map() {
 	else
 		has_time = false;
 
-	if (!Episode->use_button_timer) {
-		level.button1_time = SWITCH_INITIAL_VALUE;
-		level.button2_time = SWITCH_INITIAL_VALUE;
-		level.button3_time = SWITCH_INITIAL_VALUE;
-	}
+	//if (!Episode->use_button_timer) {
+	level.button1_time = SWITCH_INITIAL_VALUE;
+	level.button2_time = SWITCH_INITIAL_VALUE;
+	level.button3_time = SWITCH_INITIAL_VALUE;
+	//}
 
 	this->placeSprites();
 	this->level.calculateBlockTypes();

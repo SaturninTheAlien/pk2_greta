@@ -86,7 +86,7 @@ class EpisodeClass {
 		bool ignore_collectable = false;
 		bool require_all_levels = false;
 		bool no_ending = false;
-		bool use_button_timer = false;
+		//bool use_button_timer = false;
 		std::string collectable_name = "big apple";
 		
 		PK2LEVEL levels_list[EPISODI_MAX_LEVELS];
@@ -105,14 +105,13 @@ class EpisodeClass {
 		void Load_Info();
 		void Load_Assets();
 
-		
-
 		int  Save_Scores();
 		void Update_NextLevel();
-		PFile::Path Get_Dir(const std::string& file)const;
 
 		SfxHandler sfx;
 	private:
+
+		PFile::Path Get_Dir(const std::string& file)const;
 		
 		int  Open_Scores();
 

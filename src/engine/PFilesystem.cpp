@@ -13,7 +13,7 @@
 #include "engine/PLog.hpp"
 
 #include <SDL.h>
-
+#include <algorithm>
 #include <iostream>
 #include <filesystem>
 #include <sstream>
@@ -55,10 +55,6 @@ void CreateDirectory(const std::string& path_in){
 
 
 bool SetAssetsPath(const std::string& name){
-
-    //TODO Remove this
-    PFile::SetAssetsPath(name);
-
     fs::path p = name;
 
     fs::path p1 = p / "gfx" / "pk2stuff.bmp";
@@ -111,6 +107,14 @@ void SetDefaultAssetsPath() {
 
 
 std::string GetAssetsPath(){
+    return mAssetsPath.string();
+}
+
+std::string GetEpisodeDirectory(){
+    if(!mEpisodeName.empty()){
+        return (mAssetsPath / EPISODES_DIR / mEpisodeName).string();
+    }
+
     return mAssetsPath.string();
 }
 
@@ -230,7 +234,8 @@ std::optional<PFile::Path> FindEpisodeAsset(std::string name, const std::string&
          * episodes/"episode"/sprites/pig.spr2
          */
 
-        if(FindFile(mAssetsPath / "episodes" / mEpisodeName / default_dir, filename, name, alt_extension)){
+        if(!default_dir.empty() &&
+        FindFile(mAssetsPath / "episodes" / mEpisodeName / default_dir, filename, name, alt_extension)){
             return PFile::Path(name);
         }
     }
@@ -238,5 +243,40 @@ std::optional<PFile::Path> FindEpisodeAsset(std::string name, const std::string&
     return {};
 }
 
+std::vector<std::string> ScanDirectory_s(const std::string& name, const std::string& filter){
+    fs::path dir(name);
+    if(!dir.is_absolute()){
+        dir = mAssetsPath / dir;
+    }
+    std::vector<std::string> result;
+    if(!fs::exists(dir) || !fs::is_directory(dir)){
+        PLog::Write(PLog::WARN, "PFile", "Directory \"%s\" not found, cannot scan it", name.c_str());
+        return result;
+    }
+
+
+    for (const auto & entry : fs::directory_iterator(dir)){
+
+        if(filter.empty()){
+            result.push_back(entry.path().filename().string());
+        }
+        else if(filter=="/"){
+            if(entry.is_directory()){
+                result.push_back(entry.path().filename().string());
+            }
+        }
+        else{
+            auto filename = entry.path().filename();
+            std::string extension = PString::lowercase(filename.extension().string());
+            if(extension==filter){
+                result.push_back(filename.string());
+            }
+        }
+    }
+
+    std::sort(result.begin(), result.end());
+    
+    return result;
+}
 
 }

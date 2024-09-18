@@ -6,6 +6,9 @@
 
 #include "engine/PUtils.hpp"
 #include "engine/PLog.hpp"
+#include "engine/PFilesystem.hpp"
+
+#include <filesystem>
 
 #include <cstring>
 #include <string>
@@ -108,12 +111,17 @@ const char* GetDefaultLanguageName() {
 }
 
 int Load_Language(const std::string& language) {
-	
-	PFile::Path path(std::string("language" PE_SEP) + language);
-	
-	PLog::Write(PLog::DEBUG, "PK2", "Loading language from %s", path.c_str());
 
-	if (!tekstit->Read_File(path))
+	namespace fs = std::filesystem;
+
+	std::optional<PFile::Path> path = PFilesystem::FindVanillaAsset(language, PFilesystem::LANGUAGE_DIR);
+	if(!path.has_value()){
+		return -1;
+	}
+	
+	PLog::Write(PLog::DEBUG, "PK2", "Loading language from %s", path->c_str());
+
+	if (!tekstit->Read_File(*path))
 		return -1;	
 	
 	// Load_Fonts(tekstit);

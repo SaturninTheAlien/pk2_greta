@@ -166,8 +166,8 @@ void Draw_Cursor(int x, int y) {
 void Prepare_DataPath() {
 
 	PFilesystem::CreateDirectory(data_path);
-	PFilesystem::CreateDirectory(data_path + "scores" PE_SEP);
-	PFilesystem::CreateDirectory(data_path + "mapstore" PE_SEP);
+	PFilesystem::CreateDirectory(data_path + "scores");
+	PFilesystem::CreateDirectory(data_path + "mapstore");
 }
 
 /*//TODO - Receive Episode, organize this

@@ -42,10 +42,6 @@ public:
      */
     PrototypeClass* get(std::size_t index)const;
 
-    void setSearchingDir(const std::string& dir){
-        this->mSearchingDirectory = dir;
-    }
-
     void loadSpriteAssets();
     void unloadSpriteAssets();
 
@@ -53,8 +49,6 @@ public:
         return this->mPrototypes.size();
     }
 private:
-    std::string mSearchingDirectory = "";
-
     /**
      * @brief 
      * if should load dependecies sprites such as ammo, transformation and bonus

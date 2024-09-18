@@ -207,7 +207,7 @@ static void log_data() {
 }
 
 bool pk2_setAssetsPath(const std::string& path){
-	PFile::SetAssetsPath(path);
+	PFilesystem::SetAssetsPath(path);
 	return true;
 }
 
@@ -230,7 +230,12 @@ void pk2_main(bool _dev_mode, bool _show_fps, bool _test_level, const std::strin
 
 	config_txt.readFile();
 
-	Piste::init(screen_width, screen_height, PK2_NAME_STR, "gfx" PE_SEP "icon_new.png",
+	std::optional<PFile::Path> iconPath = PFilesystem::FindVanillaAsset("icon_new.png", PFilesystem::GFX_DIR);
+	if(!iconPath.has_value()){
+		throw std::runtime_error("icon_new.png not found!");
+	}
+
+	Piste::init(screen_width, screen_height, PK2_NAME_STR, iconPath->c_str(),
 	config_txt.audio_buffer_size);
 	
 	if (!Piste::is_ready()) {

@@ -16,6 +16,10 @@
 #include "engine/PInput.hpp"
 #include "engine/PSound.hpp"
 #include "engine/PUtils.hpp"
+#include "engine/PFilesystem.hpp"
+#include "engine/PLog.hpp"
+
+#include <stdexcept>
 
 void IntroScreen::Draw(){
 
@@ -91,11 +95,22 @@ void IntroScreen::Init() {
 	
 	PDraw::set_offset(640, 480);
 
-	PDraw::image_load_with_palette(bg_screen, default_palette, PFile::Path("gfx" PE_SEP "intro.bmp"), false);
+	std::optional<PFile::Path> intro_bmp = PFilesystem::FindVanillaAsset("intro.bmp", PFilesystem::GFX_DIR);
+	if(!intro_bmp.has_value()){
+		throw std::runtime_error("\"intro.bmp\" not found!");
+	}
+
+	PDraw::image_load_with_palette(bg_screen, default_palette, *intro_bmp, false);
 	PDraw::palette_set(default_palette);
 
-	if (PSound::start_music(PFile::Path("music" PE_SEP "intro.xm")) == -1)
-		throw PExcept::PException("Can't load intro.xm");
+	std::optional<PFile::Path> intro_xm = PFilesystem::FindVanillaAsset("intro.xm", PFilesystem::MUSIC_DIR);
+	if(!intro_xm.has_value()){
+		throw std::runtime_error("\"intro.xm\" not found!");
+	}
+
+	if (PSound::start_music(*intro_xm) == -1){
+		PLog::Write(PLog::ERR, "PK2", "Can't load intro.xm");
+	}
 
 	PSound::set_musicvolume(Settings.music_max_volume);
 

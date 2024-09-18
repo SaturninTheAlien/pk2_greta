@@ -45,6 +45,9 @@ PrototypeClass* PrototypesHandler::loadPrototype(const std::string& filename_cAs
 
 	std::optional<PFile::Path> path;
 
+	if(commandLineTool && extension==".spr"){
+		path = PFilesystem::FindAsset(filename, PFilesystem::SPRITES_DIR);
+	}
 	if(extension==".spr2"){
 		path = PFilesystem::FindAsset(filename, PFilesystem::SPRITES_DIR);
 	}
@@ -88,7 +91,7 @@ PrototypeClass* PrototypesHandler::loadPrototype(const std::string& filename_cAs
 		}
 	}
 
-	
+	if(this->commandLineTool)return protot;
 
 	//Check if ambient
 	if(protot->type==TYPE_BACKGROUND || protot->type==TYPE_FOREGROUND || protot->type==TYPE_TELEPORT){

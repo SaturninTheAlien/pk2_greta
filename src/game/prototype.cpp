@@ -8,7 +8,6 @@
 
 #include "exceptions.hpp"
 #include <sstream>
-#include "episode/episodeclass.hpp"
 
 SpriteAnimation::SpriteAnimation(const LegacySprAnimation& anim){
 	this->loop = anim.loop;

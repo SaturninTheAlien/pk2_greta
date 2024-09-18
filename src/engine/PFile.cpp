@@ -23,6 +23,7 @@
 #include <fstream>
 
 #include <SDL.h>
+#include <stdexcept>
 
 #include "PZip.hpp"
 
@@ -35,47 +36,19 @@
 #include <android/asset_manager_jni.h>
 #endif
 
+#define PE_SEP "/"
+
 namespace fs = std::filesystem;
 
 namespace PFile {
 
-
-std::string mAssetsPath;
-
-void SetAssetsPath(const std::string& _assetsPath){
-	mAssetsPath = _assetsPath;
-
-	if(!mAssetsPath.empty())
-	{
-		char c1 = mAssetsPath[mAssetsPath.size()-1];
-		if(c1=='/'||c1=='\\'){
-			mAssetsPath = mAssetsPath.substr(0, mAssetsPath.size()-1);
-		}
+bool Path::exists()const{
+	if(this->zip_file!=nullptr){
+		throw std::runtime_error("Unimplemented Path::exists (zip)");
 	}
-}
-
-bool mIsAbsolute(const std::string& path){
-	#ifdef _WIN32
-		return path.size()>2 && path[1] == ':' && path[2] == '\\';		
-		
-	#else
-		return path.size()>0 && path[0] == '/';
-	#endif
-}
-
-std::string mGetAssetPath(const std::string& path){
-	if(mIsAbsolute(path))return path;
 	else{
-		return mAssetsPath +PE_SEP + path;
+		return fs::exists(this->path);
 	}
-}
-
-
-void Path::FixSep() {
-
-	const char* nosep = PE_NOSEP;
-	const char* sep = PE_SEP;
-	std::replace(this->path.begin(), this->path.end(), nosep[0], sep[0]);
 }
 
 Path::Path(std::string path) {
@@ -84,9 +57,6 @@ Path::Path(std::string path) {
     this->path = path;
 	
 	this->zip_file = nullptr;
-
-	this->FixSep();
-
 }
 
 Path::Path(PZip* zip_file, std::string path) {
@@ -101,9 +71,6 @@ Path::Path(PZip* zip_file, std::string path) {
     this->path = path;
 	
     this->zip_file = zip_file;
-
-	this->FixSep();
-
 }
 
 Path::Path(Path path, std::string file) {
@@ -112,9 +79,6 @@ Path::Path(Path path, std::string file) {
 	
 	file = file.substr(0, file.find_last_not_of(" ") + 1);
 	this->path += file;
-	
-	this->FixSep();
-
 }
 
 Path::~Path() {
@@ -390,68 +354,10 @@ std::vector<std::string> scan_file(const char* dir, const char* type){
 	return result;
 }
 
-bool Path::Find() {
-
-	try{
-			// Scan dir on ZIP
-		if (this->zip_file != nullptr)
-			return this->NoCaseFind();
-		
-		#ifdef __ANDROID__
-
-		if (this->path[0] != '/')
-			return this->NoCaseFind();
-
-		#endif
-
-		std::string path_a  = mGetAssetPath(this->path);
-
-		const char* cstr = path_a.c_str();
-
-		//PLog::Write(PLog::DEBUG, "PFile", "Find %s", cstr);
-		if(fs::exists(path_a)&&!fs::is_directory(path_a)){
-			PLog::Write(PLog::DEBUG, "PFile", "Found on %s", cstr);
-			return true;
-		}
-
-		#ifdef _WIN32
-			return false;
-		#else
-			//PLog::Write(PLog::INFO, "PFile", "%s not found, trying different cAsE", cstr);
-			return this->NoCaseFind();
-		#endif
-	}
-	catch(const std::filesystem::filesystem_error& e){
-		PLog::Write(PLog::WARN, "PFile", e.what());
-	}
-	return false;
-}
-
-
-bool Path::Is_Absolute()const{
-	return mIsAbsolute(this->path);
-}
 
 void Path::SetFile(std::string file) {
 	this->path = this->GetDirectory() + PE_SEP  + file;
 }
-
-void Path::SetPath(std::string newpath) {
-
-	if(newpath[newpath.length()-1]!=PE_SEP[0]){
-		newpath+=PE_SEP;
-	}
-
-	this->path = newpath + this->GetFileName();
-}
-
-void Path::SetSubpath(std::string subpath){
-	if(subpath[subpath.length()-1]!=PE_SEP[0]){
-		subpath+=PE_SEP;
-	}
-	this->path = this->GetDirectory() + PE_SEP + subpath + this->GetFileName();
-}
-
 
 std::string Path::GetDirectory()const {
 	std::filesystem::path p(this->path);
@@ -480,9 +386,7 @@ void Path::getBuffer(std::vector<char>& bytes)const{
 		#endif
 	}
 	else{
-		std::string path_a = mGetAssetPath(this->path);
-
-		std::ifstream file(path_a.c_str(), std::ios::binary | std::ios::ate);
+		std::ifstream file(this->path.c_str(), std::ios::binary | std::ios::ate);
 		bool success = file.good();
 		if(success){
 			std::streamsize size = file.tellg();
@@ -498,7 +402,7 @@ void Path::getBuffer(std::vector<char>& bytes)const{
 
 		if(!success){
 			std::ostringstream os;
-			os<<"Cannot get raw buffer from the file: \""<<path_a<<"\"";
+			os<<"Cannot get raw buffer from the file: \""<<this->path<<"\"";
 			std::string s = os.str();
 			throw PFileException(s);
 		}
@@ -529,14 +433,11 @@ RW Path::GetRW2(const char* mode)const {
 		
 	}
 	else{
-
-		std::string path_a = mGetAssetPath(this->path);
-
-		ret = SDL_RWFromFile(path_a.c_str(), mode);
+		ret = SDL_RWFromFile(this->path.c_str(), mode);
 		if (!ret) {
 
 			std::ostringstream os;
-			os<<"Can't get RW from the file: \""<<path_a<<"\"";
+			os<<"Can't get RW from the file: \""<<this->path<<"\"";
 			std::string s = os.str();
 			throw PFileException(s);
 		}
@@ -545,9 +446,6 @@ RW Path::GetRW2(const char* mode)const {
 	}
 }
 
-std::string Path::getPath()const{
-	return mGetAssetPath(this->path);
-}
 
 nlohmann::json Path::GetJSON()const{
 	
@@ -574,8 +472,7 @@ nlohmann::json Path::GetJSON()const{
 		#endif
 
 	}else{
-		std::string path_a = mGetAssetPath(this->path);
-		std::ifstream in(path_a.c_str());
+		std::ifstream in(this->path.c_str());
 		nlohmann::json res = nlohmann::json::parse(in);
 		return res;
 	}
@@ -605,8 +502,7 @@ std::string Path::GetContentAsString()const{
 		#endif
 	}
 	else{
-		std::string path_a = mGetAssetPath(this->path);
-		std::ifstream in(path_a.c_str());
+		std::ifstream in(this->path.c_str());
 		return std::string((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
 	}
 }
@@ -847,7 +743,6 @@ std::vector<std::string> Path::scandir(const char* type) {
 	std::string dir = this->GetDirectory(); //this->path.substr(0, this->path.find_last_of(PE_SEP));
 
 	if(!this->Is_Zip()){
-		dir = mGetAssetPath(dir);
 		if(!fs::exists(dir) || !fs::is_directory(dir)){
 			return ret;
 		}

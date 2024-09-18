@@ -14,9 +14,6 @@
 
 namespace PFile {
 
-void SetAssetsPath(const std::string& _assetsPath);
-//void SetDefaultAssetsPath();
-
 class PFileException:public std::exception{
 public:
     PFileException(const std::string& message):message(message){}
@@ -109,34 +106,31 @@ public:
     }
 
 
-    std::string getPath()const;
+    //std::string getPath()const;
 
     //type:
     // ""  - all files and directories
     // "/" - directory
     // ".exe" - *.exe
-    std::vector<std::string> scandir(const char* type);
-    bool Is_Zip()const{
-        return this->zip_file!=nullptr;
-    };
+    
+    
     
 
     std::string GetContentAsString()const;
     RW GetRW2(const char* mode)const;
     nlohmann::json GetJSON()const;
     void getBuffer(std::vector<char>& bytes)const;
+    bool exists()const;
 
+private:
+
+    bool Is_Zip()const{
+        return this->zip_file!=nullptr;
+    };
+
+    std::vector<std::string> scandir(const char* type);
     void SetFile(std::string file);
-    bool Find();
-private:    
-    bool NoCaseFind();
-    
-    void SetPath(std::string path);
-    void SetSubpath(std::string sub_path);   
-
-    void FixSep();
-
-    bool Is_Absolute()const;
+    bool NoCaseFind(); 
 
     std::string GetDirectory()const;
     std::string GetFileName()const;

@@ -3,7 +3,6 @@
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
 #include "sfx.hpp"
-#include "episode/episodeclass.hpp"
 
 #include "exceptions.hpp"
 
@@ -62,21 +61,18 @@ int SfxHandler::mLoadSound(const std::string& name){
 }
 
 int SfxHandler::mLoadSoundEpisode(int prev, const std::string&name, EpisodeClass*episode){
-    if(episode!=nullptr && episode->entry.is_zip){
-        std::optional<PFile::Path> path = PFilesystem::FindEpisodeAsset(name, PFilesystem::SFX_DIR);
-        if(path.has_value()){
-            int res = PSound::load_sfx(*path);
-            if(res!=-1){
-                this->mSounds.push_back(res);
-                return res;
-            }
-            else{
-                std::ostringstream os;
-                os<<"Unable to load SFX \""<<name<<"\" from ZIP episode";
-                PLog::Write(PLog::ERR, "PK2", os.str().c_str());                
-            }
+    std::optional<PFile::Path> path = PFilesystem::FindEpisodeAsset(name, PFilesystem::SFX_DIR);
+    if(path.has_value()){
+        int res = PSound::load_sfx(*path);
+        if(res!=-1){
+            this->mSounds.push_back(res);
+            return res;
         }
-
+        else{
+            std::ostringstream os;
+            os<<"Unable to load SFX \""<<name<<"\" from ZIP episode";
+            PLog::Write(PLog::ERR, "PK2", os.str().c_str());                
+        }
     }
     return prev;
 }

@@ -3,9 +3,9 @@
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
 #include <sstream>
+
+#include "engine/PFilesystem.hpp"
 #include "playing_screen.hpp"
-
-
 #include "engine/Piste.hpp"
 
 #include <cstring>
@@ -86,7 +86,7 @@ void PlayingScreen::Draw_InGame_DebugInfo() {
 	PDraw::font_write(fontti1, Game->map_file, 10, 460);
 	PDraw::font_write(fontti1, std::to_string(Player_Sprite->jump_timer), 270, 460);
 
-	PDraw::font_write(fontti1, Episode->Get_Dir("").c_str(), 10, 470);
+	PDraw::font_write(fontti1, PFilesystem::GetAssetsPath(), 10, 470);
 
 	PDraw::font_write(fontti1, std::to_string(Player_Sprite->super_mode_timer), 610, 470);
 	PDraw::font_write(fontti1, std::to_string(Player_Sprite->invisible_timer), 610, 460);

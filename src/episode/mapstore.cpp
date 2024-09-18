@@ -10,6 +10,7 @@
 #include "engine/PFile.hpp"
 #include "engine/PLog.hpp"
 #include "engine/PZip.hpp"
+#include "engine/PFilesystem.hpp"
 
 #include <cstring>
 #include <algorithm>
@@ -18,23 +19,20 @@ std::vector<episode_entry> episodes;
 
 void Search_Episodes() {
 
-	std::vector<std::string> list;
-	
-	list = PFile::Path("episodes" PE_SEP).scandir("/");
-	for (std::string ep : list) {
+	std::vector<std::string> list = PFilesystem::ScanDirectory_s(PFilesystem::EPISODES_DIR, "/");
 
+	for (std::string ep : list) {
 		episode_entry e;
 		e.name = ep;
 		e.is_zip = false;
         episodes.push_back(e);
-        
 	}
 
-	#ifdef PK2_USE_ZIP
+	/*#ifdef PK2_USE_ZIP
 
 	std::string mapstore_path(data_path + "mapstore" PE_SEP);
-	
-	list = PFile::Path(mapstore_path).scandir(".zip");
+
+	list = PFilesystem::ScanDirectory_s(mapstore_path, ".zip");
 	for (std::string zip : list) {
 		try{
 			PFile::PZip zp(mapstore_path + zip);
@@ -55,7 +53,7 @@ void Search_Episodes() {
 		}		
 	}
 
-	#endif
+	#endif*/
 
 	if (episodes.size() > 1)
 		std::stable_sort(episodes.begin(), episodes.end(),

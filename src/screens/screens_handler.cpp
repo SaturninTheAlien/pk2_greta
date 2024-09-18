@@ -13,11 +13,11 @@
 #include "gfx/text.hpp"
 #include "save.hpp"
 #include "system.hpp"
-
-#include "episode/episodeclass.hpp"
 #include "language.hpp"
 
 #include "engine/Piste.hpp"
+#include "engine/PFilesystem.hpp"
+
 #include <sstream>
 #include <ctime>
 #include <stdexcept>
@@ -83,7 +83,7 @@ ScreensHandler::ScreensHandler():
 		Load_Fonts(tekstit);
 	}
 
-	langlist = PFile::Path("language" PE_SEP).scandir(".txt");
+	langlist = PFilesystem::ScanDirectory_s(PFilesystem::LANGUAGE_DIR, ".txt");
 	
 	Search_Episodes();
 	
@@ -127,8 +127,17 @@ ScreensHandler::ScreensHandler():
 		Settings_Save();
 	}
 
-	PDraw::image_load(game_assets, PFile::Path("gfx" PE_SEP "pk2stuff.bmp"), true);
-	PDraw::image_load(game_assets2, PFile::Path("gfx" PE_SEP "pk2stuff2.bmp"), true);
+	std::optional<PFile::Path> p = PFilesystem::FindVanillaAsset("pk2stuff.bmp", PFilesystem::GFX_DIR);
+	if(!p.has_value()){
+		throw std::runtime_error("\"pk2stuff.bmp\" not found!");
+	}	
+	PDraw::image_load(game_assets, *p, true);
+
+	p = PFilesystem::FindVanillaAsset("pk2stuff2.bmp", PFilesystem::GFX_DIR);
+	if(!p.has_value()){
+		throw std::runtime_error("\"pk2stuff2.bmp\" not found!");
+	}
+	PDraw::image_load(game_assets2, *p, true);
 
 	//PSound::load_overlay_music(PFile::Path("music" PE_SEP "super.xm"));  // why? what is so special about this one xm that it needs to be loaded at runtime?
 	// I propose that we resort to start_music() for powerups that require special effects.	

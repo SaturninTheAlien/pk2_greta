@@ -22,6 +22,10 @@
 #include <algorithm>
 #include <cstring>
 #include <string>
+#include <filesystem>
+#include <iostream>
+
+namespace fs = std::filesystem;
 
 EpisodeClass* Episode = nullptr;
 
@@ -44,6 +48,9 @@ int EpisodeClass::Open_Scores() {
 	try{
 		char versio[4];
 		this->Clear_Scores();
+
+		
+
 
 		PFile::Path path(data_path + "scores" PE_SEP + this->entry.name + ".dat");
 		PFile::RW file = path.GetRW2("r");
@@ -171,12 +178,15 @@ int EpisodeClass::Save_Scores() {
 //TODO - Load info from different languages
 void EpisodeClass::Load_Info() {
 
-	PFile::Path infofile = this->Get_Dir("infosign.txt");
-
-	if (infofile.Find())
-		if (this->infos.Read_File(infofile))
-			PLog::Write(PLog::DEBUG, "PK2", "%s loaded", infofile.c_str());
-
+	std::optional<PFile::Path> infofile = PFilesystem::FindEpisodeAsset("infosign.txt", "");
+	if(infofile.has_value()){
+		if (this->infos.Read_File(*infofile)){
+			PLog::Write(PLog::DEBUG, "PK2", "%s loaded", infofile->c_str());
+		}
+		else{
+			PLog::Write(PLog::ERR, "PK2", "Cannot load %s", infofile->c_str());
+		}		
+	}
 }
 
 //TODO - don't load the same image again
@@ -210,11 +220,12 @@ void EpisodeClass::Load() {
 		//this->source_zip =  PFile::OpenZip(data_path + "mapstore" PE_SEP + entry.zipfile);
 		this->source_zip.open(data_path + "mapstore" PE_SEP + entry.zipfile);
 #endif
-
 	PFilesystem::SetEpisode(entry.name);
 
-	PFile::Path path = this->Get_Dir("");
-	std::vector<std::string> list = path.scandir(".map");
+	std::string dir = PFilesystem::GetEpisodeDirectory();
+
+	std::vector<std::string> list = PFilesystem::ScanDirectory_s(dir, ".map");	
+	
 	this->level_count = list.size();
 
 	// Read levels plain data
@@ -223,8 +234,9 @@ void EpisodeClass::Load() {
 		try{
 			LevelClass temp;
 			char* mapname = this->levels_list[i].tiedosto;
-			strcpy(mapname, list[i].c_str());
-			temp.load(PFile::Path(path, mapname), true);
+			strncpy(mapname, list[i].c_str(), PE_PATH_SIZE);
+			
+			temp.load((fs::path(dir) / list[i]).string(), true);
 
 			strncpy(this->levels_list[i].nimi, temp.name.c_str(), 40);
 			this->levels_list[i].nimi[39] = '\0';
@@ -240,10 +252,10 @@ void EpisodeClass::Load() {
 		
 	}
 
-	PFile::Path config_path(path, "config.txt");
+	std::optional<PFile::Path> config_path = PFilesystem::FindEpisodeAsset("config.txt", "");
+	if(config_path.has_value()){
 
-	if(config_path.Find()){
-		PLang config(config_path);
+		PLang config(*config_path);
 		if (config.loaded) {
 
 			int id = config.Search_Id("glow_effect");
@@ -283,17 +295,18 @@ void EpisodeClass::Load() {
 				this->no_ending = true;
 			}
 
-			id = config.Search_Id("use_button_timer");
+			// Is it really an episode issue?
+			// For me, it's a level issue
+			/*id = config.Search_Id("use_button_timer");
 			if (id != -1) {
 				PLog::Write(PLog::INFO, "PK2", "Episode use button timer is ON");
 				this->use_button_timer = true;
-			}
-
+			}*/
+		}
+		else{
+			PLog::Write(PLog::ERR, "PK2", "Cannot open episode config file.");
 		}
 	}
-
-	// Read config
-	
 
 	// Sort levels
 	std::stable_sort(this->levels_list, this->levels_list + this->level_count,
@@ -363,18 +376,24 @@ EpisodeClass::EpisodeClass(const char* player_name, episode_entry entry) {
 	this->Load();
 	
 }
-
+/**
+ * Remove this
+ */
 PFile::Path EpisodeClass::Get_Dir(const std::string& file)const {
 
+	fs::path p = fs::path(PFilesystem::GetAssetsPath()) / PFilesystem::EPISODES_DIR / entry.name / file;
+
+	/*PFilesystem::GetAssetsPath
+
 	std::string path("episodes" PE_SEP);
-	path += entry.name + PE_SEP + file;
+	path += entry.name + PE_SEP + file;*/
 
 /*#ifdef PK2_USE_ZIP
 	if (this->entry.is_zip)
 		return PFile::Path( &this->source_zip, path);
 #endif*/
 
-	return PFile::Path(path);
+	return PFile::Path(p.string());
 
 }
 
