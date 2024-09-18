@@ -12,7 +12,7 @@
 
 std::vector<std::string> langlist;
 
-PLang *tekstit;
+PLang *tekstit = nullptr;
 LANGUAGE PK_txt;
 
 const char* GetDefaultLanguageName() {

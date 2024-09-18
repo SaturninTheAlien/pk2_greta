@@ -162,7 +162,7 @@ bool FindAsset_s(std::string& name, const std::string& default_dir, const std::s
      */
     else if(fs::exists(name) && !fs::is_directory(name))return true;
 
-    std::string filename = fs::path(name).filename();
+    std::string filename = fs::path(name).filename().string();
     if(filename.empty()) return false;
 
     if(!mEpisodeName.empty()){
@@ -207,6 +207,34 @@ std::optional<PFile::Path> FindVanillaAsset(std::string name, const std::string&
     if(fs::exists(p)){
         return PFile::Path(p);
     }
+    return {};
+}
+
+std::optional<PFile::Path> FindEpisodeAsset(std::string name, const std::string& default_dir, const std::string& alt_extension){
+    std::string filename = fs::path(name).filename().string();
+    if(filename.empty()) return {};
+
+    if(!mEpisodeName.empty()){
+
+        /**
+         * @brief 
+         * episodes/"episode"/pig.spr2
+         */
+
+        if(FindFile(mAssetsPath / "episodes" / mEpisodeName, filename, name, alt_extension)){
+            return PFile::Path(name);
+        }
+
+        /**
+         * @brief 
+         * episodes/"episode"/sprites/pig.spr2
+         */
+
+        if(FindFile(mAssetsPath / "episodes" / mEpisodeName / default_dir, filename, name, alt_extension)){
+            return PFile::Path(name);
+        }
+    }
+
     return {};
 }
 

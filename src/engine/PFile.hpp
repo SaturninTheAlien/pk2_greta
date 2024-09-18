@@ -116,10 +116,6 @@ public:
     // "/" - directory
     // ".exe" - *.exe
     std::vector<std::string> scandir(const char* type);
-
-    bool NoCaseFind();
-    bool Find();
-
     bool Is_Zip()const{
         return this->zip_file!=nullptr;
     };
@@ -129,10 +125,11 @@ public:
     RW GetRW2(const char* mode)const;
     nlohmann::json GetJSON()const;
     void getBuffer(std::vector<char>& bytes)const;
+
     void SetFile(std::string file);
-
-private:
-
+    bool Find();
+private:    
+    bool NoCaseFind();
     
     void SetPath(std::string path);
     void SetSubpath(std::string sub_path);   

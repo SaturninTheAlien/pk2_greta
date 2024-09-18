@@ -39,8 +39,8 @@ int PFont::load(PFile::Path path) {
 	int i = 0;
 	char chars[256];
 
-	if (!path.Find()) 
-		return -1;
+	/*if (!path.Find()) 
+		return -1;*/
 
 	PLang param_file = PLang();
 

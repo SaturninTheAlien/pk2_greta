@@ -20,6 +20,7 @@
 #include "engine/Piste.hpp"
 #include <sstream>
 #include <ctime>
+#include <stdexcept>
 
 #include <time.h>
 
@@ -50,6 +51,11 @@ ScreensHandler::ScreensHandler():
 		TouchScreenControls.load();
 	}
 
+	if(tekstit!=nullptr){
+		delete tekstit;
+		tekstit = nullptr;
+	}
+
 	tekstit = new PLang();
 	if (Load_Language(Settings.language) != 0) {
 
@@ -61,12 +67,20 @@ ScreensHandler::ScreensHandler():
 		}
 
 	}
-	
-	if (Load_Fonts(tekstit) != 0) {
-		if (Load_Fonts(tekstit) != 0) {
-			throw PExcept::PException("Couldn't load fonts!");
+
+	try{
+		Load_Fonts(tekstit);
+	}
+	catch(const std::exception& e){
+		PLog::Write(PLog::ERR, "PK2", e.what());
+
+		//Fallback to English
+		Settings.language = "english.txt";
+		if(Load_Language(Settings.language) != 0) {
+			throw PExcept::FileNotFoundException("english.txt", PExcept::MISSING_ENGLISH_TEXT);
 		}
-	
+		
+		Load_Fonts(tekstit);
 	}
 
 	langlist = PFile::Path("language" PE_SEP).scandir(".txt");

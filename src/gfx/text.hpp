@@ -14,7 +14,7 @@ extern int fontti3;
 extern int fontti4;
 extern int fontti5;
 
-int Load_Fonts(PLang* lang);
+void Load_Fonts(PLang* lang);
 
 int CreditsText_Draw(const char *text, int font, int x, int y, u32 start, u32 end, u32 time);
 int Wavetext_Draw(const char *text, int fontti, int x, int y, char end = '\0');

@@ -45,4 +45,6 @@ bool FindAsset_s(std::string& name, const std::string& default_dir, const std::s
 std::optional<PFile::Path> FindAsset(std::string name, const std::string& default_dir, const std::string& alt_extension="");
 
 std::optional<PFile::Path> FindVanillaAsset(std::string name, const std::string& default_dir);
+std::optional<PFile::Path> FindEpisodeAsset(std::string filename, const std::string& default_dir, const std::string& alt_extension="");
+
 }
