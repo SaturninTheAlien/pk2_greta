@@ -115,4 +115,115 @@ void* PZip::readFile(const std::string& path, int&size){
 	return zfile;
 }
 
+
+std::vector<std::string> PZip::findSubdirectories(const std::string& dirname_cAsE){
+	std::string dirname = PString::unwindowsPath(PString::rtrim(PString::lowercase(dirname_cAsE)));
+
+	std::vector<std::string> result;
+	
+	struct zip_stat st;
+	zip_stat_init(&st);
+
+	int sz = zip_get_num_entries((zip_t*)this->zip , 0);
+	
+	for (int i = 0; i < sz; ++i) {
+		zip_stat_index((zip_t*)this->zip, i, 0, &st);
+		if(st.name==nullptr)continue;
+
+		std::string st_name = st.name;
+
+		if(PString::lowercase(st_name).compare(0, dirname.size(), dirname)!=0)continue;
+
+		/**
+		 * @brief 
+		 * To skip the directory itself
+		 */
+		if(st_name.size() == dirname.size() + 1)continue;
+
+		/**
+		 * @brief 
+		 * Remove directory prefix
+		 */
+		st_name = st_name.substr(dirname.size() + 1, st_name.size());
+
+		//std::cout<<st_name<<std::endl;
+
+		auto pos = st_name.find("/");
+		if(pos==std::string::npos)continue;
+
+		st_name = st_name.substr(0, pos);
+		bool duplicate = false;
+		for(const std::string& s: result){
+			if(s == st_name){
+				duplicate = true;
+				break;
+			}
+		}
+
+		if(!duplicate){
+			result.push_back(st_name);
+		}		
+	}
+	return result;
+}
+
+
+std::vector<PZipEntry> PZip::scanDirectory(const std::string& filename_cAsE, const std::string& filter){
+
+	std::string filename = PString::unwindowsPath(PString::rtrim(PString::lowercase(filename_cAsE)));
+
+	std::vector<PZipEntry> result;
+
+	struct zip_stat st;
+	zip_stat_init(&st);
+
+	int sz = zip_get_num_entries((zip_t*)this->zip , 0);
+	for (int i = 0; i < sz; ++i) {
+		zip_stat_index((zip_t*)this->zip, i, 0, &st);
+		if(st.name==nullptr)continue;
+
+		std::string st_name = st.name;
+
+		//std::cout<<st_name<<std::endl;
+		
+		if(!filename.empty() && PString::lowercase(st_name).compare(0, filename.size(), filename)!=0)continue;
+
+		/**
+		 * @brief 
+		 * To skip the directory itself
+		 */
+		if(st_name.size() == filename.size() + 1)continue;
+
+		st_name = st_name.substr(filename.size() + 1, st_name.size());
+
+		if(filter=="/"){
+			if(st_name.size() > 0 && st_name[st_name.size() - 1]=='/'){
+				st_name = st_name.substr(0, st_name.size()-1);
+			}
+			else{
+				continue;
+			}
+		}
+		else if(!filter.empty()){
+
+			std::string extension = PString::lowercase(fs::path(st_name).extension().string());
+			if(extension!=filter){
+				continue;
+			}
+		}
+
+		/**
+		 * @brief 
+		 * To skip subdirectories
+		 */
+		//if(st_name.find("/")!=std::string::npos)continue;
+
+		result.push_back( PZipEntry(st_name, i, st.size));
+	}
+
+	return result;
+}
+
+
+//
 }

@@ -14,6 +14,7 @@
 
 #include <cstring>
 #include <algorithm>
+#include <iostream>
 
 std::vector<episode_entry> episodes;
 
@@ -28,15 +29,16 @@ void Search_Episodes() {
         episodes.push_back(e);
 	}
 
-	/*#ifdef PK2_USE_ZIP
+	#ifdef PK2_USE_ZIP
 
 	std::string mapstore_path(data_path + "mapstore" PE_SEP);
-
 	list = PFilesystem::ScanDirectory_s(mapstore_path, ".zip");
 	for (std::string zip : list) {
+		std::cout<<zip<<std::endl;
 		try{
-			PFile::PZip zp(mapstore_path + zip);
-			std::vector<std::string> zip_list = PFile::Path(&zp, "episodes" PE_SEP).scandir("/");
+
+			PZip::PZip zp(mapstore_path + zip);
+			std::vector<std::string> zip_list = zp.findSubdirectories("episodes");
 
 			for (std::string ep : zip_list) {
 				episode_entry e;
@@ -44,16 +46,13 @@ void Search_Episodes() {
 				e.is_zip = true;
 				e.zipfile = zip;
 				episodes.push_back(e);
-				
 			}
-
 		}
 		catch(const std::exception& e){
 			PLog::Write(PLog::ERR, "PK2", e.what());
-		}		
+		}
 	}
-
-	#endif*/
+	#endif
 
 	if (episodes.size() > 1)
 		std::stable_sort(episodes.begin(), episodes.end(),

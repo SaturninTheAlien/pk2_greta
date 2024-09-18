@@ -8,8 +8,6 @@
 #include <vector>
 #include <optional>
 
-
-
 namespace PZip{
 
 
@@ -67,6 +65,11 @@ public:
 
     /*int getIndex(const std::string& filename, int& size, std::string& name);*/
     void* readFile(const std::string& name, int&size);
+
+
+    std::vector<std::string> findSubdirectories(const std::string& dirname_cAsE);
+    
+    std::vector<PZipEntry> scanDirectory(const std::string& filename_cAsE, const std::string& filter=""); 
 
     std::string name;
     void * zip = nullptr;

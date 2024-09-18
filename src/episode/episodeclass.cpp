@@ -224,8 +224,17 @@ void EpisodeClass::Load() {
 
 	std::string dir = PFilesystem::GetEpisodeDirectory();
 
-	std::vector<std::string> list = PFilesystem::ScanDirectory_s(dir, ".map");	
-	
+	std::vector<std::string> list;
+
+	if(entry.is_zip){
+		throw std::runtime_error("TODO\n Zip episodes!");
+
+	}
+	else{
+		list = PFilesystem::ScanDirectory_s(dir, ".map");
+
+	}
+
 	this->level_count = list.size();
 
 	// Read levels plain data

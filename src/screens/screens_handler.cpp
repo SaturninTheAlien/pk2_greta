@@ -9,7 +9,7 @@
 #include "sfx.hpp"
 #include "settings/settings.hpp"
 #include "gfx/touchscreen.hpp"
-#include "language.hpp"
+
 #include "gfx/text.hpp"
 #include "save.hpp"
 #include "system.hpp"
@@ -84,8 +84,6 @@ ScreensHandler::ScreensHandler():
 	}
 
 	langlist = PFilesystem::ScanDirectory_s(PFilesystem::LANGUAGE_DIR, ".txt");
-	
-	Search_Episodes();
 	
 	PInput::SetVibration(Settings.vibration);
 
