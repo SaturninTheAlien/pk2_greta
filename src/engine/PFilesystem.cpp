@@ -18,6 +18,12 @@
 #include <filesystem>
 #include <sstream>
 
+
+#ifdef __ANDROID__
+#include <android/asset_manager.h>
+#include <android/asset_manager_jni.h>
+#endif
+
 namespace fs = std::filesystem;
 namespace PFilesystem{
 
@@ -278,5 +284,73 @@ std::vector<std::string> ScanDirectory_s(const std::string& name, const std::str
     
     return result;
 }
+
+
+#ifdef __ANDROID__
+/**
+ * Is it necessary?
+ * Why can't apk be handled as a regular zip.
+ * Perhaps we don't need Java to do it.
+ */
+std::vector<std::string> scan_apk(const char* dir, const char* type) {
+
+	JNIEnv* env = (JNIEnv*)SDL_AndroidGetJNIEnv();
+	jobject activity = (jobject)SDL_AndroidGetActivity();
+	jclass clazz(env->GetObjectClass(activity));
+	jmethodID method_id = env->GetMethodID(clazz, "listDir", "(Ljava/lang/String;)[Ljava/lang/String;");
+
+	jstring param = env->NewStringUTF(dir);
+	jobjectArray array = (jobjectArray)env->CallObjectMethod(activity, method_id, param);
+
+	jsize size = env->GetArrayLength(array);
+	
+	std::vector<std::string> result;
+
+	for (int i = 0; i < size; i++) {
+
+		jstring filename = (jstring)env->GetObjectArrayElement(array, i);
+		jboolean isCopy;
+		const char* file = env->GetStringUTFChars(filename, &isCopy);
+
+		if( file[0] != '.' ) {
+
+			if(type[0] == '/' && strstr(file, ".") == NULL) { //provisory way - consider file without '.' a directory
+
+				result.push_back(file);
+				continue;
+
+			} else if(type[0] == '\0') {
+			
+				result.push_back(file);
+				continue;
+			
+			} else {
+
+				const char* ext = Get_Extension(file);
+				if(strcmp(ext, type) == 0) {
+
+					result.push_back(file);
+					continue;
+
+				}
+			}
+		}
+
+		if (isCopy == JNI_TRUE) {
+    		env->ReleaseStringUTFChars(filename, file);
+		}
+	}
+
+
+	env->DeleteLocalRef(activity);
+	env->DeleteLocalRef(clazz);
+
+    PLog::Write(PLog::DEBUG, "PFile", "Scanned APK on \"%s\" for \"%s\". Found %i matches", dir, type, (int)result.size());
+
+	return result;
+
+}
+
+#endif
 
 }

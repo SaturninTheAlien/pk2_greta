@@ -41,7 +41,7 @@ std::string GetAssetsPath();
 std::string GetEpisodeDirectory();
 
 void SetEpisode(const std::string& episodeName, void* zip_file=nullptr);
-bool FindAsset_s(std::string& name, const std::string& default_dir, const std::string& alt_extension);
+//bool FindAsset_s(std::string& name, const std::string& default_dir, const std::string& alt_extension);
 
 std::optional<PFile::Path> FindAsset(std::string name, const std::string& default_dir, const std::string& alt_extension="");
 std::optional<PFile::Path> FindVanillaAsset(std::string name, const std::string& default_dir);

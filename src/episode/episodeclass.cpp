@@ -220,6 +220,7 @@ void EpisodeClass::Load() {
 		//this->source_zip =  PFile::OpenZip(data_path + "mapstore" PE_SEP + entry.zipfile);
 		this->source_zip.open(data_path + "mapstore" PE_SEP + entry.zipfile);
 #endif
+
 	PFilesystem::SetEpisode(entry.name);
 
 	std::string dir = PFilesystem::GetEpisodeDirectory();

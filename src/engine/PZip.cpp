@@ -81,7 +81,7 @@ std::optional<PZipEntry> PZip::getEntry(const std::string& cAsE_path){
 		std::string st_name = st.name;
 		if(lower_path==PString::lowercase(st_name)){
 			return PZipEntry(
-				st_name,
+				fs::path(st_name).filename().string(),
 				i,
 				st.size
 			);
@@ -91,28 +91,19 @@ std::optional<PZipEntry> PZip::getEntry(const std::string& cAsE_path){
 	return {};
 }
 
-void* PZip::readFile(const std::string& path, int&size){
-
-	std::optional<PZipEntry> entry = this->getEntry(path);
-
-	if (!entry.has_value()) {
-
-		std::ostringstream os;
-		os<<"Can't find the file: \""<<path<<"\" in zip \""<<this->name<<"\"";
-		throw PZipException(os.str());
-	}
-
-	zip_file_t* zfile = zip_fopen_index((zip_t*)this->zip, entry->index, 0);
-	size = entry->size;
+void PZip::read(const PZipEntry& entry, void* buffer){
+	zip_file_t* zfile = zip_fopen_index((zip_t*)this->zip, entry.index, 0);
 
 	if (!zfile) {
 
 		std::ostringstream os;
 		os<<"Zfile from zip \""<<this->name<<"\", file \""<<
-		path<<"\" is NULL";
+		entry.name<<"\" is NULL";
 		throw PZipException(os.str());
 	}
-	return zfile;
+
+	zip_fread(zfile, buffer, entry.size);
+	zip_fclose(zfile);
 }
 
 
@@ -216,7 +207,7 @@ std::vector<PZipEntry> PZip::scanDirectory(const std::string& filename_cAsE, con
 		 * @brief 
 		 * To skip subdirectories
 		 */
-		//if(st_name.find("/")!=std::string::npos)continue;
+		if(st_name.find("/")!=std::string::npos)continue;
 
 		result.push_back( PZipEntry(st_name, i, st.size));
 	}

@@ -4,8 +4,14 @@
 //#########################
 #include <sstream>
 #include <iostream>
+
 #include <algorithm>
 #include <filesystem>
+#include <cstring>
+#include <fstream>
+#include <SDL.h>
+#include <stdexcept>
+
 #include "engine/PFile.hpp"
 
 #include "engine/PLog.hpp"
@@ -13,44 +19,9 @@
 #include "engine/platform.hpp"
 #include "engine/PString.hpp"
 
-#include <cstring>
-#include <sys/stat.h>
-
-#include <unordered_map>
-#include <string>
-#include <vector>
-#include <algorithm>
-#include <fstream>
-
-#include <SDL.h>
-#include <stdexcept>
-
-#include "PZip.hpp"
-
-#ifdef PK2_USE_ZIP
-#include <zip.h>
-#endif
-
-#ifdef __ANDROID__
-#include <android/asset_manager.h>
-#include <android/asset_manager_jni.h>
-#endif
-
-#define PE_SEP "/"
-
 namespace fs = std::filesystem;
 
 namespace PFile {
-
-bool Path::exists()const{
-	if(this->zip_file!=nullptr){
-		throw std::runtime_error("Unimplemented Path::exists (zip)");
-	}
-	else{
-		return fs::exists(this->path);
-	}
-}
-
 Path::Path(std::string path) {
 
 	path = path.substr(0, path.find_last_not_of(" ") + 1);
@@ -59,18 +30,8 @@ Path::Path(std::string path) {
 	this->zip_file = nullptr;
 }
 
-Path::Path(PZip::PZip* zip_file, std::string path) {
-
-	if(zip_file == nullptr) {
-
-		PLog::Write(PLog::ERR, "PFile", "No zip file for %s\n", path.c_str());
-
-	}
-
-	path = path.substr(0, path.find_last_not_of(" ") + 1);
-    this->path = path;
-	
-    this->zip_file = zip_file;
+Path::Path(PZip::PZip* zip_file, const PZip::PZipEntry&e, std::string path):
+zip_file(zip_file), zip_entry(e) {
 }
 
 Path::Path(Path path, std::string file) {
@@ -85,187 +46,31 @@ Path::~Path() {
 
 }
 
-bool Path::operator==(Path path) { //needed?
-
-	bool a = this->zip_file == path.zip_file; //compare with zip_file name?
-	bool b = this->path == path.path;
-
-	return a && b;
-
-}
-
-const char* Get_Extension(const char* string) {
-
-	int len = strlen(string);
-	const char* end = string + len;
-	
-	for( int i = 0; i < len; i++ ) {
-
-		if (*(end - i) == '.' 
-			|| *(end - i) == '/'
-			|| *(end - i) == '\\') {
-
-			return end - i;
-
-		}
-
-	}
-
-	return string;
-
-}
-
-bool is_type(const char* file, const char* type) {
-
-    if(type[0] == '\0') {
-
-        return true;
-
-    } else if(type[0] == '/' && strstr(file, ".") == NULL) {
-
-        return true;
-
-    } else {
-
-        const char* ext = Get_Extension(file);
-        if(strcmp(ext, type) == 0) {
-
-            return true;
-
-        }
-    }
-
-    return false;
-
-}
-
-#ifdef __ANDROID__
-/**
- * Is it necessary?
- * Why can't apk be handled as a regular zip.
- * Perhaps we don't need Java to do it.
- */
-std::vector<std::string> scan_apk(const char* dir, const char* type) {
-
-	JNIEnv* env = (JNIEnv*)SDL_AndroidGetJNIEnv();
-	jobject activity = (jobject)SDL_AndroidGetActivity();
-	jclass clazz(env->GetObjectClass(activity));
-	jmethodID method_id = env->GetMethodID(clazz, "listDir", "(Ljava/lang/String;)[Ljava/lang/String;");
-
-	jstring param = env->NewStringUTF(dir);
-	jobjectArray array = (jobjectArray)env->CallObjectMethod(activity, method_id, param);
-
-	jsize size = env->GetArrayLength(array);
-	
-	std::vector<std::string> result;
-
-	for (int i = 0; i < size; i++) {
-
-		jstring filename = (jstring)env->GetObjectArrayElement(array, i);
-		jboolean isCopy;
-		const char* file = env->GetStringUTFChars(filename, &isCopy);
-
-		if( file[0] != '.' ) {
-
-			if(type[0] == '/' && strstr(file, ".") == NULL) { //provisory way - consider file without '.' a directory
-
-				result.push_back(file);
-				continue;
-
-			} else if(type[0] == '\0') {
-			
-				result.push_back(file);
-				continue;
-			
-			} else {
-
-				const char* ext = Get_Extension(file);
-				if(strcmp(ext, type) == 0) {
-
-					result.push_back(file);
-					continue;
-
-				}
-			}
-		}
-
-		if (isCopy == JNI_TRUE) {
-    		env->ReleaseStringUTFChars(filename, file);
-		}
-	}
-
-
-	env->DeleteLocalRef(activity);
-	env->DeleteLocalRef(clazz);
-
-    PLog::Write(PLog::DEBUG, "PFile", "Scanned APK on \"%s\" for \"%s\". Found %i matches", dir, type, (int)result.size());
-
-	return result;
-
-}
-
-#endif
-
-void Path::getBuffer(std::vector<char>& bytes)const{
-	if(this->zip_file != nullptr){
-		#ifdef PK2_USE_ZIP
-
-		int size = 0;
-		zip_file_t* zfile = (zip_file_t*)this->zip_file->readFile(this->path, size);
-		bytes.resize(size);
-		zip_fread(zfile, bytes.data(), size);
-		zip_fclose(zfile);	
-
-		#else
-		throw PFileException("Zip is not supported in this PK2 version!");
-		#endif
+bool Path::operator==(const Path& second)const {
+	if(this->zip_file!=nullptr || second.zip_file!=nullptr){
+		return this->zip_file == second.zip_file && this->zip_entry == second.zip_entry;
 	}
 	else{
-		std::ifstream file(this->path.c_str(), std::ios::binary | std::ios::ate);
-		bool success = file.good();
-		if(success){
-			std::streamsize size = file.tellg();
-			file.seekg(0, std::ios::beg);
-
-			bytes.resize(size);
-			if (!file.read(bytes.data(), size)){
-				success = false;
-				bytes.clear();
-			}
-
-		}
-
-		if(!success){
-			std::ostringstream os;
-			os<<"Cannot get raw buffer from the file: \""<<this->path<<"\"";
-			std::string s = os.str();
-			throw PFileException(s);
-		}
+		return this->path == second.path;
 	}
+}
 
+bool Path::exists()const{
+	if(this->zip_file!=nullptr){
+		throw std::runtime_error("Unimplemented Path::exists (zip)");
+	}
+	else{
+		return fs::exists(this->path);
+	}
 }
 
 RW Path::GetRW2(const char* mode)const {
 	SDL_RWops* ret;
-	if (this->zip_file != nullptr) {
-
-		#ifdef PK2_USE_ZIP
-		
-		int size = 0;
-		zip_file_t* zfile = (zip_file_t*)this->zip_file->readFile(this->path, size);
-		void* buffer = SDL_malloc(size);
-		zip_fread(zfile, buffer, size);
-		zip_fclose(zfile);
-
-		ret = SDL_RWFromConstMem(buffer, size);
+	if (this->zip_file != nullptr && this->zip_entry.good()) {
+		void * buffer = SDL_malloc(this->zip_entry.size);
+		this->zip_file->read(this->zip_entry, buffer);
+		ret = SDL_RWFromConstMem(buffer, this->zip_entry.size);
 		return RW(ret, buffer);
-
-		#else
-
-		throw PFileException("Zip is not supported in this PK2 version!");
-		
-		#endif
-		
 	}
 	else{
 		ret = SDL_RWFromFile(this->path.c_str(), mode);
@@ -284,27 +89,16 @@ RW Path::GetRW2(const char* mode)const {
 
 nlohmann::json Path::GetJSON()const{
 	
-	if(this->zip_file!=nullptr){
+	if(this->zip_file!=nullptr && this->zip_entry.good()){
 
-		#ifdef PK2_USE_ZIP
+		char * buffer = new char[this->zip_entry.size + 1];
+		buffer[this->zip_entry.size] = '\0';
 
-		int size = 0;
-		zip_file_t* zfile = (zip_file_t*)this->zip_file->readFile(this->path, size);
-		char* buffer = new char[size+1];
-		buffer[size] = '\0';
-		
-		zip_fread(zfile, buffer, size);
-		zip_fclose(zfile);
+		this->zip_file->read(this->zip_entry, buffer);
 
 		nlohmann::json res = nlohmann::json::parse(buffer);
 		delete[] buffer;
 		return res;
-
-		#else
-
-		throw PFileException("Zip is not supported in this PK2 version!");
-		
-		#endif
 
 	}else{
 		std::ifstream in(this->path.c_str());
@@ -315,26 +109,14 @@ nlohmann::json Path::GetJSON()const{
 
 std::string Path::GetContentAsString()const{
 	if(this->zip_file!=nullptr){
-		#ifdef PK2_USE_ZIP
+		char * buffer = new char[this->zip_entry.size + 1];
+		buffer[this->zip_entry.size] = '\0';
 
-		int size = 0;
-		zip_file_t* zfile = (zip_file_t*)this->zip_file->readFile(this->path, size);
-		char* buffer = new char[size+1];
-		buffer[size] = '\0';
-		
-		zip_fread(zfile, buffer, size);
-		zip_fclose(zfile);
+		this->zip_file->read(this->zip_entry, buffer);
 
 		std::string res = buffer;
-
 		delete[] buffer;
 		return res;
-
-		#else
-
-		throw PFileException("Zip is not supported in this PK2 version!");
-		
-		#endif
 	}
 	else{
 		std::ifstream in(this->path.c_str());
@@ -500,35 +282,6 @@ size_t RW::size() {
 	return SDL_RWsize(rwops);
 
 }
-/*
-size_t RW::to_buffer(void** buffer) {
-
-	SDL_RWops* rwops = (SDL_RWops*)(this->_rwops);
-	
-	size_t size = SDL_RWsize(rwops);
-	
-	if (size == 0) {
-
-		PLog::Write(PLog::ERR, "PFile", "RW size = 0");
-		return size;
-
-	}
-
-	*buffer = SDL_malloc(size);
-
-	if (*buffer) {
-
-		this->read(*buffer, size);
-		return size;
-
-	} else {
-
-		PLog::Write(PLog::ERR, "PFile", "Could not alloc memory");
-		return 0;
-
-	}
-
-}*/
 
 void RW::close() {
 

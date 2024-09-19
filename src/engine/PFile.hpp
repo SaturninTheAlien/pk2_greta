@@ -6,14 +6,11 @@
 
 #include "types.hpp"
 #include "3rd_party/json.hpp"
+#include "PZip.hpp"
 
 #include <vector>
 #include <string>
 #include <stdexcept>
-
-namespace PZip{
-    class PZip;
-}
 
 namespace PFile {
 
@@ -94,11 +91,11 @@ class Path {
 public: 
 
     Path(std::string path);
-    Path(PZip::PZip* zip_file, std::string path);
+    Path(PZip::PZip* zip_file, const PZip::PZipEntry&e, std::string path);
     Path(Path path, std::string file);
     ~Path();
 
-    bool operator ==(Path path);
+    bool operator ==(const Path& path)const;
     const char* c_str()const{
         return this->path.c_str();
     }
@@ -111,13 +108,12 @@ public:
     std::string GetContentAsString()const;
     RW GetRW2(const char* mode)const;
     nlohmann::json GetJSON()const;
-    void getBuffer(std::vector<char>& bytes)const;
     bool exists()const;
 
 private:
     std::string path;
     PZip::PZip* zip_file;
-
+    PZip::PZipEntry zip_entry;
 };
 
 }
