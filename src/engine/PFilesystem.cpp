@@ -14,7 +14,6 @@
 
 #include <SDL.h>
 #include <algorithm>
-#include <iostream>
 #include <filesystem>
 #include <sstream>
 

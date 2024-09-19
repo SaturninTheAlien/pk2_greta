@@ -14,7 +14,6 @@
 
 #include <cstring>
 #include <algorithm>
-#include <iostream>
 #include <filesystem>
 
 namespace fs = std::filesystem;
@@ -38,7 +37,6 @@ void Search_Episodes() {
 
 	list = PFilesystem::ScanDirectory_s(mapstore_path, ".zip");
 	for (std::string zip : list) {
-		std::cout<<zip<<std::endl;
 		try{
 
 			PZip::PZip zp((fs::path(mapstore_path)/zip).string());

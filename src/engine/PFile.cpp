@@ -3,7 +3,6 @@
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
 #include <sstream>
-#include <iostream>
 
 #include <algorithm>
 #include <filesystem>

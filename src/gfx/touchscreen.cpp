@@ -2,7 +2,6 @@
 //Pekka Kana 2
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
-#include <iostream>
 #include "touchscreen.hpp"
 
 #include "system.hpp"
