@@ -12,7 +12,6 @@
 #include <array>
 
 #include <SDL_image.h>
-#include <iostream>
 
 namespace PDraw {
 

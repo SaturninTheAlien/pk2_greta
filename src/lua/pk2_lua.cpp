@@ -8,7 +8,6 @@
  * Lua utils by SaturninTheAlien
  */
 
-#include <iostream>
 #include "pk2_lua.hpp"
 #include <string>
 
@@ -24,8 +23,8 @@
 
 #include "engine/PLog.hpp"
 #include "engine/PFile.hpp"
+#include "engine/PFilesystem.hpp"
 
-#include "episode/episodeclass.hpp"
 #include "game/game.hpp"
 
 #include "system.hpp"
@@ -38,9 +37,10 @@ std::string PK2GetLuaFile(const std::string&filename_in){
         name += ".lua";
     }
 
-    PFile::Path file = Episode->Get_Dir(name);
-    if(FindAsset(&file, "lua" PE_SEP)){
-        return file.GetContentAsString();
+    std::optional<PFile::Path> file = PFilesystem::FindAsset(name, PFilesystem::LUA_DIR);
+
+    if(file.has_value()){
+        return file->GetContentAsString();
     }
     else{
         return "";

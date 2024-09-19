@@ -9,6 +9,7 @@
 #include "engine/platform.hpp"
 #include "engine/PFile.hpp"
 #include "engine/PLang.hpp"
+#include "engine/PZip.hpp"
 
 #include "sfx.hpp"
 
@@ -68,9 +69,8 @@ class EpisodeClass {
 	public:
 	
 		episode_entry entry;
-#ifdef PK2_USE_ZIP
-		PFile::Zip* source_zip;
-#endif
+		PZip::PZip source_zip;
+
 		char player_name[20] = " ";
 		u32 player_score = 0;
 
@@ -82,7 +82,7 @@ class EpisodeClass {
 		bool ignore_collectable = false;
 		bool require_all_levels = false;
 		bool no_ending = false;
-		bool use_button_timer = false;
+		//bool use_button_timer = false;
 		std::string collectable_name = "big apple";
 		
 		PK2LEVEL levels_list[EPISODI_MAX_LEVELS];
@@ -101,15 +101,17 @@ class EpisodeClass {
 		void Load_Info();
 		void Load_Assets();
 
-		PFile::Path Get_Dir(const std::string& file)const;
-
-		int  Save_Scores();
-
+		void  Save_Scores();
 		void Update_NextLevel();
 
 		SfxHandler sfx;
 	private:
-		int  Open_Scores();
+
+		std::string getScoresPath()const;
+
+		PFile::Path Get_Dir(const std::string& file)const;
+		
+		void openScores();
 
 		void Clear_Scores();
 

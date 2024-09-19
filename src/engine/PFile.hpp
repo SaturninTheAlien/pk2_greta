@@ -6,17 +6,13 @@
 
 #include "types.hpp"
 #include "3rd_party/json.hpp"
+#include "PZip.hpp"
 
 #include <vector>
 #include <string>
 #include <stdexcept>
 
-
 namespace PFile {
-
-void SetAssetsPath(const std::string& _assetsPath);
-void SetDefaultAssetsPath();
-void CreateDirectory(const std::string& path);
 
 class PFileException:public std::exception{
 public:
@@ -28,7 +24,6 @@ private:
     std::string message;
 };
 
-struct Zip;
 
 class RW {
 public:
@@ -93,14 +88,14 @@ private:
 // Delete this class and replace with std::filesystem
 class Path {
 
-    public: 
+public: 
 
     Path(std::string path);
-    Path(Zip* zip_file, std::string path);
+    Path(PZip::PZip* zip_file, const PZip::PZipEntry&e);
     Path(Path path, std::string file);
     ~Path();
 
-    bool operator ==(Path path);
+    bool operator ==(const Path& path)const;
     const char* c_str()const{
         return this->path.c_str();
     }
@@ -110,46 +105,15 @@ class Path {
     }
 
 
-    std::string getPath()const;
-
-    //type:
-    // ""  - all files and directories
-    // "/" - directory
-    // ".exe" - *.exe
-    std::vector<std::string> scandir(const char* type);
-
-    bool NoCaseFind();
-    bool Find();
-
-    bool Is_Zip()const{
-        return this->zip_file!=nullptr;
-    };
-    bool Is_Absolute()const;
-
-    void SetFile(std::string file);
-    void SetPath(std::string path);
-
-    void SetSubpath(std::string sub_path);
-
-    void FixSep();
-
-    std::string GetDirectory()const;
-    std::string GetFileName()const;
-
     std::string GetContentAsString()const;
-
     RW GetRW2(const char* mode)const;
     nlohmann::json GetJSON()const;
+    bool exists()const;
 
-    void getBuffer(std::vector<char>& bytes)const;
-
-private:   
+private:
     std::string path;
-    Zip* zip_file;
-
+    PZip::PZip* zip_file;
+    PZip::PZipEntry zip_entry;
 };
-
-Zip* OpenZip(std::string path);
-void CloseZip(Zip* zp);
 
 }

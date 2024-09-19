@@ -6,9 +6,9 @@
 #include "engine/PDraw.hpp"
 #include "system.hpp"
 #include "gfx/effect.hpp"
-#include "episode/episodeclass.hpp"
 #include "engine/PSound.hpp"
 #include "engine/PLog.hpp"
+#include "engine/PFilesystem.hpp"
 
 
 LevelSector::LevelSector(std::size_t width, std::size_t height):
@@ -313,20 +313,24 @@ void LevelSector::countStartSigns(std::vector<BlockPosition>& vec, u32 sector_id
 		}
 	}
 }
-
+/**
+ * @brief 
+ * TODO
+ * Redesign and optimise this function
+ */
 void LevelSector::startMusic(){
 	if (!this->music_name.empty()) {
+		std::optional<PFile::Path> music_path = PFilesystem::FindAsset(this->music_name,
+		PFilesystem::MUSIC_DIR);
 
-		PFile::Path music_path = Episode->Get_Dir(this->music_name);
+		if (!music_path.has_value()) {
 
-		if (!FindAsset(&music_path, "music" PE_SEP)) {
-
-			PLog::Write(PLog::ERR, "PK2", "Can't find music \"%s\", trying \"song01.xm\"", music_path.GetFileName().c_str());
-			music_path = PFile::Path("music" PE_SEP "song01.xm");
+			PLog::Write(PLog::ERR, "PK2", "Can't find music \"%s\", trying \"song01.xm\"",this->music_name.c_str());
+			music_path = PFilesystem::FindAsset("song01.xm",PFilesystem::MUSIC_DIR);
 
 		}
-		
-		if (PSound::start_music(music_path) == -1)
+
+		if (PSound::start_music(*music_path) == -1)
 			PLog::Write(PLog::FATAL, "PK2", "Can't load any music file");
 
 	}

@@ -13,11 +13,14 @@
 #include "settings/settings.hpp"
 #include "exceptions.hpp"
 
+
+
 #include "engine/PLog.hpp"
 #include "engine/PDraw.hpp"
 #include "engine/PInput.hpp"
 #include "engine/PSound.hpp"
 #include "engine/PUtils.hpp"
+#include "engine/PFilesystem.hpp"
 
 #include "engine/types.hpp"
 
@@ -118,20 +121,30 @@ void EndingScreen::Init() {
 	
 	PDraw::set_offset(640, 480);
 
-	PFile::Path path = Episode->Get_Dir("ending.bmp");
-	if (FindAsset(&path, "gfx" PE_SEP)) {
+	std::optional<PFile::Path> path = PFilesystem::FindAsset("ending.bmp", PFilesystem::GFX_DIR, ".png");
 
-		PDraw::image_load_with_palette(bg_screen, default_palette, path, true);
+	if (path.has_value()) {
+
+		PDraw::image_load_with_palette(bg_screen, default_palette, *path, true);
 		PDraw::palette_set(default_palette);
 
 	} else {
-
-		PLog::Write(PLog::ERR, "PK2", "Can't load ending bg"); //"Can't load map bg"
-
+		throw PExcept::PException("\"ending.bmp\" not found!");
 	}
 
-	if (PSound::start_music(PFile::Path("music" PE_SEP "intro.xm")) == -1)
-		throw PExcept::PException("Can't load intro.xm");
+	path = PFilesystem::FindVanillaAsset("intro.xm", PFilesystem::MUSIC_DIR);
+	if(!path.has_value()){
+		throw PExcept::PException("\"intro.xm\" not found!");
+	}
+	else{
+
+		if (PSound::start_music(*path) == -1){
+			PLog::Write(PLog::ERR, "PK2", "Cannot load \"intro.xm\"!");
+		}
+	}
+
+	
+		
 
 	PSound::set_musicvolume(Settings.music_max_volume);
 

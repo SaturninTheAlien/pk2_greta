@@ -77,7 +77,7 @@ public:
     int calculateSplashColor();
 
     void clear();
-    void loadImage(PFile::Path path);
+    void loadImage(const std::string& name);
 
     int getImage()const{
         return this->tiles;

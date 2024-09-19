@@ -16,7 +16,8 @@
 #include "game/levelsector.hpp"
 #include "exceptions.hpp"
 #include "game/game.hpp"
-#include "episode/episodeclass.hpp"
+#include "engine/PFilesystem.hpp"
+
 #include "system.hpp"
 #include <sstream>
 
@@ -160,8 +161,10 @@ void GameOfLife::placeCell(bool alive, int x, int y){
 }
 
 void GameOfLife::placeRLE(const std::string& name, int x, int y, int direction){
-	PFile::Path path = Episode->Get_Dir(name);
-	if(!FindAsset(&path, "rle" PE_SEP)){
+
+	std::optional<PFile::Path> path = PFilesystem::FindAsset(name, PFilesystem::LIFE_DIR);
+
+	if(!path.has_value()){
 		std::ostringstream os;
 		os<<"RLE file: \""<<name<<"\" not found!";
 		throw PExcept::PException(os.str());
@@ -195,7 +198,7 @@ void GameOfLife::placeRLE(const std::string& name, int x, int y, int direction){
 	}
 
 
-	PFile::RW rw = path.GetRW2("r");
+	PFile::RW rw = path->GetRW2("r");
 
 	char c1 = 0;
 	int state = 0;

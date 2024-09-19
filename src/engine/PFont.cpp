@@ -8,6 +8,7 @@
 #include "engine/PDraw.hpp"
 #include "engine/PLang.hpp"
 #include "engine/platform.hpp"
+#include "engine/PFilesystem.hpp"
 
 #include <cmath>
 #include <cstring>
@@ -38,8 +39,8 @@ int PFont::load(PFile::Path path) {
 	int i = 0;
 	char chars[256];
 
-	if (!path.Find()) 
-		return -1;
+	/*if (!path.Find()) 
+		return -1;*/
 
 	PLang param_file = PLang();
 
@@ -68,12 +69,15 @@ int PFont::load(PFile::Path path) {
 	strcpy(chars, param_file.Get_Text(i));
 
 	i = param_file.Search_Id("image");
-	path.SetFile(param_file.Get_Text(i));
 
-	if (!path.Find())
+	std::optional<PFile::Path> imagePath = PFilesystem::FindVanillaAsset(param_file.Get_Text(i), PFilesystem::FONTS_DIR);
+	if (!imagePath.has_value()){
+		//TODO Add exception here
 		return -1;
+	}
+		
 
-	int temp_image = PDraw::image_load(path, true);
+	int temp_image = PDraw::image_load(*imagePath, true);
 	if (temp_image == -1) return -1;
 
 	this->get_image(buf_x, buf_y, temp_image);

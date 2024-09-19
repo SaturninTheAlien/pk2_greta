@@ -2,7 +2,6 @@
 //Pekka Kana 2
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
-#include <iostream>
 #include "touchscreen.hpp"
 
 #include "system.hpp"
@@ -11,6 +10,7 @@
 #include "game/game.hpp"
 #include "engine/PRender.hpp"
 #include "engine/PInput.hpp"
+#include "engine/PFilesystem.hpp"
 
 #include <cmath>
 
@@ -79,8 +79,13 @@ void PK2TouchScreenControls::load() {
 	int w = button_w * 0.8;
 	int h = button_h * 0.8;
 
-	PFile::Path path("gfx" PE_SEP "touchscreen.png");
-	PRender::load_ui_texture(path);
+	std::optional<PFile::Path> path = PFilesystem::FindVanillaAsset("touchscreen.png", PFilesystem::GFX_DIR);
+
+	if(!path.has_value()){
+		throw std::runtime_error("\"touchscreen.png\" not found!");
+	}
+
+	PRender::load_ui_texture(*path);
 
 	PRender::RECT src, dst;
 

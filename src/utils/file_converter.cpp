@@ -29,7 +29,7 @@ void replaceObsoleteAIs(PrototypeClass* prototype){
 
 
 void convertToSpr2(const std::string& filename_in, const std::string& filename_out){
-	PrototypesHandler handler(false, false, nullptr);
+	PrototypesHandler handler(nullptr, false);
 	try{
 		PrototypeClass* prototype = handler.loadPrototype(filename_in);
 		replaceObsoleteAIs(prototype);
@@ -45,7 +45,7 @@ void convertToSpr2(const std::string& filename_in, const std::string& filename_o
 void convertLevel(const std::string& filename_in, const std::string& filename_out){
 	try{
 		LevelClass level;
-		level.load(PFile::Path(filename_in), false);
+		level.load(PFile::Path(filename_in), true);
 		printf("Converting level \"%s\" to the new experimental format.\n", level.name.c_str());
 
 		level.saveVersion15(PFile::Path(filename_out));

@@ -10,10 +10,11 @@
 
 #include "engine/PLog.hpp"
 #include "engine/PDraw.hpp"
+#include "engine/PFilesystem.hpp"
 
 #include <cstring>
-#include <iostream>
 #include <list>
+#include <stdexcept>
 
 struct PK2FADETEXT {
 	char teksti[20];
@@ -30,128 +31,32 @@ int fontti3 = -1;
 int fontti4 = -1;
 int fontti5 = -1;
 
-int Load_Fonts(PLang* lang) {
 
+static void mLoadFont(PLang*lang, int& font, const std::string& langID, const std::string& fallbackName){
+	int ind_font = lang->Search_Id(langID.c_str());
+
+	const std::string& fontName = ind_font==-1 ? fallbackName: lang->Get_Text(ind_font);
+
+	std::optional<PFile::Path> path = PFilesystem::FindVanillaAsset(fontName, PFilesystem::FONTS_DIR);
+	if(!path.has_value()){
+		throw std::runtime_error("Font picture: \""+fontName+"\" not found!");
+	}
+
+	font = PDraw::font_create(*path);
+	if(font == -1){
+		throw std::runtime_error("Can't create font from \""+fontName+"\"!");
+	}
+}
+
+
+
+void Load_Fonts(PLang* lang) {
 	PDraw::clear_fonts();
 
-	PFile::Path fonts_path("language" PE_SEP "fonts" PE_SEP);
-	PFile::Path index_path("");
-
-	int ind_path = lang->Search_Id("font path");
-	if (ind_path != -1) {
-
-		index_path = PFile::Path(lang->Get_Text(ind_path));
-		PLog::Write(PLog::DEBUG, "PK2", "Fonts on %s", index_path.c_str());
-
-	}
-
-	int ind_font = lang->Search_Id("font small font");
-	if (ind_path == -1 || ind_font == -1) {
-
-		fonts_path.SetFile("ScandicSmall.txt");
-        fontti1 = PDraw::font_create(fonts_path);
-		if (fontti1 == -1) {
-
-			PLog::Write(PLog::ERR, "PK2", "Can't create font 1 from ScandicSmall.txt");
-			PDraw::clear_fonts();
-			return -1;
-
-		}
-		
-	} else {
-
-		index_path.SetFile(lang->Get_Text(ind_font));
-        fontti1 = PDraw::font_create(index_path);
-		if (fontti1 == -1) {
-
-			PLog::Write(PLog::ERR, "PK2", "Can't create font 1");
-			PDraw::clear_fonts();
-			return -1;
-
-		}
-	
-	}
-
-	ind_font = lang->Search_Id("font big font normal");
-	if (ind_path == -1 || ind_font == -1) {
-
-		fonts_path.SetFile("ScandicBig1.txt");
-        fontti2 = PDraw::font_create(fonts_path);
-		if (fontti2 == -1) {
-
-			PLog::Write(PLog::ERR, "PK2", "Can't create font 2 from ScandicBig1.txt");
-			PDraw::clear_fonts();
-			return -1;
-
-		}
-		
-	} else {
-
-		index_path.SetFile(lang->Get_Text(ind_font));
-        fontti2 = PDraw::font_create(index_path);
-		if (fontti2 == -1) {
-
-			PLog::Write(PLog::ERR, "PK2", "Can't create font 2");
-			PDraw::clear_fonts();
-			return -1;
-
-		}
-	}
-
-	ind_font = lang->Search_Id("font big font hilite");
-	if (ind_path == -1 || ind_font == -1) {
-
-		fonts_path.SetFile("ScandicBig2.txt");
-        fontti3 = PDraw::font_create(fonts_path);
-		if (fontti3 == -1) {
-
-			PLog::Write(PLog::ERR, "PK2", "Can't create font 3 from ScandicBig2.txt");
-			PDraw::clear_fonts();
-			return -1;
-
-		}
-
-	} else {
-
-		index_path.SetFile(lang->Get_Text(ind_font));
-        fontti3 = PDraw::font_create(index_path);
-		if (fontti3 == -1) {
-
-			PLog::Write(PLog::ERR, "PK2", "Can't create font 3");
-			PDraw::clear_fonts();
-			return -1;
-
-		}
-	}
-
-	ind_font = lang->Search_Id("font big font shadow");
-	if (ind_path == -1 || ind_font == -1) {
-
-		fonts_path.SetFile("ScandicBig3.txt");
-        fontti4 = PDraw::font_create(fonts_path);
-		if (fontti4 == -1) {
-
-			PLog::Write(PLog::ERR, "PK2", "Can't create font 4 from ScandicBig3.txt");
-			PDraw::clear_fonts();
-			return -1;
-
-		}
-	
-	} else {
-
-		index_path.SetFile(lang->Get_Text(ind_font));
-        fontti4 = PDraw::font_create(index_path);
-		if (fontti4 == -1) {
-
-			PLog::Write(PLog::ERR, "PK2", "Can't create font 4");
-			PDraw::clear_fonts();
-			return -1;
-			
-		}
-
-	}
-
-	return 0;
+	mLoadFont(lang, fontti1, "font small font", "ScandicSmall.txt");
+	mLoadFont(lang, fontti2, "font big font normal", "ScandicBig1.txt");
+	mLoadFont(lang, fontti3, "font big font hilite", "ScandicBig2.txt");
+	mLoadFont(lang, fontti4, "font big font shadow", "ScandicBig3.txt");
 }
 
 int CreditsText_Draw(const char *text, int font, int x, int y, u32 start, u32 end, u32 time){

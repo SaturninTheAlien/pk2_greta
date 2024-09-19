@@ -8,9 +8,10 @@ class EpisodeClass;
 class PrototypesHandler{
 
 public:
-    PrototypesHandler(bool shouldLoadDependencies, bool jsonPriority, EpisodeClass* episode=nullptr):
-    mShouldLoadDependencies(shouldLoadDependencies), mJsonPriority(jsonPriority), mEpisode(episode){}
-
+    PrototypesHandler(EpisodeClass* episode, bool isCommandLineTool=false)
+    :mEpisode(episode), commandLineTool(isCommandLineTool){
+        
+    }
     ~PrototypesHandler(){
         clear();
     }
@@ -41,10 +42,6 @@ public:
      */
     PrototypeClass* get(std::size_t index)const;
 
-    void setSearchingDir(const std::string& dir){
-        this->mSearchingDirectory = dir;
-    }
-
     void loadSpriteAssets();
     void unloadSpriteAssets();
 
@@ -52,24 +49,20 @@ public:
         return this->mPrototypes.size();
     }
 private:
-    std::string mSearchingDirectory = "";
-
     /**
      * @brief 
      * if should load dependecies sprites such as ammo, transformation and bonus
      */
-    bool mShouldLoadDependencies = true;
-    bool mJsonPriority = true;    
     bool mAssetsLoaded = false;
+
+    
 
     /**
      * @brief 
      * Episode pointer
      */
     class EpisodeClass*mEpisode = nullptr;
+    bool commandLineTool = true;
 
     std::vector<PrototypeClass*>mPrototypes;
-
-    PFile::Path mGetDir(const std::string& filename)const;
-    bool mFindSprite(PFile::Path& path)const;
 };

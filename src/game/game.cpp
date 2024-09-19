@@ -22,6 +22,8 @@
 #include "engine/PLog.hpp"
 #include "engine/PDraw.hpp"
 #include "engine/PInput.hpp"
+#include "engine/PFilesystem.hpp"
+
 #include "lua/pk2_lua.hpp"
 #include "lua/lua_game_events.hpp"
 
@@ -30,7 +32,7 @@
 GameClass* Game = nullptr;
 
 GameClass::GameClass(int idx):
-spritePrototypes(true, true, Episode){
+spritePrototypes(Episode){
 
 	this->level_id = idx;
 	this->map_file = Episode->levels_list[idx].tiedosto;
@@ -41,7 +43,7 @@ spritePrototypes(true, true, Episode){
 }
 
 GameClass::GameClass(std::string map_file):
-spritePrototypes(true, true, Episode){
+spritePrototypes(Episode){
 
 	this->map_file = map_file;
 
@@ -347,12 +349,22 @@ void GameClass::update(int& debug_active_sprites){
 		} if (PInput::Keydown(PInput::V))
 			Player_Sprite->invisible_timer = 3000;
 		if (PInput::Keydown(PInput::S)) {
-			//PSound::play_overlay_music();   // this does the exact same thing as start_music()
-			PSound::start_music(PFile::Path("music" PE_SEP "super.xm"));   // the problem is this will most likely overwrite the current music, fixlater
+			this->startSupermodeMusic();			
 			Player_Sprite->super_mode_timer = 490;
 			key_delay = 30;
 		}
 
+	}
+}
+
+
+void GameClass::startSupermodeMusic(){
+	std::optional<PFile::Path> p = PFilesystem::FindAsset("super.xm", PFilesystem::MUSIC_DIR, ".ogg");
+	if(p.has_value()){
+		PSound::start_music(*p);
+	}
+	else{
+		PLog::Write(PLog::ERR, "\"super.xm\" not found!");
 	}
 }
 
@@ -391,8 +403,16 @@ void GameClass::finish() {
 	
 	this->level_clear = true;
 
-	if (PSound::start_music(PFile::Path("music" PE_SEP "hiscore.xm")) == -1)
-		throw PExcept::PException("Can't find hiscore.xm");
+	std::optional<PFile::Path> music_path = PFilesystem::FindAsset("hiscore.xm", PFilesystem::MUSIC_DIR, ".ogg");
+
+	if(!music_path.has_value()){
+		throw PExcept::PException("\"hiscore.xm\" not found!");
+	}
+
+	if (PSound::start_music(*music_path) == -1){
+		PLog::Write(PLog::ERR, "Can't play \"hiscore.xm\"");
+	}
+
 
 	if(!test_level){
 		Episode->level_status[this->level_id] |= LEVEL_PASSED;
@@ -413,9 +433,12 @@ void GameClass::finish() {
 }
 
 int GameClass::Open_Map() {
-	
-	PFile::Path path = Episode->Get_Dir(map_file);
-	level.load(path, false);
+
+	std::optional<PFile::Path> levelPath = PFilesystem::FindEpisodeAsset(map_file, "");
+	if(!levelPath.has_value()){
+		throw PExcept::PException("Cannot find the level file: \""+map_file+"\"!");
+	}
+	level.load(*levelPath, false);
 
 	/**
 	 * @brief 
@@ -436,11 +459,11 @@ int GameClass::Open_Map() {
 	else
 		has_time = false;
 
-	if (!Episode->use_button_timer) {
-		level.button1_time = SWITCH_INITIAL_VALUE;
-		level.button2_time = SWITCH_INITIAL_VALUE;
-		level.button3_time = SWITCH_INITIAL_VALUE;
-	}
+	//if (!Episode->use_button_timer) {
+	level.button1_time = SWITCH_INITIAL_VALUE;
+	level.button2_time = SWITCH_INITIAL_VALUE;
+	level.button3_time = SWITCH_INITIAL_VALUE;
+	//}
 
 	this->placeSprites();
 	this->level.calculateBlockTypes();

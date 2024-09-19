@@ -165,7 +165,7 @@ void Settings_Open() {
 	PFile::Path path(data_path, SETTINGS_FILE);
 
 	try{
-		if(path.Find()){
+		if(path.exists()){
 			Settings = path.GetJSON().get<PK2SETTINGS>();
 		}
 		else{
@@ -193,7 +193,7 @@ void Settings_Save() {
 
 	PFile::Path path(data_path, SETTINGS_FILE);
 	nlohmann::json j = Settings;
-	std::ofstream f(path.getPath());
+	std::ofstream f(path.c_str());
 
 	f << j.dump(4)<<std::endl;
 	f.close();

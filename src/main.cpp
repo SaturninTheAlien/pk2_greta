@@ -10,6 +10,7 @@
 //	Starts the level13.map on dev mode
 //#########################
 #include "engine/Piste.hpp"
+#include "engine/PFilesystem.hpp"
 #include "version.hpp"
 
 #include "screens/screens_handler.hpp"
@@ -42,20 +43,21 @@ static void start_test(const char* arg) {
 	
 	if (arg == NULL) return;
 
-	PFile::Path path(arg);
-
 	/**
 	 * @brief 
 	 * TODO
 	 * Not to load the whole episode while testing a level
 	 */
 
+	std::filesystem::path path(arg);
+
+	//PFile::Path path(arg);
 	episode_entry episode;
-	episode.name = path.GetDirectory();
+	episode.name = path.parent_path().filename().string();
 	episode.is_zip = false;
 	Episode = new EpisodeClass("test", episode);
 
-	Game = new GameClass(path.GetFileName());
+	Game = new GameClass(path.filename().string());
 
 	PLog::Write(PLog::DEBUG, "PK2", "Testing episode '%s' level '%s'", episode.name.c_str(), Game->map_file.c_str());
 
@@ -89,14 +91,20 @@ static void quit() {
 
 static void set_paths() {
 
-	PFile::SetDefaultAssetsPath();
+	PFilesystem::SetDefaultAssetsPath();
 	
 	#ifndef __ANDROID__
 
 	#ifdef PK2_PORTABLE
 
-	data_path = "data" PE_SEP;
-	PFile::CreateDirectory(data_path);
+	/**
+	 * @brief 
+	 * TODO
+	 * Redesign it
+	 */
+
+	data_path =  (std::filesystem::path(PFilesystem::GetAssetsPath()) / "data").string() + "/";
+	PFilesystem::CreateDirectory(data_path);
 
 	#else
 
@@ -199,7 +207,7 @@ static void log_data() {
 }
 
 bool pk2_setAssetsPath(const std::string& path){
-	PFile::SetAssetsPath(path);
+	PFilesystem::SetAssetsPath(path);
 	return true;
 }
 
@@ -222,7 +230,16 @@ void pk2_main(bool _dev_mode, bool _show_fps, bool _test_level, const std::strin
 
 	config_txt.readFile();
 
-	Piste::init(screen_width, screen_height, PK2_NAME_STR, "gfx" PE_SEP "icon_new.png",
+	if(!_test_level){
+		Search_Episodes();
+	}	
+
+	std::optional<PFile::Path> iconPath = PFilesystem::FindVanillaAsset("icon_new.png", PFilesystem::GFX_DIR);
+	if(!iconPath.has_value()){
+		throw std::runtime_error("icon_new.png not found!");
+	}
+
+	Piste::init(screen_width, screen_height, PK2_NAME_STR, iconPath->c_str(),
 	config_txt.audio_buffer_size);
 	
 	if (!Piste::is_ready()) {

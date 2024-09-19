@@ -13,6 +13,8 @@
 #include "engine/PLog.hpp"
 #include "engine/PUtils.hpp"
 #include "engine/PFile.hpp"
+#include "engine/PFilesystem.hpp"
+
 #include "engine/PDraw.hpp"
 
 #include "lua/pk2_lua.hpp"
@@ -20,10 +22,22 @@
 #include <algorithm>
 #include <cstring>
 #include <string>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 EpisodeClass* Episode = nullptr;
 
 #define VERSION "1.1"
+
+
+EpisodeClass::~EpisodeClass(){
+	PFilesystem::SetEpisode("", nullptr);
+}
+
+std::string EpisodeClass::getScoresPath()const{
+	return (fs::path(data_path) / "scores" / (this->entry.name + ".dat")).string();
+}
 
 void EpisodeClass::Clear_Scores() {
 
@@ -31,15 +45,15 @@ void EpisodeClass::Clear_Scores() {
 
 }
 
-int EpisodeClass::Open_Scores() {
+void EpisodeClass::openScores() {
 
 	try{
 		char versio[4];
 		this->Clear_Scores();
+		PFile::Path path(this->getScoresPath());
+		if(!path.exists())return;
 
-		PFile::Path path(data_path + "scores" PE_SEP + this->entry.name + ".dat");
 		PFile::RW file = path.GetRW2("r");
-
 		file.read(versio, 4);
 		if (strncmp(versio, VERSION, 4) == 0) {
 
@@ -102,27 +116,22 @@ int EpisodeClass::Open_Scores() {
 			PLog::Write(PLog::INFO, "PK2", "Can't read this scores version");
 
 			file.close();
-			return 2;
 
 		}
 	}
 	catch(const std::exception&e){
 		PLog::Write(PLog::WARN, "PK2", e.what());
 		PLog::Write(PLog::INFO, "PK2", "Can't load scores files");
-		return 1;
 
 	}
-
-	return 0;
-
 }
 
 // Version 1.1
-int EpisodeClass::Save_Scores() {
+void EpisodeClass::Save_Scores() {
 	
 	char versio[4] = VERSION;
 
-	PFile::Path path(data_path + "scores" PE_SEP + this->entry.name + ".dat");
+	PFile::Path path(this->getScoresPath());
 
 	try{
 		PFile::RW file = path.GetRW2("w");
@@ -151,89 +160,80 @@ int EpisodeClass::Save_Scores() {
 	catch(const std::exception& e){
 		PLog::Write(PLog::ERR, "PK2", e.what());
 		PLog::Write(PLog::ERR, "PK2", "Can't save scores");
-		return 1;
 	}
-
-	
-
-	return 0;
-
 }
 
 //TODO - Load info from different languages
 void EpisodeClass::Load_Info() {
 
-	PFile::Path infofile = this->Get_Dir("infosign.txt");
-
-	if (infofile.Find())
-		if (this->infos.Read_File(infofile))
-			PLog::Write(PLog::DEBUG, "PK2", "%s loaded", infofile.c_str());
-
+	std::optional<PFile::Path> infofile = PFilesystem::FindEpisodeAsset("infosign.txt", "");
+	if(infofile.has_value()){
+		if (this->infos.Read_File(*infofile)){
+			PLog::Write(PLog::DEBUG, "PK2", "%s loaded", infofile->c_str());
+		}
+		else{
+			PLog::Write(PLog::ERR, "PK2", "Cannot load %s", infofile->c_str());
+		}		
+	}
 }
 
 //TODO - don't load the same image again
 void EpisodeClass::Load_Assets() {
-	PFile::Path path = this->Get_Dir("pk2stuff.png");
-	if(!FindAsset(&path, "gfx" PE_SEP)){
-		path = this->Get_Dir("pk2stuff.bmp");
-		if (FindAsset(&path, "gfx" PE_SEP)) {
 
-			PDraw::image_load(game_assets, path, true);
+	std::optional<PFile::Path> path = PFilesystem::FindAsset("pk2stuff.png",
+		PFilesystem::GFX_DIR, ".bmp");
 
-		} else {
-
-			PLog::Write(PLog::ERR, "PK2", "Can't load pk2stuff"); //"Can't load map bg"
-
-		}
+	if(!path.has_value()){
+		PLog::Write(PLog::ERR, "PK2", "Can't load pk2stuff"); //"Can't load map bg"
 	}
 	else{
-		PDraw::image_load(game_assets, path, true);
+		PDraw::image_load(game_assets, *path, true);
 	}
 
-	path = this->Get_Dir("pk2stuff2.png");
-	if(!FindAsset(&path, "gfx" PE_SEP)){
-		path = this->Get_Dir("pk2stuff2.bmp");
-		if (FindAsset(&path, "gfx" PE_SEP)) {
+	path = PFilesystem::FindAsset("pk2stuff2.png",
+		PFilesystem::GFX_DIR, ".bmp");
 
-			PDraw::image_load(game_assets2, path, true);
-
-		} else {
-
-			PLog::Write(PLog::ERR, "PK2", "Can't load pk2stuff2"); //"Can't load map bg"
-
-		}
-	}
-	else{
-		PDraw::image_load(game_assets2, path, true);
-	}
-	
-	
-	
-	
-
-	/*path = this->Get_Dir("pk2stuff2.bmp");
-	if (FindAsset(&path, "gfx" PE_SEP)) {
-
-		PDraw::image_load(game_assets2, path, true);
-
-	} else {
-
+	if(!path.has_value()){
 		PLog::Write(PLog::ERR, "PK2", "Can't load pk2stuff2"); //"Can't load map bg"
-
-	}*/
-
+	}
+	else{
+		PDraw::image_load(game_assets2, *path, true);
+	}
 }
 
 void EpisodeClass::Load() {
+	
+	if (entry.is_zip){
+		this->source_zip.open( (fs::path(data_path)/"mapstore"/entry.zipfile).string());
+		PFilesystem::SetEpisode(entry.name, &this->source_zip);
+	}
+	else{
+		PFilesystem::SetEpisode(entry.name, nullptr);
+	}
 
-#ifdef PK2_USE_ZIP
-	if (entry.is_zip)
-		this->source_zip = PFile::OpenZip(data_path + "mapstore" PE_SEP + entry.zipfile);
-#endif
+	std::string dir = PFilesystem::GetEpisodeDirectory();
 
-	PFile::Path path = this->Get_Dir("");
-	std::vector<std::string> list = path.scandir(".map");
-	this->level_count = list.size();
+	std::vector<std::string> namelist;
+	std::vector<PFile::Path> pathlist;
+
+
+	if(entry.is_zip){
+		std::vector<PZip::PZipEntry> v = this->source_zip.scanDirectory(
+			std::string("episodes/")+this->entry.name, ".map");
+		for(const PZip::PZipEntry& en: v){
+			pathlist.emplace_back(PFile::Path(&this->source_zip, en));
+			namelist.emplace_back(en.name);
+		}
+	}
+	else{
+		namelist = PFilesystem::ScanDirectory_s(dir, ".map");
+		for(const std::string& name: namelist){
+			pathlist.emplace_back(PFile::Path((fs::path(dir) / name).string()));
+		}
+
+	}
+
+	this->level_count = namelist.size();
 
 	// Read levels plain data
 	for (u32 i = 0; i < this->level_count; i++) {
@@ -241,8 +241,9 @@ void EpisodeClass::Load() {
 		try{
 			LevelClass temp;
 			char* mapname = this->levels_list[i].tiedosto;
-			strcpy(mapname, list[i].c_str());
-			temp.load(PFile::Path(path, mapname), true);
+			strncpy(mapname, namelist[i].c_str(), PE_PATH_SIZE);
+			
+			temp.load(pathlist[i], true);
 
 			strncpy(this->levels_list[i].nimi, temp.name.c_str(), 40);
 			this->levels_list[i].nimi[39] = '\0';
@@ -258,10 +259,10 @@ void EpisodeClass::Load() {
 		
 	}
 
-	PFile::Path config_path(path, "config.txt");
+	std::optional<PFile::Path> config_path = PFilesystem::FindEpisodeAsset("config.txt", "");
+	if(config_path.has_value()){
 
-	if(config_path.Find()){
-		PLang config(config_path);
+		PLang config(*config_path);
 		if (config.loaded) {
 
 			int id = config.Search_Id("glow_effect");
@@ -301,17 +302,18 @@ void EpisodeClass::Load() {
 				this->no_ending = true;
 			}
 
-			id = config.Search_Id("use_button_timer");
+			// Is it really an episode issue?
+			// For me, it's a level issue
+			/*id = config.Search_Id("use_button_timer");
 			if (id != -1) {
 				PLog::Write(PLog::INFO, "PK2", "Episode use button timer is ON");
 				this->use_button_timer = true;
-			}
-
+			}*/
+		}
+		else{
+			PLog::Write(PLog::ERR, "PK2", "Cannot open episode config file.");
 		}
 	}
-
-	// Read config
-	
 
 	// Sort levels
 	std::stable_sort(this->levels_list, this->levels_list + this->level_count,
@@ -332,7 +334,7 @@ void EpisodeClass::Load() {
 
 	this->sfx.loadAllForEpisode(sfx_global, this);
 
-	this->Open_Scores();
+	this->openScores();
 	this->Load_Info();
 
 	this->Update_NextLevel();
@@ -381,27 +383,24 @@ EpisodeClass::EpisodeClass(const char* player_name, episode_entry entry) {
 	this->Load();
 	
 }
-
-EpisodeClass::~EpisodeClass() {
-
-#ifdef PK2_USE_ZIP
-	if (this->entry.is_zip)
-		PFile::CloseZip(this->source_zip);
-#endif
-
-}
-
+/**
+ * Remove this
+ */
 PFile::Path EpisodeClass::Get_Dir(const std::string& file)const {
 
+	fs::path p = fs::path(PFilesystem::GetAssetsPath()) / PFilesystem::EPISODES_DIR / entry.name / file;
+
+	/*PFilesystem::GetAssetsPath
+
 	std::string path("episodes" PE_SEP);
-	path += entry.name + PE_SEP + file;
+	path += entry.name + PE_SEP + file;*/
 
-#ifdef PK2_USE_ZIP
+/*#ifdef PK2_USE_ZIP
 	if (this->entry.is_zip)
-		return PFile::Path(this->source_zip, path);
-#endif
+		return PFile::Path( &this->source_zip, path);
+#endif*/
 
-	return PFile::Path(path);
+	return PFile::Path(p.string());
 
 }
 

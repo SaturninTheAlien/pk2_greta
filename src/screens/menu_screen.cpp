@@ -18,9 +18,10 @@
 #include "version.hpp"
 
 #include "engine/Piste.hpp"
+#include "engine/PFilesystem.hpp"
 
 #include <cstring>
-
+#include <stdexcept>
 #include <SDL_system.h>
 
 void MenuScreen::Draw_BGSquare(int left, int top, int right, int bottom, u8 pvari){
@@ -1132,19 +1133,16 @@ void MenuScreen::Draw_Menu_Language() {
 		if(Draw_Menu_Text(langlist[i].c_str(),150,my,'.')) {
 
 			Load_Language(langlist[i]);
-			
-			if (Load_Fonts(tekstit) == -1) {
 
-				Load_Language(Settings.language);
-				Load_Fonts(tekstit);
-
-			} else {
-
+			try{
 				Settings.language = langlist[i];
 				Settings_Save();
-
 			}
-
+			catch(const std::exception& e){
+				PLog::Write(PLog::ERR, "PK2 Fonts", e.what());
+				Load_Language(Settings.language);
+				Load_Fonts(tekstit);
+			}
 		}
 		
 		my += 20;
@@ -1259,10 +1257,21 @@ void MenuScreen::Init() {
 	langlistindex = 0;
 
 	if (!Episode) {
-		PDraw::image_load_with_palette(bg_screen, default_palette, PFile::Path("gfx" PE_SEP "menu.bmp"), true);
+
+		std::optional<PFile::Path> menu_path = PFilesystem::FindVanillaAsset("menu.bmp", PFilesystem::GFX_DIR);
+		if(!menu_path.has_value()){
+			throw std::runtime_error("\"menu.bmp\" not found!");
+		}
+
+		PDraw::image_load_with_palette(bg_screen, default_palette, *menu_path, true);
 		PDraw::palette_set(default_palette);
 
-		PSound::start_music(PFile::Path("music" PE_SEP "song09.xm"));
+		std::optional<PFile::Path> song9_path = PFilesystem::FindVanillaAsset("song09.xm", PFilesystem::MUSIC_DIR);
+		if(!song9_path.has_value()){
+			throw std::runtime_error("\"song09.xm\" not found!");
+		}
+
+		PSound::start_music(*song9_path);
 		PSound::set_musicvolume(Settings.music_max_volume);
 	
 	} else {

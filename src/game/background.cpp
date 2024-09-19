@@ -4,15 +4,20 @@
 //#########################
 #include "background.hpp"
 #include "engine/PDraw.hpp"
+#include "engine/PFilesystem.hpp"
+
 #include "system.hpp"
 #include "exceptions.hpp"
 
-void Background::load(PFile::Path path){
-    if (!FindAsset(&path, "gfx" PE_SEP "scenery" PE_SEP)){
-        throw PExcept::FileNotFoundException(path.c_str(), PExcept::MISSING_BACKGROUND);
+void Background::load(const std::string&name){
+
+	std::optional<PFile::Path> path = PFilesystem::FindAsset(name, PFilesystem::SCENERY_DIR);
+
+    if (!path.has_value()){
+        throw PExcept::FileNotFoundException(name, PExcept::MISSING_BACKGROUND);
 	}
 
-	std::pair<int, int> p = PDraw::image_load_with_palette(path, false);
+	std::pair<int, int> p = PDraw::image_load_with_palette(*path, false);
 	this->picture = p.first;
 	this->palette = p.second;
 

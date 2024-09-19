@@ -9,8 +9,6 @@
 #include <SDL.h>
 #include <functional>
 
-#include <iostream>
-
 #define UPDATE_FPS 30 //Update FPS each 30 frames
 
 namespace Piste {

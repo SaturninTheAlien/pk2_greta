@@ -4,6 +4,8 @@
 //#########################
 #include "system.hpp"
 
+#include "engine/PFilesystem.hpp"
+
 #include "engine/PLog.hpp"
 #include "engine/PUtils.hpp"
 #include "engine/PInput.hpp"
@@ -163,12 +165,12 @@ void Draw_Cursor(int x, int y) {
 
 void Prepare_DataPath() {
 
-	PFile::CreateDirectory(data_path);
-	PFile::CreateDirectory(data_path + "scores" PE_SEP);
-	PFile::CreateDirectory(data_path + "mapstore" PE_SEP);
+	PFilesystem::CreateDirectory(data_path);
+	PFilesystem::CreateDirectory(data_path + "scores");
+	PFilesystem::CreateDirectory(data_path + "mapstore");
 }
 
-//TODO - Receive Episode, organize this
+/*//TODO - Receive Episode, organize this
 bool FindAsset(PFile::Path* path, const char* default_dir) {
 
 	if(path->Find()){
@@ -204,7 +206,7 @@ bool FindAsset(PFile::Path* path, const char* default_dir) {
 
 	PLog::Write(PLog::INFO, "PK2", "Can't find %s", path->c_str());
 	return false;
-}
+}*/
 
 int Set_Screen_Size(int w, int h) {
 

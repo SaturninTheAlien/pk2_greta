@@ -24,7 +24,7 @@ public:
 
     int scrolling = BACKGROUND_STATIC;
 
-    void load(PFile::Path path);
+    void load(const std::string& name);
     void clear();
     void draw(int camera_x, int camera_y);
 

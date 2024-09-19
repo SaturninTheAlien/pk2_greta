@@ -3,7 +3,6 @@
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
 #include "sfx.hpp"
-#include "episode/episodeclass.hpp"
 
 #include "exceptions.hpp"
 
@@ -13,6 +12,7 @@
 
 #include "engine/PLog.hpp"
 #include "engine/PSound.hpp"
+#include "engine/PFilesystem.hpp"
 
 #include <cmath>
 #include <sstream>
@@ -43,31 +43,35 @@ const std::map<std::string, int SfxHandler::*> SfxHandler::soundFilenames = {
 
 
 int SfxHandler::mLoadSound(const std::string& name){
-    PFile::Path path("sfx" PE_SEP);
-    path.SetFile(name);
-    int result = PSound::load_sfx(path);
+
+    namespace fs = std::filesystem;
+
+    std::optional<PFile::Path> path = PFilesystem::FindVanillaAsset(name, PFilesystem::SFX_DIR);
+    if(!path.has_value()){
+        throw PExcept::FileNotFoundException(name, PExcept::MISSING_SFX);
+    }
+
+    int result = PSound::load_sfx(*path);
     if(result==-1){
         throw PExcept::FileNotFoundException(name, PExcept::MISSING_SFX);
     }
+    
     this->mSounds.push_back(result);
     return result;
 }
 
 int SfxHandler::mLoadSoundEpisode(int prev, const std::string&name, EpisodeClass*episode){
-    if(episode!=nullptr && episode->entry.is_zip){
-        PFile::Path path = episode->Get_Dir(name);
-        path.SetPath("sfx" PE_SEP);
-        if(path.Find()){
-            int res = PSound::load_sfx(path);
-            if(res!=-1){
-                this->mSounds.push_back(res);
-                return res;
-            }
-            else{
-                std::ostringstream os;
-                os<<"Unable to load SFX \""<<name<<"\" from ZIP episode";
-                PLog::Write(PLog::ERR, "PK2", os.str().c_str());                
-            }
+    std::optional<PFile::Path> path = PFilesystem::FindEpisodeAsset(name, PFilesystem::SFX_DIR);
+    if(path.has_value()){
+        int res = PSound::load_sfx(*path);
+        if(res!=-1){
+            this->mSounds.push_back(res);
+            return res;
+        }
+        else{
+            std::ostringstream os;
+            os<<"Unable to load SFX \""<<name<<"\" from ZIP episode";
+            PLog::Write(PLog::ERR, "PK2", os.str().c_str());                
         }
     }
     return prev;

@@ -9,17 +9,18 @@
 #include "sfx.hpp"
 #include "settings/settings.hpp"
 #include "gfx/touchscreen.hpp"
-#include "language.hpp"
+
 #include "gfx/text.hpp"
 #include "save.hpp"
 #include "system.hpp"
-
-#include "episode/episodeclass.hpp"
 #include "language.hpp"
 
 #include "engine/Piste.hpp"
+#include "engine/PFilesystem.hpp"
+
 #include <sstream>
 #include <ctime>
+#include <stdexcept>
 
 #include <time.h>
 
@@ -50,6 +51,11 @@ ScreensHandler::ScreensHandler():
 		TouchScreenControls.load();
 	}
 
+	if(tekstit!=nullptr){
+		delete tekstit;
+		tekstit = nullptr;
+	}
+
 	tekstit = new PLang();
 	if (Load_Language(Settings.language) != 0) {
 
@@ -61,17 +67,23 @@ ScreensHandler::ScreensHandler():
 		}
 
 	}
-	
-	if (Load_Fonts(tekstit) != 0) {
-		if (Load_Fonts(tekstit) != 0) {
-			throw PExcept::PException("Couldn't load fonts!");
+
+	try{
+		Load_Fonts(tekstit);
+	}
+	catch(const std::exception& e){
+		PLog::Write(PLog::ERR, "PK2", e.what());
+
+		//Fallback to English
+		Settings.language = "english.txt";
+		if(Load_Language(Settings.language) != 0) {
+			throw PExcept::FileNotFoundException("english.txt", PExcept::MISSING_ENGLISH_TEXT);
 		}
-	
+		
+		Load_Fonts(tekstit);
 	}
 
-	langlist = PFile::Path("language" PE_SEP).scandir(".txt");
-	
-	Search_Episodes();
+	langlist = PFilesystem::ScanDirectory_s(PFilesystem::LANGUAGE_DIR, ".txt");
 	
 	PInput::SetVibration(Settings.vibration);
 
@@ -113,8 +125,17 @@ ScreensHandler::ScreensHandler():
 		Settings_Save();
 	}
 
-	PDraw::image_load(game_assets, PFile::Path("gfx" PE_SEP "pk2stuff.bmp"), true);
-	PDraw::image_load(game_assets2, PFile::Path("gfx" PE_SEP "pk2stuff2.bmp"), true);
+	std::optional<PFile::Path> p = PFilesystem::FindVanillaAsset("pk2stuff.bmp", PFilesystem::GFX_DIR);
+	if(!p.has_value()){
+		throw std::runtime_error("\"pk2stuff.bmp\" not found!");
+	}	
+	PDraw::image_load(game_assets, *p, true);
+
+	p = PFilesystem::FindVanillaAsset("pk2stuff2.bmp", PFilesystem::GFX_DIR);
+	if(!p.has_value()){
+		throw std::runtime_error("\"pk2stuff2.bmp\" not found!");
+	}
+	PDraw::image_load(game_assets2, *p, true);
 
 	//PSound::load_overlay_music(PFile::Path("music" PE_SEP "super.xm"));  // why? what is so special about this one xm that it needs to be loaded at runtime?
 	// I propose that we resort to start_music() for powerups that require special effects.	

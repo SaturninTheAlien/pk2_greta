@@ -117,8 +117,8 @@ private:
 
     
     
-    Tileset* mLoadTileset(PFile::Path path, const std::string& tilesetName);
-    Background* mLoadBackground(PFile::Path path, const std::string& backgroundName);
+    Tileset* mLoadTileset(const std::string& tilesetName);
+    Background* mLoadBackground(const std::string& backgroundName);
 
     /**
      * @brief 
