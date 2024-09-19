@@ -32,9 +32,12 @@ EpisodeClass* Episode = nullptr;
 #define VERSION "1.1"
 
 
-
 EpisodeClass::~EpisodeClass(){
-	PFilesystem::SetEpisode("");
+	PFilesystem::SetEpisode("", nullptr);
+}
+
+std::string EpisodeClass::getScoresPath()const{
+	return (fs::path(data_path) / "scores" / (this->entry.name + ".dat")).string();
 }
 
 void EpisodeClass::Clear_Scores() {
@@ -43,18 +46,15 @@ void EpisodeClass::Clear_Scores() {
 
 }
 
-int EpisodeClass::Open_Scores() {
+void EpisodeClass::openScores() {
 
 	try{
 		char versio[4];
 		this->Clear_Scores();
+		PFile::Path path(this->getScoresPath());
+		if(!path.exists())return;
 
-		
-
-
-		PFile::Path path(data_path + "scores" PE_SEP + this->entry.name + ".dat");
 		PFile::RW file = path.GetRW2("r");
-
 		file.read(versio, 4);
 		if (strncmp(versio, VERSION, 4) == 0) {
 
@@ -117,27 +117,22 @@ int EpisodeClass::Open_Scores() {
 			PLog::Write(PLog::INFO, "PK2", "Can't read this scores version");
 
 			file.close();
-			return 2;
 
 		}
 	}
 	catch(const std::exception&e){
 		PLog::Write(PLog::WARN, "PK2", e.what());
 		PLog::Write(PLog::INFO, "PK2", "Can't load scores files");
-		return 1;
 
 	}
-
-	return 0;
-
 }
 
 // Version 1.1
-int EpisodeClass::Save_Scores() {
+void EpisodeClass::Save_Scores() {
 	
 	char versio[4] = VERSION;
 
-	PFile::Path path(data_path + "scores" PE_SEP + this->entry.name + ".dat");
+	PFile::Path path(this->getScoresPath());
 
 	try{
 		PFile::RW file = path.GetRW2("w");
@@ -166,13 +161,7 @@ int EpisodeClass::Save_Scores() {
 	catch(const std::exception& e){
 		PLog::Write(PLog::ERR, "PK2", e.what());
 		PLog::Write(PLog::ERR, "PK2", "Can't save scores");
-		return 1;
 	}
-
-	
-
-	return 0;
-
 }
 
 //TODO - Load info from different languages
@@ -214,29 +203,38 @@ void EpisodeClass::Load_Assets() {
 }
 
 void EpisodeClass::Load() {
-
-#ifdef PK2_USE_ZIP
-	if (entry.is_zip)
-		//this->source_zip =  PFile::OpenZip(data_path + "mapstore" PE_SEP + entry.zipfile);
-		this->source_zip.open(data_path + "mapstore" PE_SEP + entry.zipfile);
-#endif
-
-	PFilesystem::SetEpisode(entry.name);
+	
+	if (entry.is_zip){
+		this->source_zip.open( (fs::path(data_path)/"mapstore"/entry.zipfile).string());
+		PFilesystem::SetEpisode(entry.name, &this->source_zip);
+	}
+	else{
+		PFilesystem::SetEpisode(entry.name, nullptr);
+	}
 
 	std::string dir = PFilesystem::GetEpisodeDirectory();
 
-	std::vector<std::string> list;
+	std::vector<std::string> namelist;
+	std::vector<PFile::Path> pathlist;
+
 
 	if(entry.is_zip){
-		throw std::runtime_error("TODO\n Zip episodes!");
-
+		std::vector<PZip::PZipEntry> v = this->source_zip.scanDirectory(
+			std::string("episodes/")+this->entry.name, ".map");
+		for(const PZip::PZipEntry& en: v){
+			pathlist.emplace_back(PFile::Path(&this->source_zip, en));
+			namelist.emplace_back(en.name);
+		}
 	}
 	else{
-		list = PFilesystem::ScanDirectory_s(dir, ".map");
+		namelist = PFilesystem::ScanDirectory_s(dir, ".map");
+		for(const std::string& name: namelist){
+			pathlist.emplace_back(PFile::Path((fs::path(dir) / name).string()));
+		}
 
 	}
 
-	this->level_count = list.size();
+	this->level_count = namelist.size();
 
 	// Read levels plain data
 	for (u32 i = 0; i < this->level_count; i++) {
@@ -244,9 +242,9 @@ void EpisodeClass::Load() {
 		try{
 			LevelClass temp;
 			char* mapname = this->levels_list[i].tiedosto;
-			strncpy(mapname, list[i].c_str(), PE_PATH_SIZE);
+			strncpy(mapname, namelist[i].c_str(), PE_PATH_SIZE);
 			
-			temp.load((fs::path(dir) / list[i]).string(), true);
+			temp.load(pathlist[i], true);
 
 			strncpy(this->levels_list[i].nimi, temp.name.c_str(), 40);
 			this->levels_list[i].nimi[39] = '\0';
@@ -337,7 +335,7 @@ void EpisodeClass::Load() {
 
 	this->sfx.loadAllForEpisode(sfx_global, this);
 
-	this->Open_Scores();
+	this->openScores();
 	this->Load_Info();
 
 	this->Update_NextLevel();

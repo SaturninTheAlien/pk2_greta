@@ -91,7 +91,7 @@ class Path {
 public: 
 
     Path(std::string path);
-    Path(PZip::PZip* zip_file, const PZip::PZipEntry&e, std::string path);
+    Path(PZip::PZip* zip_file, const PZip::PZipEntry&e);
     Path(Path path, std::string file);
     ~Path();
 

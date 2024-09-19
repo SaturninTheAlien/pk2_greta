@@ -67,8 +67,16 @@ void PZip::close(){
     this->name = "";
 }
 
-std::optional<PZipEntry> PZip::getEntry(const std::string& cAsE_path){
+std::optional<PZipEntry> PZip::getEntry(const std::string& cAsE_path, const std::string& alt_extension){
+
 	std::string lower_path = PString::unwindowsPath(PString::lowercase(PString::rtrim(cAsE_path)));
+
+	std::string lower_path_alt="";
+	if(!alt_extension.empty()){
+		lower_path_alt= PString::unwindowsPath(
+			fs::path(lower_path).replace_extension(alt_extension).string()
+		);
+	}
 
 	struct zip_stat st;
 	zip_stat_init(&st);
@@ -79,7 +87,11 @@ std::optional<PZipEntry> PZip::getEntry(const std::string& cAsE_path){
 		if(st.name==nullptr)continue;
 
 		std::string st_name = st.name;
-		if(lower_path==PString::lowercase(st_name)){
+
+		std::string st_name_lower = PString::lowercase(st_name);
+
+		if(lower_path==st_name_lower ||
+		(!lower_path_alt.empty() && lower_path_alt==st_name_lower)){
 			return PZipEntry(
 				fs::path(st_name).filename().string(),
 				i,

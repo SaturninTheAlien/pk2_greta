@@ -54,17 +54,6 @@ static void mLoadFont(PLang*lang, int& font, const std::string& langID, const st
 void Load_Fonts(PLang* lang) {
 	PDraw::clear_fonts();
 
-	PFile::Path fonts_path("language" PE_SEP "fonts" PE_SEP);
-	PFile::Path index_path("");
-
-	/*int ind_path = lang->Search_Id("font path");
-	if (ind_path != -1) {
-
-		index_path = PFile::Path(lang->Get_Text(ind_path));
-		PLog::Write(PLog::DEBUG, "PK2", "Fonts on %s", index_path.c_str());
-
-	}*/
-
 	mLoadFont(lang, fontti1, "font small font", "ScandicSmall.txt");
 	mLoadFont(lang, fontti2, "font big font normal", "ScandicBig1.txt");
 	mLoadFont(lang, fontti3, "font big font hilite", "ScandicBig2.txt");

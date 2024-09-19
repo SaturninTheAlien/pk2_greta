@@ -76,7 +76,7 @@ public:
 
     void read(const PZipEntry& entry, void* buffer);
 
-    std::optional<PZipEntry> getEntry(const std::string& cAsE_path);
+    std::optional<PZipEntry> getEntry(const std::string& cAsE_path, const std::string& alt_extension="");
     std::vector<std::string> findSubdirectories(const std::string& dirname_cAsE);
     
     std::vector<PZipEntry> scanDirectory(const std::string& filename_cAsE, const std::string& filter=""); 

@@ -349,18 +349,22 @@ void GameClass::update(int& debug_active_sprites){
 		} if (PInput::Keydown(PInput::V))
 			Player_Sprite->invisible_timer = 3000;
 		if (PInput::Keydown(PInput::S)) {
-
-			std::optional<PFile::Path> p = PFilesystem::FindAsset("super.xm", PFilesystem::MUSIC_DIR, ".ogg");
-			if(p.has_value()){
-				PSound::start_music(*p);
-			}
-			else{
-				PLog::Write(PLog::ERR, "\"super.xm\" not found!");
-			}
+			this->startSupermodeMusic();			
 			Player_Sprite->super_mode_timer = 490;
 			key_delay = 30;
 		}
 
+	}
+}
+
+
+void GameClass::startSupermodeMusic(){
+	std::optional<PFile::Path> p = PFilesystem::FindAsset("super.xm", PFilesystem::MUSIC_DIR, ".ogg");
+	if(p.has_value()){
+		PSound::start_music(*p);
+	}
+	else{
+		PLog::Write(PLog::ERR, "\"super.xm\" not found!");
 	}
 }
 

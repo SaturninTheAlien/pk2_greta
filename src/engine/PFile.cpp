@@ -30,8 +30,9 @@ Path::Path(std::string path) {
 	this->zip_file = nullptr;
 }
 
-Path::Path(PZip::PZip* zip_file, const PZip::PZipEntry&e, std::string path):
+Path::Path(PZip::PZip* zip_file, const PZip::PZipEntry&e):
 zip_file(zip_file), zip_entry(e) {
+	this->path = zip_entry.name;
 }
 
 Path::Path(Path path, std::string file) {

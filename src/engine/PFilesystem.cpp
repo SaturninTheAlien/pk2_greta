@@ -45,7 +45,11 @@ const std::string LIFE_DIR = "rle";
 
 static fs::path mAssetsPath;
 static std::string mEpisodeName;
+static PZip::PZip* mEpisodeZip;
+
+
 static bool mAssetsPathSet = false;
+
 
 void CreateDirectory(const std::string& path_in){
     fs::path p(path_in);
@@ -125,12 +129,9 @@ std::string GetEpisodeDirectory(){
 }
 
 
-void SetEpisode(const std::string& episodeName, void* zip_file){
+void SetEpisode(const std::string& episodeName, PZip::PZip* zip_file){
     mEpisodeName = episodeName;
-
-    if(zip_file!=nullptr){
-        std::cout<<"TO DO - support zip files"<<std::endl;
-    }
+    mEpisodeZip = zip_file;
 }
 
 /**
@@ -164,67 +165,32 @@ static bool FindFile(const fs::path& dir, const std::string& cAsE, std::string& 
     return false;
 }
 
-bool FindAsset_s(std::string& name, const std::string& default_dir, const std::string& alt_extension){
-    if(name.empty())return false;
-
-    /**
-     * 1. /full_path/pig.spr2
-     */
-    else if(fs::exists(name) && !fs::is_directory(name))return true;
-
-    std::string filename = fs::path(name).filename().string();
-    if(filename.empty()) return false;
-
-    if(!mEpisodeName.empty()){
-
-        /**
-         * @brief 
-         * episodes/"episode"/pig.spr2
-         */
-
-        if(FindFile(mAssetsPath / "episodes" / mEpisodeName, filename, name, alt_extension))return true;
-
-        /**
-         * @brief 
-         * episodes/"episode"/sprites/pig.spr2
-         */
-
-        if(FindFile(mAssetsPath / "episodes" / mEpisodeName / default_dir, filename, name, alt_extension))return true;
-    }
-
-    /**
-     * @brief 
-     * sprites/pig.spr2
-     */
-
-    return FindFile(mAssetsPath / default_dir, filename, name, alt_extension);
-}
-
-
-std::optional<PFile::Path> FindAsset(std::string name, const std::string& default_dir, const std::string& alt_extension){
-    if(FindAsset_s(name, default_dir, alt_extension)){
-        return PFile::Path(name);        
-    }
-
-    PLog::Write(PLog::WARN, "PK2", "Can't find %s", name.c_str());
-
-    return {};
-}
-
-std::optional<PFile::Path> FindVanillaAsset(std::string name, const std::string& dir){
-
-    fs::path p = mAssetsPath / dir / name;
-    if(fs::exists(p)){
-        return PFile::Path(p);
-    }
-    return {};
-}
 
 std::optional<PFile::Path> FindEpisodeAsset(std::string name, const std::string& default_dir, const std::string& alt_extension){
     std::string filename = fs::path(name).filename().string();
     if(filename.empty()) return {};
 
-    if(!mEpisodeName.empty()){
+    if(mEpisodeZip!=nullptr){
+
+        std::optional<PZip::PZipEntry> entry;
+        /**
+         * @brief 
+         * zip:/sprites/pig.spr2
+         */
+        if(!default_dir.empty()){
+            entry = mEpisodeZip->getEntry((fs::path(default_dir)/filename).string(), alt_extension);
+            if(entry.has_value())return PFile::Path(mEpisodeZip, *entry);
+        }
+
+        /**
+         * @brief 
+         * zip:/episodes/"episode"/pig.spr2
+         */
+
+        entry = mEpisodeZip->getEntry( (fs::path("episodes") / mEpisodeName / filename).string(), alt_extension);
+        if(entry.has_value())return PFile::Path(mEpisodeZip, *entry);
+    }
+    else if(!mEpisodeName.empty()){
 
         /**
          * @brief 
@@ -247,6 +213,41 @@ std::optional<PFile::Path> FindEpisodeAsset(std::string name, const std::string&
     }
 
     return {};
+}
+
+std::optional<PFile::Path> FindVanillaAsset(std::string name, const std::string& default_dir, const std::string& alt_extension){
+
+    std::string filename = fs::path(name).filename().string();
+    /**
+     * @brief 
+     * sprites/pig.spr2
+     */
+    if(FindFile(mAssetsPath / default_dir, filename, name, alt_extension)){
+        return PFile::Path(name);
+    }
+
+    return {};
+}
+
+std::optional<PFile::Path> FindAsset(const std::string& name, const std::string& default_dir, const std::string& alt_extension){
+    if(name.empty())return {};
+
+    /**
+     * 1. /full_path/pig.spr2
+     */    
+    fs::path p(name);
+    if(p.is_absolute() && fs::exists(p) && !fs::is_directory(p))return PFile::Path(p);
+
+    std::optional<PFile::Path> op = FindEpisodeAsset(name, default_dir, alt_extension);
+    if(op.has_value())return op;
+
+    op = FindVanillaAsset(name, default_dir, alt_extension);
+    
+    if(!op.has_value()){
+        PLog::Write(PLog::WARN, "PFilesystem", "File \"%s\" not found!", name.c_str());
+    }
+
+    return op;
 }
 
 std::vector<std::string> ScanDirectory_s(const std::string& name, const std::string& filter){

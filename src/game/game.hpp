@@ -111,6 +111,8 @@ class GameClass {
 		bool isStarted()const{
 			return this->started;
 		}
+
+		void startSupermodeMusic();
 	private:		
 		bool started = false;
 		int Open_Map();

@@ -15,6 +15,9 @@
 #include <cstring>
 #include <algorithm>
 #include <iostream>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 std::vector<episode_entry> episodes;
 
@@ -31,13 +34,14 @@ void Search_Episodes() {
 
 	#ifdef PK2_USE_ZIP
 
-	std::string mapstore_path(data_path + "mapstore" PE_SEP);
+	std::string mapstore_path=(fs::path(data_path)/"mapstore").string();
+
 	list = PFilesystem::ScanDirectory_s(mapstore_path, ".zip");
 	for (std::string zip : list) {
 		std::cout<<zip<<std::endl;
 		try{
 
-			PZip::PZip zp(mapstore_path + zip);
+			PZip::PZip zp((fs::path(mapstore_path)/zip).string());
 			std::vector<std::string> zip_list = zp.findSubdirectories("episodes");
 
 			for (std::string ep : zip_list) {

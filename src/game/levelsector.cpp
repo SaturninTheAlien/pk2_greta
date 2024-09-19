@@ -326,7 +326,7 @@ void LevelSector::startMusic(){
 		if (!music_path.has_value()) {
 
 			PLog::Write(PLog::ERR, "PK2", "Can't find music \"%s\", trying \"song01.xm\"",this->music_name.c_str());
-			music_path = PFile::Path("music" PE_SEP "song01.xm");
+			music_path = PFilesystem::FindAsset("song01.xm",PFilesystem::MUSIC_DIR);
 
 		}
 

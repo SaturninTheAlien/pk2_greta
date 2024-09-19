@@ -550,7 +550,7 @@ void BonusSpriteCollected(SpriteClass* sprite, SpriteClass* collector){
 			case AI_BONUS_SUPERMODE:{
 				collector->super_mode_timer = sprite->prototype->charge_time;
 				if(collector == Game->playerSprite){
-					PSound::start_music(PFile::Path("music" PE_SEP "super.xm"));
+					Game->startSupermodeMusic();
 				}
 				//PSound::play_overlay_music();
 				   // the problem is this will most likely overwrite the current music, fixlater

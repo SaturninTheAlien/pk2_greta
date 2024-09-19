@@ -101,15 +101,17 @@ class EpisodeClass {
 		void Load_Info();
 		void Load_Assets();
 
-		int  Save_Scores();
+		void  Save_Scores();
 		void Update_NextLevel();
 
 		SfxHandler sfx;
 	private:
 
+		std::string getScoresPath()const;
+
 		PFile::Path Get_Dir(const std::string& file)const;
 		
-		int  Open_Scores();
+		void openScores();
 
 		void Clear_Scores();
 
