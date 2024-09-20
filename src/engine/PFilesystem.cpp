@@ -235,7 +235,7 @@ std::optional<PFile::Path> FindAsset(const std::string& name, const std::string&
      * 1. /full_path/pig.spr2
      */    
     fs::path p(name);
-    if(p.is_absolute() && fs::exists(p) && !fs::is_directory(p))return PFile::Path(p);
+    if(p.is_absolute() && fs::exists(p) && !fs::is_directory(p))return PFile::Path(name);
 
     std::optional<PFile::Path> op = FindEpisodeAsset(name, default_dir, alt_extension);
     if(op.has_value())return op;
