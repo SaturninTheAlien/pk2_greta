@@ -255,6 +255,12 @@ AI_Table::AI_Table(){
 
     Init_AI(AI_BONUS_CANNOT_BE_PUSHED, AI_TRIGGER_ANYWAY, AI_Functions::CannotBePushed, false, false, true, false);
 
+
+
+
+    Init_AI(AI_PARTIALLY_UNCONTROLLABLE_PLAYER, AI_TRIGGER_TRANSFORMATION, AI_Functions::UncontrollablePlayer, false, true, false, false);
+    Init_AI(AI_COMPLETELY_UNCONTROLLABLE_PLAYER2, AI_TRIGGER_TRANSFORMATION, AI_Functions::UncontrollablePlayer2, false, true, false, false);
+
     /**
      * @brief
      * Background AIs

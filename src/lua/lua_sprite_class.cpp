@@ -99,7 +99,7 @@ void ExposeSpriteClass(sol::state& lua){
          */
 
         //"player", sol::readonly(&SpriteClass::player),
-        "player", &SpriteClass::player,
+        "player", &SpriteClass::player_c,
 
         "origX", sol::readonly(&SpriteClass::orig_x),
         "origY", sol::readonly(&SpriteClass::orig_y),

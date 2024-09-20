@@ -23,7 +23,7 @@
 /* -------- SpriteClass  ------------------------------------------------------------------ */
 
 SpriteClass::SpriteClass(){}
-SpriteClass::SpriteClass(PrototypeClass *prototype, bool player,
+SpriteClass::SpriteClass(PrototypeClass *prototype, int player_c,
  double x,
  double y,
  LevelSector*sector,
@@ -31,9 +31,9 @@ SpriteClass::SpriteClass(PrototypeClass *prototype, bool player,
 	if (prototype) {
 
 		this->prototype         = prototype;
-		this->player        = player;
+		this->player_c        = player_c;
 
-		this->can_collect_bonuses = player;
+		this->can_collect_bonuses = this->isPlayer();
 
 		this->active     = true;
 		this->removed        = false;
@@ -136,7 +136,7 @@ void SpriteClass::draw(int kamera_x, int kamera_y){
 	if (flip_x) {
 		
 		if(this->invisible_timer){
-			if(this->player || !this->enemy){
+			if(this->isPlayer() || !this->enemy){
 				PDraw::image_cliptransparent(prototype->frames_mirror[frame], x-l-1, y-h, 40, COLOR_GRAY);
 			}
 		}			
@@ -148,7 +148,7 @@ void SpriteClass::draw(int kamera_x, int kamera_y){
 	} else {
 
 		if(this->invisible_timer){
-			if(this->player || !this->enemy){
+			if(this->isPlayer() || !this->enemy){
 				PDraw::image_cliptransparent(prototype->frames[frame], x-l-1, y-h, 40, COLOR_GRAY);
 			}
 		}
@@ -371,10 +371,18 @@ bool SpriteClass::transformTo(PrototypeClass * transformation){
 
 		this->swimming = false;
 		this->max_speed_available = false;
-		this->can_collect_bonuses = this->player;
+		this->can_collect_bonuses = this->isPlayer();
 
 		this->seen_player_x = -1;
 		this->seen_player_y = -1;
+		
+		/**
+		 * @brief 
+		 * Set the default player type
+		 */
+		if(this->isPlayer()){
+			this->player_c = 1;
+		}
 
 		for(const SpriteAI::AI_Class& ai: this->prototype->AI_f){
 			if(ai.trigger == AI_TRIGGER_TRANSFORMATION){

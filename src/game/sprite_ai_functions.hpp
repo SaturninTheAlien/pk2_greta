@@ -17,8 +17,11 @@ void Egg2(SpriteClass*s);
 void Projectile(SpriteClass*s);
 void Jumper(SpriteClass*s);
 void Basic(SpriteClass*s);
+
 void NonStop(SpriteClass*s);
 void NonStopVertical(SpriteClass*s);
+
+void NonStop2(SpriteClass*s);
 
 void Turning_Horizontally(SpriteClass*s);
 void Turning_Vertically(SpriteClass*s);
@@ -81,6 +84,9 @@ void Return_To_Orig_Y_Constant(SpriteClass*s);
 
 void SwimInWater(SpriteClass*s);
 void SwimInWaterMaxSpeed(SpriteClass*s);
+
+void UncontrollablePlayer(SpriteClass* s);
+void UncontrollablePlayer2(SpriteClass* s);
 
 
 void MaxSpeedPlayer(SpriteClass*s);

@@ -415,7 +415,7 @@ void SpriteOnDeath(SpriteClass* sprite){
 	Play_GameSFX(sprite->prototype->sounds[SOUND_DESTRUCTION],100, (int)sprite->x, (int)sprite->y,
 					sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 
-	if (sprite->prototype->type == TYPE_GAME_CHARACTER && sprite->prototype->score != 0 && !sprite->player){
+	if (sprite->prototype->type == TYPE_GAME_CHARACTER && sprite->prototype->score != 0 && !sprite->isPlayer()){
 		Fadetext_New(fontti2,std::to_string(sprite->prototype->score),(int)sprite->x-8,(int)sprite->y-8,80);
 		Game->score_increment += sprite->prototype->score;
 	}
@@ -470,7 +470,11 @@ void PotionTransformation(SpriteClass* sprite, PrototypeClass* intended_prototyp
 
 		sprite->swimming = false;
 		sprite->max_speed_available = false;
-		sprite->can_collect_bonuses = sprite->player;
+		sprite->can_collect_bonuses = sprite->isPlayer();
+
+		if(sprite->isPlayer()){
+			sprite->player_c=1;
+		}
 
 		if(sprite==Game->playerSprite){
 			int infotext = Episode->infos.Search_Id("pekka transformed");
@@ -680,113 +684,128 @@ void UpdateSprite(SpriteClass* sprite){
 		(sprite->swimming && sprite->HasAI(AI_MAX_SPEED_SWIMMING)) ||
 		(sprite->super_mode_timer > 0 && sprite->HasAI(AI_MAX_SPEED_PLAYER_ON_SUPER));*/
 
-	if (sprite->player && sprite->energy > 0){
-		/* SLOW WALK */
-		if (PInput::Keydown(Input->walk_slow)
-		|| TouchScreenControls.pad_button == 1 || TouchScreenControls.pad_button == 3)
-			add_speed = false;
+	if (sprite->isPlayer() && sprite->energy > 0){
 
-		/* ATTACK 1 */
-		if ((PInput::Keydown(Input->attack1) || TouchScreenControls.egg) && sprite->charging_timer == 0 && sprite->ammo1 != nullptr)
-			sprite->attack1_timer = sprite->prototype->attack1_time;
-		/* ATTACK 2 */
-		else if ((PInput::Keydown(Input->attack2) || TouchScreenControls.doodle) && sprite->charging_timer == 0 && sprite->ammo2 != nullptr)
-				sprite->attack2_timer = sprite->prototype->attack2_time;
+		if(sprite->player_c < 3){
+			/* ATTACK 1 */
+			if ((PInput::Keydown(Input->attack1) || TouchScreenControls.egg) && sprite->charging_timer == 0 && sprite->ammo1 != nullptr)
+				sprite->attack1_timer = sprite->prototype->attack1_time;
+			/* ATTACK 2 */
+			else if ((PInput::Keydown(Input->attack2) || TouchScreenControls.doodle) && sprite->charging_timer == 0 && sprite->ammo2 != nullptr)
+					sprite->attack2_timer = sprite->prototype->attack2_time;
 
-		/* CROUCH */
-		sprite->crouched = false;
-		bool axis_couch = (Input == &Settings.joystick) && (PInput::GetAxis(1) > 0.5);
-		if ((PInput::Keydown(Input->down) || TouchScreenControls.down || axis_couch) && !sprite->can_move_down) {
-			sprite->crouched = true;
-			sprite_upper += sprite_height/1.5;
+			/* CROUCH */
+			sprite->crouched = false;
+			bool axis_couch = (Input == &Settings.joystick) && (PInput::GetAxis(1) > 0.5);
+			if ((PInput::Keydown(Input->down) || TouchScreenControls.down || axis_couch) && !sprite->can_move_down) {
+				sprite->crouched = true;
+				sprite_upper += sprite_height/1.5;
+			}
 		}
-
-		/* NAVIGATING*/
-		int navigation = 0;
-
-		if (Input == &Settings.joystick)
-			navigation = PInput::GetAxis(0) * 100;
-
-		if (TouchScreenControls.pad_button == 0 || TouchScreenControls.pad_button == 1)
-			navigation = -100;
-		else if (TouchScreenControls.pad_button == 3 || TouchScreenControls.pad_button == 4)
-			navigation = 100;
-
-		if (PInput::Keydown(Input->right))
-			navigation = 100;
 		
-		if (PInput::Keydown(Input->left))
-			navigation = -100;
+		if(sprite->player_c==1){
 
-		double a_lisays = 0.04;//0.08;
+			/* SLOW WALK */
+			if (PInput::Keydown(Input->walk_slow)
+			|| TouchScreenControls.pad_button == 1 || TouchScreenControls.pad_button == 3)
+				add_speed = false;
 
-		if (add_speed) {
-			if (rand()%20 == 1 && sprite->animation_index == ANIMATION_WALKING) // Draw dust
-				Particles_New(PARTICLE_DUST_CLOUDS,sprite->x-8,sprite_bottom-8,0.25,-0.25,40,0,0);
+			/* NAVIGATING*/
 
-			a_lisays += 0.09;//0.05
-		}
+			int navigation = 0;
 
-		if (sprite->can_move_down)
-			a_lisays /= 1.5;//2.0
+			if (Input == &Settings.joystick)
+				navigation = PInput::GetAxis(0) * 100;
 
-		a_lisays *= double(navigation) / 100;
+			if (TouchScreenControls.pad_button == 0 || TouchScreenControls.pad_button == 1)
+				navigation = -100;
+			else if (TouchScreenControls.pad_button == 3 || TouchScreenControls.pad_button == 4)
+				navigation = 100;
 
-		if (sprite->max_speed_available)
-			a_lisays *= max_speed;
-				
-		if (navigation > 0)
-			sprite->flip_x = false;
-		else if (navigation < 0)
-			sprite->flip_x = true;
+			if (PInput::Keydown(Input->right))
+				navigation = 100;
+			
+			if (PInput::Keydown(Input->left))
+				navigation = -100;
 
-		if (sprite->crouched)	// Slow when couch
-			a_lisays /= 10;
+			double a_lisays = 0.04;//0.08;
 
-		sprite->a += a_lisays;
+			if (add_speed) {
+				if (rand()%20 == 1 && sprite->animation_index == ANIMATION_WALKING) // Draw dust
+					Particles_New(PARTICLE_DUST_CLOUDS,sprite->x-8,sprite_bottom-8,0.25,-0.25,40,0,0);
 
-		/* JUMPING */
-		if (sprite->prototype->weight > 0 && !sprite->swimming) {
-			if (PInput::Keydown(Input->jump) || TouchScreenControls.up) {
-				if (!sprite->crouched) {
-					if (sprite->jump_timer == 0)
-						Play_GameSFX(Episode->sfx.jump_sound, 100, (int)sprite->x, (int)sprite->y,
-									  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
-
-					if (sprite->jump_timer <= 0)
-						sprite->jump_timer = 1; //10;
-				}
-			} else {
-				if (sprite->jump_timer > 0 && sprite->jump_timer < 45)
-					sprite->jump_timer = 55;
+				a_lisays += 0.09;//0.05
 			}
 
-			/* dripping quietly down */
-			bool axis_up = (Input == &Settings.joystick) && (PInput::GetAxis(1) < -0.5);
-			if ((PInput::Keydown(Input->jump) || TouchScreenControls.up || axis_up) && sprite->jump_timer >= 150/*90+20*/ &&
-				sprite->prototype->can_glide)
-				gliding = true;
-		}
-		/* MOVING UP AND DOWN */
-		else { // if the player sprite-weight is 0 - like birds
+			if (sprite->can_move_down)
+				a_lisays /= 1.5;//2.0
 
-			double speed = 0.15;
+			a_lisays *= double(navigation) / 100;
+
 			if (sprite->max_speed_available)
-				speed *= max_speed;
+				a_lisays *= max_speed;
+					
+			if (navigation > 0)
+				sprite->flip_x = false;
+			else if (navigation < 0)
+				sprite->flip_x = true;
 
-			if (PInput::Keydown(Input->jump) || TouchScreenControls.up)
-				sprite->b -= speed;
+			if (sprite->crouched)	// Slow when couch
+				a_lisays /= 10;
 
-			if (PInput::Keydown(Input->down) || TouchScreenControls.down)
-				sprite->b += speed;
+			sprite->a += a_lisays;
+		}
 
-			sprite->jump_timer = 0;
+		if(sprite->player_c < 3){
+			/* JUMPING */
+			if (sprite->prototype->weight > 0 && !sprite->swimming) {
+				if (PInput::Keydown(Input->jump) || TouchScreenControls.up) {
+					if (!sprite->crouched) {
+						if (sprite->jump_timer == 0)
+							Play_GameSFX(Episode->sfx.jump_sound, 100, (int)sprite->x, (int)sprite->y,
+										sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
+
+						if (sprite->jump_timer <= 0)
+							sprite->jump_timer = 1; //10;
+					}
+				} else {
+					if (sprite->jump_timer > 0 && sprite->jump_timer < 45)
+						sprite->jump_timer = 55;
+				}
+
+				/* dripping quietly down */
+				bool axis_up = (Input == &Settings.joystick) && (PInput::GetAxis(1) < -0.5);
+				if ((PInput::Keydown(Input->jump) || TouchScreenControls.up || axis_up) && sprite->jump_timer >= 150/*90+20*/ &&
+					sprite->prototype->can_glide)
+					gliding = true;
+			}
+			/* MOVING UP AND DOWN */
+			else { // if the player sprite-weight is 0 - like birds
+
+				double speed = 0.15;
+				if (sprite->max_speed_available)
+					speed *= max_speed;
+
+				if (PInput::Keydown(Input->jump) || TouchScreenControls.up)
+					sprite->b -= speed;
+
+				if (PInput::Keydown(Input->down) || TouchScreenControls.down)
+					sprite->b += speed;
+
+				sprite->jump_timer = 0;
+			}			
 		}
 
 		/* AI */
 		for(std::size_t i=0;i<sprite->prototype->AI_f.size();++i){
 			const SpriteAI::AI_Class& ai = sprite->prototype->AI_f[i];
-			if(!ai.apply_to_player)continue;
+			
+			if(sprite->player_c==1){
+				if(!ai.apply_to_player)continue;
+			}
+			else{
+				if(!ai.apply_to_player && !ai.apply_to_creatures)continue;
+			}
 
 			if( (sprite->energy>0 && ai.trigger==AI_TRIGGER_ALIVE) || ai.trigger==AI_TRIGGER_ANYWAY){
 				ai.func(sprite);
@@ -1036,7 +1055,7 @@ void UpdateSprite(SpriteClass* sprite){
 			{
 				// sprites with same index change directions when touch
 				if (sprite->prototype == sprite2->prototype &&
-					sprite2->energy > 0/* && sprite->player == 0*/)
+					sprite2->energy > 0/* && sprite->isPlayer() == 0*/)
 				{
 					if (sprite->x < sprite2->x)
 						sprite->can_move_right = false;
@@ -1121,7 +1140,7 @@ void UpdateSprite(SpriteClass* sprite){
 								sprite2->damage_taken        = sprite->prototype->damage;
 								sprite2->damage_taken_type = sprite->prototype->damage_type;
 								
-								if ( !(sprite2->player && sprite2->invisible_timer) ) //If sprite2 isn't a invisible player
+								if ( !(sprite2->isPlayer() && sprite2->invisible_timer) ) //If sprite2 isn't a invisible player
 									sprite->attack1_timer = sprite->prototype->attack1_time; //Then sprite attack??
 
 								if (sprite2->prototype->type == TYPE_PROJECTILE && sprite2->canDamageOnCollision(sprite)) {
@@ -1255,12 +1274,12 @@ void UpdateSprite(SpriteClass* sprite){
 	if (sprite->energy < 0)
 		sprite->energy = 0;
 
-	if (sprite->damage_timer == 0 || sprite->player) {
+	if (sprite->damage_timer == 0 || sprite->isPlayer()) {
 		sprite->x += sprite->a;
 		sprite->y += sprite->b;
 	}
 
-	if (sprite == Player_Sprite || sprite->energy < 1) {
+	if (sprite->player_c == 1 || sprite->energy < 1) {
 		double kitka = 1.04;
 
 		if (sector->weather == WEATHER_RAIN || sector->weather == WEATHER_RAIN_LEAVES)
@@ -1318,7 +1337,7 @@ void UpdateSprite(SpriteClass* sprite){
 	/* AI                                                                                    */
 	/*****************************************************************************************/
 	
-	if (!sprite->player) {
+	if (!sprite->isPlayer()) {
 
 		for(std::size_t i=0; i<sprite->prototype->AI_f.size(); ++i){
 			const SpriteAI::AI_Class&ai = sprite->prototype->AI_f[i];
@@ -1794,7 +1813,7 @@ void UpdateBonusSprite(SpriteClass* sprite){
 	}
 
 	/* The energy doesn't matter that the player is a bonus item */
-	if (sprite->player)
+	if (sprite->isPlayer())
 		sprite->energy = 0;
 
 	sprite->initial_update = false;

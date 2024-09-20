@@ -173,12 +173,12 @@ int SpritesHandler::onTickUpdate(int camera_x, int camera_y){
 	return active_sprites;
 }
 
-SpriteClass* SpritesHandler::mCreateSprite(PrototypeClass* prototype, bool player, double x, double y, SpriteClass*parent_sprite){
+SpriteClass* SpritesHandler::mCreateSprite(PrototypeClass* prototype, int player_c, double x, double y, SpriteClass*parent_sprite){
 	if(prototype==nullptr){
 		throw std::runtime_error("Cannot create a sprite from a null prototype");
 	}
 	
-	SpriteClass* sprite = new SpriteClass(prototype, player, x, y, this->mLevelSector, parent_sprite);
+	SpriteClass* sprite = new SpriteClass(prototype, player_c, x, y, this->mLevelSector, parent_sprite);
 	this->Sprites_List.push_back(sprite);
 
 	for(const SpriteAI::AI_Class& ai: sprite->prototype->AI_f){
@@ -198,7 +198,7 @@ SpriteClass* SpritesHandler::mCreateSprite(PrototypeClass* prototype, bool playe
 }
 
 SpriteClass* SpritesHandler::addPlayer(PrototypeClass*prototype, double x, double y){
-	SpriteClass* sprite = this->mCreateSprite(prototype, true, x, y, nullptr);
+	SpriteClass* sprite = this->mCreateSprite(prototype, 1, x, y, nullptr);
 	sprite->initial_update = true;
 	sprite->original = true;
 
@@ -219,7 +219,7 @@ SpriteClass* SpritesHandler::addPlayer(PrototypeClass*prototype, double x, doubl
 }
 
 void SpritesHandler::addLevelSprite(PrototypeClass*prototype, double x, double y){
-	SpriteClass* sprite  = this->mCreateSprite(prototype, false, x, y, nullptr);
+	SpriteClass* sprite  = this->mCreateSprite(prototype, 0, x, y, nullptr);
 	sprite->initial_update = true;
 	sprite->original = true;
 
@@ -236,7 +236,7 @@ void SpritesHandler::addLevelSprite(PrototypeClass*prototype, double x, double y
 }
 
 void SpritesHandler::addDroppedBonusSprite(PrototypeClass*prototype, double x, double y){
-	SpriteClass* sprite  = this->mCreateSprite(prototype, false, x, y, nullptr);
+	SpriteClass* sprite  = this->mCreateSprite(prototype, 0, x, y, nullptr);
 
 	if(sprite->weight>0)sprite->jump_timer = 1;
 	
@@ -256,7 +256,7 @@ void SpritesHandler::addGiftSprite(PrototypeClass* prototype){
 	}
 	
 	SpriteClass* sprite  = this->mCreateSprite(prototype,
-		false,
+		0,
 		Player_Sprite->x,
 		Player_Sprite->y, parent);
 
@@ -269,7 +269,7 @@ void SpritesHandler::addProjectileSprite(PrototypeClass* prototype, double x, do
 		return;
 	}
 
-	SpriteClass* sprite  = this->mCreateSprite(prototype, false, x, y, shooter);
+	SpriteClass* sprite  = this->mCreateSprite(prototype, 0, x, y, shooter);
 
 	/**
 	 * @brief 
@@ -439,7 +439,7 @@ void SpritesHandler::drawSprites(int camera_x, int camera_y, bool gamePaused, in
 				PDraw::image_cutclip(game_assets,hit_x-camera_x-28+8, hit_y-camera_y-27+8,1+framex,83,1+57+framex,83+55);
 			}
 
-			bool blinking = dev_mode && sprite->player && PInput::Keydown(PInput::Y);
+			bool blinking = dev_mode && sprite->isPlayer() && PInput::Keydown(PInput::Y);
 			if(!blinking || degree % 2 == 0){
 				sprite->draw(camera_x, camera_y);
 			}

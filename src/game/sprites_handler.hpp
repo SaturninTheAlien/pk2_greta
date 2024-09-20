@@ -56,7 +56,7 @@ public:
 
     SpriteClass* addLuaSprite(PrototypeClass* prototype, double x, double y, SpriteClass*parent=nullptr){
         
-        return this->mCreateSprite(prototype, false, x, y, parent);
+        return this->mCreateSprite(prototype, 0, x, y, parent);
     }
     
     std::list<SpriteClass*> Sprites_List;
@@ -71,7 +71,7 @@ public:
     void drawFGsprites(int camera_x, int camera_y, bool gamePaused, int& debug_drawn_sprite);
 
 private:
-    SpriteClass * mCreateSprite(PrototypeClass* prototype, bool player, double x, double y, SpriteClass*parent_sprite=nullptr);
+    SpriteClass * mCreateSprite(PrototypeClass* prototype, int player_c, double x, double y, SpriteClass*parent_sprite=nullptr);
 
     void mAddBG(SpriteClass* sprite) {
         bgSprites_List.push_back(sprite);

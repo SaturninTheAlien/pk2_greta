@@ -21,7 +21,7 @@ class SpriteClass{
 public:
 
     bool    active       = false;           // if the sprite is acting
-    bool    player          = false;          // if the sprite is the player
+    
     PrototypeClass *prototype   = nullptr;      // the sprite prototype
     bool    removed          = true;            // the sprite was removed
     double  orig_x           = 0;               // original x location
@@ -106,7 +106,7 @@ public:
 
     
     SpriteClass();
-    SpriteClass(PrototypeClass *prototype, bool player, double x, double y, LevelSector*sector, SpriteClass*parent=nullptr);
+    SpriteClass(PrototypeClass *prototype, int player_c, double x, double y, LevelSector*sector, SpriteClass*parent=nullptr);
     ~SpriteClass();
 
     void  draw(int camera_x, int camera_y);   // animate and draw the sprite
@@ -133,6 +133,12 @@ public:
     void die();
 
     void StartThunder();
+
+    bool isPlayer()const{
+        return this->player_c!=0;
+    }
+
+    int player_c = 0;
 
 private:
     void Animation_Basic();

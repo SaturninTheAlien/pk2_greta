@@ -214,6 +214,20 @@ void NonStopVertical(SpriteClass*s){
     }
 }
 
+void NonStop2(SpriteClass*s){
+	double max = s->prototype->max_speed;
+    if (s->flip_x)
+    {
+        if (s->a > -max)
+            s->a -= 1;
+    }
+    else
+    {
+        if (s->a < max)
+            s->a += 1;
+    }
+}
+
 void Turning_Horizontally(SpriteClass*s){
 
     if (!s->can_move_right)
@@ -977,6 +991,18 @@ void SwimInWaterMaxSpeed(SpriteClass*s){
 }
 
 
+void UncontrollablePlayer(SpriteClass*s){
+	if(s->isPlayer()){
+		s->player_c = 2;
+	}
+}
+
+void UncontrollablePlayer2(SpriteClass*s){
+	if(s->isPlayer()){
+		s->player_c = 3;
+	}
+}
+
 void MaxSpeedPlayer(SpriteClass*s){
 	s->max_speed_available = true;
 }
@@ -1143,7 +1169,7 @@ void DieIfSkullBlocksChanged(SpriteClass*sprite){
 void ThrowableWeapon(SpriteClass*sprite, SpriteClass*shooter){
 	if ((int)shooter->a == 0){
 		// If the "shooter" is a player or the speed of the projectile is zero
-		if (shooter->player || sprite->prototype->max_speed == 0){
+		if (shooter->isPlayer() || sprite->prototype->max_speed == 0){
 			if (!shooter->flip_x)
 				sprite->a = sprite->prototype->max_speed;
 			else
