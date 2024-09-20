@@ -784,13 +784,23 @@ void UpdateSprite(SpriteClass* sprite){
 		}
 
 		/* AI */
-		for(const SpriteAI::AI_Class& ai:sprite->prototype->AI_f){
+		for(std::size_t i=0;i<sprite->prototype->AI_f.size();++i){
+			const SpriteAI::AI_Class& ai = sprite->prototype->AI_f[i];
 			if(!ai.apply_to_player)continue;
 
 			if( (sprite->energy>0 && ai.trigger==AI_TRIGGER_ALIVE) || ai.trigger==AI_TRIGGER_ANYWAY){
 				ai.func(sprite);
 			}
 		}
+
+
+		/*for(const SpriteAI::AI_Class& ai:sprite->prototype->AI_f){
+			if(!ai.apply_to_player)continue;
+
+			if( (sprite->energy>0 && ai.trigger==AI_TRIGGER_ALIVE) || ai.trigger==AI_TRIGGER_ANYWAY){
+				ai.func(sprite);
+			}
+		}*/
 
 		/* It is not acceptable that a player is anything other than the game character */
 		if (sprite->prototype->type != TYPE_GAME_CHARACTER)
@@ -1310,7 +1320,8 @@ void UpdateSprite(SpriteClass* sprite){
 	
 	if (!sprite->player) {
 
-		for(SpriteAI::AI_Class& ai : sprite->prototype->AI_f){
+		for(std::size_t i=0; i<sprite->prototype->AI_f.size(); ++i){
+			const SpriteAI::AI_Class&ai = sprite->prototype->AI_f[i];
 			if(!ai.apply_to_creatures)continue;
 			
 			if(ai.trigger==AI_TRIGGER_ANYWAY){
@@ -1320,6 +1331,17 @@ void UpdateSprite(SpriteClass* sprite){
 				ai.func(sprite);
 			}
 		}
+
+		/*for(SpriteAI::AI_Class& ai : sprite->prototype->AI_f){
+			if(!ai.apply_to_creatures)continue;
+			
+			if(ai.trigger==AI_TRIGGER_ANYWAY){
+				ai.func(sprite);
+			}
+			else if(sprite->energy>0 && ai.trigger==AI_TRIGGER_ALIVE){
+				ai.func(sprite);
+			}
+		}*/
 	}
 
 	if (sprite->energy > sprite->prototype->energy)
