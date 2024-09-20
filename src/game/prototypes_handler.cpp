@@ -48,7 +48,7 @@ PrototypeClass* PrototypesHandler::loadPrototype(const std::string& filename_cAs
 	if(commandLineTool && extension==".spr"){
 		path = PFilesystem::FindAsset(filename, PFilesystem::SPRITES_DIR);
 	}
-	if(extension==".spr2"){
+	else if(extension==".spr2"){
 		path = PFilesystem::FindAsset(filename, PFilesystem::SPRITES_DIR);
 	}
 	else if(extension==".spr"){

@@ -29,13 +29,13 @@ void replaceObsoleteAIs(PrototypeClass* prototype){
 
 
 void convertToSpr2(const std::string& filename_in, const std::string& filename_out){
-	PrototypesHandler handler(nullptr, false);
+	PrototypesHandler handler(nullptr, true);
 	try{
 		PrototypeClass* prototype = handler.loadPrototype(filename_in);
 		replaceObsoleteAIs(prototype);
 		nlohmann::json j = *prototype;
 		handler.savePrototype(prototype, filename_out);
-		PLog::Write(PLog::INFO, "PK2", "Sprite %s converted to %s\n", filename_in.c_str(), filename_out.c_str());
+		PLog::Write(PLog::INFO, "PK2 Tools", "Sprite %s converted to %s\n", filename_in.c_str(), filename_out.c_str());
 	}
 	catch(const std::exception&e){
 		printf("%s\n", e.what());
