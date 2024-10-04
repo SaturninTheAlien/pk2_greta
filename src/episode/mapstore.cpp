@@ -33,7 +33,7 @@ void Search_Episodes() {
 
 	#ifdef PK2_USE_ZIP
 
-	std::string mapstore_path=(fs::path(data_path)/"mapstore").string();
+	std::string mapstore_path=(fs::path(PFilesystem::GetDataPath())/"mapstore").string();
 
 	list = PFilesystem::ScanDirectory_s(mapstore_path, ".zip");
 	for (std::string zip : list) {

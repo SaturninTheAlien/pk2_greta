@@ -4,6 +4,9 @@
 //#########################
 #pragma once
 
+//TODO
+//Move it to Mapstore or EpisodeClass
+
 #include "episode/episodeclass.hpp"
 
 #include "engine/platform.hpp"
@@ -24,5 +27,5 @@ struct PK2SAVE {
 
 extern PK2SAVE saves_list[SAVES_COUNT];
 
-int Load_SaveFile();
+void Load_SaveFile();
 int Save_Record(int i);

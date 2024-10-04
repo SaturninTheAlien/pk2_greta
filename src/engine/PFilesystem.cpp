@@ -48,18 +48,23 @@ const std::string LUA_DIR = "lua";
 const std::string LIFE_DIR = "rle";
 
 static fs::path mAssetsPath;
+static fs::path mDataPath;
+
 static std::string mEpisodeName;
 static PZip::PZip* mEpisodeZip;
 
 
 static bool mAssetsPathSet = false;
+static bool mDataPathSet = false;
 
 
 void CreateDirectory(const std::string& path_in){
     fs::path p(path_in);
-    if(!p.is_absolute()){
+
+    /*if(!p.is_absolute()){
         p = mAssetsPath / p;
-    }
+    }*/
+
 	if(!std::filesystem::exists(p) || !std::filesystem::is_directory(p)){
 		std::filesystem::create_directory(p);
 	}
@@ -76,18 +81,38 @@ bool SetAssetsPath(const std::string& name){
     if(fs::exists(p1)){
 
         mAssetsPath = p;
+        mAssetsPathSet = true;
         return true;
     }
 
     fs::path p2 = p / "res" / "gfx" / "pk2stuff.bmp";
     if(fs::exists(p2)){
         mAssetsPath = p / "res";
+        mAssetsPathSet = true;
         return true;
     }
 
     return false;
 }
 
+bool SetDataPath(const std::string& name){
+    mDataPath = name;
+    mDataPathSet = true;
+
+    /**
+     * @brief 
+     * Create the directories if they don't exist.
+     */
+
+    CreateDirectory(mDataPath);
+    CreateDirectory(mDataPath / "scores");
+    CreateDirectory(mDataPath / "mapstore");
+
+    //TODO
+    //return false if the directory is not writeable
+
+    return true;
+}
 
 void SetDefaultAssetsPath() {
 	if(mAssetsPathSet)return;
@@ -103,25 +128,76 @@ void SetDefaultAssetsPath() {
         throw PFile::PFileException(os.str());
 	}
 
+    bool success = false;
+
 	#ifndef _WIN32
     fs::path executable_dir = fs::path(c_path).parent_path();
     if(executable_dir.filename().string() == "bin"){
-        SetAssetsPath( (executable_dir.parent_path() / "res").string());
+        success = SetAssetsPath( (executable_dir.parent_path() / "res").string());
     }
     else{
-        SetAssetsPath(executable_dir.string());
+        success = SetAssetsPath(executable_dir.string());
     }
 
 	#else
-	SetAssetsPath(c_path);
+	success = SetAssetsPath(c_path);
 	#endif
 
 	SDL_free(c_path);
+
+    if(!success){
+        throw PFile::PFileException("Cannot set the default assets path!");
+    }
 }
 
+void SetDefaultDataPath(){
+    if(mDataPathSet)return;
+
+    bool success = false;
+
+
+#ifndef __ANDROID__
+
+#ifdef PK2_PORTABLE
+    success = SetDataPath(mAssetsPath / "data");
+#else
+    char* data_path_p = SDL_GetPrefPath("Piste Gamez", "Pekka Kana 2");
+    if(data_path_p==nullptr){
+        std::ostringstream os;
+        os<<"SDL_GetPrefPath failed: "<<SDL_GetError();
+        throw PFile::PFileException(os.str());
+    }
+
+    success = SetDataPath(data_path_p);
+    SDL_free(data_path_p);
+#endif
+
+#else
+    const char* data_path_p = SDL_AndroidGetExternalStoragePath();
+    if(data_path_p){
+        success = SetDataPath(data_path_p);
+        SDL_free(data_path_p);
+    }
+    
+#endif
+
+    if(!success){
+        throw PFile::PFileException("Cannot set the default data path!");
+    }
+
+    return;
+}
 
 std::string GetAssetsPath(){
     return mAssetsPath.string();
+}
+
+std::string GetDataPath(){
+    return mDataPath.string();
+}
+
+PFile::Path GetDataFileW(const std::string& filename){
+    return (mDataPath / filename).string();
 }
 
 std::string GetEpisodeDirectory(){

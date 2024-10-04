@@ -4,6 +4,7 @@
 //#########################
 #include "config_txt.hpp"
 #include "engine/PLang.hpp"
+#include "engine/PFilesystem.hpp"
 
 //TODO Remove this dependency
 #include "system.hpp"
@@ -41,7 +42,7 @@ static const char default_config[] =
 
 void Config_txt::readFile(){
     PLang conf = PLang();
-	PFile::Path path = PFile::Path(data_path + "config.txt");
+	PFile::Path path = PFilesystem::GetDataFileW("config.txt");
 	
 	bool ok = conf.Read_File(path);
 	if (!ok) {

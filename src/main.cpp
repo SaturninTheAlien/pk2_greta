@@ -89,134 +89,19 @@ static void quit() {
 }
 
 
-static void set_paths() {
-
-	PFilesystem::SetDefaultAssetsPath();
-	
-	#ifndef __ANDROID__
-
-	#ifdef PK2_PORTABLE
-
-	/**
-	 * @brief 
-	 * TODO
-	 * Redesign it
-	 */
-
-	data_path =  (std::filesystem::path(PFilesystem::GetAssetsPath()) / "data").string() + "/";
-
-	PFilesystem::CreateDirectory(data_path);
-	PFilesystem::CreateDirectory(data_path + "scores");
-	PFilesystem::CreateDirectory(data_path + "mapstore");
-
-	#else
-
-	char* data_path_p = SDL_GetPrefPath(NULL, PK2_NAME);
-	if (data_path_p == NULL) {
-
-		PLog::Write(PLog::FATAL, "PK2", "Failed to init data path");
-		quit();
-		//return 1;
-
-	}
-
-	data_path = data_path_p;
-	SDL_free(data_path_p);
-
-	#endif //PK2_PORTABLE
-
-	#else //__ANDROID__
-
-	/**
-	 * @brief 
-	 * TO DO Rewrite it and move to PFilesystem
-	 */
-
-	const char* ptr = SDL_AndroidGetExternalStoragePath(); //TODO 1.5 - external path must be a writeable path
-	if (ptr) {
-		External_Path = ptr;
-		SDL_free((void*)ptr);
-	} else {
-		PLog::Write(PLog::ERR, "PK2", "Couldn't find External Path");
-	}
-
-	ptr = SDL_AndroidGetInternalStoragePath();
-	if (ptr) {
-		Internal_Path = ptr;
-		SDL_free((void*)ptr);
-	} else {
-		PLog::Write(PLog::ERR, "PK2", "Couldn't find Internal Path");
-	}
-
-	External_Path += PE_SEP;
-	Internal_Path += PE_SEP;
-
-	PLog::Write(PLog::DEBUG, "PK2", "External %s", External_Path.c_str());
-	PLog::Write(PLog::DEBUG, "PK2", "Internal %s", Internal_Path.c_str());
-
-	PLog::Write(PLog::DEBUG, "PK2", "Allow %i", SDL_AndroidGetExternalStorageState);
-
-
-	// Choose between internal or external path on Android
-	// Prioritize internal
-	if (PUtils::ExternalWriteable()) {
-
-		PLog::Write(PLog::DEBUG, "PK2", "External access allowed");
-
-		PFile::Path settings_f = PFile::Path("settings.ini");
-		settings_f.SetPath(Internal_Path);
-		PLog::Write(PLog::DEBUG, "PK2", "%s", settings_f.c_str());
-		if (!settings_f.Find()) {
-
-			PLog::Write(PLog::DEBUG, "PK2", "Settings not found on internal");
-
-			settings_f.SetPath(External_Path);
-			if (settings_f.Find()) {
-
-				PLog::Write(PLog::DEBUG, "PK2", "Settings found on external");
-				external_dir = true;
-			
-			}
-			else {
-
-				PLog::Write(PLog::DEBUG, "PK2", "Settings not found on external");
-				external_dir = false;
-
-			}
-		} else {
-
-			PLog::Write(PLog::DEBUG, "PK2", "Settings found on internal");
-			external_dir = false;
-
-		}
-	} else {
-
-		PLog::Write(PLog::DEBUG, "PK2", "External access not allowed");
-		external_dir = false;
-
-	}
-
-	if (external_dir)
-		data_path = External_Path;
-	else
-		data_path = Internal_Path;
-
-	#endif //__ANDROID__
-
-}
-
-
 static void log_data() {
 
 	PLog::Write(PLog::DEBUG, "PK2", "Pekka Kana 2 started!");
 	PLog::Write(PLog::DEBUG, "PK2", "Game version: %s", PK2_VERSION_STR);
-	PLog::Write(PLog::DEBUG, "PK2", "Data path - %s", data_path.c_str());
+	PLog::Write(PLog::DEBUG, "PK2", "Assets path - %s", PFilesystem::GetAssetsPath().c_str());
+	PLog::Write(PLog::DEBUG, "PK2", "Data path - %s", PFilesystem::GetDataPath().c_str());
 
 }
 
 void pk2_init(){
-
-	set_paths();
+	//set_paths();
+	PFilesystem::SetDefaultAssetsPath();
+	PFilesystem::SetDefaultDataPath();
 	PLog::Init(PLog::ALL, true, true);
 }
 
@@ -246,9 +131,7 @@ void pk2_main(bool _dev_mode, bool _show_fps, bool _test_level, const std::strin
 		config_txt.audio_buffer_size);
 		
 		if (!Piste::is_ready()) {
-
-			PLog::Write(PLog::FATAL, "PK2", "Failed to init PisteEngine");
-			quit();
+			throw std::runtime_error("Failed to init PisteEngine!");
 		}	
 		handler = new ScreensHandler();
 		Screen::next_screen = SCREEN_INTRO;
@@ -296,15 +179,25 @@ int main(int argc, char **argv) {
 		case 0:{
 			if(arg=="--help" || arg=="-h"){
 				printf("Pekka Kana 2 (Pekka the Rooster 2) is a jump 'n run game made "
-				"in the spirit of classic platformers such as Super Mario, SuperTux, Sonic the Hedgehog,"
+				"in the spirit of classic platformers such as Super Mario, SuperTux, "
 				" Jazz Jackrabbit, Super Frog and so on.\n"
 				"Available command arguments are:\n"
 				"-h / --help -> print help,\n"
 				"-v / --version -> print version string,\n"
-				"-t / --test \"episode/level\" -> test/play particular level\n"
-				"(e.g ./pekka-kana-2 --test \"rooster island 2/level13.map\"),\n"
 				"-d / --dev -> enable the cheats and the debug tools,\n"
 				"--fps -> enable the FPS counter.\n"
+				"-t / --test \"episode/level\" -> test/play particular level\n"
+				"(e.g ./pekka-kana-2 --test \"rooster island 2/level13.map\"),\n"
+
+				"--assets-path -> set a custom assets path (default sprites, rooster islands and so on)\n"
+				"(e.g ./pekka-kana-2 --assets-path \"path/my_pk2assets\")\n"
+
+				"--data-path -> set a custom data path (saves, mapstore, etc)\n"
+				"(e.g ./pekka-kana-2 --data-path \"path/my_saves\")\n"
+
+				"--convert -> convert an old sprite to the new .spr2 format\n"
+				"(e.g ./pekka-kana-2 --convert \"path/old.spr\")\n"
+				
 				);
 				return 0;
 			}
@@ -319,15 +212,16 @@ int main(int argc, char **argv) {
 			else if(arg=="--test" || arg=="-t" || arg=="test"){
 				state = 1;				
 			}
-			else if(arg=="--path" || arg=="-p"){
+			else if(arg=="--assets-path"){
 				state = 2;
 			}
+			else if(arg=="--data-path"){
+				state = 6;
+			}
+
 			else if(arg=="--fps"){
 				show_fps= true;
 			}
-			/*else if (arg=="--mobile") {
-				PUtils::Force_Mobile();
-			}*/
 			else if	(arg=="--convert"){
 				filename_in = "";
 				filename_out = "";
@@ -354,7 +248,7 @@ int main(int argc, char **argv) {
 		break;
 		case 2:{
 			if(!PFilesystem::SetAssetsPath(arg)){
-				printf("Incorrect assets path \"%s\"!", arg.c_str());
+				printf("Cannot set the assets path \"%s\"!", arg.c_str());
 				return 1;
 			}
 			state = 0;
@@ -375,9 +269,17 @@ int main(int argc, char **argv) {
 			state = 0;
 		}
 		break;
+		case 6:{
+			if(!PFilesystem::SetDataPath(arg)){
+				printf("Cannot set the data path \"%s\"!", arg.c_str());
+				return 1;
+			}
 
+			state=0;
+		}
+		break;
 		default:
-			printf("Invalid arg: \"%s\"\n", arg.c_str());
+			printf("Invalid state: %i\n", state);
 			return 1;
 		}
 	}

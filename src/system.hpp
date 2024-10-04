@@ -17,19 +17,7 @@
 extern int screen_width;
 extern int screen_height;
 
-#ifdef __ANDROID__
-// Variables used on data menu
-
-extern bool external_dir;
-
-extern std::string External_Path;
-extern std::string Internal_Path;
-
-#endif
-
 extern char id_code[8];
-
-extern std::string data_path;
 
 extern int game_assets;
 extern int game_assets2;

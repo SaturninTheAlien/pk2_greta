@@ -10,6 +10,7 @@
 #include "engine/PLog.hpp"
 #include "engine/PInput.hpp"
 #include "engine/PJson.hpp"
+#include "engine/PFilesystem.hpp"
 
 #include <ctime>
 #include <cstring>
@@ -161,7 +162,7 @@ void to_json(nlohmann::json& j, const PK2SETTINGS& s){
 
 void Settings_Open() {
 
-	PFile::Path path(data_path, SETTINGS_FILE);
+	PFile::Path path = PFilesystem::GetDataFileW(SETTINGS_FILE);
 
 	try{
 		if(path.exists()){
@@ -190,7 +191,7 @@ void Settings_Open() {
 
 void Settings_Save() {
 
-	PFile::Path path(data_path, SETTINGS_FILE);
+	PFile::Path path = PFilesystem::GetDataFileW(SETTINGS_FILE);
 	nlohmann::json j = Settings;
 	std::ofstream f(path.c_str());
 

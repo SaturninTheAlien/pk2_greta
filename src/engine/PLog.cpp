@@ -4,7 +4,7 @@
 //#########################
 #include "engine/PLog.hpp"
 
-#include "system.hpp"
+#include "PFilesystem.hpp"
 
 #include <stdexcept>
 #include <ctime>
@@ -67,7 +67,7 @@ void Init(u8 level, bool _print_to_stdout, bool _print_to_file) {
     }
 
     if(print_to_file){
-        PFile::Path file(data_path + "log.txt");
+        PFile::Path file = PFilesystem::GetDataFileW("log.txt");
         log_file = new PFile::RW(file.GetRW2("w"));
     }
 }

@@ -2,12 +2,17 @@
 //Pekka Kana 2
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
+
+//TODO
+//Move it to Mapstore or EpisodeClass
+
 #include "save.hpp"
 
 #include "episode/mapstore.hpp"
 #include "system.hpp"
 
 #include "engine/PLog.hpp"
+#include "engine/PFilesystem.hpp"
 #include "exceptions.hpp"
 
 #include <cstring>
@@ -39,7 +44,7 @@ int Empty_Records() {
 	
 }
 
-int Save_All_Records() {
+void Save_All_Records() {
 
 	char versio[2] = VERSION;
 	char count_c[8];
@@ -47,7 +52,7 @@ int Save_All_Records() {
 	memset(count_c, 0, sizeof(count_c));
 	snprintf(count_c, sizeof(count_c), "%i", SAVES_COUNT);
 
-	PFile::Path path(data_path, SAVES_FILE);
+	PFile::Path path = PFilesystem::GetDataFileW(SAVES_FILE);
 
 	try{
 		PFile::RW file = path.GetRW2("w");
@@ -71,12 +76,9 @@ int Save_All_Records() {
 		PLog::Write(PLog::ERR, "PK2", e.what());
 		throw PExcept::PException("Can't save records");
 	}
-	
-	return 0;
-
 }
 
-int Load_SaveFile() {
+void Load_SaveFile() {
 
 	char versio[2];
 	char count_c[8];
@@ -84,7 +86,8 @@ int Load_SaveFile() {
 
 	Empty_Records();
 
-	PFile::Path path(data_path, SAVES_FILE);
+	PFile::Path path = PFilesystem::GetDataFileW(SAVES_FILE);
+	if(!path.exists())return;
 
 	try
 	{
@@ -192,7 +195,6 @@ int Load_SaveFile() {
 				default: 
 					PLog::Write(PLog::ERR, "PK2", "Couldn't load save file");
 					file.close();
-					return 1;
 
 			}
 
@@ -221,7 +223,7 @@ int Load_SaveFile() {
 
 			PLog::Write(PLog::ERR, "PK2", "Can't read this save version");
 			file.close();
-			return 1;
+			return;
 
 		}
 
@@ -234,13 +236,7 @@ int Load_SaveFile() {
 		PLog::Write(PLog::DEBUG, "PK2", e.what());
 		PLog::Write(PLog::INFO, "PK2", "No save files found");
 		Save_All_Records();
-		return 1;
 	}
-	
-
-	
-	return 0;
-
 }
 
 int Save_Record(int i) {

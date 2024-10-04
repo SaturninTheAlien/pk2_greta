@@ -35,7 +35,7 @@ EpisodeClass::~EpisodeClass(){
 }
 
 std::string EpisodeClass::getScoresPath()const{
-	return (fs::path(data_path) / "scores" / (this->entry.name + ".dat")).string();
+	return (fs::path(PFilesystem::GetDataPath()) / "scores" / (this->entry.name + ".dat")).string();
 }
 
 void EpisodeClass::Clear_Scores() {
@@ -203,7 +203,7 @@ void EpisodeClass::Load_Assets() {
 void EpisodeClass::Load() {
 	
 	if (entry.is_zip){
-		this->source_zip.open( (fs::path(data_path)/"mapstore"/entry.zipfile).string());
+		this->source_zip.open( (fs::path(PFilesystem::GetDataPath())/"mapstore"/entry.zipfile).string());
 		PFilesystem::SetEpisode(entry.name, &this->source_zip);
 	}
 	else{

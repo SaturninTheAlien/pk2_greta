@@ -20,18 +20,7 @@
 int screen_width  = 800;
 int screen_height = 480;
 
-#ifdef __ANDROID__
-
-bool external_dir;
-
-std::string External_Path;
-std::string Internal_Path;
-
-#endif
-
 char id_code[8] = "";
-
-std::string data_path;
 
 int default_palette = -1;
 int game_assets = -1;
