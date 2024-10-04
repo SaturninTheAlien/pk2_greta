@@ -163,51 +163,6 @@ void Draw_Cursor(int x, int y) {
 	PDraw::image_cutclip(game_assets,x,y,621,461,640,480);
 }
 
-void Prepare_DataPath() {
-
-	PFilesystem::CreateDirectory(data_path);
-	PFilesystem::CreateDirectory(data_path + "scores");
-	PFilesystem::CreateDirectory(data_path + "mapstore");
-}
-
-/*//TODO - Receive Episode, organize this
-bool FindAsset(PFile::Path* path, const char* default_dir) {
-
-	if(path->Find()){
-		return true;
-	}
-
-	path->SetSubpath(default_dir);
-
-	//PLog::Write(PLog::INFO, "PK2", "Trying %s", path->c_str());
-
-	if(path->Find()){
-		return true;
-	}
-
-	path->SetPath(default_dir);
-
-	//PLog::Write(PLog::INFO, "PK2", "Trying %s", path->c_str());
-
-	if(path->Find()){
-		return true;
-	}
-
-	if(path->Is_Zip()){
-
-		*path = PFile::Path(default_dir + path->GetFileName());
-		//PLog::Write(PLog::INFO, "PK2", "Trying %s", path->c_str());
-		if (path->Find()) {
-			return true;
-
-		}
-
-	}
-
-	PLog::Write(PLog::INFO, "PK2", "Can't find %s", path->c_str());
-	return false;
-}*/
-
 int Set_Screen_Size(int w, int h) {
 
 	PDraw::set_buffer_size(w, h);

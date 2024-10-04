@@ -21,45 +21,6 @@
 
 namespace PUtils {
 
-void Lower(char* string) {
-
-	for(; *string != '\0'; string++)
-		*string |= ' ';
-	
-}
-
-//Remove spaces at the end of string
-void RemoveSpace(char* string) {
-
-	int len = strlen(string);
-
-	while(string[len-2] == ' '){
-		string[len-2] = '\0';
-		len--;
-	}
-
-}
-
-bool NoCaseCompare(const char* a, const char* b) {
-
-	for (int i = 0;; i++) {
-
-		char ac = a[i];
-		char bc = b[i];
-
-		// This is used to compare paths
-		if (ac == '\\') ac = '/';
-		if (bc == '\\') bc = '/';
-
-		if ((ac | ' ') != (bc | ' '))
-			return false;
-		if (ac == '\0')
-			return true;
-
-	}
-
-}
-
 int Alphabetical_Compare(const char *a, const char *b) {
 	
 	int a_size = strlen(a);
@@ -106,25 +67,5 @@ void GetLanguage(char* lang) {
 	lang[1] = SDL_tolower(locale[1]);     // there should be a better way to do this but meh,
 	lang[2] = '\0';
 }
-
-// TODO Test this
-
-#ifdef __ANDROID__
-bool ExternalWriteable() {
-
-	JNIEnv* env = (JNIEnv*)SDL_AndroidGetJNIEnv();
-	jobject activity = (jobject)SDL_AndroidGetActivity();
-	jclass clazz(env->GetObjectClass(activity));
-	jmethodID method_id = env->GetMethodID(clazz, "externalPermitted", "()Z");
-
-	jboolean retval = env->CallBooleanMethod(activity, method_id);
-
-	env->DeleteLocalRef(activity);
-	env->DeleteLocalRef(clazz);
-
-    return (retval == JNI_TRUE);
-
-}
-#endif
 
 }

@@ -104,7 +104,10 @@ static void set_paths() {
 	 */
 
 	data_path =  (std::filesystem::path(PFilesystem::GetAssetsPath()) / "data").string() + "/";
+
 	PFilesystem::CreateDirectory(data_path);
+	PFilesystem::CreateDirectory(data_path + "scores");
+	PFilesystem::CreateDirectory(data_path + "mapstore");
 
 	#else
 
@@ -123,6 +126,11 @@ static void set_paths() {
 	#endif //PK2_PORTABLE
 
 	#else //__ANDROID__
+
+	/**
+	 * @brief 
+	 * TO DO Rewrite it and move to PFilesystem
+	 */
 
 	const char* ptr = SDL_AndroidGetExternalStoragePath(); //TODO 1.5 - external path must be a writeable path
 	if (ptr) {
@@ -206,50 +214,42 @@ static void log_data() {
 
 }
 
-bool pk2_setAssetsPath(const std::string& path){
-	PFilesystem::SetAssetsPath(path);
-	return true;
-}
-
 void pk2_init(){
 
 	set_paths();
 	PLog::Init(PLog::ALL, PFile::Path(data_path + "log.txt"));
-	Prepare_DataPath();
 }
 
 void pk2_main(bool _dev_mode, bool _show_fps, bool _test_level, const std::string& test_path){
-	
+
+	ScreensHandler *handler = nullptr;
 	dev_mode = _dev_mode;
 	show_fps = _show_fps;
 	test_level = _test_level;
-
-	log_data();
-	
-	Settings_Open();
-
-	config_txt.readFile();
-
-	if(!_test_level){
-		Search_Episodes();
-	}	
-
-	std::optional<PFile::Path> iconPath = PFilesystem::FindVanillaAsset("icon_new.png", PFilesystem::GFX_DIR);
-	if(!iconPath.has_value()){
-		throw std::runtime_error("icon_new.png not found!");
-	}
-
-	Piste::init(screen_width, screen_height, PK2_NAME_STR, iconPath->c_str(),
-	config_txt.audio_buffer_size);
-	
-	if (!Piste::is_ready()) {
-
-		PLog::Write(PLog::FATAL, "PK2", "Failed to init PisteEngine");
-		quit();
-	}
-
-	ScreensHandler *handler = nullptr;
 	try{
+		log_data();
+		
+		Settings_Open();
+
+		config_txt.readFile();
+
+		if(!_test_level){
+			Search_Episodes();
+		}	
+
+		std::optional<PFile::Path> iconPath = PFilesystem::FindVanillaAsset("icon_new.png", PFilesystem::GFX_DIR);
+		if(!iconPath.has_value()){
+			throw std::runtime_error("icon_new.png not found!");
+		}
+
+		Piste::init(screen_width, screen_height, PK2_NAME_STR, iconPath->c_str(),
+		config_txt.audio_buffer_size);
+		
+		if (!Piste::is_ready()) {
+
+			PLog::Write(PLog::FATAL, "PK2", "Failed to init PisteEngine");
+			quit();
+		}	
 		handler = new ScreensHandler();
 		Screen::next_screen = SCREEN_INTRO;
 		if(dev_mode){
@@ -353,7 +353,8 @@ int main(int argc, char **argv) {
 		}
 		break;
 		case 2:{
-			if(!pk2_setAssetsPath(arg)){
+			if(!PFilesystem::SetAssetsPath(arg)){
+				printf("Incorrect assets path \"%s\"!", arg.c_str());
 				return 1;
 			}
 			state = 0;
@@ -376,7 +377,7 @@ int main(int argc, char **argv) {
 		break;
 
 		default:
-			printf("Invalid arg\n");
+			printf("Invalid arg: \"%s\"\n", arg.c_str());
 			return 1;
 		}
 	}

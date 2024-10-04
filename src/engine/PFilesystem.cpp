@@ -19,6 +19,11 @@
 
 
 #ifdef __ANDROID__
+/**
+ * @brief 
+ * TODO
+ * All the Android-exclusive code should be in this file
+ */
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
 #endif

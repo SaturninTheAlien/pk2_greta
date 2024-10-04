@@ -80,8 +80,4 @@ int Clicked();
 
 void Draw_Cursor(int x, int y);
 
-void Prepare_DataPath();
-
-//bool FindAsset(PFile::Path* path, const char* default_dir);
-
 int Set_Screen_Mode(int mode);
