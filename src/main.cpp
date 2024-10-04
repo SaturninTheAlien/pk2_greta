@@ -217,7 +217,7 @@ static void log_data() {
 void pk2_init(){
 
 	set_paths();
-	PLog::Init(PLog::ALL, PFile::Path(data_path + "log.txt"));
+	PLog::Init(PLog::ALL, true, true);
 }
 
 void pk2_main(bool _dev_mode, bool _show_fps, bool _test_level, const std::string& test_path){

@@ -57,8 +57,6 @@ void convertLevel(const std::string& filename_in, const std::string& filename_ou
 }
 
 bool pk2_convertToNewFormat(const std::string& filename_in, const std::string& filename_out){
-
-	PLog::Init(PLog::ALL, PFile::Path(data_path + "log.txt"));
 	if(filename_in.empty()){
 		printf("You have to specify the sprite to convert!");
 		return false;
