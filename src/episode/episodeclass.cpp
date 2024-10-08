@@ -301,6 +301,22 @@ void EpisodeClass::Load() {
 				this->no_ending = true;
 			}
 
+			id = config.Search_Id("potion_transformation_offset");
+			if (id != -1) {
+				PLog::Write(PLog::INFO, "PK2", "Potion transformation offset is ON");
+
+				const char* txt = config.Get_Text(id);
+
+				if (strcmp(txt, "default") == 0)
+					this->transformation_offset = false;
+				else if (strcmp(txt, "yes") == 0)
+					this->transformation_offset = true;
+				else if (strcmp(txt, "no") == 0)
+					this->transformation_offset = false;	
+			}
+
+
+
 			// Is it really an episode issue?
 			// For me, it's a level issue
 			/*id = config.Search_Id("use_button_timer");

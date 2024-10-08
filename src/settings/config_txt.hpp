@@ -17,7 +17,7 @@ public:
      * @brief 
      * Deprecated features, they can be removed
      */
-    bool transformation_offset = false;
+    // bool transformation_offset = false;
 };
 
 extern Config_txt config_txt;

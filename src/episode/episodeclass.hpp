@@ -84,7 +84,8 @@ class EpisodeClass {
 		bool no_ending = false;
 		//bool use_button_timer = false;
 		std::string collectable_name = "big apple";
-		
+		bool transformation_offset = false;
+
 		PK2LEVEL levels_list[EPISODI_MAX_LEVELS];
 		u8 level_status[EPISODI_MAX_LEVELS];
 

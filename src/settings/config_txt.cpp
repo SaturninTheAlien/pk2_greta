@@ -10,14 +10,6 @@
 #include "system.hpp"
 
 static const char default_config[] = 
-"\r\n -- Silent suicide"
-"\r\n -- If set to \"yes\" the player has no destruction effect"
-"\r\n -- after committing suicide by pressing delete key"
-"\r\n -- Some players requested it for \"psychological reasons\"."
-"\r\n -- disabled by default"
-"\r\n*silent_suicide:  no"
-"\r\n"
-"\r\n"
 "\r\n-- Audio Buffer Size"
 "\r\n-- low value = low audio latency; high value = less cpu usage"
 "\r\n-- Default is 1024"
@@ -26,18 +18,12 @@ static const char default_config[] =
 "\r\n*audio_buffer_size:    default"
 "\r\n"
 "\r\n"
-"\r\n"
-"\r\n"
-"\r\n-- For the compatibility with some older episodes"
-"\r\n-- Don't turn it on without a good reason!"
-"\r\n-- On the legacy PK2, the player used to move a bit upwards after using a transformation potion."
-"\r\n-- If you are a mapmaker, please don't use it intentionally."
-"\r\n--"
-"\r\n-- This feature may be removed completely in the future."
-"\r\n---------------"
-"\r\n*potion_transformation_offset:    no"
-"\r\n"
-"\r\n"
+"\r\n -- Silent suicide"
+"\r\n -- If set to \"yes\" the player has no destruction effect"
+"\r\n -- after committing suicide by pressing delete key"
+"\r\n -- Some players requested it for \"psychological reasons\"."
+"\r\n -- disabled by default"
+"\r\n*silent_suicide:  no"
 "\r\n";
 
 void Config_txt::readFile(){
@@ -81,17 +67,7 @@ void Config_txt::readFile(){
 
 		
 	}
-	idx = conf.Search_Id("potion_transformation_offset");
-	if (idx != -1) {
-		const char* txt = conf.Get_Text(idx);
-
-		if (strcmp(txt, "default") == 0)
-			this->transformation_offset = false;
-		else if (strcmp(txt, "yes") == 0)
-			this->transformation_offset = true;
-		else if (strcmp(txt, "no") == 0)
-			this->transformation_offset = false;	
-	}
+	
 	idx = conf.Search_Id("silent_suicide");
 	if(idx != -1){
 		const char* txt = conf.Get_Text(idx);

@@ -464,7 +464,7 @@ void PotionTransformation(SpriteClass* sprite, PrototypeClass* intended_prototyp
 		 * @brief 
 		 * Transformation offset
 		 */
-		if(config_txt.transformation_offset){
+		if(Episode!=nullptr && Episode->transformation_offset){
 			sprite->y -= sprite->prototype->height/2;
 		}
 
