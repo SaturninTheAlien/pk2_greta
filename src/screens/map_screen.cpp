@@ -255,7 +255,7 @@ void MapScreen::Play_Music() {
 	std::optional<PFile::Path> mapmus = {};
 
 	for(const std::string& music_name:map_music_filenames){
-		mapmus = PFilesystem::FindEpisodeAsset(music_name, "");
+		mapmus = PFilesystem::FindEpisodeAsset(music_name, PFilesystem::MUSIC_DIR);
 
 		if(mapmus.has_value())break;
 	}
