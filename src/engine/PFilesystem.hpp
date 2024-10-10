@@ -51,8 +51,8 @@ void SetEpisode(const std::string& episodeName, PZip::PZip* zip_file=nullptr);
 //bool FindAsset_s(std::string& name, const std::string& default_dir, const std::string& alt_extension);
 
 std::optional<PFile::Path> FindAsset(const std::string& name, const std::string& default_dir, const std::string& alt_extension="");
-std::optional<PFile::Path> FindVanillaAsset(std::string name, const std::string& default_dir, const std::string& alt_extension="");
-std::optional<PFile::Path> FindEpisodeAsset(std::string filename, const std::string& default_dir, const std::string& alt_extension="");
+std::optional<PFile::Path> FindVanillaAsset(const std::string& name, const std::string& default_dir, const std::string& alt_extension="");
+std::optional<PFile::Path> FindEpisodeAsset(const std::string& name, const std::string& default_dir, const std::string& alt_extension="");
 
 std::vector<std::string> ScanDirectory_s(const std::string& name, const std::string& filter="");
 }

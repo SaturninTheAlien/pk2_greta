@@ -218,8 +218,8 @@ void SetEpisode(const std::string& episodeName, PZip::PZip* zip_file){
  * @brief 
  * Finding files, cAsE insensitive
  */
-static bool FindFile(const fs::path& dir, const std::string& cAsE, std::string& res, const std::string& alt_extension){
-    if(!fs::exists(dir) || !fs::is_directory(dir))return false;
+static std::optional<std::string> FindFile(const fs::path& dir, const std::string& cAsE,  const std::string& alt_extension){
+    if(!fs::exists(dir) || !fs::is_directory(dir))return {};
     std::string name_lowercase = PString::rtrim(PString::lowercase(cAsE));
 
     std::string name_lowercase_alt = "";
@@ -227,26 +227,31 @@ static bool FindFile(const fs::path& dir, const std::string& cAsE, std::string& 
         name_lowercase_alt = fs::path(name_lowercase).replace_extension(alt_extension).string();
     }
 
+    std::optional<std::string> alt_res = {};
+
 
     for (const auto & entry : fs::directory_iterator(dir)){
         if(!entry.is_directory()){
             fs::path filename = entry.path().filename();
 
             std::string s1 = PString::lowercase(filename.string());
-            if(name_lowercase == s1 || 
-            (!alt_extension.empty() && name_lowercase_alt == s1)){
-                
-                res = (dir / filename).string();
-                return true;
+            
+            if(name_lowercase == s1){
+
+                return (dir / filename).string();
+            }
+            else if(!alt_extension.empty() && name_lowercase_alt == s1){
+                alt_res = (dir / filename).string();
+
             }
         }
     }
 
-    return false;
+    return alt_res;
 }
 
 
-std::optional<PFile::Path> FindEpisodeAsset(std::string name, const std::string& default_dir, const std::string& alt_extension){
+std::optional<PFile::Path> FindEpisodeAsset(const std::string& name, const std::string& default_dir, const std::string& alt_extension){
     std::string filename = fs::path(name).filename().string();
     if(filename.empty()) return {};
 
@@ -272,38 +277,42 @@ std::optional<PFile::Path> FindEpisodeAsset(std::string name, const std::string&
     }
     else if(!mEpisodeName.empty()){
 
+        
+
         /**
          * @brief 
          * episodes/"episode"/pig.spr2
          */
-
-        if(FindFile(mAssetsPath / "episodes" / mEpisodeName, filename, name, alt_extension)){
-            return PFile::Path(name);
+        std::optional<std::string> op = FindFile(mAssetsPath / "episodes" / mEpisodeName, filename, alt_extension);
+        if(op.has_value()){
+            return PFile::Path(*op);
         }
 
         /**
          * @brief 
          * episodes/"episode"/sprites/pig.spr2
          */
-
-        if(!default_dir.empty() &&
-        FindFile(mAssetsPath / "episodes" / mEpisodeName / default_dir, filename, name, alt_extension)){
-            return PFile::Path(name);
+        if(!default_dir.empty()){
+            op = FindFile(mAssetsPath / "episodes" / mEpisodeName / default_dir, filename, alt_extension);
+            if(op.has_value()){
+                return PFile::Path(*op);
+            }
         }
     }
 
     return {};
 }
 
-std::optional<PFile::Path> FindVanillaAsset(std::string name, const std::string& default_dir, const std::string& alt_extension){
+std::optional<PFile::Path> FindVanillaAsset(const std::string& name, const std::string& default_dir, const std::string& alt_extension){
 
     std::string filename = fs::path(name).filename().string();
     /**
      * @brief 
      * sprites/pig.spr2
      */
-    if(FindFile(mAssetsPath / default_dir, filename, name, alt_extension)){
-        return PFile::Path(name);
+    std::optional<std::string> op = FindFile(mAssetsPath / default_dir, filename, alt_extension);
+    if(op.has_value()){
+        return PFile::Path(*op);
     }
 
     return {};

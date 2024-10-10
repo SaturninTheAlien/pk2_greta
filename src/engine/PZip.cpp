@@ -78,6 +78,8 @@ std::optional<PZipEntry> PZip::getEntry(const std::string& cAsE_path, const std:
 		);
 	}
 
+	std::optional<PZipEntry> alt_res = {};
+
 	struct zip_stat st;
 	zip_stat_init(&st);
 
@@ -90,9 +92,15 @@ std::optional<PZipEntry> PZip::getEntry(const std::string& cAsE_path, const std:
 
 		std::string st_name_lower = PString::lowercase(st_name);
 
-		if(lower_path==st_name_lower ||
-		(!lower_path_alt.empty() && lower_path_alt==st_name_lower)){
+		if(lower_path==st_name_lower){
 			return PZipEntry(
+				fs::path(st_name).filename().string(),
+				i,
+				st.size
+			);
+		}
+		else if(!lower_path_alt.empty() && lower_path_alt==st_name_lower){
+			alt_res = PZipEntry(
 				fs::path(st_name).filename().string(),
 				i,
 				st.size
@@ -100,7 +108,7 @@ std::optional<PZipEntry> PZip::getEntry(const std::string& cAsE_path, const std:
 		}
 	}
 
-	return {};
+	return alt_res;
 }
 
 void PZip::read(const PZipEntry& entry, void* buffer){
