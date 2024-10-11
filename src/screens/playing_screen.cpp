@@ -165,67 +165,68 @@ void PlayingScreen::Draw_InGame_Gifts() {
 }
 
 void PlayingScreen::Draw_InGame_Lower_Menu() {
-	//char luku[16];
-	int x, y;
 
-	//////////////
-	// Draw time
-	//////////////
-	if (Game->has_time) {
-		int vali = 0;
-		float shown_time = float(Game->timeout) / 60;
-		int min = int(shown_time/60);
-		int sek = int(shown_time)%60;
+	if(Settings.draw_gui){
+		int x, y;
 
-		x = screen_width / 2 + 69;
-		y = screen_height-39;
-		PDraw::font_write(fontti1,tekstit->Get_Text(PK_txt.game_time),x,y-20);
+		if (Game->has_time) {
+			int vali = 0;
+			float shown_time = float(Game->timeout) / 60;
+			int min = int(shown_time/60);
+			int sek = int(shown_time)%60;
 
-		//sprintf(luku, "%i", min);
-		vali += ShadowedText_Draw(std::to_string(min), x, y);
-		vali += PDraw::font_write(fontti1,":",x+vali,y+9);
+			x = screen_width / 2 + 69;
+			y = screen_height-39;
+			PDraw::font_write(fontti1,tekstit->Get_Text(PK_txt.game_time),x,y-20);
 
-		if (sek < 10)
-			vali += ShadowedText_Draw("0", x + vali, y);
-		
-		//sprintf(luku, "%i", sek);
-		vali += ShadowedText_Draw(std::to_string(sek), x + vali, y);
+			//sprintf(luku, "%i", min);
+			vali += ShadowedText_Draw(std::to_string(min), x, y);
+			vali += PDraw::font_write(fontti1,":",x+vali,y+9);
 
-	}
+			if (sek < 10)
+				vali += ShadowedText_Draw("0", x + vali, y);
+			
+			//sprintf(luku, "%i", sek);
+			vali += ShadowedText_Draw(std::to_string(sek), x + vali, y);
 
-	/////////////////
-	// Draw keys / enemies
-	/////////////////
-	if(Game->level.game_mode==GAME_MODE_KILL_ALL){
-		x = screen_width / 2 + 210;
-		y = screen_height - 39;
-		PDraw::font_write(fontti1,"enemies:",x,y-20);
-		ShadowedText_Draw(std::to_string(Game->enemies), x, y);
+		}
 
-	}
-	else if (Game->keys > 0){
-		x = screen_width / 2 + 210;
-		y = screen_height - 39;
-		PDraw::font_write(fontti1,tekstit->Get_Text(PK_txt.game_keys),x,y-20);
-		ShadowedText_Draw(std::to_string(Game->keys), x, y);
+		/////////////////
+		// Draw keys / enemies
+		/////////////////
+		if(Game->level.game_mode==GAME_MODE_KILL_ALL){
+			x = screen_width / 2 + 210;
+			y = screen_height - 39;
+			PDraw::font_write(fontti1,"enemies:",x,y-20);
+			ShadowedText_Draw(std::to_string(Game->enemies), x, y);
+
+		}
+		else if (Game->keys > 0){
+			x = screen_width / 2 + 210;
+			y = screen_height - 39;
+			PDraw::font_write(fontti1,tekstit->Get_Text(PK_txt.game_keys),x,y-20);
+			ShadowedText_Draw(std::to_string(Game->keys), x, y);
+		}
 	}
 
 	/////////////////
 	// Draw Gifts
 	/////////////////
-	if (Gifts_Count() > 0 && Game->item_pannel_x < 10)
+	if(Settings.draw_itembar){
+		if (Gifts_Count() > 0 && Game->item_pannel_x < 10)
 		Game->item_pannel_x++;
 
-	if (Gifts_Count() == 0 && Game->item_pannel_x > -215)
-		Game->item_pannel_x--;
+		if (Gifts_Count() == 0 && Game->item_pannel_x > -215)
+			Game->item_pannel_x--;
 
-	if (Game->item_pannel_x > -215)
-		PDraw::image_cutclip(game_assets,Game->item_pannel_x,screen_height-60,
-		                        1,216,211,266);
-	if (Game->item_pannel_x > 5)
-		PDraw::font_write(fontti1,tekstit->Get_Text(PK_txt.game_items),15,screen_height-65);
+		if (Game->item_pannel_x > -215)
+			PDraw::image_cutclip(game_assets,Game->item_pannel_x,screen_height-60,
+									1,216,211,266);
+		if (Game->item_pannel_x > 5)
+			PDraw::font_write(fontti1,tekstit->Get_Text(PK_txt.game_items),15,screen_height-65);
 
-	Draw_InGame_Gifts();
+		Draw_InGame_Gifts();
+	}
 }
 
 void PlayingScreen::Draw_InGame_UI(){
@@ -346,12 +347,14 @@ void PlayingScreen::Draw() {
 
 	sector->sprites.drawFGsprites(Game->camera_x, Game->camera_y, Game->paused, this->debug_drawn_sprites);
 
-	if (Settings.draw_itembar)
-		Draw_InGame_Lower_Menu();
+	Draw_InGame_Lower_Menu();
 
 	Fadetext_Draw();
 
-	Draw_InGame_UI();
+	if(Settings.draw_gui){
+		Draw_InGame_UI();
+	}
+	
 
 	if (draw_debug_info)
 		Draw_InGame_DebugInfo();

@@ -260,6 +260,14 @@ std::optional<PFile::Path> FindEpisodeAsset(const std::string& name, const std::
         std::optional<PZip::PZipEntry> entry;
         /**
          * @brief 
+         * zip:/episodes/"episode"/pig.spr2
+         */
+
+        entry = mEpisodeZip->getEntry( (fs::path("episodes") / mEpisodeName / filename).string(), alt_extension);
+        if(entry.has_value())return PFile::Path(mEpisodeZip, *entry);
+        
+        /**
+         * @brief 
          * zip:/sprites/pig.spr2
          */
         if(!default_dir.empty()){
@@ -267,13 +275,7 @@ std::optional<PFile::Path> FindEpisodeAsset(const std::string& name, const std::
             if(entry.has_value())return PFile::Path(mEpisodeZip, *entry);
         }
 
-        /**
-         * @brief 
-         * zip:/episodes/"episode"/pig.spr2
-         */
-
-        entry = mEpisodeZip->getEntry( (fs::path("episodes") / mEpisodeName / filename).string(), alt_extension);
-        if(entry.has_value())return PFile::Path(mEpisodeZip, *entry);
+        
     }
     else if(!mEpisodeName.empty()){
 
