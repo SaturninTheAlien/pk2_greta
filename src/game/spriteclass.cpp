@@ -141,7 +141,21 @@ void SpriteClass::draw(int kamera_x, int kamera_y){
 			}
 		}			
 		else{
-			PDraw::image_clip(prototype->frames_mirror[frame], x-l-1, y-h);
+
+			switch (prototype->blend_mode)
+			{
+			case 0:
+				PDraw::image_clip(prototype->frames_mirror[frame], x-l-1, y-h);
+				break;
+
+			case 1:
+				PDraw::image_cliptransparent(prototype->frames_mirror[frame], x-l-1, y-h, prototype->blend_alpha, COLOR_NORMAL);
+
+			default:
+				break;
+			}
+
+			
 		}
 			
 
@@ -153,7 +167,20 @@ void SpriteClass::draw(int kamera_x, int kamera_y){
 			}
 		}
 		else{
-			PDraw::image_clip(prototype->frames[frame], x-l-1, y-h);
+			switch (prototype->blend_mode)
+			{
+			case 0:
+				PDraw::image_clip(prototype->frames[frame], x-l-1, y-h);
+				break;
+
+			case 1:
+				PDraw::image_cliptransparent(prototype->frames[frame], x-l-1, y-h, prototype->blend_alpha, COLOR_NORMAL);
+				break;
+
+
+			default:
+				break;
+			}
 		}	
 	}
 }

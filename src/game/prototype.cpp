@@ -535,6 +535,12 @@ void PrototypeClass::setProto20(const nlohmann::json& j){
 		this->has_dead_weight = true;
 		this->dead_weight = j["dead_weight"].get<double>();
 	}
+
+	/**
+	 * Experimental
+	 */
+	jsonReadInt(j, "blend_mode", this->blend_mode);
+	jsonReadInt(j, "blend_alpha", this->blend_alpha);
 }
 
 void to_json(nlohmann::json& j, const PrototypeClass& c){
@@ -640,6 +646,11 @@ void to_json(nlohmann::json& j, const PrototypeClass& c){
 	}
 	if(c.has_dead_weight){
 		j["dead_weight"] = c.dead_weight;
+	}
+
+	if(c.blend_mode!=0){
+		j["blend_mode"] = c.blend_mode;
+		j["blend_alpha"] = c.blend_alpha;
 	}
 }
 

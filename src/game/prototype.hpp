@@ -148,6 +148,14 @@ public:
     bool    bonus_always = false;
     bool    can_swim     = false;
 
+
+    /**
+     * @brief
+     * Transparency / experimental
+     */
+    int blend_mode = 0;
+    int blend_alpha = 50;
+
     /**
      * @brief 
      * Field for the purpose of counting.
