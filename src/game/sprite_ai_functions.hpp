@@ -45,11 +45,11 @@ void Attack_1_Nonstop(SpriteClass*s);
 void Attack_2_Nonstop(SpriteClass*s);
 void Attack_1_if_Player_in_Front(SpriteClass*s);
 void Attack_2_if_Player_in_Front(SpriteClass*s);
-void Attack_1_if_Player_Bellow(SpriteClass*s);
+void Attack_1_if_Player_Below(SpriteClass*s);
 void Attack_1_If_Player_Above(SpriteClass*s);
 void Attack_2_If_Player_Above(SpriteClass*s);
 void Transform_If_Player_Above(SpriteClass*s);
-void Transform_If_Player_Bellow(SpriteClass*s);
+void Transform_If_Player_Below(SpriteClass*s);
 
 void Jump_If_Player_Above(SpriteClass*s);
 void Jump_If_Player_in_Front(SpriteClass*s);

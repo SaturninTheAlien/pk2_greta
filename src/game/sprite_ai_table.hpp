@@ -59,6 +59,12 @@ public:
     bool apply_to_creatures = false;
     bool apply_to_bonuses = false;
     bool apply_to_backgrounds = false;
+
+    /**
+     * @brief 
+     * If the player sprite is required to execute the AI (for example Attak if player below)
+     */
+    bool requires_player_sprite = false;
 };
 
 /**
@@ -94,7 +100,8 @@ private:
         bool creatures=true,
         bool player=false,
         bool bonuses=false,
-        bool backgrounds=false);
+        bool backgrounds=false,
+        bool requires_player_sprite = false);
 
     void Init_AI_Projectile(int id, void (*func)(SpriteClass*, SpriteClass*));
 

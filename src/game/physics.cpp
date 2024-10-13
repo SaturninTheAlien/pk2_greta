@@ -686,13 +686,14 @@ void UpdateSprite(SpriteClass* sprite){
 
 	if (sprite->isPlayer() && sprite->energy > 0){
 
-		if(sprite->player_c < 3){
-			/* ATTACK 1 */
-			if ((PInput::Keydown(Input->attack1) || TouchScreenControls.egg) && sprite->charging_timer == 0 && sprite->ammo1 != nullptr)
-				sprite->attack1_timer = sprite->prototype->attack1_time;
-			/* ATTACK 2 */
-			else if ((PInput::Keydown(Input->attack2) || TouchScreenControls.doodle) && sprite->charging_timer == 0 && sprite->ammo2 != nullptr)
-					sprite->attack2_timer = sprite->prototype->attack2_time;
+		/* ATTACK 1 */
+		if ((PInput::Keydown(Input->attack1) || TouchScreenControls.egg) && sprite->charging_timer == 0 && sprite->ammo1 != nullptr)
+			sprite->attack1_timer = sprite->prototype->attack1_time;
+		/* ATTACK 2 */
+		else if ((PInput::Keydown(Input->attack2) || TouchScreenControls.doodle) && sprite->charging_timer == 0 && sprite->ammo2 != nullptr)
+				sprite->attack2_timer = sprite->prototype->attack2_time;
+		
+		if(sprite->player_c==1){
 
 			/* CROUCH */
 			sprite->crouched = false;
@@ -701,9 +702,6 @@ void UpdateSprite(SpriteClass* sprite){
 				sprite->crouched = true;
 				sprite_upper += sprite_height/1.5;
 			}
-		}
-		
-		if(sprite->player_c==1){
 
 			/* SLOW WALK */
 			if (PInput::Keydown(Input->walk_slow)
@@ -804,7 +802,7 @@ void UpdateSprite(SpriteClass* sprite){
 				if(!ai.apply_to_player)continue;
 			}
 			else{
-				if(!ai.apply_to_player && !ai.apply_to_creatures)continue;
+				if((!ai.apply_to_player && !ai.apply_to_creatures) || ai.requires_player_sprite)continue;
 			}
 
 			if( (sprite->energy>0 && ai.trigger==AI_TRIGGER_ALIVE) || ai.trigger==AI_TRIGGER_ANYWAY){
@@ -1844,6 +1842,9 @@ void UpdateBackgroundSprite(SpriteClass* sprite, double &yl){
 			}
 		}
 	}
+	
+	if (sprite->attack1_timer > 0) // for BG teleporters
+		sprite->attack1_timer--;
 
 	if (sprite->charging_timer > 0)
 		sprite->charging_timer--;

@@ -529,7 +529,7 @@ void Attack_2_if_Player_in_Front(SpriteClass*s){
 		}
 	}
 }
-void Attack_1_if_Player_Bellow(SpriteClass*s){
+void Attack_1_if_Player_Below(SpriteClass*s){
 	if (s->damage_timer == 0 && player!=nullptr)
 	{
 		if ((player->x - s->x < s->prototype->width && player->x - s->x > -s->prototype->width) &&
@@ -591,7 +591,7 @@ void Transform_If_Player_Above(SpriteClass*s){
 	}
 }
 
-void Transform_If_Player_Bellow(SpriteClass*s){
+void Transform_If_Player_Below(SpriteClass*s){
 	if(player!=nullptr){
 		if ((player->x - s->x < s->prototype->width && player->x - s->x > -s->prototype->width) &&
 			(player->y > s->y && player->y - s->y < 350))

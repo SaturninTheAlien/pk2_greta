@@ -82,7 +82,8 @@ void AI_Table::Init_AI(int id,
         bool creatures,
         bool player,
         bool bonuses,
-        bool backgrounds){
+        bool backgrounds,
+        bool requires_alive_player){
 
     AI_Class ai;
 
@@ -140,37 +141,54 @@ AI_Table::AI_Table(){
 
     Init_AI(AI_RANDOM_JUMP, AI_TRIGGER_ALIVE, AI_Functions::Random_Jump);
 
-    Init_AI(AI_FOLLOW_PLAYER, AI_TRIGGER_ALIVE, AI_Functions::Follow_Player);
+    Init_AI(AI_FOLLOW_PLAYER, AI_TRIGGER_ALIVE, AI_Functions::Follow_Player,
+    true, false, false, false, true);
 
-    Init_AI(AI_FOLLOW_PLAYER_IF_IN_FRONT, AI_TRIGGER_ALIVE, AI_Functions::Follow_Player_If_Seen);
+    Init_AI(AI_FOLLOW_PLAYER_IF_IN_FRONT, AI_TRIGGER_ALIVE, AI_Functions::Follow_Player_If_Seen,
+    true, false, false, false, true);
 
-    Init_AI(AI_FOLLOW_PLAYER_VERT_HORI, AI_TRIGGER_ALIVE, AI_Functions::Follow_Player_Vert_Hori);
+    Init_AI(AI_FOLLOW_PLAYER_VERT_HORI, AI_TRIGGER_ALIVE, AI_Functions::Follow_Player_Vert_Hori,
+    true, false, false, false, true);
 
-    Init_AI(AI_FOLLOW_PLAYER_IF_IN_FRONT_VERT_HORI, AI_TRIGGER_ALIVE, AI_Functions::Follow_Player_If_Seen_Vert_Hori);
+    Init_AI(AI_FOLLOW_PLAYER_IF_IN_FRONT_VERT_HORI, AI_TRIGGER_ALIVE, AI_Functions::Follow_Player_If_Seen_Vert_Hori,
+    true, false, false, false, true);
 
-    Init_AI(AI_LOOK_AT_PLAYER, AI_TRIGGER_ALIVE, AI_Functions::Look_at_Player);
+    Init_AI(AI_LOOK_AT_PLAYER, AI_TRIGGER_ALIVE, AI_Functions::Look_at_Player,
+    true, false, true, true, true);
 
-    Init_AI(AI_RUN_AWAY_FROM_PLAYER, AI_TRIGGER_ALIVE, AI_Functions::Run_Away_From_Player);
-    Init_AI(AI_RUN_AWAY_FROM_SUPERMODE_PLAYER, AI_TRIGGER_ALIVE, AI_Functions::Run_Away_From_Supermode_Player);
+    Init_AI(AI_RUN_AWAY_FROM_PLAYER, AI_TRIGGER_ALIVE, AI_Functions::Run_Away_From_Player,
+    true, false, false, false, true);
+
+    Init_AI(AI_RUN_AWAY_FROM_SUPERMODE_PLAYER, AI_TRIGGER_ALIVE, AI_Functions::Run_Away_From_Supermode_Player,
+    true, false, false, false, true);
     
     Init_AI(AI_SELF_DESTRUCTION, AI_TRIGGER_ALIVE, AI_Functions::SelfDestruction, true, false, true, true);
 
     Init_AI(AI_ATTACK_1_NONSTOP, AI_TRIGGER_ALIVE, AI_Functions::Attack_1_Nonstop);
     Init_AI(AI_ATTACK_2_NONSTOP, AI_TRIGGER_ALIVE, AI_Functions::Attack_2_Nonstop);
 
-    Init_AI(AI_ATTACK_1_IF_PLAYER_IN_FRONT, AI_TRIGGER_ALIVE, AI_Functions::Attack_1_if_Player_in_Front); //TO DO Redesign
-    Init_AI(AI_ATTACK_2_IF_PLAYER_IN_FRONT, AI_TRIGGER_ALIVE, AI_Functions::Attack_2_if_Player_in_Front); //TO DO Redesign
+    Init_AI(AI_ATTACK_1_IF_PLAYER_IN_FRONT, AI_TRIGGER_ALIVE, AI_Functions::Attack_1_if_Player_in_Front,
+    true, false, false, false, true); //TO DO Redesign
+    Init_AI(AI_ATTACK_2_IF_PLAYER_IN_FRONT, AI_TRIGGER_ALIVE, AI_Functions::Attack_2_if_Player_in_Front,
+    true, false, false, false, true); //TO DO Redesign
 
-    Init_AI(AI_ATTACK_1_IF_PLAYER_BELOW, AI_TRIGGER_ALIVE, AI_Functions::Attack_1_if_Player_Bellow); //TO DO Redesign
+    Init_AI(AI_ATTACK_1_IF_PLAYER_BELOW, AI_TRIGGER_ALIVE, AI_Functions::Attack_1_if_Player_Below,
+    true, false, false, false, true); //TO DO Redesign
 
-    Init_AI(AI_ATTACK_1_IF_PLAYER_ABOVE, AI_TRIGGER_ALIVE, AI_Functions::Attack_1_If_Player_Above); //TO DO Redesign
-    Init_AI(AI_ATTACK_2_IF_PLAYER_ABOVE, AI_TRIGGER_ALIVE, AI_Functions::Attack_2_If_Player_Above); //TO DO Redesign
+    Init_AI(AI_ATTACK_1_IF_PLAYER_ABOVE, AI_TRIGGER_ALIVE, AI_Functions::Attack_1_If_Player_Above,
+    true, false, false, false, true); //TO DO Redesign
+    Init_AI(AI_ATTACK_2_IF_PLAYER_ABOVE, AI_TRIGGER_ALIVE, AI_Functions::Attack_2_If_Player_Above,
+    true, false, false, false, true); //TO DO Redesign
 
-    Init_AI(AI_TRANSFORM_IF_PLAYER_BELOW, AI_TRIGGER_ALIVE, AI_Functions::Transform_If_Player_Bellow); //TO DO Redesign
-    Init_AI(AI_TRANSFORM_IF_PLAYER_ABOVE, AI_TRIGGER_ALIVE, AI_Functions::Transform_If_Player_Above); //TO DO Redesign
+    Init_AI(AI_TRANSFORM_IF_PLAYER_BELOW, AI_TRIGGER_ALIVE, AI_Functions::Transform_If_Player_Below,
+    true, false, false, false, true); //TO DO Redesign
+    Init_AI(AI_TRANSFORM_IF_PLAYER_ABOVE, AI_TRIGGER_ALIVE, AI_Functions::Transform_If_Player_Above,
+    true, false, false, false, true); //TO DO Redesign
     
-    Init_AI(AI_JUMP_IF_PLAYER_ABOVE, AI_TRIGGER_ALIVE, AI_Functions::Jump_If_Player_Above); //TO DO Redesign
-    Init_AI(AI_JUMP_IF_PLAYER_IN_FRONT, AI_TRIGGER_ALIVE, AI_Functions::Jump_If_Player_in_Front);  //TO DO Redesign
+    Init_AI(AI_JUMP_IF_PLAYER_ABOVE, AI_TRIGGER_ALIVE, AI_Functions::Jump_If_Player_Above,
+    true, false, false, false, true); //TO DO Redesign
+    Init_AI(AI_JUMP_IF_PLAYER_IN_FRONT, AI_TRIGGER_ALIVE, AI_Functions::Jump_If_Player_in_Front,
+    true, false, false, false, true);  //TO DO Redesign
 
     Init_AI(AI_DAMAGED_BY_WATER, AI_TRIGGER_ALIVE, AI_Functions::Damaged_by_Water, true, true);
 
@@ -231,7 +249,8 @@ AI_Table::AI_Table(){
     Init_AI(AI_RANDOM_MOVE_VERT_HORI, AI_TRIGGER_ALIVE, AI_Functions::Random_Move_Vert_Hori);
 
     
-    Init_AI(AI_DESTRUCTED_NEXT_TO_PLAYER, AI_TRIGGER_ALIVE, AI_Functions::Destructed_Next_To_Player);
+    Init_AI(AI_DESTRUCTED_NEXT_TO_PLAYER, AI_TRIGGER_ALIVE, AI_Functions::Destructed_Next_To_Player,
+    true, false, false, false, true);
 
     Init_AI(AI_FOLLOW_COMMANDS, AI_TRIGGER_ALIVE, AI_Functions::Follow_Commands, true, true, true, true);
 
@@ -258,8 +277,8 @@ AI_Table::AI_Table(){
 
 
 
-    Init_AI(AI_PARTIALLY_UNCONTROLLABLE_PLAYER, AI_TRIGGER_TRANSFORMATION, AI_Functions::UncontrollablePlayer, false, true, false, false);
-    Init_AI(AI_COMPLETELY_UNCONTROLLABLE_PLAYER2, AI_TRIGGER_TRANSFORMATION, AI_Functions::UncontrollablePlayer2, false, true, false, false);
+    Init_AI(AI_LIMITED_PLAYER_CONTROL, AI_TRIGGER_TRANSFORMATION, AI_Functions::UncontrollablePlayer, false, true, false, false);
+    Init_AI(AI_VERY_LIMITED_PLAYER_CONTROL, AI_TRIGGER_TRANSFORMATION, AI_Functions::UncontrollablePlayer2, false, true, false, false);
 
     /**
      * @brief
@@ -386,7 +405,7 @@ AI_Table::AI_Table(){
      * Infos
      */
 
-    Init_AI(AI_INFO_IF_TOUCHES_PLAYER, AI_TRIGGER_ALIVE, AI_Functions::DisplayInfoIfTouchesPlayer, true, false, true, true);
+    Init_AI(AI_INFO_IF_TOUCHES_PLAYER, AI_TRIGGER_ALIVE, AI_Functions::DisplayInfoIfTouchesPlayer, true, false, true, true, true);
     Init_AI(AI_INFO_IF_DAMAGED, AI_TRIGGER_DAMAGE, AI_Functions::DisplayInfo, true, true, true, true);
     Init_AI(AI_INFO_IF_DEAD, AI_TRIGGER_DEATH, AI_Functions::DisplayInfo, true, true, true, true);
 
