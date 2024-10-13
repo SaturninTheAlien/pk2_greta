@@ -122,9 +122,9 @@ void pk2_main(bool _dev_mode, bool _show_fps, bool _test_level, const std::strin
 			Search_Episodes();
 		}	
 
-		std::optional<PFile::Path> iconPath = PFilesystem::FindVanillaAsset("icon_new.png", PFilesystem::GFX_DIR);
+		std::optional<PFile::Path> iconPath = PFilesystem::FindVanillaAsset("icon.bmp", PFilesystem::GFX_DIR, ".png");
 		if(!iconPath.has_value()){
-			throw std::runtime_error("icon_new.png not found!");
+			throw std::runtime_error("\"icon[.bmp/.png]\" not found!");			
 		}
 
 		Piste::init(screen_width, screen_height, PK2_NAME_STR, iconPath->c_str(),
