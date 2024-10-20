@@ -172,10 +172,10 @@ Info Signs
 *info18:			uważaj na silny wiatr!
 *info19:			uratuj kurczaki!
 		
-font information
+Font Information
 ------------------------------------------------------------------------------------
-*font small font:		cyrillicssmall.txt
-*font big font normal:		cyrillicsbig1.txt
-*font big font hilite:		cyrillicsbig2.txt
-*font big font shadow:		cyrillicsbig3.txt
+*font small font:		ScandicSmall.txt
+*font big font normal:		ScandicBig1.txt
+*font big font hilite:		ScandicBig2.txt
+*font big font shadow:		ScandicBig3.txt
 *font path:			language/fonts/

@@ -27,11 +27,14 @@ private:
 	};
 
 	static UTF8_Char lowercase(UTF8_Char src);
+	static UTF8_Char uppercase(UTF8_Char src);
+
+	int getCharacterPos(const UTF8_Char& c)const;
 
 	std::vector<std::pair<int, UTF8_Char>> utf8_charlist;
 
 
-	int charlist[256];
+	//int charlist[256];
 	uint char_w, char_h, char_count;
 	int image_index = -1;
 

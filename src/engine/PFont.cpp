@@ -65,6 +65,13 @@ PFont::UTF8_Char PFont::lowercase(UTF8_Char src){
 	return src;
 }
 
+PFont::UTF8_Char PFont::uppercase(UTF8_Char src){
+	if(getBytesNumber(*src.data)==1){
+		*src.data = std::toupper(*src.data);
+	}
+	return src;
+}
+
 void PFont::initCharlist() {
 
 	const char* chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" "###" "0123456789.!?:-.+=()/#\\_%🌜";
@@ -73,15 +80,6 @@ void PFont::initCharlist() {
 
 
 void PFont::initCharlist(const char* letters){
-
-	for ( uint i = 0; i < 256; i++ )
-		charlist[i] = -1;
-	
-	for ( uint i = 0; i < strlen(letters); i++ ){
-		charlist[std::tolower(letters[i])] = i * char_w;
-		charlist[std::toupper(letters[i])] = i * char_w;
-	}
-
 	this->utf8_charlist.clear();
 
 	int index_counter = 0;
@@ -93,10 +91,12 @@ void PFont::initCharlist(const char* letters){
 		this->utf8_charlist.emplace_back(std::make_pair(index_counter, u8c));
 
 		UTF8_Char lower = lowercase(u8c);
+		UTF8_Char upper = uppercase(u8c);
 		if(u8c!=lower){
-			//std::cout<<"Lowering \" "<<u8c.data<<" to "<<lower.data<<std::endl;
-
-			this->utf8_charlist.emplace_back(std::make_pair(index_counter,  lower));
+			this->utf8_charlist.emplace_back(std::make_pair(index_counter, lower));
+		}
+		else if(u8c!=upper){
+			this->utf8_charlist.emplace_back(std::make_pair(index_counter, upper));
 		}
 
 		++index_counter;
@@ -137,10 +137,10 @@ int PFont::load(PFile::Path path) {
 	i = param_file.Search_Id("letter height");
 	this->char_h = atoi(param_file.Get_Text(i));
 
-	/*i = param_file.Search_Id("letters");
-	this->initCharlist(param_file.Get_Text(i));*/
+	i = param_file.Search_Id("letters");
+	this->initCharlist(param_file.Get_Text(i));
 
-	this->initCharlist();
+	//this->initCharlist();
 
 	i = param_file.Search_Id("image");
 
@@ -163,10 +163,20 @@ int PFont::load(PFile::Path path) {
 
 }
 
+int PFont::getCharacterPos(const UTF8_Char& u8c)const{
+	for(const std::pair<int, UTF8_Char>& p: this->utf8_charlist){
+		if(p.second==u8c){
+			return p.first * this->char_w;
+		}
+	}
+
+	return -1;
+}
+
 int PFont::write(int posx, int posy, const char *text) {
 	
 	int ox = posx;
-	
+
 	PDraw::RECT srcrect, dstrect;
 	srcrect.y = 0;
 	srcrect.w = char_w;
@@ -181,15 +191,11 @@ int PFont::write(int posx, int posy, const char *text) {
 	UTF8_Char u8c;
 	while (*curr_char!='\0'){
 		curr_char = u8c.read(curr_char);
-
-		for(const std::pair<int, UTF8_Char>& p: this->utf8_charlist){
-			if(p.second==u8c){
-				srcrect.x = p.first * this->char_w;
-				dstrect.x = ox;
-
-				PDraw::image_cutclip(image_index,srcrect,dstrect);
-				break;
-			}
+		int ix = this->getCharacterPos(u8c);
+		if(ix!=-1){
+			srcrect.x = ix;
+			dstrect.x = ox;
+			PDraw::image_cutclip(image_index,srcrect,dstrect);
 		}
 
 		ox += char_w;
@@ -203,9 +209,7 @@ int PFont::write_trasparent(int posx, int posy, const char* text, int alpha) {
 	u8 *back_buffer, *txt_buffer;
 	u32 back_w, txt_w;
 
-	uint i = 0;
 	u8 color1, color2, color3;
-	char curr_char;
 
 	int w, h;
 	PDraw::get_buffer_size(&w, &h);
@@ -218,10 +222,13 @@ int PFont::write_trasparent(int posx, int posy, const char* text, int alpha) {
 	PDraw::drawscreen_start(back_buffer, back_w);
 	PDraw::drawimage_start(image_index, txt_buffer, txt_w);
 
-	do {
-		curr_char = text[i];
-		int ix = charlist[(u8)(curr_char)];
-		if (ix > -1){
+
+	UTF8_Char u8c;
+	int i = 0;
+	while (*text!='\0'){
+		text = u8c.read(text);
+		int ix = this->getCharacterPos(u8c);
+		if(ix!=-1){
 			for (uint x = 0; x < char_w; x++) {
 				
 				int fx = posx + x + i * char_w;
@@ -250,14 +257,14 @@ int PFont::write_trasparent(int posx, int posy, const char* text, int alpha) {
 				}
 			}
 		}
-		i++;
-	
-	} while(curr_char != '\0');
 
+		++i;
+	}
+	
 	PDraw::drawscreen_end();
 	PDraw::drawimage_end(image_index);
 
-	return( (i-1) * char_w );
+	return i * char_w;
 }
 
 PFont::PFont(int img_source, int x, int y, int width, int height, int count) {
@@ -267,7 +274,7 @@ PFont::PFont(int img_source, int x, int y, int width, int height, int count) {
 	char_count = count;
 
 	this->get_image(x, y, img_source);
-	this->initCharlist();
+	//this->initCharlist();
 
 }
 
