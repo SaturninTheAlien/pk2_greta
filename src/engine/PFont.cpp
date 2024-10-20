@@ -2,8 +2,6 @@
 //Pekka Kana 2
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
-#include <iostream>
-
 #include "engine/PFont.hpp"
 
 #include "engine/PDraw.hpp"
@@ -14,63 +12,6 @@
 #include <cmath>
 #include <cstring>
 
-
-static int getBytesNumber(char c){
-
-    //ASCII ch
-    if((c & 0x80)==0){
-        return 1;
-    }
-    // 11110000
-
-    //3 following bytes
-    else if((c & 0xF0)==0xF0){
-        return 4;
-    }
-
-    //2 following bytes
-    else if((c & 0xE0)==0xE0){
-        return 3;
-    }
-
-    //1 following bytes
-    else if((c & 0xC0)==0xC0){
-        return 2;
-    }
-
-
-    return 0;
-}
-
-const char* PFont::UTF8_Char::read(const char *str){
-	for(int i=0;i<4;++i){
-		this->data[i] = '\0';
-	}
-
-	int bytes = getBytesNumber(*str);
-	for(int i=0;i<bytes;++i){
-		if(*str=='\0')return str;
-
-		this->data[i] = *str;
-		++str;
-	}
-
-	return str;
-}
-
-PFont::UTF8_Char PFont::lowercase(UTF8_Char src){
-	if(getBytesNumber(*src.data)==1){
-		*src.data = std::tolower(*src.data);
-	}
-	return src;
-}
-
-PFont::UTF8_Char PFont::uppercase(UTF8_Char src){
-	if(getBytesNumber(*src.data)==1){
-		*src.data = std::toupper(*src.data);
-	}
-	return src;
-}
 
 void PFont::initCharlist() {
 
@@ -84,14 +25,14 @@ void PFont::initCharlist(const char* letters){
 
 	int index_counter = 0;
 	const char * str = letters;
-	UTF8_Char u8c;
+	PString::UTF8_Char u8c;
 
 	while(*str!='\0'){
 		str = u8c.read(str);
 		this->utf8_charlist.emplace_back(std::make_pair(index_counter, u8c));
 
-		UTF8_Char lower = lowercase(u8c);
-		UTF8_Char upper = uppercase(u8c);
+		PString::UTF8_Char lower = PString::lowercase(u8c);
+		PString::UTF8_Char upper = PString::uppercase(u8c);
 		if(u8c!=lower){
 			this->utf8_charlist.emplace_back(std::make_pair(index_counter, lower));
 		}
@@ -138,7 +79,13 @@ int PFont::load(PFile::Path path) {
 	this->char_h = atoi(param_file.Get_Text(i));
 
 	i = param_file.Search_Id("letters");
-	this->initCharlist(param_file.Get_Text(i));
+	if(i!=-1){
+		this->initCharlist(param_file.Get_Text(i));
+	}
+	else{
+		this->initCharlist();
+	}
+	
 
 	//this->initCharlist();
 
@@ -163,8 +110,8 @@ int PFont::load(PFile::Path path) {
 
 }
 
-int PFont::getCharacterPos(const UTF8_Char& u8c)const{
-	for(const std::pair<int, UTF8_Char>& p: this->utf8_charlist){
+int PFont::getCharacterPos(const PString::UTF8_Char& u8c)const{
+	for(const std::pair<int, PString::UTF8_Char>& p: this->utf8_charlist){
 		if(p.second==u8c){
 			return p.first * this->char_w;
 		}
@@ -188,7 +135,7 @@ int PFont::write(int posx, int posy, const char *text) {
 
 	int charsNumber = 0;
 	const char* curr_char = text;
-	UTF8_Char u8c;
+	PString::UTF8_Char u8c;
 	while (*curr_char!='\0'){
 		curr_char = u8c.read(curr_char);
 		int ix = this->getCharacterPos(u8c);
@@ -223,7 +170,7 @@ int PFont::write_trasparent(int posx, int posy, const char* text, int alpha) {
 	PDraw::drawimage_start(image_index, txt_buffer, txt_w);
 
 
-	UTF8_Char u8c;
+	PString::UTF8_Char u8c;
 	int i = 0;
 	while (*text!='\0'){
 		text = u8c.read(text);

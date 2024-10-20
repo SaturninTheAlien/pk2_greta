@@ -97,7 +97,7 @@ Player's name
 Episodes
 ------------------------------------------------------------------------------------
 *episode menu choose episode:			Choisissez un stage
-*episode menu get more episodes at:		Plus de stages à http://pistegamez.cjb.net
+*episode menu get more episodes at:		Plus de stages Ã  http://pistegamez.cjb.net
 *episode menu no maps:				Pas de plans !?
 
 Map

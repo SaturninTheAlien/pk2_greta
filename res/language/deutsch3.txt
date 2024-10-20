@@ -5,13 +5,13 @@ Setup
 *setup music & sounds:			Musik und Effekte
 *setup music:				Musik
 *setup sounds:				Sound Effekte
-*setup language:			Sprache wählen
+*setup language:			Sprache wÃ¤hlen
 *setup play:				Spielen
 *setup exit:				Zurueck
 
 Intro
 ------------------------------------------------------------------------------------
-*intro presents:			präsentiert 2003
+*intro presents:			prÃ¤sentiert 2003
 *intro a game by:			Ein Spiel von
 *intro original character design:	Original Charakterdesign
 *intro tested by:			Getestet von
@@ -35,14 +35,14 @@ Main Menu
 Load Game
 ------------------------------------------------------------------------------------
 *load menu title:			Spiel laden
-*load menu info:			Gespeichertes Spiel wählen
+*load menu info:			Gespeichertes Spiel wÃ¤hlen
 *load menu episode:			Episode: 
 *load menu level:			Level: 
 
 Save Game
 ------------------------------------------------------------------------------------
 *save menu title:			Spiel speichern
-*save menu info:			Speicherplatz wählen
+*save menu info:			Speicherplatz wÃ¤hlen
 *save menu episode:			Episode: 
 *save menu level:			Level: 
 
@@ -65,8 +65,8 @@ Game Controls
 Sounds
 ------------------------------------------------------------------------------------
 *sounds menu title:			Sounds und Musik
-*sounds menu sfx volume:		Lautstärke der Effekte
-*sounds menu music volume:		Lautstärke der Musik
+*sounds menu sfx volume:		LautstÃ¤rke der Effekte
+*sounds menu music volume:		LautstÃ¤rke der Musik
 *sounds menu more:			Laut
 *sounds menu less:			Leise
 
@@ -90,19 +90,19 @@ Player's name
 ------------------------------------------------------------------------------------
 *player screen type your name:		Gib deinen Namen ein
 *player screen continue:		Fertig
-*player screen clear:			Löschen
+*player screen clear:			LÃ¶schen
 *player default name:			pekka
 
 Episodes
 ------------------------------------------------------------------------------------
-*episode menu choose episode:		Wähle eine Episode
+*episode menu choose episode:		WÃ¤hle eine Episode
 *episode menu get more episodes at:	Hol dir mehr Episoden unter http://pistegamez.cjb.net
 *episode menu no maps:			Episode hat keine Karten!?
 
 Map
 ------------------------------------------------------------------------------------
 *map screen total score:		Punkte
-*map screen next level:			Nächstes Level
+*map screen next level:			NÃ¤chstes Level
 *episode best player:			Episoden Champion:
 *episode hiscore:			Hiscore
 *level best player:			Bester Spieler:
@@ -117,7 +117,7 @@ Scores
 *score screen bonus score:		Bonuspunkte
 *score screen time score:		Zeitbonus
 *score screen energy score:		Energiebonus
-*score screen item score:		Gegenstände
+*score screen item score:		GegenstÃ¤nde
 *score screen continue:			Karte
 *score screen total score:		Gesamtpunktzahl
 *score screen new level hiscore:	Du hast den Hiscore geknackt!
@@ -129,7 +129,7 @@ Game
 *score:					Punkte:
 *game time:				Zeit:
 *energy:				Energie:
-*items:					Gegenstände:
+*items:					GegenstÃ¤nde:
 *attack 1:				Megaphon:
 *attack 2:				Eier:
 *keys:					Schluessel:
@@ -139,7 +139,7 @@ Game
 *knocked out:				Du bist K.O.!
 *time out:				Zeit ist vorbei!
 *try again:				Versuch es nochmal!
-*locks open:				Alle Schlösser sind offen!
+*locks open:				Alle SchlÃ¶sser sind offen!
 *new doodle attack:			Ein neues Megaphon!
 *new egg attack:			Ein neues Ei!
 *new item:				Ein neuer Gegenstand!
@@ -157,20 +157,20 @@ Info Signs
 *info01:			Blase mit dem Megaphon deine Feinde weg!
 *info02:			Bombadiere deine Feinde mit Eiern!
 *info03:			Finde den Ausgang!
-*info04:			Die Schlösser öffnen sich erst wenn du alle Schluessel hast.
+*info04:			Die SchlÃ¶sser Ã¶ffnen sich erst wenn du alle Schluessel hast.
 *info05:			Spring auf die Schalter um Sie zu bewegen.
 *info06:			Gruene Schalter bewegen Mauern mit gruenen Pfeilen.
 *info07:			Blaue Schalter bewegen Mauern mit blauen Pfeilen.
-*info08:			Ein orangefarbener Schalter löscht das Feuer.
-*info09:			Du kannst die geschenkten Gegenstände natürlich benutzen.
+*info08:			Ein orangefarbener Schalter lÃ¶scht das Feuer.
+*info09:			Du kannst die geschenkten GegenstÃ¤nde natÃ¼rlich benutzen.
 *info10:			Federn bringen dir deine Energie zurueck.
-*info11:			Teleporter sind gefährlich! Geh nur nicht verloren!
+*info11:			Teleporter sind gefÃ¤hrlich! Geh nur nicht verloren!
 *info12:			Knock Outs und Bonusse steigern deine Punktzahl.
-*info13:			Immer schön nach dem versteckten Bonus suchen!
-*info14:			Schlösser öffnen sich wenn der Schluessel sie beruehrt.
+*info13:			Immer schÃ¶n nach dem versteckten Bonus suchen!
+*info14:			SchlÃ¶sser Ã¶ffnen sich wenn der Schluessel sie beruehrt.
 *info15:			Pass auf die Fallen auf! hee hee...
 *info16:			Beeil dich! Die Zeit rennt!
-*info17:			Pass auf die bösartigen Tiere auf!
-*info18:			Hui, hier bläst aber ein starker Wind!
+*info17:			Pass auf die bÃ¶sartigen Tiere auf!
+*info18:			Hui, hier blÃ¤st aber ein starker Wind!
 *info19:			Rette die Huehnchen!
 		

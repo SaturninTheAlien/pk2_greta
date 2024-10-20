@@ -8,6 +8,8 @@
  */
 #include "PString.hpp"
 #include <algorithm>
+#include <iomanip>
+#include <bitset>
 
 namespace PString{
 
@@ -41,6 +43,72 @@ std::string unwindowsPath(const std::string& path){
         }
     }
     return res;
+}
+
+
+static int getBytesNumber(char c){
+
+    //ASCII ch
+    if((c & 0x80)==0){
+        return 1;
+    }
+    // 11110000
+
+    //3 following bytes
+    else if((c & 0xF0)==0xF0){
+        return 4;
+    }
+
+    //2 following bytes
+    else if((c & 0xE0)==0xE0){
+        return 3;
+    }
+
+    //1 following bytes
+    else if((c & 0xC0)==0xC0){
+        return 2;
+    }
+
+
+    std::ostringstream os;
+    os<<"Not allowed UTF-8 leading byte: "<<std::bitset<8>(c)<<std::endl;
+    throw std::runtime_error(os.str());
+}
+
+const char* UTF8_Char::read(const char *str){
+	for(int i=0;i<4;++i){
+		this->data[i] = '\0';
+	}
+
+	int bytes = getBytesNumber(*str);
+    char* data_ptr = this->data;
+
+	for(int i=0;i<bytes;++i){
+		if(*str=='\0')return str;
+
+		*data_ptr = *str;
+
+        ++data_ptr;
+		++str;
+	}
+
+	return str;
+}
+
+UTF8_Char lowercase(UTF8_Char src){
+	if(getBytesNumber(*src.data)==1){
+		*src.data = std::tolower(*src.data);
+	}
+    //TODO lowercase other charcters
+	return src;
+}
+
+UTF8_Char uppercase(UTF8_Char src){
+	if(getBytesNumber(*src.data)==1){
+		*src.data = std::toupper(*src.data);
+	}
+    //TODO lowercase other charcters
+	return src;
 }
 
 }

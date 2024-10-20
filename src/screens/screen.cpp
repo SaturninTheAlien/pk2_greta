@@ -17,7 +17,7 @@ void Screen::Fade_Quit() {
 	
 }
 
-bool Screen::Draw_Menu_Text(const char *teksti, int x, int y, char end) {
+bool Screen::Draw_Menu_Text(const char *teksti, int x, int y) {
 
 	const int TEXT_H = 20; 
 
@@ -30,7 +30,7 @@ bool Screen::Draw_Menu_Text(const char *teksti, int x, int y, char end) {
 	if ( mouse_on || (chosen_menu_id == selected_menu_id) ) {
 
 		chosen_menu_id = selected_menu_id;
-		Wavetext_Draw(teksti, fontti3, x, y, end);//
+		Wavetext_Draw(teksti, fontti3, x, y);//
 
 		int c = Clicked();
 		if ( (c == 1 && mouse_on) || (c > 1) ) {
@@ -44,7 +44,7 @@ bool Screen::Draw_Menu_Text(const char *teksti, int x, int y, char end) {
 		}
 	} else {
 	
-		WavetextSlow_Draw(teksti, fontti2, x, y, end);
+		WavetextSlow_Draw(teksti, fontti2, x, y);
 	
 	}
 

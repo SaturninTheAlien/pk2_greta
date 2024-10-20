@@ -5,19 +5,19 @@ Setup
 *setup music & sounds:			Musik und soundeffekte
 *setup music:				Musik
 *setup sounds:				Soundeffekte
-*setup language:			Sprache wählen
+*setup language:			Sprache wÃ¤hlen
 *setup play:				Spielen
 *setup exit:				Bye-Bye
 
 Intro
 ------------------------------------------------------------------------------------
-*intro presents:			präsentiert 2003
+*intro presents:			prÃ¤sentiert 2003
 *intro a game by:			ein Spiel von
 *intro original character design:	original Character design
 *intro tested by:			getestet von
 *intro thanks to:			Danke an
-*intro translation:			Deutschübersetzung
-*intro translator:			Sebastian Schöngen
+*intro translation:			DeutschÃ¼bersetzung
+*intro translator:			Sebastian SchÃ¶ngen
 
 Main Menu
 ------------------------------------------------------------------------------------
@@ -30,7 +30,7 @@ Main Menu
 *main menu sounds:			Sounds
 *main menu exit game:			Arrividertschi
 
-*back to main menu:			Zurück zum Menü
+*back to main menu:			ZurÃ¼ck zum MenÃ¼
 
 Load Game
 ------------------------------------------------------------------------------------
@@ -51,7 +51,7 @@ Game Controls
 *controls menu title:			Tastenbelegungen
 *controls menu move left:		Links laufen
 *controls menu move right:		Rechts laufen
-*controls menu jump:			Hüpfen
+*controls menu jump:			HÃ¼pfen
 *controls menu duck:			Ducken
 *controls menu walk slow:		Gehen
 *controls menu egg attack:		Eierwurf
@@ -65,8 +65,8 @@ Game Controls
 Sounds
 ------------------------------------------------------------------------------------
 *sounds menu title:			Sounds und Musik
-*sounds menu sfx volume:		Lautstärke der Soundeffekte
-*sounds menu music volume:		Lautstärke der Musik
+*sounds menu sfx volume:		LautstÃ¤rke der Soundeffekte
+*sounds menu music volume:		LautstÃ¤rke der Musik
 *sounds menu more:			mehr
 *sounds menu less:			weniger
 
@@ -84,25 +84,25 @@ Graphics
 *graphics menu bg sprites on:			Hintergrund An
 *graphics menu bg sprites off:			Hintergrund Aus
 *graphics menu game speed normal:		Spielgeschwindigkeit ist normal 
-*graphics menu game speed double:		Spiel läuft doppelt so schnell
+*graphics menu game speed double:		Spiel lÃ¤uft doppelt so schnell
 
 Player's name
 ------------------------------------------------------------------------------------
 *player screen type your name:		Gib deinen Namen ein
 *player screen continue:		Fertig
-*player screen clear:			Löschen
+*player screen clear:			LÃ¶schen
 *player default name:			superchecker
 
 Episodes
 ------------------------------------------------------------------------------------
-*episode menu choose episode:		Wähle eine Episode
+*episode menu choose episode:		WÃ¤hle eine Episode
 *episode menu get more episodes at:	Hol dir mehr Episoden auf: http://pistegamez.cjb.net
 *episode menu no maps:			Episode hat keine Karten!?
 
 Map
 ------------------------------------------------------------------------------------
 *map screen total score:		Punkte
-*map screen next level:			Nächstes level
+*map screen next level:			NÃ¤chstes level
 *episode best player:			Episoden Champion:
 *episode hiscore:			Bestpunktzahl
 *level best player:			Bester Spieler
@@ -132,14 +132,14 @@ Game
 *items:					Items:
 *attack 1:				Meggafon:
 *attack 2:				Eier:
-*keys:					Schlüssel:
+*keys:					SchlÃ¼ssel:
 *level clear:				Level geschafft!
 *time bonus:			
 *game paused:				Pause...
 *knocked out:				TOT hahaha...!
 *time out:				Zu lahmarschig!
-*try again:				Versuch´s halt nochmal!
-*locks open:				Alle Schlösser sind offen!
+*try again:				VersuchÂ´s halt nochmal!
+*locks open:				Alle SchlÃ¶sser sind offen!
 *new doodle attack:			Ein Meggafon!
 *new egg attack:			Ein Ei!
 *new item:				Ein Item!
@@ -148,29 +148,29 @@ Game
 
 The End
 ------------------------------------------------------------------------------------
-*end congratulations:			Glückwunsch!
-*end chickens saved:			Du hast die Hühner gerettet!
+*end congratulations:			GlÃ¼ckwunsch!
+*end chickens saved:			Du hast die HÃ¼hner gerettet!
 *end the end:				ENDE
 
 Info Signs
 ------------------------------------------------------------------------------------
-*info01:			Töte Gegner mit dem Meggafon!
-*info02:			Schieße Gegner mit Eiern ab!
+*info01:			TÃ¶te Gegner mit dem Meggafon!
+*info02:			SchieÃŸe Gegner mit Eiern ab!
 *info03:			Finde das Zielschild!
-*info04:			Schlösser gehen auf, wenn du alle Schlüssel gesamelt hast.
+*info04:			SchlÃ¶sser gehen auf, wenn du alle SchlÃ¼ssel gesamelt hast.
 *info05:			Aktiviere Schalter durch Draufsprinen.
-*info06:			Grüne Schalter bewegen Wände mit grünen Pfeilen.
-*info07:			Blaue Schalter bewegen Wände mit blauen Pfeilen.
-*info08:			Orange Schalter löscchen Feuer.
+*info06:			GrÃ¼ne Schalter bewegen WÃ¤nde mit grÃ¼nen Pfeilen.
+*info07:			Blaue Schalter bewegen WÃ¤nde mit blauen Pfeilen.
+*info08:			Orange Schalter lÃ¶scchen Feuer.
 *info09:			Du kannst Items jederzeit benutzen.
 *info10:			Federn geben Energie.
 *info11:			Teleporter sind kompliziert. Geh nicht verloren!
-*info12:			Tötungen und Boni erhöhen deine Punktzahl.
+*info12:			TÃ¶tungen und Boni erhÃ¶hen deine Punktzahl.
 *info13:			Suche immer nach versteckten Boni!
-*info14:			Schlösser gehen auf, wenn ein Schlüssel sie berührt.
+*info14:			SchlÃ¶sser gehen auf, wenn ein SchlÃ¼ssel sie berÃ¼hrt.
 *info15:			Pass auf dass du in keine Falle trittst, VERSAGER...
-*info16:			Beeil dich, die Zeit läuft!
-*info17:			Pass auf wütende Tiere auf!
+*info16:			Beeil dich, die Zeit lÃ¤uft!
+*info17:			Pass auf wÃ¼tende Tiere auf!
 *info18:			Pass auf starken Wind auf!
-*info19:			Rette die Hühner!
+*info19:			Rette die HÃ¼hner!
 		

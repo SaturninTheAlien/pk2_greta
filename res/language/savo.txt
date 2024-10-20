@@ -2,19 +2,19 @@
 Setup
 ------------------------------------------------------------------------------------
 *setup options:			Asetukset
-*setup video modes:		N‰‰ttˆtilat
-*setup music & sounds:		Mussiikki ja i‰net
+*setup video modes:		N√§√§tt√∂tilat
+*setup music & sounds:		Mussiikki ja i√§net
 *setup music:			Mussiikki
-*setup sounds:			I‰n'tehosteet
+*setup sounds:			I√§n'tehosteet
 *setup language:		Valihe kiel'tiijosto
 *setup play:			Pelloo
 *setup exit:			Lopeta
 
 Intro
 ------------------------------------------------------------------------------------
-*intro presents:			esitt‰‰ 2003
+*intro presents:			esitt√§√§ 2003
 *intro a game by:			pelin, jonka on tekassu
-*intro original character design:	alakuper‰sen hahmon vi‰nti
+*intro original character design:	alakuper√§sen hahmon vi√§nti
 *intro tested by:			testoojat
 *intro thanks to:			kiitokset
 *intro translation:			savolaeset tekstit
@@ -23,15 +23,15 @@ Intro
 Main Menu
 ------------------------------------------------------------------------------------
 *main menu new game:		alota uus peli
-*main menu continue:		jatka peli‰
+*main menu continue:		jatka peli√§
 *main menu load game:		lattoo peli
 *main menu save game:		tallenna peli
 *main menu controls:		ohjaemet
 *main menu graphics:		rahviikat
-*main menu sounds:		i‰net
+*main menu sounds:		i√§net
 *main menu exit game:		lopetappa
 
-*back to main menu:		takas pi‰valikkoon
+*back to main menu:		takas pi√§valikkoon
 
 Load Game
 ------------------------------------------------------------------------------------
@@ -49,7 +49,7 @@ Save Game
 
 Game Controls
 ------------------------------------------------------------------------------------
-*controls menu title:		pelin n‰pp‰emet
+*controls menu title:		pelin n√§pp√§emet
 *controls menu move left:	vasemmalle
 *controls menu move right:	oekeelle
 *controls menu jump:		loekka
@@ -57,16 +57,16 @@ Game Controls
 *controls menu walk slow:	hiipiminen
 *controls menu egg attack:	muniminen
 *controls menu doodle attack:	kiekasu
-*controls menu use item:	k‰‰t‰ esine
+*controls menu use item:	k√§√§t√§ esine
 *controls menu edit:		muokkoo kontrolleja
-*controls menu keyboard def:	perusnappulat n‰pp‰emistˆlle
+*controls menu keyboard def:	perusnappulat n√§pp√§emist√∂lle
 *controls menu gamepad4:	perusnappulat ohjaemelle  4 nappuloo
 *controls menu gamepad6:	perusnappulat ohjaemelle  6 nappuloo
 
 Sounds
 ------------------------------------------------------------------------------------
-*sounds menu title:		i‰net ja mussiikki
-*sounds menu sfx volume:	i‰n'tehosteen voemakkuus
+*sounds menu title:		i√§net ja mussiikki
+*sounds menu sfx volume:	i√§n'tehosteen voemakkuus
 *sounds menu music volume:	mussiikin voemakkuus
 *sounds menu more:		lissee
 *sounds menu less:		ota poes
@@ -74,16 +74,16 @@ Sounds
 Graphics
 ------------------------------------------------------------------------------------
 *graphics menu title:				pelin rahviikka
-*graphics menu transparency fx on:		l‰pin‰kyvyystehoste on
-*graphics menu transparency fx off:		l‰pin‰kyvyystehoste ee oo
-*graphics menu menus are transparent:		l‰pin‰kyv‰t valikkotekstit
+*graphics menu transparency fx on:		l√§pin√§kyvyystehoste on
+*graphics menu transparency fx off:		l√§pin√§kyvyystehoste ee oo
+*graphics menu menus are transparent:		l√§pin√§kyv√§t valikkotekstit
 *graphics menu menus are not transparent:	tavalliset valikkotekstit
-*graphics menu item bar is visible:		esineet n‰kkyy
-*graphics menu item bar is not visible:		esineet ee n‰y
-*graphics menu weather fx on:			si‰efektit n‰kkyy
-*graphics menu weather fx off:			si‰efektit ee n‰y
-*graphics menu bg sprites on:			taastat n‰kkyy
-*graphics menu bg sprites off:			taastat ee n‰y
+*graphics menu item bar is visible:		esineet n√§kkyy
+*graphics menu item bar is not visible:		esineet ee n√§y
+*graphics menu weather fx on:			si√§efektit n√§kkyy
+*graphics menu weather fx off:			si√§efektit ee n√§y
+*graphics menu bg sprites on:			taastat n√§kkyy
+*graphics menu bg sprites off:			taastat ee n√§y
 *graphics menu game speed normal:		normaali noppeeus
 *graphics menu game speed double:		tuplanopeeus
 
@@ -91,7 +91,7 @@ Player's name
 ------------------------------------------------------------------------------------
 *player screen type your name:			rustooppa nimesi
 *player screen continue:			valamis
-*player screen clear:				raekkoo tyhj‰ks
+*player screen clear:				raekkoo tyhj√§ks
 *player default name:				pellooja
 
 Episodes
@@ -119,7 +119,7 @@ Scores
 *score screen bonus score:		pojot poonuksista
 *score screen time score:		pojot ajasta
 *score screen energy score:		pojot enerkiasta
-*score screen item score:		pojot esineest‰
+*score screen item score:		pojot esineest√§
 *score screen continue:			jatka
 *score screen total score:		kokonaespojot
 *score screen new level hiscore:	teit jakson uuven pojo-enkan!
@@ -135,12 +135,12 @@ Game
 *attack 1:			kieku:
 *attack 2:			munat:
 *keys:				avvaemet:
-*level clear:			jakso l‰pi!
+*level clear:			jakso l√§pi!
 *time bonus:			aekapoonus
 *game paused:			taako...
-*knocked out:			pekka heetti veevins‰!
+*knocked out:			pekka heetti veevins√§!
 *time out:			aeka loppu!
-*try again:			yrit‰pp‰ uuvestaan!
+*try again:			yrit√§pp√§ uuvestaan!
 *locks open:			kaekki lukot on aaki!
 *new doodle attack:		uus kiekasu!
 *new egg attack:		uus muna!
@@ -157,21 +157,21 @@ The End
 Info Signs
 ------------------------------------------------------------------------------------
 *info01:			huuva viholliset nurin mekavoonilla!
-*info02:			puota munia vihulaesten pi‰lle!
-*info03:			eti kent‰n ulosk‰‰nti!
-*info04:			lukot aakee ku kaekki avvaemet on ker‰tty.
-*info05:			liikuta kytkint‰ hyppeem‰ll‰ sen pi‰lle.
-*info06:			vihre‰ kytkin liikuttaa vihreit‰ seeni‰.
-*info07:			sinine kytkin liikuttaa sinisi‰ seeni‰.
+*info02:			puota munia vihulaesten pi√§lle!
+*info03:			eti kent√§n ulosk√§√§nti!
+*info04:			lukot aakee ku kaekki avvaemet on ker√§tty.
+*info05:			liikuta kytkint√§ hyppeem√§ll√§ sen pi√§lle.
+*info06:			vihre√§ kytkin liikuttaa vihreit√§ seeni√§.
+*info07:			sinine kytkin liikuttaa sinisi√§ seeni√§.
 *info08:			oranssi kytkin sammuttaa lieskat.
-*info09:			voet k‰‰ttee lahjoesta suamas esineet millon haluvat.
-*info10:			hˆˆhenet pallaattaa enerkijjoo.
-*info11:			teleportit on arvoomattomia. el‰ eksy!
-*info12:			suat pisteit‰ poonuksista ja tyrm‰yksist‰.
-*info13:			yrit‰ lˆˆtee kaekki piilotetut poonukset!
+*info09:			voet k√§√§ttee lahjoesta suamas esineet millon haluvat.
+*info10:			h√∂√∂henet pallaattaa enerkijjoo.
+*info11:			teleportit on arvoomattomia. el√§ eksy!
+*info12:			suat pisteit√§ poonuksista ja tyrm√§yksist√§.
+*info13:			yrit√§ l√∂√∂tee kaekki piilotetut poonukset!
 *info14:			lukko aakee, jos avvaen ossuu siihe.
-*info15:			ooppa varovaenen! ti‰ll‰ on ansoja!
-*info16:			jos aeka loppuu, et pi‰se kenttee l‰pi.
+*info15:			ooppa varovaenen! ti√§ll√§ on ansoja!
+*info16:			jos aeka loppuu, et pi√§se kenttee l√§pi.
 *info17:			varo vihasia elukoeta!
 *info18:			varo voemakasta tuulta!
 *info19:			vappaata kuapatut kanat!

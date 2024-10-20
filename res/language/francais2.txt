@@ -1,7 +1,7 @@
 Setup 
 ------------------------------------------------------------------------------------
-*setup options:				Paramètres
-*setup video modes:			Modes Vidéo
+*setup options:				ParamÃ¨tres
+*setup video modes:			Modes VidÃ©o
 *setup music & sounds:			Effets Musique et son
 *setup music:				Musique
 *setup sounds:				Effets de Son

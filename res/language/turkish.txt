@@ -2,8 +2,8 @@ Setup
 ------------------------------------------------------------------------------------
 *setup options:				Ayarlar
 *setup video modes:			Video modlarI
-*setup music & sounds:			Müzik ve Ses efektleri
-*setup music:				Müzik
+*setup music & sounds:			MÃ¼zik ve Ses efektleri
+*setup music:				MÃ¼zik
 *setup sounds:				Ses efektleri
 *setup language:			Dil Secimi
 *setup play:				Oyun
@@ -30,20 +30,20 @@ Main Menu
 *main menu sounds:			sesler
 *main menu exit game:			cIkIs
 
-*back to main menu:			ana menuye dönus
+*back to main menu:			ana menuye dÃ¶nus
 
 Load Game
 ------------------------------------------------------------------------------------
 *load menu title:			oyun yukle
 *load menu info:			yuklemek istediginiz oyuna tIklayIn
-*load menu episode:			bölum: 
+*load menu episode:			bÃ¶lum: 
 *load menu level:			seviye: 
 
 Save Game
 ------------------------------------------------------------------------------------
 *save menu title:			oyun kaydet
 *save menu info:			kaydetmek istediginiz bosluga tIklayIn
-*save menu episode:			bölum: 
+*save menu episode:			bÃ¶lum: 
 *save menu level:			seviye: 
 
 Game Controls
@@ -77,12 +77,12 @@ Graphics
 *graphics menu transparency fx off:		gecirgenlik efekti kapalI
 *graphics menu menus are transparent:		gecirgen menu yazIlarI acIk
 *graphics menu menus are not transparent:	gecirgen menu yazIlarI kapalI 
-*graphics menu item bar is visible:		esya cubugu görunur
-*graphics menu item bar is not visible:		esya cubugu görunmez
+*graphics menu item bar is visible:		esya cubugu gÃ¶runur
+*graphics menu item bar is not visible:		esya cubugu gÃ¶runmez
 *graphics menu weather fx on:			hava efekti acIk
 *graphics menu weather fx off:			hava efekti kapalI
-*graphics menu bg sprites on:			arkafon göruntuleri acIk
-*graphics menu bg sprites off:			arkafon göruntuleri kapalI
+*graphics menu bg sprites on:			arkafon gÃ¶runtuleri acIk
+*graphics menu bg sprites off:			arkafon gÃ¶runtuleri kapalI
 *graphics menu game speed normal:		oyun hIzI normal 
 *graphics menu game speed double:		oyun hIzI ikikat 
 
@@ -95,15 +95,15 @@ Player's name
 
 Episodes
 ------------------------------------------------------------------------------------
-*episode menu choose episode:		bir bölum secin
-*episode menu get more episodes at:	daha fazla bölum icin http://pistegamez.cjb.net
-*episode menu no maps:			bölumun haritalarI yok!?
+*episode menu choose episode:		bir bÃ¶lum secin
+*episode menu get more episodes at:	daha fazla bÃ¶lum icin http://pistegamez.cjb.net
+*episode menu no maps:			bÃ¶lumun haritalarI yok!?
 
 Map
 ------------------------------------------------------------------------------------
 *map screen total score:		puan
 *map screen next level:			sonraki seviye
-*episode best player:			bölum sampiyonu:
+*episode best player:			bÃ¶lum sampiyonu:
 *episode hiscore:			en iyi puan
 *level best player:			en iyi oyuncu
 *level hiscore:				puan:
@@ -120,9 +120,9 @@ Scores
 *score screen item score:		esya bonusu
 *score screen continue:			harita
 *score screen total score:		toplam puan
-*score screen new level hiscore:	yüksek puanI gectin!
+*score screen new level hiscore:	yÃ¼ksek puanI gectin!
 *score screen new level best time:	en hIzlI oyuncusun!
-*score screen new episode hiscore:	bölum sampiyonusun!
+*score screen new episode hiscore:	bÃ¶lum sampiyonusun!
 
 Game
 ------------------------------------------------------------------------------------
@@ -161,7 +161,7 @@ Info Signs
 *info05:			ustlerinde zIplayarak mekanizmalarI calIstIr.
 *info06:			yesil mekanizmalar yesil oklu duvarlarI hareket ettirir.
 *info07:			mavi mekanizmalar mavi oklu duvarlarI hareket ettirir.
-*info08:			turuncu mekanizma alevleri söndurur.
+*info08:			turuncu mekanizma alevleri sÃ¶ndurur.
 *info09:			istedigin zaman hediye esyalarI kullanabilirsin.
 *info10:			tuyler enerjiyi geri kazandIrIr.
 *info11:			IsInlayIcIlar karIsIktIr! sakIn kaybolma!

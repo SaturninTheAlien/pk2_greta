@@ -80,67 +80,71 @@ int CreditsText_Draw(const char *text, int font, int x, int y, u32 start, u32 en
 	return 0;
 }
 
-int WavetextLap_Draw(const char *text, int fontti, int x, int y, float lap, char end) {
+int WavetextLap_Draw(const char *text, int fontti, int x, int y, float lap) {
 
 	int pos = 0;
-	char kirjain[2] = " ";
+	int i = 0;
+	PString::UTF8_Char u8c;
 
-	for (int i = 0; text[i] != '\0' && text[i] != end; i++) {
-
+	while(*text!='\0'){
+		text = u8c.read(text);
 		int ys = (int)(sin_table((i+degree)*8))/(7.f/(lap*0.8));
 		int xs = (int)(cos_table((i+degree)*8))/(9.f/(lap*2.5));
-		kirjain[0] = text[i];
-		
-		PDraw::font_write(fontti4,kirjain,x+pos-xs+3,y+ys+3);
-		pos += PDraw::font_write(fontti,kirjain,x+pos-xs,y+ys);
-	
+
+		PDraw::font_write(fontti4, u8c.c_str(), x+pos-xs+3,y+ys+3);
+		pos += PDraw::font_write(fontti, u8c.c_str(), x+pos-xs,y+ys);
+		++i;
 	}
 
 	return pos;
 
 }
 
-int Wavetext_Draw(const char *text, int fontti, int x, int y, char end) {
+int Wavetext_Draw(const char *text, int fontti, int x, int y) {
 
 	int pos = 0;
-	char kirjain[2] = " ";
+	int i = 0;
+	PString::UTF8_Char u8c;
 
-	for (int i = 0; text[i] != '\0' && text[i] != end; i++) {
+	while(*text!='\0'){
+		text = u8c.read(text);
 
 		int ys = (int)(sin_table((i+degree)*8))/7;
 		int xs = (int)(cos_table((i+degree)*8))/9;
-		kirjain[0] = text[i];
-		
-		PDraw::font_write(fontti4,kirjain,x+pos-xs+3,y+ys+3);
-		pos += PDraw::font_write(fontti,kirjain,x+pos-xs,y+ys);
-	
+
+		PDraw::font_write(fontti4,u8c.c_str(),x+pos-xs+3,y+ys+3);
+		pos += PDraw::font_write(fontti,u8c.c_str(),x+pos-xs,y+ys);
+		++i;
 	}
 
 	return pos;
 
 }
 
-int WavetextSlow_Draw(const char *text, int fontti, int x, int y, char end) {
-	
-	int pos = 0;
-	char kirjain[2] = " ";
+int WavetextSlow_Draw(const char *text, int fontti, int x, int y) {
 
-	for (int i = 0; text[i] != '\0' && text[i] != end; i++) {
-		
+
+	int pos = 0;
+	int i = 0;
+	PString::UTF8_Char u8c;
+
+	while(*text!='\0'){
+		text = u8c.read(text);
+
 		int ys = (int)(sin_table((i+degree)*4))/9;
 		int xs = (int)(cos_table((i+degree)*4))/11;
-		kirjain[0] = text[i];
 
 		if (Settings.transparent_text) {
 		
-			pos += PDraw::font_writealpha_s(fontti,kirjain,x+pos-xs,y+ys,75);
+			pos += PDraw::font_writealpha_s(fontti,u8c.c_str(),x+pos-xs,y+ys,75);
 		
 		} else {
 
-			PDraw::font_write(fontti4,kirjain,x+pos-xs+1,y+ys+1);
-			pos += PDraw::font_write(fontti,kirjain,x+pos-xs,y+ys);
+			PDraw::font_write(fontti4,u8c.c_str(),x+pos-xs+1,y+ys+1);
+			pos += PDraw::font_write(fontti,u8c.c_str(),x+pos-xs,y+ys);
 		
 		}
+		++i;
 	}
 
 	return pos;

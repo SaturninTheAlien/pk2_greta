@@ -1130,7 +1130,7 @@ void MenuScreen::Draw_Menu_Language() {
 
 	for ( uint i = langlistindex; i < end; i++ ) {
 
-		if(Draw_Menu_Text(langlist[i].c_str(),150,my,'.')) {
+		if(Draw_Menu_Text(langlist[i].c_str(),150,my)) {
 
 			Load_Language(langlist[i]);
 

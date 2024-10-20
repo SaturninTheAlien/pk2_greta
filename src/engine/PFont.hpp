@@ -4,34 +4,20 @@
 //#########################
 #pragma once
 
-#include "engine/PFile.hpp"
-#include "engine/platform.hpp"
+#include "PFile.hpp"
+#include "platform.hpp"
+#include "PString.hpp"
+
 
 #include <vector>
 #include <utility>
 
 class PFont{
 private:
-	class UTF8_Char{
-	public:
-		char data[5] = {'\0'};
-		const char* read(const char*str);
 
-		bool operator==(const UTF8_Char& other)const{
-			return *reinterpret_cast<const u32*>(this->data) == *reinterpret_cast<const u32*>(other.data);
-		}
+	int getCharacterPos(const PString::UTF8_Char& c)const;
 
-		bool operator!=(const UTF8_Char& other)const{
-			return *reinterpret_cast<const u32*>(this->data) != *reinterpret_cast<const u32*>(other.data);
-		}
-	};
-
-	static UTF8_Char lowercase(UTF8_Char src);
-	static UTF8_Char uppercase(UTF8_Char src);
-
-	int getCharacterPos(const UTF8_Char& c)const;
-
-	std::vector<std::pair<int, UTF8_Char>> utf8_charlist;
+	std::vector<std::pair<int, PString::UTF8_Char>> utf8_charlist;
 
 
 	//int charlist[256];

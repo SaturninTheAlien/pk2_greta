@@ -1,11 +1,11 @@
 Setup 
 ------------------------------------------------------------------------------------
-*setup options:				Nastavení
-*setup video modes:			Rozlišení
+*setup options:				NastavenÃ­
+*setup video modes:			RozliÅ¡enÃ­
 *setup music & sounds:			Hudba a zvuky
 *setup music:				Hudba
 *setup sounds:				Zvuky
-*setup language:			Vıbìr jazyka
+*setup language:			VÃ½bÃ¬r jazyka
 *setup play:				Start
 *setup exit:				Konec
 
