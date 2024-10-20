@@ -2,6 +2,8 @@
 //Pekka Kana 2
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
+#include <iostream>
+
 #include "engine/PFont.hpp"
 
 #include "engine/PDraw.hpp"
@@ -12,18 +14,93 @@
 #include <cmath>
 #include <cstring>
 
-int PFont::init_charlist() {
 
-	const char* chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" "\xc5\xc4\xd6" "0123456789.!?:-.+=()/#\\_%";
+static int getBytesNumber(char c){
+
+    //ASCII ch
+    if((c & 0x80)==0){
+        return 1;
+    }
+    // 11110000
+
+    //3 following bytes
+    else if((c & 0xF0)==0xF0){
+        return 4;
+    }
+
+    //2 following bytes
+    else if((c & 0xE0)==0xE0){
+        return 3;
+    }
+
+    //1 following bytes
+    else if((c & 0xC0)==0xC0){
+        return 2;
+    }
+
+
+    return 0;
+}
+
+const char* PFont::UTF8_Char::read(const char *str){
+	for(int i=0;i<4;++i){
+		this->data[i] = '\0';
+	}
+
+	int bytes = getBytesNumber(*str);
+	for(int i=0;i<bytes;++i){
+		if(*str=='\0')return str;
+
+		this->data[i] = *str;
+		++str;
+	}
+
+	return str;
+}
+
+PFont::UTF8_Char PFont::lowercase(UTF8_Char src){
+	if(getBytesNumber(*src.data)==1){
+		*src.data = std::tolower(*src.data);
+	}
+	return src;
+}
+
+void PFont::initCharlist() {
+
+	const char* chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" "###" "0123456789.!?:-.+=()/#\\_%🌜";
+	this->initCharlist(chars);
+}
+
+
+void PFont::initCharlist(const char* letters){
 
 	for ( uint i = 0; i < 256; i++ )
 		charlist[i] = -1;
 	
-	for ( uint i = 0; i < sizeof(chars); i++)
-		charlist[(u8)chars[i]] = i * char_w;
-	
-	return 0;
+	for ( uint i = 0; i < strlen(letters); i++ ){
+		charlist[std::tolower(letters[i])] = i * char_w;
+		charlist[std::toupper(letters[i])] = i * char_w;
+	}
 
+	this->utf8_charlist.clear();
+
+	int index_counter = 0;
+	const char * str = letters;
+	UTF8_Char u8c;
+
+	while(*str!='\0'){
+		str = u8c.read(str);
+		this->utf8_charlist.emplace_back(std::make_pair(index_counter, u8c));
+
+		UTF8_Char lower = lowercase(u8c);
+		if(u8c!=lower){
+			//std::cout<<"Lowering \" "<<u8c.data<<" to "<<lower.data<<std::endl;
+
+			this->utf8_charlist.emplace_back(std::make_pair(index_counter,  lower));
+		}
+
+		++index_counter;
+	}
 }
 
 int PFont::get_image(int x, int y, int img_source) {
@@ -36,10 +113,6 @@ int PFont::get_image(int x, int y, int img_source) {
 int PFont::load(PFile::Path path) {
 
 	int i = 0;
-	char chars[256];
-
-	/*if (!path.Find()) 
-		return -1;*/
 
 	PLang param_file = PLang();
 
@@ -55,8 +128,8 @@ int PFont::load(PFile::Path path) {
 	i = param_file.Search_Id("image y");
 	int buf_y = atoi(param_file.Get_Text(i));
 
-	i = param_file.Search_Id("letters");
-	this->char_count = strlen(param_file.Get_Text(i));
+	/*i = param_file.Search_Id("letters");
+	this->char_count = strlen(param_file.Get_Text(i));*/
 
 	i = param_file.Search_Id("letter width");
 	this->char_w = atoi(param_file.Get_Text(i));
@@ -64,8 +137,10 @@ int PFont::load(PFile::Path path) {
 	i = param_file.Search_Id("letter height");
 	this->char_h = atoi(param_file.Get_Text(i));
 
-	i = param_file.Search_Id("letters");
-	strcpy(chars, param_file.Get_Text(i));
+	/*i = param_file.Search_Id("letters");
+	this->initCharlist(param_file.Get_Text(i));*/
+
+	this->initCharlist();
 
 	i = param_file.Search_Id("image");
 
@@ -82,12 +157,7 @@ int PFont::load(PFile::Path path) {
 	this->get_image(buf_x, buf_y, temp_image);
 	PDraw::image_delete(temp_image);
 
-	// TODO
-	for ( uint i = 0; i < 256; i++ )
-		charlist[i] = -1;
 	
-	for ( uint i = 0; i < char_count; i++ )
-		charlist[(u8)(chars[i]&~' ')] = i * char_w;
 
 	return 0;
 
@@ -95,29 +165,37 @@ int PFont::load(PFile::Path path) {
 
 int PFont::write(int posx, int posy, const char *text) {
 	
-	int i = 0;
-	int ix, ox = posx;
-	char curr_char;
-
+	int ox = posx;
+	
 	PDraw::RECT srcrect, dstrect;
 	srcrect.y = 0;
 	srcrect.w = char_w;
 	srcrect.h = char_h;
 	dstrect.y = posy;
 
-	do {
-		curr_char = text[i];
-		ix = charlist[(u8)(curr_char&~' ')];
-		if (ix > -1) {
-			srcrect.x = ix;
-			dstrect.x = ox;
-			PDraw::image_cutclip(image_index,srcrect,dstrect);
-		}
-		ox += char_w;
-		i++;
-	} while(curr_char != '\0');
+	dstrect.w = char_w;
+	dstrect.h = char_h;
 
-	return((i-1)*char_w);
+	int charsNumber = 0;
+	const char* curr_char = text;
+	UTF8_Char u8c;
+	while (*curr_char!='\0'){
+		curr_char = u8c.read(curr_char);
+
+		for(const std::pair<int, UTF8_Char>& p: this->utf8_charlist){
+			if(p.second==u8c){
+				srcrect.x = p.first * this->char_w;
+				dstrect.x = ox;
+
+				PDraw::image_cutclip(image_index,srcrect,dstrect);
+				break;
+			}
+		}
+
+		ox += char_w;
+		charsNumber+=1;
+	}
+	return char_w * charsNumber;
 }
 
 int PFont::write_trasparent(int posx, int posy, const char* text, int alpha) {
@@ -142,7 +220,7 @@ int PFont::write_trasparent(int posx, int posy, const char* text, int alpha) {
 
 	do {
 		curr_char = text[i];
-		int ix = charlist[(u8)(curr_char&~' ')];
+		int ix = charlist[(u8)(curr_char)];
 		if (ix > -1){
 			for (uint x = 0; x < char_w; x++) {
 				
@@ -189,7 +267,7 @@ PFont::PFont(int img_source, int x, int y, int width, int height, int count) {
 	char_count = count;
 
 	this->get_image(x, y, img_source);
-	this->init_charlist();
+	this->initCharlist();
 
 }
 
