@@ -4,7 +4,7 @@ Font attributes
 *image width:	640
 *image x:	0
 *image y:	44
-*letters:	abcdefghijklmnopqrstuvwxyzåäö0123456789.!?:-,+=()/"\_%áéíóúñąęśńźżł
+*letters:	abcdefghijklmnopqrstuvwxyzåäö0123456789.!?:-,+=()/"\_%áéíóúñąęśńźżłć
 *letter width:	15
 *letter height:	21
 

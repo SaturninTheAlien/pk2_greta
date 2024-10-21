@@ -12,7 +12,7 @@ Setup
 Intro
 ------------------------------------------------------------------------------------
 *intro presents:			prezentuje (2003)
-*intro a game by:			gre stworzona przez
+*intro a game by:			gra stworzona przez
 *intro original character design:	projekt oryginalnych postaci
 *intro tested by:			przetestowana przez
 *intro thanks to:			podziękowania
@@ -27,7 +27,7 @@ Main Menu
 *main menu save game:			Zapisz gre
 *main menu controls:			Sterowanie
 *main menu graphics:			Grafika
-*main menu sounds:			Dżwięk
+*main menu sounds:			Dźwięk
 *main menu exit game:			Wyjście
 
 *back to main menu:			powrót do menu
@@ -42,7 +42,7 @@ Load Game
 Save Game
 ------------------------------------------------------------------------------------
 *save menu title:			zapisz grę
-*save menu info:			kliknij pozycje gdzie chcesz zapisac stan gry
+*save menu info:			kliknij pozycje gdzie chcesz zapisać stan gry
 *save menu episode:			epizod: 
 *save menu level:			poziom: 
 
@@ -65,7 +65,7 @@ Game Controls
 Sounds
 ------------------------------------------------------------------------------------
 *sounds menu title:			muzyka i efekty dźwiękowe
-*sounds menu sfx volume:		głośność efektow dzwiekowych
+*sounds menu sfx volume:		głośność efektów dźwiękowych
 *sounds menu music volume:		głośność muzyki
 *sounds menu more:			głośniej
 *sounds menu less:			ciszej
@@ -85,8 +85,8 @@ Graphics
 
 Player's name
 ------------------------------------------------------------------------------------
-*player screen type your name:		wpisz swoją nazwę
-*player screen continue:		kontynuuj
+*player screen type your name:		wpisz nazwę gracza
+*player screen continue:		dalej
 *player screen clear:			wyczyść
 *player default name:			pekka
 
@@ -94,12 +94,12 @@ Episodes
 ------------------------------------------------------------------------------------
 *episode menu choose episode:		wybierz epizod
 *episode menu get more episodes at:	więcej epizodów na http://www.pistegamez.net
-*episode menu no maps:			epizod nie ma poziomów!?
+*episode menu no maps:			nie znaleziono poziomów
 
 Map
 ------------------------------------------------------------------------------------
-*map screen total score:		wynik
-*map screen next level:			nastepny poziom
+*map screen total score:		całkowity wynik
+*map screen next level:			następny poziom
 *episode best player:			najlepszy gracz epizodu:
 *episode hiscore:			najlepszy wynik epizodu:
 *level best player:			najlepszy gracz poziomu:
@@ -137,7 +137,7 @@ Game
 *knocked out:				nokaut, spróbuj ponownie!
 *time out:				czas się skończył!
 *try again:				spróbuj jeszcze raz!
-*locks open:				wszystkie zamki otwarte!
+*locks open:				wszystkie kłódki otwarte!
 *new doodle attack:			nowy megafon!
 *new egg attack:			nowe jajko!
 *new item:				nowy przedmiot!
@@ -153,21 +153,21 @@ The End
 Info Signs
 ------------------------------------------------------------------------------------
 *info01:			użyj megafonu przeciwko wrogom!
-*info02:			bombarduj wroga jajkami!
+*info02:			bombarduj wrogów jajkami!
 *info03:			szukaj znaku wyjścia!
-*info04:			zamki zostana otwarte gdy zbierzesz wszystkie klucze.
-*info05:			skocz na przycisk aby go wcisnąć.
+*info04:			kłódki zostaną otwarte gdy zbierzesz wszystkie klucze.
+*info05:			aby wcisnąć przycisk skocz na niego.
 *info06:			zielony przycisk porusza ściany z zieloną strzałką.
-*info07:			niebieki przycisk porusza ściany z niebieską strzałką.
+*info07:			niebieski przycisk porusza ściany z niebieską strzałką.
 *info08:			pomarańczowy przycisk wyłącza ogień.
-*info09:			możesz używaż przedmiotów kiedy potrzebujesz.
-*info10:			pióra dodają energii.
+*info09:			możesz używać przedmiotów kiedy potrzebujesz.
+*info10:			pióra przywracają energię.
 *info11:			teleportery bywają zdradliwe! nie zgub się!
 *info12:			nokauty przeciwników i bonusy polepszają twój wynik.
 *info13:			zawsze szukaj ukrytych bonusów!
-*info14:			zamek zostanie otwarty, gdy dotknie go klucz.
-*info15:			uważaj na pulapki! hee hee...
-*info16:			spiesz sie! czas ucieka!
+*info14:			kłódka zostanie otwarta, gdy dotknie jej klucz.
+*info15:			uważaj na pułapki! hee hee...
+*info16:			śpiesz się! czas ucieka!
 *info17:			uważaj na wrogie zwierzęta!
 *info18:			uważaj na silny wiatr!
 *info19:			uratuj kurczaki!
