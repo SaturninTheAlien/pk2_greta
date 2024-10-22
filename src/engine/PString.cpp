@@ -46,6 +46,23 @@ std::string unwindowsPath(const std::string& path){
 }
 
 
+bool endsWith(const std::string& str, const std::string& suffix){
+    std::size_t n = suffix.size();
+    if(str.size() < n) return false;
+    return str.substr(str.size() - n, n)==suffix;
+}
+
+
+std::string removeSuffix(const std::string& str, const std::string& suffix){
+    if(endsWith(str, suffix)){
+        return str.substr(0, str.size() - suffix.size());
+    }
+    else{
+        return str;
+    }
+}
+
+
 static int getBytesNumber(char c){
 
     //ASCII ch

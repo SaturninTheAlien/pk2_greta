@@ -19,6 +19,7 @@
 
 #include "engine/Piste.hpp"
 #include "engine/PFilesystem.hpp"
+#include "engine/PString.hpp"
 
 #include <cstring>
 #include <stdexcept>
@@ -1130,7 +1131,9 @@ void MenuScreen::Draw_Menu_Language() {
 
 	for ( uint i = langlistindex; i < end; i++ ) {
 
-		if(Draw_Menu_Text(langlist[i].c_str(),150,my)) {
+		std::string lang_name = PString::removeSuffix(langlist[i], ".txt");
+
+		if(Draw_Menu_Text(lang_name.c_str(),150,my)) {
 
 			Load_Language(langlist[i]);
 

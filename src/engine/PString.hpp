@@ -29,6 +29,11 @@ std::string rtrim(const std::string & src);
  */
 std::string unwindowsPath(const std::string& path);
 
+
+bool endsWith(const std::string& str, const std::string& suffix);
+std::string removeSuffix(const std::string& str, const std::string& suffix);
+
+
 class UTF8_Char{
 private:
     char data[5] = {'\0'};
