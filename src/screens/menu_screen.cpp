@@ -277,7 +277,9 @@ void MenuScreen::Draw_Menu_Main() {
 	}
 
 	if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_new_game),180,my)){
-		strcpy(menu_name, tekstit->Get_Text(PK_txt.player_default_name));
+		strncpy(menu_name, tekstit->Get_Text(PK_txt.player_default_name), 20);
+		menu_name[19] = '\0';
+
 		menu_name_index = strlen(menu_name);
 		menu_name_last_mark = ' ';
 		
@@ -400,7 +402,11 @@ void MenuScreen::Draw_Menu_Name() {
 	if (editing_name) {
 
 		char in;
-		int key = PInput::ReadKeyboard(&in);
+
+		// TO DO
+		// allow entering UTF-8 characters
+		int key = PInput::ReadKeyboardNav();
+		PInput::ReadKeyboardInputOld(&in);
 
 		if (in != '\0') {
 

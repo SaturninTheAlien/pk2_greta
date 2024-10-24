@@ -37,4 +37,6 @@ public:
 	~PFont();
 
 	int load(PFile::Path path);
+
+	bool acceptChar(PString::UTF8_Char u8c)const;
 };

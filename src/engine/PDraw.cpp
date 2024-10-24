@@ -746,6 +746,10 @@ int font_writealpha_s(int font_index, const std::string& text, int x, int y, int
 
 }
 
+bool font_accept_char(int font_index, PString::UTF8_Char u8c){
+    return fontList[font_index]->acceptChar(u8c);
+}
+
 void set_buffer_size(int w, int h) {
 
     if (frameBuffer8->w == w && frameBuffer8->h == h)

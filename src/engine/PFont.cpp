@@ -239,3 +239,13 @@ PFont::~PFont() {
 		PDraw::image_delete(image_index);
 
 }
+
+
+bool PFont::acceptChar(PString::UTF8_Char u8c)const{
+
+	for(const std::pair<int, PString::UTF8_Char>&p:this->utf8_charlist){
+		if(u8c==p.second)return true;
+	}
+
+	return false;
+}
