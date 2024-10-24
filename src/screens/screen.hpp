@@ -33,6 +33,6 @@ public:
 	virtual void Loop()=0;
 	static bool closing_game;
 protected:
-	static bool Draw_Menu_Text(const char *teksti, int x, int y, char end='\0');
+	static bool Draw_Menu_Text(const char *teksti, int x, int y);
 	static void Fade_Quit();	
 };

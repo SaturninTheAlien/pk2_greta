@@ -1,13 +1,13 @@
 Setup 
 ------------------------------------------------------------------------------------
 *setup options:				Controis
-*setup video modes:			Modos de Vídeo
-*setup music & sounds:			Música e efectos de son
-*setup music:				Música
+*setup video modes:			Modos de VÃ­deo
+*setup music & sounds:			MÃºsica e efectos de son
+*setup music:				MÃºsica
 *setup sounds:				Efectos de son
-*setup language:			Escolle a túa lingua
+*setup language:			Escolle a tÃºa lingua
 *setup play:				Xogar
-*setup exit:				Saír
+*setup exit:				SaÃ­r
 
 Intro
 ------------------------------------------------------------------------------------
@@ -139,16 +139,16 @@ Game
 *time out:				rematou o tempo
 *try again:				tentao outra vez
 *locks open:				as pechaduras estan abertas
-*new doodle attack:			¡cacarexo!
-*new egg attack:			¡ovo!
-*new item:				¡un obxecto!
+*new doodle attack:			Â¡cacarexo!
+*new egg attack:			Â¡ovo!
+*new item:				Â¡un obxecto!
 
 *loading:				agarda un intre...
 
 The End
 ------------------------------------------------------------------------------------
-*end congratulations:			¡felicidades!
-*end chickens saved:			¡salvaches-los polos!
+*end congratulations:			Â¡felicidades!
+*end chickens saved:			Â¡salvaches-los polos!
 *end the end:				a fin
 
 Info Signs
@@ -167,9 +167,9 @@ Info Signs
 *info12:			os inimigos fora de combate e os obxectos aumentan a tua puntuacion
 *info13:			sempre procura bonus agachados
 *info14:			a pechadura abrese se unha chave a toca
-*info15:			¡coidado coas trampas! hee hee...
-*info16:			¡apresa! o tempo voa
-*info17:			¡coidado cos animais famentos!
-*info18:			¡coidado co forte vento!
-*info19:			¡salva os polos!
+*info15:			Â¡coidado coas trampas! hee hee...
+*info16:			Â¡apresa! o tempo voa
+*info17:			Â¡coidado cos animais famentos!
+*info18:			Â¡coidado co forte vento!
+*info19:			Â¡salva os polos!
 		

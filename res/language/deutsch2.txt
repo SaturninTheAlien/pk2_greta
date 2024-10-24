@@ -16,7 +16,7 @@ Intro
 *intro original character design:	original character design
 *intro tested by:			tested by
 *intro thanks to:			thanks to
-*intro translation:			dt. Übersetzung
+*intro translation:			dt. Ãœbersetzung
 *intro translator:			http://www.demonews.de
 
 Main Menu
@@ -35,7 +35,7 @@ Main Menu
 Load Game
 ------------------------------------------------------------------------------------
 *load menu title:			Spiel laden
-*load menu info:			Waehle den Spielstand aus, den Du laden möchtest!
+*load menu info:			Waehle den Spielstand aus, den Du laden mÃ¶chtest!
 *load menu episode:			Episode: 
 *load menu level:			Level: 
 
@@ -90,7 +90,7 @@ Player's name
 ------------------------------------------------------------------------------------
 *player screen type your name:		Gib Deinen Namen ein
 *player screen continue:		Los gehts!
-*player screen clear:			löschen
+*player screen clear:			lÃ¶schen
 *player default name:			DemoNews.de
 
 Episodes

@@ -8,6 +8,7 @@
 #include "engine/PDraw.hpp"
 #include "engine/PRender.hpp"
 #include "engine/platform.hpp"
+#include "engine/PString.hpp"
 
 #include <SDL.h>
 
@@ -181,6 +182,7 @@ bool Keydown(u32 key) {
 
 bool text_editing = false;
 char keyboard_text[32];
+PString::UTF8_Char keyboard_input;
 int keyboard_key = 0;
 
 void StartKeyboard() {
@@ -188,6 +190,7 @@ void StartKeyboard() {
 	SDL_StartTextInput();
 	text_editing = true;
 	keyboard_text[0] = '\0';
+	keyboard_input = PString::UTF8_Char();
 	
 }
 
@@ -208,6 +211,7 @@ bool Is_Editing() {
 void InjectText(const char* text) {
 
 	strcpy(keyboard_text, text);
+	keyboard_input.read(text);
 
 }
 
@@ -227,8 +231,8 @@ static bool accept_char(char c) {
 
 }
 
-// TODO - return just the key
-int ReadKeyboard(char* c) {
+// TODO - remove this
+void ReadKeyboardInputOld(char* c) {
 
 	if (accept_char(keyboard_text[0])) {
 		
@@ -242,6 +246,10 @@ int ReadKeyboard(char* c) {
 	
 	keyboard_text[0] = '\0';
 
+	//return ReadKeyboardNav();
+}
+
+int ReadKeyboardNav(){
 	int key = 0;
 
 	if (keyboard_key == SDL_SCANCODE_DELETE)
@@ -258,7 +266,15 @@ int ReadKeyboard(char* c) {
 	keyboard_key = 0;
 
 	return key;
+}
 
+PString::UTF8_Char ReadKeyboardInput(){
+	PString::UTF8_Char res = keyboard_input;
+	if(!res.isNull()){
+		keyboard_input = PString::UTF8_Char();
+	}
+
+	return res;
 }
 
 void SetVibration(u16 vib) {

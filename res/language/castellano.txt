@@ -65,7 +65,7 @@ Sounds
 ------------------------------------------------------------------------------------
 *sounds menu title:			sonido y musica
 *sounds menu sfx volume:		volumen de los efectos de sonido
-*sounds menu music volume:		volumen de la música
+*sounds menu music volume:		volumen de la mÃºsica
 *sounds menu more:			mas
 *sounds menu less:			menos
 
@@ -163,7 +163,7 @@ Info Signs
 *info08:			los interruptores naranja apagan el fuego.
 *info09:			puedes usar los items guardados cuando quieras.
 *info10:			las plumas devuelven la energia.
-*info11:			los transportadores son engañosos! no los pierdas!
+*info11:			los transportadores son engaÃ±osos! no los pierdas!
 *info12:			los enemigos fuera de combate y los items aumentan tu puntaje.
 *info13:			siempre busca bonus ocultos!
 *info14:			la cerradura se abre si una llave la toca.

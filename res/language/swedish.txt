@@ -1,11 +1,11 @@
 Setup 
 ------------------------------------------------------------------------------------
-*setup options:				Inställningar
-*setup video modes:			Skärmupplösning
+*setup options:				InstÃ¤llningar
+*setup video modes:			SkÃ¤rmupplÃ¶sning
 *setup music & sounds:			Musik- och ljudeffekter
 *setup music:				Musik
 *setup sounds:				Ljudeffekter
-*setup language:			Välj språk
+*setup language:			VÃ¤lj sprÃ¥k
 *setup play:				Spela
 *setup exit:				Avsluta
 
@@ -16,13 +16,13 @@ Intro
 *intro original character design:	originalgrafik
 *intro tested by:			testat av
 *intro thanks to:			tack till
-*intro translation:			svensk översättning
+*intro translation:			svensk Ã¶versÃ¤ttning
 *intro translator:			mattias andersson
 
 Main Menu
 ------------------------------------------------------------------------------------
 *main menu new game:			nytt spel
-*main menu continue:			fortsätt
+*main menu continue:			fortsÃ¤tt
 *main menu load game:			ladda spel
 *main menu save game:			spara spel
 *main menu controls:			kontroller
@@ -35,113 +35,113 @@ Main Menu
 Load Game
 ------------------------------------------------------------------------------------
 *load menu title:			ladda spel
-*load menu info:			klicka på det sparade spel du vill ladda
+*load menu info:			klicka pÃ¥ det sparade spel du vill ladda
 *load menu episode:			episod: 
 *load menu level:			bana: 
 
 Save Game
 ------------------------------------------------------------------------------------
 *save menu title:			spara spel
-*save menu info:			klicka på den post där du vill spara spelet
+*save menu info:			klicka pÃ¥ den post dÃ¤r du vill spara spelet
 *save menu episode:			episod: 
 *save menu level:			bana: 
 
 Game Controls
 ------------------------------------------------------------------------------------
 *controls menu title:			kontroller
-*controls menu move left:		gå åt vänster
-*controls menu move right:		gå åt höger
+*controls menu move left:		gÃ¥ Ã¥t vÃ¤nster
+*controls menu move right:		gÃ¥ Ã¥t hÃ¶ger
 *controls menu jump:			hoppa
 *controls menu duck:			ducka
-*controls menu walk slow:		gå långsamt
-*controls menu egg attack:		äggattack
+*controls menu walk slow:		gÃ¥ lÃ¥ngsamt
+*controls menu egg attack:		Ã¤ggattack
 *controls menu doodle attack:		megafonattack
-*controls menu use item:		använd pryl
-*controls menu edit:			ändra
-*controls menu keyboard def:		standardinställning tangentbord
-*controls menu gamepad4:		standardinställning gamepad 4 knappar
-*controls menu gamepad6:		standardinställning gamepad 6 knappar
+*controls menu use item:		anvÃ¤nd pryl
+*controls menu edit:			Ã¤ndra
+*controls menu keyboard def:		standardinstÃ¤llning tangentbord
+*controls menu gamepad4:		standardinstÃ¤llning gamepad 4 knappar
+*controls menu gamepad6:		standardinstÃ¤llning gamepad 6 knappar
 
 Sounds
 ------------------------------------------------------------------------------------
 *sounds menu title:			ljud och musik
-*sounds menu sfx volume:		volym för ljudeffekter
-*sounds menu music volume:		volym för musik
-*sounds menu more:			högre
-*sounds menu less:			lägre
+*sounds menu sfx volume:		volym fÃ¶r ljudeffekter
+*sounds menu music volume:		volym fÃ¶r musik
+*sounds menu more:			hÃ¶gre
+*sounds menu less:			lÃ¤gre
 
 Graphics
 ------------------------------------------------------------------------------------
 *graphics menu title:				grafik
-*graphics menu transparency fx on:		transparenta effekter på
+*graphics menu transparency fx on:		transparenta effekter pÃ¥
 *graphics menu transparency fx off:		transparenta effekter av
-*graphics menu menus are transparent:		transparenta menytexter på
+*graphics menu menus are transparent:		transparenta menytexter pÃ¥
 *graphics menu menus are not transparent:	transparenta menytexter av
-*graphics menu item bar is visible:		prylpanel är synlig
-*graphics menu item bar is not visible:		prylpanel är inte synlig
-*graphics menu weather fx on:			vädereffekter på
-*graphics menu weather fx off:			vädereffekter av
-*graphics menu bg sprites on:			bakgrundssprites på
+*graphics menu item bar is visible:		prylpanel Ã¤r synlig
+*graphics menu item bar is not visible:		prylpanel Ã¤r inte synlig
+*graphics menu weather fx on:			vÃ¤dereffekter pÃ¥
+*graphics menu weather fx off:			vÃ¤dereffekter av
+*graphics menu bg sprites on:			bakgrundssprites pÃ¥
 *graphics menu bg sprites off:			bakgrundssprites av
-*graphics menu game speed normal:		spelhastigheten är normal
-*graphics menu game speed double:		spelhastigheten är dubbel
+*graphics menu game speed normal:		spelhastigheten Ã¤r normal
+*graphics menu game speed double:		spelhastigheten Ã¤r dubbel
 
 Player's name
 ------------------------------------------------------------------------------------
 *player screen type your name:		skriv ditt namn
 *player screen continue:		ok
-*player screen clear:			ångra
+*player screen clear:			Ã¥ngra
 *player default name:			pekka
 
 Episodes
 ------------------------------------------------------------------------------------
-*episode menu choose episode:		välj en episod
-*episode menu get more episodes at:	hämta fler episoder från http://pistegamez.cjb.net
+*episode menu choose episode:		vÃ¤lj en episod
+*episode menu get more episodes at:	hÃ¤mta fler episoder frÃ¥n http://pistegamez.cjb.net
 *episode menu no maps:			episoden saknar kartor!?
 
 Map
 ------------------------------------------------------------------------------------
-*map screen total score:		poäng
-*map screen next level:			nästa bana
-*episode best player:			episodmästare:
-*episode hiscore:			toppoäng
-*level best player:			bästa spelare
-*level hiscore:				poäng:
+*map screen total score:		poÃ¤ng
+*map screen next level:			nÃ¤sta bana
+*episode best player:			episodmÃ¤stare:
+*episode hiscore:			toppoÃ¤ng
+*level best player:			bÃ¤sta spelare
+*level hiscore:				poÃ¤ng:
 *level fastest player:			snabbaste spelare
 *level best time:			tid:
 
 Scores
 ------------------------------------------------------------------------------------
-*score screen title:			poäng totalt
-*score screen level score:		poäng på banan
-*score screen bonus score:		bonuspoäng
+*score screen title:			poÃ¤ng totalt
+*score screen level score:		poÃ¤ng pÃ¥ banan
+*score screen bonus score:		bonuspoÃ¤ng
 *score screen time score:		tidsbonus
 *score screen energy score:		energibonus
 *score screen item score:		prylbonus
-*score screen continue:			fortsätt
-*score screen total score:		poäng totalt
+*score screen continue:			fortsÃ¤tt
+*score screen total score:		poÃ¤ng totalt
 *score screen new level hiscore:	du fick ett nytt hiscore!
-*score screen new level best time:	du är den snabbaste spelaren!
-*score screen new episode hiscore:	du är episodmästare!
+*score screen new level best time:	du Ã¤r den snabbaste spelaren!
+*score screen new episode hiscore:	du Ã¤r episodmÃ¤stare!
 
 Game
 ------------------------------------------------------------------------------------
-*score:					poäng:
+*score:					poÃ¤ng:
 *game time:				tid:
 *energy:				energi:
 *items:					prylar:
 *attack 1:				vapen:
-*attack 2:				ägg:
+*attack 2:				Ã¤gg:
 *keys:					nycklar:
 *level clear:				banan klar!
 *time bonus:			
 *game paused:				paus...
 *knocked out:				utslagen!
-*time out:				tiden är slut!
-*try again:				försök igen!
-*locks open:				alla lås är öppna!
+*time out:				tiden Ã¤r slut!
+*try again:				fÃ¶rsÃ¶k igen!
+*locks open:				alla lÃ¥s Ã¤r Ã¶ppna!
 *new doodle attack:			ett nytt vapen!
-*new egg attack:			ett nytt ägg!
+*new egg attack:			ett nytt Ã¤gg!
 *new item:				en ny pryl!
 
 *loading:				laddar...
@@ -149,28 +149,28 @@ Game
 The End
 ------------------------------------------------------------------------------------
 *end congratulations:			gratulerar!
-*end chickens saved:			du har räddat kycklingarna!
+*end chickens saved:			du har rÃ¤ddat kycklingarna!
 *end the end:				the end
 
 Info Signs
 ------------------------------------------------------------------------------------
-*info01:			använd megafonen mot fienderna!
-*info02:			bomba fienderna med ägg!
+*info01:			anvÃ¤nd megafonen mot fienderna!
+*info02:			bomba fienderna med Ã¤gg!
 *info03:			hitta exit tecknet!
-*info04:			låsen öppnas om du har alla nycklarna.
-*info05:			tryck ner knappar genom att hoppa på dem.
-*info06:			gröna knappar flyttar väggar med gröna pilar.
-*info07:			blå knappar flyttar väggar med blå pilar.
-*info08:			orangea knappar stängar av eld.
-*info09:			du kan använda upphittade prylar när du vill.
-*info10:			fjädrar ger energi.
-*info11:			teleporters är luriga! gå inte vilse!
-*info12:			knock outs och bonusar ökar din poäng.
-*info13:			sök alltid efter dolda bonusar!
-*info14:			lås öppnas om en nyckel rör vid det.
-*info15:			akta dig för fällor! hee hee...
+*info04:			lÃ¥sen Ã¶ppnas om du har alla nycklarna.
+*info05:			tryck ner knappar genom att hoppa pÃ¥ dem.
+*info06:			grÃ¶na knappar flyttar vÃ¤ggar med grÃ¶na pilar.
+*info07:			blÃ¥ knappar flyttar vÃ¤ggar med blÃ¥ pilar.
+*info08:			orangea knappar stÃ¤ngar av eld.
+*info09:			du kan anvÃ¤nda upphittade prylar nÃ¤r du vill.
+*info10:			fjÃ¤drar ger energi.
+*info11:			teleporters Ã¤r luriga! gÃ¥ inte vilse!
+*info12:			knock outs och bonusar Ã¶kar din poÃ¤ng.
+*info13:			sÃ¶k alltid efter dolda bonusar!
+*info14:			lÃ¥s Ã¶ppnas om en nyckel rÃ¶r vid det.
+*info15:			akta dig fÃ¶r fÃ¤llor! hee hee...
 *info16:			skynda dig! tiden rinner snart ut!
-*info17:			se upp för ilskna djur!
-*info18:			se upp för stark vind!
-*info19:			rädda kycklingarna!
+*info17:			se upp fÃ¶r ilskna djur!
+*info18:			se upp fÃ¶r stark vind!
+*info19:			rÃ¤dda kycklingarna!
 		

@@ -164,7 +164,7 @@ Info Signs
 *info08:			los interruptores naranja apagan el fuego.
 *info09:			puedes usar los items cuando quieras.
 *info10:			las plumas te dan energia.
-*info11:			el teletransporte es cabrón! no te pierdas!
+*info11:			el teletransporte es cabrÃ³n! no te pierdas!
 *info12:			los knocks out y los bonus aumentan tu puntuacion.
 *info13:			always search for hidden bonuses!
 *info14:			una cerradura se abre si un llave lo toca.

@@ -1,13 +1,13 @@
 Setup 
 ------------------------------------------------------------------------------------
-*setup options:				Настройки
-*setup video modes:			Резолюция
-*setup music & sounds:			Музика и звукови ефекти
-*setup music:				Музика
-*setup sounds:				Звукови ефекти
-*setup language:			Изберете език
-*setup play:				Старт
-*setup exit:				Изход
+*setup options:				ГЌГ Г±ГІГ°Г®Г©ГЄГЁ
+*setup video modes:			ГђГҐГ§Г®Г«ГѕГ¶ГЁГї
+*setup music & sounds:			ГЊГіГ§ГЁГЄГ  ГЁ Г§ГўГіГЄГ®ГўГЁ ГҐГґГҐГЄГІГЁ
+*setup music:				ГЊГіГ§ГЁГЄГ 
+*setup sounds:				Г‡ГўГіГЄГ®ГўГЁ ГҐГґГҐГЄГІГЁ
+*setup language:			Г€Г§ГЎГҐГ°ГҐГІГҐ ГҐГ§ГЁГЄ
+*setup play:				Г‘ГІГ Г°ГІ
+*setup exit:				Г€Г§ГµГ®Г¤
 
 Intro
 ------------------------------------------------------------------------------------

@@ -5,6 +5,7 @@
 #pragma once
 
 #include "engine/platform.hpp"
+#include "engine/PString.hpp"
 
 #include <vector>
 
@@ -75,7 +76,10 @@ void EndKeyboard();
 bool Is_Editing();
 void InjectText(const char* text);
 void InjectKey(int key);
-int  ReadKeyboard(char* c);
+void  ReadKeyboardInputOld(char* c);
+
+int  ReadKeyboardNav();
+PString::UTF8_Char ReadKeyboardInput();
 
 void SetVibration(u16 vib);
 bool ControllerFound();

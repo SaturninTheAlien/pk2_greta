@@ -19,6 +19,7 @@
 
 #include "engine/Piste.hpp"
 #include "engine/PFilesystem.hpp"
+#include "engine/PString.hpp"
 
 #include <cstring>
 #include <stdexcept>
@@ -276,7 +277,9 @@ void MenuScreen::Draw_Menu_Main() {
 	}
 
 	if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_new_game),180,my)){
-		strcpy(menu_name, tekstit->Get_Text(PK_txt.player_default_name));
+		strncpy(menu_name, tekstit->Get_Text(PK_txt.player_default_name), 20);
+		menu_name[19] = '\0';
+
 		menu_name_index = strlen(menu_name);
 		menu_name_last_mark = ' ';
 		
@@ -399,7 +402,11 @@ void MenuScreen::Draw_Menu_Name() {
 	if (editing_name) {
 
 		char in;
-		int key = PInput::ReadKeyboard(&in);
+
+		// TO DO
+		// allow entering UTF-8 characters
+		int key = PInput::ReadKeyboardNav();
+		PInput::ReadKeyboardInputOld(&in);
 
 		if (in != '\0') {
 
@@ -1130,7 +1137,9 @@ void MenuScreen::Draw_Menu_Language() {
 
 	for ( uint i = langlistindex; i < end; i++ ) {
 
-		if(Draw_Menu_Text(langlist[i].c_str(),150,my,'.')) {
+		std::string lang_name = PString::removeSuffix(langlist[i], ".txt");
+
+		if(Draw_Menu_Text(lang_name.c_str(),150,my)) {
 
 			Load_Language(langlist[i]);
 
