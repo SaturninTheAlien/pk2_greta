@@ -13,7 +13,6 @@
 #include "engine/PRender.hpp"
 #include "settings/settings.hpp"
 
-#define _USE_MATH_DEFINES
 #include <cmath>
 #include <string>
 

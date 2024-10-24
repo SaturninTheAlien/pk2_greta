@@ -104,9 +104,9 @@ bool SetDataPath(const std::string& name){
      * Create the directories if they don't exist.
      */
 
-    CreateDirectory(mDataPath);
-    CreateDirectory(mDataPath / "scores");
-    CreateDirectory(mDataPath / "mapstore");
+    CreateDirectory(mDataPath.string());
+    CreateDirectory( (mDataPath / "scores").string());
+    CreateDirectory( (mDataPath / "mapstore").string());
 
     //TODO
     //return false if the directory is not writeable
@@ -159,7 +159,7 @@ void SetDefaultDataPath(){
 #ifndef __ANDROID__
 
 #ifdef PK2_PORTABLE
-    success = SetDataPath(mAssetsPath / "data");
+    success = SetDataPath((mAssetsPath / "data").string());
 #else
     char* data_path_p = SDL_GetPrefPath("Piste Gamez", "Pekka Kana 2");
     if(data_path_p==nullptr){

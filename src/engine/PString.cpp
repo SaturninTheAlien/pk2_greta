@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <iomanip>
 #include <bitset>
+#include <sstream>
 
 namespace PString{
 
