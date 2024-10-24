@@ -2,7 +2,8 @@
 //Pekka Kana 2
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
-#include "episode/mapstore.hpp"
+#include "mapstore.hpp"
+#include "save_legacy.hpp"
 
 #include "system.hpp"
 
@@ -21,6 +22,9 @@ namespace fs = std::filesystem;
 std::vector<episode_entry> episodes;
 
 void Search_Episodes() {
+
+	//Load saves
+	Load_SaveFile();
 
 	std::vector<std::string> list = PFilesystem::ScanDirectory_s(PFilesystem::EPISODES_DIR, "/");
 

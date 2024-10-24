@@ -6,9 +6,9 @@
 //TODO
 //Move it to Mapstore or EpisodeClass
 
-#include "save.hpp"
+#include "save_legacy.hpp"
 
-#include "episode/mapstore.hpp"
+#include "mapstore.hpp"
 #include "system.hpp"
 
 #include "engine/PLog.hpp"

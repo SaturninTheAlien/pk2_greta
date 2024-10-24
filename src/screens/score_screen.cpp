@@ -11,11 +11,13 @@
 #include "game/game.hpp"
 #include "game/gifts.hpp"
 #include "gfx/touchscreen.hpp"
+
 #include "episode/episodeclass.hpp"
+#include "episode/save_legacy.hpp"
+
 #include "sfx.hpp"
 #include "system.hpp"
 #include "settings/settings.hpp"
-#include "save.hpp"
 
 #include "engine/PDraw.hpp"
 #include "engine/PInput.hpp"

@@ -13,7 +13,7 @@
 #include "language.hpp"
 #include "episode/episodeclass.hpp"
 #include "episode/mapstore.hpp"
-#include "save.hpp"
+#include "episode/save_legacy.hpp"
 #include "system.hpp"
 #include "version.hpp"
 
@@ -333,9 +333,9 @@ void MenuScreen::Draw_Menu_Main() {
 		my += 20;
 	}*/
 
-	if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_exit),180,my))
+	if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_exit),180,my)){
 		Fade_Quit();
-		my += 20;
+	}
 
 }
 

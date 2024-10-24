@@ -8,7 +8,7 @@
 #include "game/levelclass.hpp"
 #include "language.hpp"
 #include "system.hpp"
-#include "save.hpp"
+#include "save_legacy.hpp"
 
 #include "engine/PLog.hpp"
 #include "engine/PFile.hpp"
