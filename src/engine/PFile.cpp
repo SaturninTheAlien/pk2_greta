@@ -63,7 +63,7 @@ bool Path::exists()const{
 	}
 }
 
-RW Path::GetRW2(const char* mode)const {
+RW Path::GetRW2(std::string mode)const {
 	SDL_RWops* ret;
 	if (this->zip_file != nullptr && this->zip_entry.good()) {
 		void * buffer = SDL_malloc(this->zip_entry.size);
@@ -72,7 +72,11 @@ RW Path::GetRW2(const char* mode)const {
 		return RW(ret, buffer);
 	}
 	else{
-		ret = SDL_RWFromFile(this->path.c_str(), mode);
+		if(!PString::endsWith(mode, "b")){
+			mode+="b";
+		}
+
+		ret = SDL_RWFromFile(this->path.c_str(), mode.c_str());
 		if (!ret) {
 
 			std::ostringstream os;

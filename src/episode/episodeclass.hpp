@@ -4,7 +4,8 @@
 //#########################
 #pragma once
 
-#include "episode/mapstore.hpp"
+#include "mapstore.hpp"
+#include "scores_table.hpp"
 
 #include "engine/platform.hpp"
 #include "engine/PFile.hpp"
@@ -89,7 +90,8 @@ class EpisodeClass {
 		PK2LEVEL levels_list[EPISODI_MAX_LEVELS];
 		u8 level_status[EPISODI_MAX_LEVELS];
 
-		PK2EPISODESCORES scores;
+		//PK2EPISODESCORES scores;
+		ScoresTable scoresTable;
 
 		PLang infos;
 
@@ -102,7 +104,7 @@ class EpisodeClass {
 		void Load_Info();
 		void Load_Assets();
 
-		void  Save_Scores();
+		void  saveScores();
 		void Update_NextLevel();
 
 		SfxHandler sfx;
@@ -113,9 +115,6 @@ class EpisodeClass {
 		PFile::Path Get_Dir(const std::string& file)const;
 		
 		void openScores();
-
-		void Clear_Scores();
-
 };
 
 extern EpisodeClass* Episode;

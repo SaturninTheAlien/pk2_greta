@@ -27,8 +27,6 @@ namespace fs = std::filesystem;
 
 EpisodeClass* Episode = nullptr;
 
-#define VERSION "1.1"
-
 
 EpisodeClass::~EpisodeClass(){
 	PFilesystem::SetEpisode("", nullptr);
@@ -38,85 +36,9 @@ std::string EpisodeClass::getScoresPath()const{
 	return (fs::path(PFilesystem::GetDataPath()) / "scores" / (this->entry.name + ".dat")).string();
 }
 
-void EpisodeClass::Clear_Scores() {
-
-	memset(&this->scores, 0, sizeof(this->scores));
-
-}
-
 void EpisodeClass::openScores() {
-
 	try{
-		char versio[4];
-		this->Clear_Scores();
-		PFile::Path path(this->getScoresPath());
-		if(!path.exists())return;
-
-		PFile::RW file = path.GetRW2("r");
-		file.read(versio, 4);
-		if (strncmp(versio, VERSION, 4) == 0) {
-
-			PLog::Write(PLog::INFO, "PK2", "Loading scores v1.1");
-			
-			u32 count;
-			file.read(count);
-
-			if (count > this->level_count)
-				count = this->level_count;
-
-			for (u32 i = 0; i < count; i++) {
-				
-				file.read(this->scores.has_score[i]);
-				file.read(this->scores.best_score[i]);
-				file.read(this->scores.top_player[i], 20);
-				file.read(this->scores.max_apples[i]);
-				
-				file.read(this->scores.has_time[i]);
-				file.read(this->scores.best_time[i]);
-				file.read(this->scores.fastest_player[i], 20);
-
-			}
-
-			file.read(this->scores.episode_top_score);
-			file.read(this->scores.episode_top_player, 20);
-
-			file.close();
-
-		} else if (strncmp(versio, "1.0", 4) == 0) {
-
-			PLog::Write(PLog::INFO, "PK2", "Loading scores v1.0");
-
-			PK2EPISODESCORES10 temp;
-			file.read(&temp, sizeof(temp));
-			file.close();
-
-			for (int i = 0; i < EPISODI_MAX_LEVELS; i++) {
-
-				this->scores.has_score[i] = (temp.best_score[i] != 0) ? 1 : 0;
-				
-				this->scores.best_score[i] = temp.best_score[i];
-				strncpy(this->scores.top_player[i], temp.top_player[i], 20);
-				
-				this->scores.has_time[i] = (temp.best_time[i] != 0) ? 1 : 0;
-				this->scores.max_apples[i] = 0;
-
-				this->scores.best_time[i] = (s32)temp.best_time[i] * 100; //FRAME = (dec)conds * 100
-				strncpy(this->scores.fastest_player[i], temp.fastest_player[i], 20);
-
-				this->Save_Scores();
-
-			}
-
-			this->scores.episode_top_score = temp.episode_top_score;
-			strncpy(this->scores.episode_top_player, temp.episode_top_player, 20);
-
-		} else {
-
-			PLog::Write(PLog::INFO, "PK2", "Can't read this scores version");
-
-			file.close();
-
-		}
+		scoresTable.load(this->getScoresPath());
 	}
 	catch(const std::exception&e){
 		PLog::Write(PLog::WARN, "PK2", e.what());
@@ -126,35 +48,11 @@ void EpisodeClass::openScores() {
 }
 
 // Version 1.1
-void EpisodeClass::Save_Scores() {
-	
-	char versio[4] = VERSION;
-
+void EpisodeClass::saveScores() {
 	PFile::Path path(this->getScoresPath());
 
 	try{
-		PFile::RW file = path.GetRW2("w");
-
-		file.write(versio, 4);
-		file.write(level_count);
-
-		for (u32 i = 0; i < level_count; i++) {
-			
-			file.write(this->scores.has_score[i]);
-			file.write(this->scores.best_score[i]);
-			file.write(this->scores.top_player[i], 20);
-			file.write(this->scores.max_apples[i]);
-			
-			file.write(this->scores.has_time[i]);
-			file.write(this->scores.best_time[i]);
-			file.write(this->scores.fastest_player[i], 20);
-
-		}
-
-		file.write(this->scores.episode_top_score);
-		file.write(this->scores.episode_top_player, 20);
-		file.close();
-
+		scoresTable.save(path);
 	}
 	catch(const std::exception& e){
 		PLog::Write(PLog::ERR, "PK2", e.what());
