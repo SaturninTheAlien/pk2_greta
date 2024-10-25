@@ -505,25 +505,17 @@ void MenuScreen::Draw_Menu_Load() {
 			if(saves_list[i].empty)
 				break;
 			os<<"bk. ";
-			//strcpy(number, "bk. ");
 			my += 13;
 
 		} else {
 			os<<i+1<<". ";
-
-			/*sprintf(ind, "%i", i+1);
-			strcpy(number,ind);
-			strcat(number,". ");*/
-
 		}
 		
 		if (saves_list[i].empty){
 			os<<"empty";
-			//strcat(number, "empty");
 		}
 		else{
 			os<<saves_list[i].name;
-			//strcat(number, saves_list[i].name);
 		}
 
 		std::string number = os.str();
@@ -574,9 +566,6 @@ void MenuScreen::Draw_Menu_Load() {
 void MenuScreen::Draw_Menu_Save() {
 
 	int my = 0, vali = 0;
-	//char number[32];
-	//char jaksoc[8];
-	//char ind[8];
 
 	Draw_BGSquare(40, 70, 640-40, 410, 224);
 
@@ -588,17 +577,11 @@ void MenuScreen::Draw_Menu_Save() {
 		std::ostringstream os;
 		os<<i+1<<". ";
 
-		/*sprintf(ind, "%i", i+1);
-		strcpy(number, ind);
-		strcat(number, ". ");*/
-
 		if (saves_list[i].empty){
 			os<<"empty";
-			//strcat(number, "empty");
 		}
 		else{
 			os<<saves_list[i].name;
-			//strcat(number, saves_list[i].name);
 		}
 
 		std::string number = os.str();

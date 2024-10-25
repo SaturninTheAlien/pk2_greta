@@ -62,6 +62,7 @@ int ScoreScreen::LevelScore_Compare(int level, u32 score, u32 apples, s32 time){
 		//time
 		levelScorePtr->hasTime = Game->has_time;
 		if(Game->has_time && time < levelScorePtr->bestTime){
+			this->map_new_time_record = true;
 			levelScorePtr->bestTime = time;
 			levelScorePtr->fastestPlayer = Episode->player_name;
 			++ret;			

@@ -268,10 +268,9 @@ EpisodeClass::EpisodeClass(int save) {
 				set = true;
 			}
 		}
-
 	}
-	
-	strcpy(this->player_name, saves_list[save].name);
+	saves_list[save].name[19] = '\0';
+	this->player_name = saves_list[save].name;
 	this->next_level = saves_list[save].next_level;
 	this->player_score = saves_list[save].score;
 
@@ -285,36 +284,13 @@ EpisodeClass::EpisodeClass(int save) {
 
 }
 
-EpisodeClass::EpisodeClass(const char* player_name, episode_entry entry) {
-
-	this->entry = entry;
-	strncpy(this->player_name, player_name, 20);
-
+EpisodeClass::EpisodeClass(const std::string& player_name, episode_entry entry):
+entry(entry), player_name(player_name){
 	for (int j = 0; j < EPISODI_MAX_LEVELS; j++)
 		this->level_status[j] = 0;
 	
 	this->Load();
 	
-}
-/**
- * Remove this
- */
-PFile::Path EpisodeClass::Get_Dir(const std::string& file)const {
-
-	fs::path p = fs::path(PFilesystem::GetAssetsPath()) / PFilesystem::EPISODES_DIR / entry.name / file;
-
-	/*PFilesystem::GetAssetsPath
-
-	std::string path("episodes" PE_SEP);
-	path += entry.name + PE_SEP + file;*/
-
-/*#ifdef PK2_USE_ZIP
-	if (this->entry.is_zip)
-		return PFile::Path( &this->source_zip, path);
-#endif*/
-
-	return PFile::Path(p.string());
-
 }
 
 void EpisodeClass::Update_NextLevel() {

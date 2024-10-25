@@ -18,7 +18,7 @@ struct PK2SAVE {
 
 	bool  empty;
 	u32   next_level;
-	char  episode[PE_PATH_SIZE];
+	char  episode[128];
 	char  name[20];
 	u32   score;
 	u8    level_status[EPISODI_MAX_LEVELS];
