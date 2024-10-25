@@ -18,7 +18,6 @@
 #include "game/game.hpp"
 #include "episode/episodeclass.hpp"
 #include "episode/mapstore.hpp"
-#include "save.hpp"
 #include "gfx/touchscreen.hpp"
 #include "system.hpp"
 #include "language.hpp"

@@ -13,7 +13,7 @@
 #include "language.hpp"
 #include "episode/episodeclass.hpp"
 #include "episode/mapstore.hpp"
-#include "save.hpp"
+#include "episode/save_legacy.hpp"
 #include "system.hpp"
 #include "version.hpp"
 

@@ -15,7 +15,7 @@
 #include "sfx.hpp"
 #include "system.hpp"
 #include "settings/settings.hpp"
-#include "save.hpp"
+#include "episode/save_legacy.hpp"
 
 #include "engine/PDraw.hpp"
 #include "engine/PInput.hpp"
