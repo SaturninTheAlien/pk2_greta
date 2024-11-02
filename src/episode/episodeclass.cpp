@@ -61,7 +61,7 @@ void EpisodeClass::saveScores() {
 }
 
 //TODO - Load info from different languages
-void EpisodeClass::Load_Info() {
+void EpisodeClass::loadInfo() {
 
 	std::optional<PFile::Path> infofile = PFilesystem::FindEpisodeAsset("infosign.txt", "");
 	if(infofile.has_value()){
@@ -75,7 +75,7 @@ void EpisodeClass::Load_Info() {
 }
 
 //TODO - don't load the same image again
-void EpisodeClass::Load_Assets() {
+void EpisodeClass::loadAssets() {
 
 	std::optional<PFile::Path> path = PFilesystem::FindAsset("pk2stuff.png",
 		PFilesystem::GFX_DIR, ".bmp");
@@ -98,7 +98,7 @@ void EpisodeClass::Load_Assets() {
 	}
 }
 
-void EpisodeClass::Load() {
+void EpisodeClass::load() {
 	
 	if (entry.is_zip){
 		this->source_zip.open( (fs::path(PFilesystem::GetDataPath())/"mapstore"/entry.zipfile).string());
@@ -130,25 +130,28 @@ void EpisodeClass::Load() {
 
 	}
 
-	this->level_count = namelist.size();
+	std::size_t levelsNumber = namelist.size();
 
 	// Read levels plain data
-	for (u32 i = 0; i < this->level_count; i++) {
+	for (u32 i = 0; i < levelsNumber; i++) {
 
 		try{
+			LevelEntry levelEntry;
+
 			LevelClass temp;
-			char* mapname = this->levels_list[i].tiedosto;
-			strncpy(mapname, namelist[i].c_str(), PE_PATH_SIZE);
-			
+
+			levelEntry.fileName = namelist[i];
+
 			temp.load(pathlist[i], true);
 
-			strncpy(this->levels_list[i].nimi, temp.name.c_str(), 40);
-			this->levels_list[i].nimi[39] = '\0';
+			levelEntry.levelName = temp.name;
+			levelEntry.map_x = temp.icon_x;
+			levelEntry.map_y = temp.icon_y;
 
-			this->levels_list[i].x = temp.icon_x;// 142 + i*35;
-			this->levels_list[i].y = temp.icon_y;// 270;
-			this->levels_list[i].order = temp.level_number;
-			this->levels_list[i].icon = temp.icon_id;
+			levelEntry.number = temp.level_number;
+			levelEntry.icon_id = temp.icon_id;
+
+			this->levels_list_v.emplace_back(levelEntry);
 		}
 		catch(const std::exception& e){
 			PLog::Write(PLog::ERR, "PK2 level", e.what());
@@ -187,11 +190,11 @@ void EpisodeClass::Load() {
 				PLog::Write(PLog::INFO, "PK2", this->collectable_name.c_str());
 			}
 
-			id = config.Search_Id("require_all_levels");
+			/*id = config.Search_Id("require_all_levels");
 			if (id != -1) {
 				PLog::Write(PLog::INFO, "PK2", "Episode require all levels is ON");
 				this->require_all_levels = true;
-			}
+			}*/
 
 			id = config.Search_Id("no_ending");
 			if (id != -1) {
@@ -229,28 +232,29 @@ void EpisodeClass::Load() {
 	}
 
 	// Sort levels
-	std::stable_sort(this->levels_list, this->levels_list + this->level_count,
-	[](const PK2LEVEL& a, const PK2LEVEL& b) {
-		return a.order < b.order;
+	std::stable_sort(this->levels_list_v.begin(), this->levels_list_v.end(),
+	[](const LevelEntry& a, const LevelEntry& b) {
+		return a.number < b.number;
 	});
 
 	// Set positions
-	for (u32 i = 0; i < this->level_count; i++) {	
-	
-		if (levels_list[i].x == 0)
-			levels_list[i].x = 172 + i*30;
-
-		if (levels_list[i].y == 0)
-			levels_list[i].y = 270;
-	
+	int i = 0;
+	for(LevelEntry& entry: this->levels_list_v){
+		if (entry.map_x == 0){
+			entry.map_x = 172 + i*30;
+		}
+		if (entry.map_y == 0){
+			entry.map_y = 270;
+		}
+		++i;
 	}
-
+	
 	this->sfx.loadAllForEpisode(sfx_global, this);
 
 	this->openScores();
-	this->Load_Info();
+	this->loadInfo();
 
-	this->Update_NextLevel();
+	this->updateNextLevel();
 }
 
 EpisodeClass::EpisodeClass(int save) {
@@ -274,62 +278,67 @@ EpisodeClass::EpisodeClass(int save) {
 	this->next_level = saves_list[save].next_level;
 	this->player_score = saves_list[save].score;
 
-	for (int j = 0; j < EPISODI_MAX_LEVELS; j++) {
+	
 
-		this->level_status[j] = saves_list[save].level_status[j];
+	this->load();
 
+	int size = this->levels_list_v.size();
+	if(size > EPISODI_MAX_LEVELS){
+		size = EPISODI_MAX_LEVELS;
 	}
 
-	this->Load();
+	for (int j = 0; j < size; j++) {
 
+		this->levels_list_v[j].status = saves_list[save].level_status[j];
+	}
+
+}
+
+u8 EpisodeClass::getLevelStatus(int level_id)const{
+	if(level_id >= 0 && level_id < (int)this->levels_list_v.size()){
+		return this->levels_list_v[level_id].status;
+	}
+	else{
+		return 0;
+	}		
+}
+
+void EpisodeClass::updateLevelStatus(int level_id, u8 status){
+	if(level_id >= 0 && level_id < (int)this->levels_list_v.size()){
+		this->levels_list_v[level_id].status = status;
+		this->updateNextLevel();
+	}
+}
+
+std::string EpisodeClass::getLevelFilename(int level_id)const{
+	if(level_id >= 0 && level_id < (int)this->levels_list_v.size()){
+		return this->levels_list_v[level_id].fileName;
+	}
+	throw std::runtime_error(std::string("Level with id=")+std::to_string(level_id)+" not found!");
+}
+
+int EpisodeClass::findLevelbyFilename(const std::string& levelFilename)const{
+
+	for(std::size_t i=0; i < this->levels_list_v.size();++i){
+		if(levelFilename == this->levels_list_v[i].fileName){
+			return (int)i;
+		}
+	}
+	
+	return -1;
 }
 
 EpisodeClass::EpisodeClass(const std::string& player_name, episode_entry entry):
-entry(entry), player_name(player_name){
-	for (int j = 0; j < EPISODI_MAX_LEVELS; j++)
-		this->level_status[j] = 0;
-	
-	this->Load();
-	
+entry(entry), player_name(player_name){	
+	this->load();
 }
 
-void EpisodeClass::Update_NextLevel() {
+void EpisodeClass::updateNextLevel() {
+	for(const LevelEntry& entry: this->levels_list_v){
+		u8 status = entry.status;
 
-	if (require_all_levels) {
-
-		next_level = UINT32_MAX;
-		for (u32 i = 0; i < level_count; i++)
-			if (!(level_status[i] & LEVEL_PASSED) && levels_list[i].order < next_level) {
-				next_level = levels_list[i].order;
-				break;
-			}
-
-	} else {
-
-		next_level = 1;
-		for (u32 i = 0; i < level_count; i++) {
-			
-			if (levels_list[i].order > next_level)
-				break;
-
-			if (level_status[i] & LEVEL_PASSED)
-				next_level = levels_list[i].order + 1;
+		if((status & LEVEL_PASSED) != 0 && entry.number + 1 > next_level ){
+			next_level = entry.number + 1;
 		}
-		
-		// Clear levels before next level
-		bool ended = true;
-		for (u32 i = 0; i < level_count; i++) {
-			if (levels_list[i].order < next_level) {
-				level_status[i] |= LEVEL_PASSED;
-			}
-			if (!(level_status[i] & LEVEL_PASSED))
-				ended = false;
-		}
-
-		if (ended)
-			next_level = UINT32_MAX;
-		
 	}
-
-
 }

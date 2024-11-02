@@ -4,6 +4,9 @@
 //#########################
 #pragma once
 
+#include <string>
+#include <vector>
+
 #include "mapstore.hpp"
 #include "scores_table.hpp"
 
@@ -14,16 +17,21 @@
 
 #include "sfx.hpp"
 
-const int EPISODI_MAX_LEVELS = 100; //50;
+#define EPISODI_MAX_LEVELS 100
+//50
 
-struct PK2LEVEL {
+class LevelEntry{
+public:
+	std::string fileName;
+	std::string levelName;
 
-	char  tiedosto[PE_PATH_SIZE];
-	char  nimi[40];
-	int   x, y;
-	u32   order;
-	u32   icon;
-	
+	int map_x = 0;
+	int map_y = 0;
+
+	int icon_id = 0;
+	int number = 0;
+
+	u8 status = 0;
 };
 
 enum LEVEL_STATUS {
@@ -42,18 +50,15 @@ class EpisodeClass {
 		int player_score = 0;
 
 		u32 next_level = 1;
-		u32 level_count = 0;
+		//u32 level_count = 0;
 
 		bool glows = false;
 		bool hide_numbers = false;
 		bool ignore_collectable = false;
-		bool require_all_levels = false;
+		//bool require_all_levels = false;
 		bool no_ending = false;
 		std::string collectable_name = "big apple";
 		bool transformation_offset = false;
-
-		PK2LEVEL levels_list[EPISODI_MAX_LEVELS];
-		u8 level_status[EPISODI_MAX_LEVELS];
 
 		ScoresTable scoresTable;
 
@@ -63,16 +68,35 @@ class EpisodeClass {
 		EpisodeClass(const std::string& player_name, episode_entry entry);
 		~EpisodeClass();
 
-		void Load();
+		void load();
 
-		void Load_Info();
-		void Load_Assets();
+		void loadInfo();
+		void loadAssets();
 
 		void  saveScores();
-		void Update_NextLevel();
+		
 
 		SfxHandler sfx;
+
+		std::size_t getLevelsNumber()const{
+			return this->levels_list_v.size();
+		}
+
+		u8 getLevelStatus(int level_id)const;
+		void updateLevelStatus(int level_id, u8 status);
+
+		std::string getLevelFilename(int level_id)const;
+		int findLevelbyFilename(const std::string& levelFilename)const;
+
+		const std::vector<LevelEntry>& getLevelEntries()const{
+			return this->levels_list_v;
+		}
+		
 	private:
+
+		void updateNextLevel();
+
+		std::vector<LevelEntry> levels_list_v;
 
 		std::string getScoresPath()const;		
 		void openScores();

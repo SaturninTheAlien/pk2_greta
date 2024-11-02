@@ -92,7 +92,7 @@ void MapScreen::Draw() {
 		PDraw::font_write(fontti1,std::to_string(Episode->next_level),100+ysize+15,120);
 	}
 
-	if (Episode->level_count == 0) {
+	if (Episode->getLevelsNumber() == 0) {
 		PDraw::font_write(fontti2,tekstit->Get_Text(PK_txt.episodes_no_maps),180,290);
 	}
 	
@@ -103,21 +103,23 @@ void MapScreen::Draw() {
 		WavetextSlow_Draw(tekstit->Get_Text(PK_txt.mainmenu_return), fontti2, 100, 430);
 	}
 
-	for (u32 i = 0; i < Episode->level_count; i++) {
-		if (strcmp(Episode->levels_list[i].nimi,"")!=0 && Episode->levels_list[i].order > 0) {
+	//for (u32 i = 0; i < Episode->level_count; i++) {
+	u32 i = 0;
+	for(const LevelEntry& entry: Episode->getLevelEntries()){
+		if (!entry.levelName.empty() && entry.number > 0) {
 			
 			int type = -1;
-			if (Episode->levels_list[i].order == Episode->next_level)
+			if (entry.number == Episode->next_level)
 				type = 1;
-			if (Episode->levels_list[i].order > Episode->next_level)
+			if (entry.number > Episode->next_level)
 				type = 2;
-			if (Episode->level_status[i] != 0)
+			if (entry.status != 0)
 				type = 0;
 
-			int x = Episode->levels_list[i].x;
-			int y = Episode->levels_list[i].y;
+			int x = entry.map_x;
+			int y = entry.map_y;
 
-			int icon = Episode->levels_list[i].icon;
+			int icon = entry.icon_id;
 
 			int assets = game_assets;
 			if (icon >= 22) {
@@ -138,12 +140,12 @@ void MapScreen::Draw() {
 			int paluu = PK_Draw_Map_Button(x-5, y-10, type);
 
 			if (!Episode->ignore_collectable) {
-				if (Episode->level_status[i] & LEVEL_ALLAPPLES){
+				if (entry.status & LEVEL_ALLAPPLES){
 					PDraw::image_cutclip(game_assets2, 
 						x - 10,
 						y, 45, 379, 58, 394);
 				}
-				else if(Episode->level_status[i] & LEVEL_HAS_BIG_APPLES){
+				else if(entry.status & LEVEL_HAS_BIG_APPLES){
 					PDraw::image_cutclip(game_assets2, 
 						x - 10,
 						y, 45, 397, 58, 412);
@@ -156,7 +158,7 @@ void MapScreen::Draw() {
 			if (Episode->next_level == UINT32_MAX) {
 
 				int dd = (degree / 3) % 60;
-				int order = Episode->levels_list[i].order;
+				int order = entry.number;
 
 				int a = 0;
 				if (order < dd)
@@ -187,7 +189,7 @@ void MapScreen::Draw() {
 
 			if (!Episode->hide_numbers) {
 				//sprintf(luku, "%i", Episode->levels_list[i].order);
-				PDraw::font_write(fontti1,std::to_string(Episode->levels_list[i].order),x-12+2,y-29+2);
+				PDraw::font_write(fontti1,std::to_string(entry.number),x-12+2,y-29+2);
 			}
 
 			// if mouse hoover
@@ -196,7 +198,7 @@ void MapScreen::Draw() {
 				int info_x = 489+3, info_y = 341-26;
 
 				PDraw::image_cutclip(game_assets,info_x-3,info_y+26,473,0,608,122);
-				PDraw::font_write(fontti1,Episode->levels_list[i].nimi,info_x,info_y+30);
+				PDraw::font_write(fontti1,entry.levelName,info_x,info_y+30);
 
 				LevelScore* levelScore = Episode->scoresTable.getScoreByLevelNumber(i);
 				if(levelScore!=nullptr){
@@ -236,6 +238,7 @@ void MapScreen::Draw() {
 				}
 			}
 		}
+		++i;
 	}
 }
 
@@ -290,7 +293,7 @@ void MapScreen::Init() {
 	degree = degree_temp;
 
 	// Load custom assets (should be done when creating Episode)
-	Episode->Load_Assets();
+	Episode->loadAssets();
 
 	std::optional<PFile::Path> path = PFilesystem::FindAsset("map.bmp", PFilesystem::GFX_DIR, ".png");
 

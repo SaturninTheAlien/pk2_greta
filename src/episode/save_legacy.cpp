@@ -21,6 +21,7 @@
 #define SAVES_FILE "saves.dat"
 #define VERSION "3"
 
+
 struct PK2SAVE_V1{
 	s32   jakso;
 	char  episodi[260]; //260, 256, 128?
@@ -249,8 +250,10 @@ int Save_Record(int i) {
 	saves_list[i].next_level = Episode->next_level;
 	saves_list[i].score = Episode->player_score;
 
-	for (int j = 0; j < EPISODI_MAX_LEVELS; j++)
-		saves_list[i].level_status[j] = Episode->level_status[j];
+	for (int j = 0; j < EPISODI_MAX_LEVELS; j++){
+		saves_list[i].level_status[j] = Episode->getLevelStatus(j);
+	}
+		
 
 	Save_All_Records();
 
