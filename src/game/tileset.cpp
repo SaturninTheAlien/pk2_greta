@@ -75,7 +75,7 @@ void Tileset::animateFire(int button1_timer, int color1, int color2){
 			if (color != 255)
 			{
 				color %= 32;
-				color = color - rand()%4;
+				color = color - this->anim_rand()%4;
 
 				if (color < 0)
 					color = 255;
@@ -94,7 +94,7 @@ void Tileset::animateFire(int button1_timer, int color1, int color2){
 	if (button1_timer < 20)
 	{
 		for (x=128;x<160;x++)
-			buffer[x+479*width] = color2 + 16 + rand()%15; //rand()%15+144;
+			buffer[x+479*width] = color2 + 16 + this->anim_rand()%15; //this->anim_rand()%15+144;
 	}
 	else
 		for (x=128;x<160;x++)
@@ -121,7 +121,7 @@ void Tileset::animateWaterfall(){
 
 	for (x=32;x<64;x++)
 	{
-		plus = rand()%2+2;//...+1
+		plus = this->anim_rand()%2+2;//...+1
 		for (y=416;y<448;y++)
 		{
 			color = temp[x-32+(y-416)*32];
@@ -131,9 +131,9 @@ void Tileset::animateWaterfall(){
 				color %= 32;
 				if (color > 10)//20
 					color--;
-				if (rand()%40 == 1)
-					color = 11+rand()%11;//15+rand()%8;//9+rand()%5;
-				if (rand()%160 == 1)
+				if (this->anim_rand()%40 == 1)
+					color = 11+this->anim_rand()%11;//15+this->anim_rand()%8;//9+this->anim_rand()%5;
+				if (this->anim_rand()%160 == 1)
 					color = 30;
 				buffer[x + (416+(y+plus)%32)*width] = color+color2;
 			}

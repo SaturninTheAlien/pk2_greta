@@ -6,6 +6,8 @@
 #include <string>
 #include "engine/PFile.hpp"
 
+#include <random>
+
 #define TILESET_SIZE 150
 
 enum {
@@ -105,4 +107,11 @@ private:
 
     int tiles = -1;
     int water_tiles = -1;
+
+    /**
+     * @brief 
+     * Pseudo-random generator with a constant seed to animate waterfall and fire
+     * To fix "unsynced" BG / FG waterfall and fire tiles
+     */
+    std::mt19937 anim_rand = std::mt19937(13);
 };
