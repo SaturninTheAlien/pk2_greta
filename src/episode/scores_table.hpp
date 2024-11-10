@@ -12,7 +12,7 @@
 
 class LevelScore{
 public:
-    std::string levelName;
+    std::string levelFileName;
     int levelNumber = 0;
 
     //bool hasScore = true;
@@ -46,4 +46,6 @@ public:
     void addScore(const LevelScore& score){
         this->scores.emplace_back(score);
     }
+
+    LevelScore* getScoreByLevelName(const std::string& levelName);
 };

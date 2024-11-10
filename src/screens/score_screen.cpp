@@ -36,10 +36,13 @@ enum {
 	COUNT_ENDED
 };
 
-int ScoreScreen::LevelScore_Compare(int level, u32 score, u32 apples, s32 time){
+int ScoreScreen::LevelScore_Compare(int level_id, u32 score, u32 apples, s32 time){
 	int ret = 0;
+	//Episode->getLevelFilename
 
-	LevelScore * levelScorePtr = Episode->scoresTable.getScoreByLevelNumber(level);
+	std::string levelFileName = Episode->getLevelFilename(level_id);
+
+	LevelScore * levelScorePtr = Episode->scoresTable.getScoreByLevelName(levelFileName);
 	if(levelScorePtr!=nullptr){
 
 		//points
@@ -73,7 +76,10 @@ int ScoreScreen::LevelScore_Compare(int level, u32 score, u32 apples, s32 time){
 	else{
 		LevelScore newScore;
 		//level number
-		newScore.levelNumber = level;
+		newScore.levelNumber = level_id;
+
+		//level filename
+		newScore.levelFileName = levelFileName;
 
 		//points
 		this->map_new_record = true;

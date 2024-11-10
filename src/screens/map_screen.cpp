@@ -200,7 +200,7 @@ void MapScreen::Draw() {
 				PDraw::image_cutclip(game_assets,info_x-3,info_y+26,473,0,608,122);
 				PDraw::font_write(fontti1,entry.levelName,info_x,info_y+30);
 
-				LevelScore* levelScore = Episode->scoresTable.getScoreByLevelNumber(i);
+				LevelScore* levelScore = Episode->scoresTable.getScoreByLevelName(entry.fileName);
 				if(levelScore!=nullptr){
 
 					PDraw::font_writealpha_s(fontti1,tekstit->Get_Text(PK_txt.map_level_best_player),info_x,info_y+50,75);

@@ -9,7 +9,7 @@
 static constexpr int LEGACY_MAX_LEVELS_NUMBER = 100;
 
 void to_json(nlohmann::json& j,const LevelScore& score){
-    j["level"] = score.levelName;
+    j["level"] = score.levelFileName;
     j["number"] = score.levelNumber;
     j["best"] = score.bestScore;
     j["top_player"] = score.topPlayer;
@@ -23,7 +23,7 @@ void to_json(nlohmann::json& j,const LevelScore& score){
 
 
 void from_json(const nlohmann::json& j, LevelScore& score){
-    j.at("level").get_to(score.levelName);
+    j.at("level").get_to(score.levelFileName);
     j.at("number").get_to(score.levelNumber);
     j.at("best").get_to(score.bestScore);
 
@@ -199,6 +199,16 @@ void ScoresTable::save(PFile::Path path)const{
 LevelScore* ScoresTable::getScoreByLevelNumber(int levelNumber){
     for(LevelScore& ls: this->scores){
         if(ls.levelNumber==levelNumber){
+            return &ls;
+        }
+    }
+
+    return nullptr;
+}
+
+LevelScore* ScoresTable::getScoreByLevelName(const std::string& levelName){
+    for(LevelScore& ls: this->scores){
+        if(ls.levelFileName==levelName){
             return &ls;
         }
     }

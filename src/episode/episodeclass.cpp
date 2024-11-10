@@ -38,7 +38,19 @@ std::string EpisodeClass::getScoresPath()const{
 
 void EpisodeClass::openScores() {
 	try{
-		scoresTable.load(this->getScoresPath());
+		this->scoresTable.load(this->getScoresPath());
+		/**
+		 * @brief 
+		 * Fix missing level filenames, for example, in old score files
+		 */
+		int i = 0;
+		for(const LevelEntry& entry:this->levels_list_v){
+			LevelScore * score = this->scoresTable.getScoreByLevelNumber(i);
+			if(score!=nullptr && score->levelFileName.empty()){
+				score->levelFileName = entry.fileName;
+			}
+			++i;
+		}
 	}
 	catch(const std::exception&e){
 		PLog::Write(PLog::WARN, "PK2", e.what());
