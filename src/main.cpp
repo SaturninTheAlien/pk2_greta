@@ -18,7 +18,6 @@
 #include "game/game.hpp"
 #include "episode/episodeclass.hpp"
 #include "episode/mapstore.hpp"
-#include "save.hpp"
 #include "gfx/touchscreen.hpp"
 #include "system.hpp"
 #include "language.hpp"
@@ -59,7 +58,7 @@ static void start_test(const char* arg) {
 
 	Game = new GameClass(path.filename().string());
 
-	PLog::Write(PLog::DEBUG, "PK2", "Testing episode '%s' level '%s'", episode.name.c_str(), Game->map_file.c_str());
+	PLog::Write(PLog::DEBUG, "PK2", "Testing episode '%s' level '%s'", episode.name.c_str(), Game->level_file.c_str());
 
 }
 

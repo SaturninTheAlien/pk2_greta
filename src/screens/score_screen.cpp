@@ -15,7 +15,7 @@
 #include "sfx.hpp"
 #include "system.hpp"
 #include "settings/settings.hpp"
-#include "save.hpp"
+#include "episode/save_legacy.hpp"
 
 #include "engine/PDraw.hpp"
 #include "engine/PInput.hpp"
@@ -36,59 +36,82 @@ enum {
 	COUNT_ENDED
 };
 
-int ScoreScreen::LevelScore_Compare(int level, u32 score, u32 apples, s32 time){
-
-	if(test_level)return 0;
-	
+int ScoreScreen::LevelScore_Compare(int level_id, u32 score, u32 apples, s32 time){
 	int ret = 0;
+	//Episode->getLevelFilename
 
-	if (!Episode->scores.has_score[level] || (score > Episode->scores.best_score[level])) {
+	std::string levelFileName = Episode->getLevelFilename(level_id);
 
-		strcpy(Episode->scores.top_player[level], Episode->player_name);
-		Episode->scores.best_score[level] = score;
-		Episode->scores.has_score[level] = true;
-		map_new_record = true;
-		ret++;
-	
-	}
+	LevelScore * levelScorePtr = Episode->scoresTable.getScoreByLevelName(levelFileName);
+	if(levelScorePtr!=nullptr){
 
-	if (Game->apples_count > 0) {
-		if (apples > Episode->scores.max_apples[level]) {
+		//points
+		if(score > levelScorePtr->bestScore){
 
-			Episode->scores.max_apples[level] = apples;
-			ret++;
+			this->map_new_record = true;
+			levelScorePtr->bestScore = score;
+			levelScorePtr->topPlayer = Episode->player_name;
 
+			++ret;
 		}
-	}
 
-	if (Game->has_time) {
+		//apples
+		if(apples > levelScorePtr->maxApples){
 
-		if (!Episode->scores.has_time[level] || (time < Episode->scores.best_time[level])) {
-
-			strcpy(Episode->scores.fastest_player[level],Episode->player_name);
-			Episode->scores.best_time[level] = time;
-			Episode->scores.has_time[level] = true;
-			map_new_time_record = true;
-			ret++;
-
+			levelScorePtr->maxApples = apples;
+			++ret;
 		}
+
+		//time
+		levelScorePtr->hasTime = Game->has_time;
+		if(Game->has_time && time < levelScorePtr->bestTime){
+			this->map_new_time_record = true;
+			levelScorePtr->bestTime = time;
+			levelScorePtr->fastestPlayer = Episode->player_name;
+			++ret;			
+		}
+
+
+	}
+	else{
+		LevelScore newScore;
+		//level number
+		newScore.levelNumber = level_id;
+
+		//level filename
+		newScore.levelFileName = levelFileName;
+
+		//points
+		this->map_new_record = true;
+		newScore.bestScore = score;
+		newScore.topPlayer = Episode->player_name;
+
+		//apples
+		newScore.maxApples = apples;
+
+		//time
+		newScore.hasTime = Game->has_time;		
+		if(Game->has_time){
+			this->map_new_time_record = true;
+			newScore.fastestPlayer = Episode->player_name;
+		}
+
+		ret+=3;
+		Episode->scoresTable.addScore(newScore);
 	}
 
 	return ret;
 
 }
 int ScoreScreen::EpisodeScore_Compare(u32 score){
-	if(test_level) return 0;
-
 	int ret = 0;
 
-	if (score > Episode->scores.episode_top_score) {
+	if (score > Episode->scoresTable.episodeTopScore) {
 
-		Episode->scores.episode_top_score = score;
-		strcpy(Episode->scores.episode_top_player,Episode->player_name);
-		episode_new_record = true;
+		Episode->scoresTable.episodeTopScore = score;
+		Episode->scoresTable.episodeTopPlayer = Episode->player_name;
+		this->episode_new_record = true;
 		ret++;
-
 	}
 
 	return ret;
@@ -317,7 +340,7 @@ void ScoreScreen::Init() {
 		
 		if (episode_result > 0 || level_result > 0) {
 
-			Episode->Save_Scores();
+			Episode->saveScores();
 
 		}
 

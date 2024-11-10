@@ -6,7 +6,7 @@
 //TODO
 //Move it to Mapstore or EpisodeClass
 
-#include "save.hpp"
+#include "save_legacy.hpp"
 
 #include "episode/mapstore.hpp"
 #include "system.hpp"
@@ -20,6 +20,7 @@
 
 #define SAVES_FILE "saves.dat"
 #define VERSION "3"
+
 
 struct PK2SAVE_V1{
 	s32   jakso;
@@ -92,14 +93,6 @@ void Load_SaveFile() {
 	try
 	{
 		PFile::RW file = path.GetRW2("r");
-		/*if (file == nullptr){
-
-			PLog::Write(PLog::INFO, "PK2", "No save file");
-			Save_All_Records();
-			return 1;
-		
-		}*/
-
 		file.read(versio, sizeof(versio));
 
 		// Version 3 is always little endian
@@ -247,13 +240,20 @@ int Save_Record(int i) {
 	memset(&saves_list[i], 0, sizeof(PK2SAVE));
 
 	saves_list[i].empty = false;
-	strcpy(saves_list[i].episode, Episode->entry.name.c_str()); //assert size 128
-	strcpy(saves_list[i].name, Episode->player_name);
+	strncpy(saves_list[i].episode, Episode->entry.name.c_str(), 128);
+	saves_list[i].episode[127] = '\0';
+
+	strncpy(saves_list[i].name, Episode->player_name.c_str(), 20);
+	saves_list[i].name[19] = '\0';
+
+
 	saves_list[i].next_level = Episode->next_level;
 	saves_list[i].score = Episode->player_score;
 
-	for (int j = 0; j < EPISODI_MAX_LEVELS; j++)
-		saves_list[i].level_status[j] = Episode->level_status[j];
+	for (int j = 0; j < EPISODI_MAX_LEVELS; j++){
+		saves_list[i].level_status[j] = Episode->getLevelStatus(j);
+	}
+		
 
 	Save_All_Records();
 

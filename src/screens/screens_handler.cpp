@@ -11,7 +11,6 @@
 #include "gfx/touchscreen.hpp"
 
 #include "gfx/text.hpp"
-#include "save.hpp"
 #include "system.hpp"
 #include "language.hpp"
 
@@ -143,7 +142,7 @@ ScreensHandler::ScreensHandler():
 	sfx_global.loadAll();
 	//Load_SFX();
 
-	Load_SaveFile();
+	//Load_SaveFile();
 
 	Fade_in(FADE_SLOW);
 	PSound::set_musicvolume_now(Settings.music_max_volume);

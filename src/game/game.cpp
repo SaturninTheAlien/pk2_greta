@@ -35,31 +35,25 @@ GameClass::GameClass(int idx):
 spritePrototypes(Episode){
 
 	this->level_id = idx;
-	this->map_file = Episode->levels_list[idx].tiedosto;
+	this->level_file =  Episode->getLevelFilename(idx);
 
-	if (Episode->level_status[idx] & LEVEL_PASSED)
+	if(Episode->getLevelStatus(idx) & LEVEL_PASSED ){
 		this->repeating = true;
-
+	}
 }
 
-GameClass::GameClass(std::string map_file):
+GameClass::GameClass(std::string level_file):
 spritePrototypes(Episode){
 
-	this->map_file = map_file;
+	this->repeating = true;
 
-	bool found = false;
-	for (uint i = 0; i < Episode->level_count; i++) {
-		if (map_file == Episode->levels_list[i].tiedosto) {
-			this->level_id = i;
-			found = true;
-		}
-	}
+	this->level_file = level_file;
+	this->level_id = Episode->findLevelbyFilename(level_file);
 
-	if (!found) {
-		PLog::Write(PLog::FATAL, "PK2", "Couldn't find %s on episode", map_file.c_str());
+	if(this->level_id==-1){
+		PLog::Write(PLog::FATAL, "PK2", "Couldn't find %s on episode", level_file.c_str());
 		throw PExcept::PException("Couldn't find test level on episode");
 	}
-
 }
 
 GameClass::~GameClass(){
@@ -415,18 +409,17 @@ void GameClass::finish() {
 
 
 	if(!test_level){
-		Episode->level_status[this->level_id] |= LEVEL_PASSED;
-	
-		if (this->apples_count > 0){
-			Episode->level_status[this->level_id] |= LEVEL_HAS_BIG_APPLES;
+		u8 status = Episode->getLevelStatus(this->level_id);
 
-			if (this->apples_got >= this->apples_count){
-				Episode->level_status[this->level_id] |= LEVEL_ALLAPPLES;
+		status |= LEVEL_PASSED;
+		if(this->apples_count > 0){
+			status |= LEVEL_HAS_BIG_APPLES;
+			if(this->apples_got >= this->apples_count){
+				status |= LEVEL_ALLAPPLES;
 			}
 		}
-			
 
-		Episode->Update_NextLevel();
+		Episode->updateLevelStatus(this->level_id, status);	
 	}
 	
 	PSound::set_musicvolume_now(Settings.music_max_volume);
@@ -434,9 +427,9 @@ void GameClass::finish() {
 
 int GameClass::Open_Map() {
 
-	std::optional<PFile::Path> levelPath = PFilesystem::FindEpisodeAsset(map_file, "");
+	std::optional<PFile::Path> levelPath = PFilesystem::FindEpisodeAsset(level_file, "");
 	if(!levelPath.has_value()){
-		throw PExcept::PException("Cannot find the level file: \""+map_file+"\"!");
+		throw PExcept::PException("Cannot find the level file: \""+level_file+"\"!");
 	}
 	level.load(*levelPath, false);
 

@@ -106,7 +106,7 @@ public:
 
 
     std::string GetContentAsString()const;
-    RW GetRW2(const char* mode)const;
+    RW GetRW2(std::string mode)const;
     nlohmann::json GetJSON()const;
     bool exists()const;
 

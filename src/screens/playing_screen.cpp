@@ -72,9 +72,11 @@ void PlayingScreen::Draw_InGame_DebugInfo() {
 		}
 	}
 
-	for (uint i = 0; i < Episode->level_count; i++)
-		if (strcmp(Episode->levels_list[i].nimi,"")!=0)
-			PDraw::font_write(fontti1,Episode->levels_list[i].nimi,0,240+i*10);
+	int i = 0;
+	for(const LevelEntry& entry: Episode->getLevelEntries()){
+		PDraw::font_write(fontti1,entry.levelName,0,240+i*10);
+		++i;
+	}
 
 
 	SpriteClass* Player_Sprite = Game->playerSprite;
@@ -83,7 +85,7 @@ void PlayingScreen::Draw_InGame_DebugInfo() {
 	PDraw::font_write(fontti1, std::to_string(Player_Sprite->y), 10, 420);
 	PDraw::font_write(fontti1, std::to_string(Player_Sprite->b), 10, 430);
 	PDraw::font_write(fontti1, std::to_string(Player_Sprite->a), 10, 440);
-	PDraw::font_write(fontti1, Game->map_file, 10, 460);
+	PDraw::font_write(fontti1, Game->level_file, 10, 460);
 	PDraw::font_write(fontti1, std::to_string(Player_Sprite->jump_timer), 270, 460);
 
 	PDraw::font_write(fontti1, PFilesystem::GetAssetsPath(), 10, 470);

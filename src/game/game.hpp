@@ -23,7 +23,7 @@ class GameClass {
 
 		u32 level_id = -1;
 		LevelClass level;
-		std::string map_file;	
+		std::string level_file;	
 		
 		bool game_over = false;
 		bool level_clear = false;
@@ -69,7 +69,7 @@ class GameClass {
 		int item_pannel_x = -215;
 
 		GameClass(int idx);
-		GameClass(std::string map_file);
+		GameClass(std::string level_file);
 		~GameClass();
 
 		void update(int& debug_active_sprites);

@@ -23,7 +23,6 @@
 #include "gfx/touchscreen.hpp"
 #include "episode/episodeclass.hpp"
 #include "sfx.hpp"
-#include "save.hpp"
 #include "system.hpp"
 #include "exceptions.hpp"
 
@@ -78,13 +77,13 @@ void MapScreen::Draw() {
 	
 	ShadowedText_Draw(std::to_string(Episode->player_score), 100 + ysize + 15, 92);
 
-	if (Episode->scores.episode_top_score > 0) {
+	if (Episode->scoresTable.episodeTopScore > 0) {
 
 		ysize = PDraw::font_write(fontti1,tekstit->Get_Text(PK_txt.map_episode_best_player),360,72);
-		PDraw::font_write(fontti1,Episode->scores.episode_top_player,360+ysize+10,72);
+		PDraw::font_write(fontti1,Episode->scoresTable.episodeTopPlayer,360+ysize+10,72);
 		
 		ysize = PDraw::font_write(fontti1,tekstit->Get_Text(PK_txt.map_episode_hiscore),360,92);
-		PDraw::font_write(fontti2,std::to_string(Episode->scores.episode_top_score), 360+ysize+15,92);
+		PDraw::font_write(fontti2,std::to_string(Episode->scoresTable.episodeTopScore), 360+ysize+15,92);
 
 	}
 
@@ -93,7 +92,7 @@ void MapScreen::Draw() {
 		PDraw::font_write(fontti1,std::to_string(Episode->next_level),100+ysize+15,120);
 	}
 
-	if (Episode->level_count == 0) {
+	if (Episode->getLevelsNumber() == 0) {
 		PDraw::font_write(fontti2,tekstit->Get_Text(PK_txt.episodes_no_maps),180,290);
 	}
 	
@@ -104,21 +103,23 @@ void MapScreen::Draw() {
 		WavetextSlow_Draw(tekstit->Get_Text(PK_txt.mainmenu_return), fontti2, 100, 430);
 	}
 
-	for (u32 i = 0; i < Episode->level_count; i++) {
-		if (strcmp(Episode->levels_list[i].nimi,"")!=0 && Episode->levels_list[i].order > 0) {
+	//for (u32 i = 0; i < Episode->level_count; i++) {
+	u32 i = 0;
+	for(const LevelEntry& entry: Episode->getLevelEntries()){
+		if (!entry.levelName.empty() && entry.number > 0) {
 			
 			int type = -1;
-			if (Episode->levels_list[i].order == Episode->next_level)
+			if (entry.number == Episode->next_level)
 				type = 1;
-			if (Episode->levels_list[i].order > Episode->next_level)
+			if (entry.number > Episode->next_level)
 				type = 2;
-			if (Episode->level_status[i] != 0)
+			if (entry.status != 0)
 				type = 0;
 
-			int x = Episode->levels_list[i].x;
-			int y = Episode->levels_list[i].y;
+			int x = entry.map_x;
+			int y = entry.map_y;
 
-			int icon = Episode->levels_list[i].icon;
+			int icon = entry.icon_id;
 
 			int assets = game_assets;
 			if (icon >= 22) {
@@ -139,12 +140,12 @@ void MapScreen::Draw() {
 			int paluu = PK_Draw_Map_Button(x-5, y-10, type);
 
 			if (!Episode->ignore_collectable) {
-				if (Episode->level_status[i] & LEVEL_ALLAPPLES){
+				if (entry.status & LEVEL_ALLAPPLES){
 					PDraw::image_cutclip(game_assets2, 
 						x - 10,
 						y, 45, 379, 58, 394);
 				}
-				else if(Episode->level_status[i] & LEVEL_HAS_BIG_APPLES){
+				else if(entry.status & LEVEL_HAS_BIG_APPLES){
 					PDraw::image_cutclip(game_assets2, 
 						x - 10,
 						y, 45, 397, 58, 412);
@@ -157,7 +158,7 @@ void MapScreen::Draw() {
 			if (Episode->next_level == UINT32_MAX) {
 
 				int dd = (degree / 3) % 60;
-				int order = Episode->levels_list[i].order;
+				int order = entry.number;
 
 				int a = 0;
 				if (order < dd)
@@ -188,7 +189,7 @@ void MapScreen::Draw() {
 
 			if (!Episode->hide_numbers) {
 				//sprintf(luku, "%i", Episode->levels_list[i].order);
-				PDraw::font_write(fontti1,std::to_string(Episode->levels_list[i].order),x-12+2,y-29+2);
+				PDraw::font_write(fontti1,std::to_string(entry.number),x-12+2,y-29+2);
 			}
 
 			// if mouse hoover
@@ -197,48 +198,47 @@ void MapScreen::Draw() {
 				int info_x = 489+3, info_y = 341-26;
 
 				PDraw::image_cutclip(game_assets,info_x-3,info_y+26,473,0,608,122);
-				PDraw::font_write(fontti1,Episode->levels_list[i].nimi,info_x,info_y+30);
+				PDraw::font_write(fontti1,entry.levelName,info_x,info_y+30);
 
-				if (Episode->scores.has_score[i]) { 
-					
+				LevelScore* levelScore = Episode->scoresTable.getScoreByLevelName(entry.fileName);
+				if(levelScore!=nullptr){
+
 					PDraw::font_writealpha_s(fontti1,tekstit->Get_Text(PK_txt.map_level_best_player),info_x,info_y+50,75);
-					PDraw::font_write(fontti1,Episode->scores.top_player[i],info_x,info_y+62);
+					PDraw::font_write(fontti1,levelScore->topPlayer,info_x,info_y+62);
 					ysize = 8 + PDraw::font_writealpha_s(fontti1,tekstit->Get_Text(PK_txt.map_level_hiscore),info_x,info_y+74,75);
 					//sprintf(luku, "%i", Episode->scores.best_score[i]);
-					PDraw::font_write(fontti1,std::to_string(Episode->scores.best_score[i]),info_x+ysize,info_y+75);
-				
-                }
+					PDraw::font_write(fontti1,std::to_string(levelScore->bestScore),info_x+ysize,info_y+75);
 
-				if (Episode->scores.has_time[i]) {
+					if(levelScore->hasTime){
+						PDraw::font_writealpha_s(fontti1,tekstit->Get_Text(PK_txt.map_level_fastest_player),info_x,info_y+98,75);
+						PDraw::font_write(fontti1,levelScore->fastestPlayer,info_x,info_y+110);
 
-					PDraw::font_writealpha_s(fontti1,tekstit->Get_Text(PK_txt.map_level_fastest_player),info_x,info_y+98,75);
-					PDraw::font_write(fontti1,Episode->scores.fastest_player[i],info_x,info_y+110);
+						ysize = 8 + PDraw::font_writealpha_s(fontti1,tekstit->Get_Text(PK_txt.map_level_best_time),info_x,info_y+122,75);
 
-					ysize = 8 + PDraw::font_writealpha_s(fontti1,tekstit->Get_Text(PK_txt.map_level_best_time),info_x,info_y+122,75);
+						s32 time = levelScore->bestTime / 60;
+						if (time < 0) {
+							time = -time;
+							ysize += PDraw::font_write(fontti1,"-",info_x+ysize,info_y+122);
+						}
 
-					s32 time = Episode->scores.best_time[i] / 60;
-					if (time < 0) {
-						time = -time;
-						ysize += PDraw::font_write(fontti1,"-",info_x+ysize,info_y+122);
+						s32 min = time / 60;
+						s32 sek = time % 60;
+						
+						std::string min_s = std::to_string(min);
+						std::string sek_s = std::to_string(sek);
+
+						//sprintf(luku, "%i", min);
+						ysize += PDraw::font_write(fontti1,min_s,info_x+ysize,info_y+122);
+						ysize += PDraw::font_write(fontti1,":",info_x+ysize,info_y+122);
+						if (sek < 10)
+							ysize += PDraw::font_write(fontti1,"0",info_x+ysize,info_y+122);
+						//sprintf(luku, "%i", sek);
+						PDraw::font_write(fontti1,sek_s,info_x+ysize,info_y+122);
 					}
-
-					s32 min = time / 60;
-					s32 sek = time % 60;
-					
-					std::string min_s = std::to_string(min);
-					std::string sek_s = std::to_string(sek);
-
-					//sprintf(luku, "%i", min);
-					ysize += PDraw::font_write(fontti1,min_s,info_x+ysize,info_y+122);
-					ysize += PDraw::font_write(fontti1,":",info_x+ysize,info_y+122);
-                    if (sek < 10)
-                        ysize += PDraw::font_write(fontti1,"0",info_x+ysize,info_y+122);
-					//sprintf(luku, "%i", sek);
-					PDraw::font_write(fontti1,sek_s,info_x+ysize,info_y+122);
-
 				}
 			}
 		}
+		++i;
 	}
 }
 
@@ -293,7 +293,7 @@ void MapScreen::Init() {
 	degree = degree_temp;
 
 	// Load custom assets (should be done when creating Episode)
-	Episode->Load_Assets();
+	Episode->loadAssets();
 
 	std::optional<PFile::Path> path = PFilesystem::FindAsset("map.bmp", PFilesystem::GFX_DIR, ".png");
 

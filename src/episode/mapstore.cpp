@@ -2,7 +2,8 @@
 //Pekka Kana 2
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
-#include "episode/mapstore.hpp"
+#include "mapstore.hpp"
+#include "save_legacy.hpp"
 
 #include "system.hpp"
 
@@ -11,6 +12,7 @@
 #include "engine/PLog.hpp"
 #include "engine/PZip.hpp"
 #include "engine/PFilesystem.hpp"
+
 
 #include <cstring>
 #include <algorithm>
@@ -64,6 +66,7 @@ void Search_Episodes() {
 	
 	PLog::Write(PLog::DEBUG, "PK2", "Found %i episodes", (int)episodes.size());
 
+	Load_SaveFile();
 }
 
 
