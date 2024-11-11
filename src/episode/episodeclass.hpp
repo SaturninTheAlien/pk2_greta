@@ -29,8 +29,7 @@ public:
 	int map_y = 0;
 
 	int icon_id = 0;
-	int number = 0;
-
+	u32 number = 0;
 	u8 status = 0;
 };
 

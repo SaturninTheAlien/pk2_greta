@@ -13,8 +13,8 @@ public:
     void Loop();
 
 private:
-    int LevelScore_Compare(int level, u32 score, u32 apples, s32 time);
-    int EpisodeScore_Compare(u32 score);
+    int LevelScore_Compare(int level, int score, int apples, int time);
+    int EpisodeScore_Compare(int score);
     int Draw_ScoreCount();
 
 

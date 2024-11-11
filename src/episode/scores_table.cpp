@@ -90,7 +90,7 @@ void ScoresTable::load(PFile::Path path){
         if (count > LEGACY_MAX_LEVELS_NUMBER)
             count = LEGACY_MAX_LEVELS_NUMBER;
 
-        for (int i = 0; i < count; ++i) {
+        for (u32 i = 0; i < count; ++i) {
 
             u8 has_score = 0;
             file.read(has_score);

@@ -48,12 +48,13 @@ spritePrototypes(Episode){
 	this->repeating = true;
 
 	this->level_file = level_file;
-	this->level_id = Episode->findLevelbyFilename(level_file);
 
-	if(this->level_id==-1){
+	int level_id_tmp = Episode->findLevelbyFilename(level_file);
+	if(level_id_tmp==-1){
 		PLog::Write(PLog::FATAL, "PK2", "Couldn't find %s on episode", level_file.c_str());
 		throw PExcept::PException("Couldn't find test level on episode");
 	}
+	this->level_id = level_id_tmp;
 }
 
 GameClass::~GameClass(){

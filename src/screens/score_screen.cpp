@@ -36,7 +36,7 @@ enum {
 	COUNT_ENDED
 };
 
-int ScoreScreen::LevelScore_Compare(int level_id, u32 score, u32 apples, s32 time){
+int ScoreScreen::LevelScore_Compare(int level_id, int score, int apples, int time){
 	int ret = 0;
 	//Episode->getLevelFilename
 
@@ -103,7 +103,7 @@ int ScoreScreen::LevelScore_Compare(int level_id, u32 score, u32 apples, s32 tim
 	return ret;
 
 }
-int ScoreScreen::EpisodeScore_Compare(u32 score){
+int ScoreScreen::EpisodeScore_Compare(int score){
 	int ret = 0;
 
 	if (score > Episode->scoresTable.episodeTopScore) {
@@ -471,7 +471,7 @@ void ScoreScreen::Loop() {
 		if(test_level){
 			Piste::stop();
 		}
-		else if (Episode->next_level == UINT32_MAX && !Game->repeating && !Episode->no_ending) {
+		else if (Episode->next_level >= Episode->getLevelsNumber() && !Game->repeating && !Episode->no_ending) {
 
 			next_screen = SCREEN_END;
 

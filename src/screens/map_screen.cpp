@@ -87,7 +87,7 @@ void MapScreen::Draw() {
 
 	}
 
-	if (Episode->next_level < UINT32_MAX) {
+	if (Episode->next_level < Episode->getLevelsNumber()) {
 		ysize = PDraw::font_write(fontti1,tekstit->Get_Text(PK_txt.map_next_level),100,120);
 		PDraw::font_write(fontti1,std::to_string(Episode->next_level),100+ysize+15,120);
 	}
@@ -155,7 +155,7 @@ void MapScreen::Draw() {
 				//		45, 379, 58-45, 394-379, x - 10, y, sin_table(degree)*3 - 10, COLOR_GRAY);
 			}
 
-			if (Episode->next_level == UINT32_MAX) {
+			if (Episode->next_level >= Episode->getLevelsNumber()) {
 
 				int dd = (degree / 3) % 60;
 				int order = entry.number;
