@@ -246,8 +246,12 @@ int Save_Record(int i) {
 	strncpy(saves_list[i].name, Episode->player_name.c_str(), 20);
 	saves_list[i].name[19] = '\0';
 
-
-	saves_list[i].next_level = Episode->next_level;
+	if(Episode->isCompleted()){
+		saves_list[i].next_level = UINT32_MAX;
+	}
+	else{
+		saves_list[i].next_level = Episode->next_level;
+	}
 	saves_list[i].score = Episode->player_score;
 
 	for (int j = 0; j < EPISODI_MAX_LEVELS; j++){

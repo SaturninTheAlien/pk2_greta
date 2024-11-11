@@ -161,6 +161,10 @@ void EpisodeClass::load() {
 			levelEntry.map_y = temp.icon_y;
 
 			levelEntry.number = temp.level_number;
+			if(levelEntry.number > this->highestLevelNumber){
+				this->highestLevelNumber = levelEntry.number;
+			}
+
 			levelEntry.icon_id = temp.icon_id;
 
 			this->levels_list_v.emplace_back(levelEntry);
@@ -202,11 +206,11 @@ void EpisodeClass::load() {
 				PLog::Write(PLog::INFO, "PK2", this->collectable_name.c_str());
 			}
 
-			/*id = config.Search_Id("require_all_levels");
+			id = config.Search_Id("require_all_levels");
 			if (id != -1) {
 				PLog::Write(PLog::INFO, "PK2", "Episode require all levels is ON");
 				this->require_all_levels = true;
-			}*/
+			}
 
 			id = config.Search_Id("no_ending");
 			if (id != -1) {
@@ -346,11 +350,27 @@ entry(entry), player_name(player_name){
 }
 
 void EpisodeClass::updateNextLevel() {
+
+	u32 passedLevelsCounter = 0;
+
 	for(const LevelEntry& entry: this->levels_list_v){
 		u8 status = entry.status;
 
-		if((status & LEVEL_PASSED) != 0 && entry.number + 1 > next_level ){
-			next_level = entry.number + 1;
+		if((status & LEVEL_PASSED) != 0){
+
+			if(entry.number + 1 > next_level){
+				this->next_level = entry.number + 1;
+			}
+
+			++passedLevelsCounter;
 		}
+	}
+
+
+	if(require_all_levels){
+		this->completed = passedLevelsCounter == this->levels_list_v.size();
+	}
+	else{
+		this->completed = this->next_level > this->getHighestLevelNumber();
 	}
 }

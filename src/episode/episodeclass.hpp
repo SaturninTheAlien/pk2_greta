@@ -54,7 +54,7 @@ class EpisodeClass {
 		bool glows = false;
 		bool hide_numbers = false;
 		bool ignore_collectable = false;
-		//bool require_all_levels = false;
+		bool require_all_levels = false;
 		bool no_ending = false;
 		std::string collectable_name = "big apple";
 		bool transformation_offset = false;
@@ -91,7 +91,16 @@ class EpisodeClass {
 			return this->levels_list_v;
 		}
 		
+		u32 getHighestLevelNumber()const{
+			return this->highestLevelNumber;
+		}
+
+		bool isCompleted()const{
+			return this->completed;
+		}
 	private:
+		u32 highestLevelNumber = 0;
+		bool completed = false;
 
 		void updateNextLevel();
 

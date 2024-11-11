@@ -471,8 +471,7 @@ void ScoreScreen::Loop() {
 		if(test_level){
 			Piste::stop();
 		}
-		else if (Episode->next_level >= Episode->getLevelsNumber() && !Game->repeating && !Episode->no_ending) {
-
+		else if (Episode->isCompleted() && !Game->repeating && !Episode->no_ending) {
 			next_screen = SCREEN_END;
 
 		} else {
