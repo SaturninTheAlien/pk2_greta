@@ -336,6 +336,22 @@ void UpdateTouch(){
 	
 	int devices = SDL_GetNumTouchDevices();
 
+	/*int w = 0;
+	int h = 0;
+
+	PRender::get_window_size(&win_w, &win_h);
+	PDraw::get_buffer_size(&w, &h);*/
+
+
+	int sw, sh;
+	PRender::get_window_size(&sw, &sh);
+
+	int bw, bh;
+	PDraw::get_buffer_size(&bw, &bh);
+
+	int off_x, off_y;
+	PDraw::get_offset(&off_x, &off_y);
+
 	for (int i = 0; i < devices; i++) {
 		
 		SDL_TouchID id = SDL_GetTouchDevice(i);
@@ -357,7 +373,20 @@ void UpdateTouch(){
 				touch.pos_x = finger->x;
 				touch.pos_y = finger->y;
 				touchlist.push_back(touch);
-				
+
+				if(j==0){
+					float tmpx = finger->x * sw;
+					float tmpy = finger->y * sh;
+
+					tmpx *= float(bw) / sw;
+					tmpy *= float(bh) / sh;
+
+					tmpx -= off_x;
+					tmpy -= off_y;
+
+					mouse_x = tmpx;
+					mouse_y = tmpy;
+				}
 			}
 		}
 
@@ -433,6 +462,8 @@ float GetAxis(int axis) {
 
 void UpdateMouse(bool keyMove, bool relative) {
 
+	
+
 	static int last_x, last_y;
 	static bool ignore_mouse = false;
 
@@ -445,43 +476,46 @@ void UpdateMouse(bool keyMove, bool relative) {
 	int off_x, off_y;
 	PDraw::get_offset(&off_x, &off_y);
 
-	if (!relative) {
-		SDL_SetRelativeMouseMode(SDL_FALSE);
 
-		int tmpx, tmpy;
-		mouse_key = SDL_GetMouseState(&tmpx, &tmpy);
+	//if(!Settings.touchscreen_mode){
 
-		//Problem with fitScreen
-		tmpx *= float(bw) / sw;
-		tmpy *= float(bh) / sh;
+		if (!relative) {
+			SDL_SetRelativeMouseMode(SDL_FALSE);
 
-		tmpx -= off_x;
-		tmpy -= off_y;
+			int tmpx, tmpy;
+			mouse_key = SDL_GetMouseState(&tmpx, &tmpy);
 
-		// Mouse moved
-		if (abs(last_x - tmpx) > 0 || abs(last_y - tmpy) > 0)
+			//Problem with fitScreen
+			tmpx *= float(bw) / sw;
+			tmpy *= float(bh) / sh;
+
+			tmpx -= off_x;
+			tmpy -= off_y;
+
+			// Mouse moved
+			if (abs(last_x - tmpx) > 0 || abs(last_y - tmpy) > 0)
+				ignore_mouse = false;
+
+			last_x = tmpx;
+			last_y = tmpy;
+			
+			if (!ignore_mouse) {
+				mouse_x = float(tmpx);
+				mouse_y = float(tmpy);
+			}
+	
+		} else {
+			SDL_SetRelativeMouseMode(SDL_TRUE);
+
 			ignore_mouse = false;
 
-		last_x = tmpx;
-		last_y = tmpy;
-		
-		if (!ignore_mouse) {
-			mouse_x = float(tmpx);
-			mouse_y = float(tmpy);
+			int delta_x, delta_y;
+			mouse_key = SDL_GetRelativeMouseState(&delta_x, &delta_y);
+
+			mouse_x += 0.4 * delta_x;
+			mouse_y += 0.4 * delta_y;
 		}
-	
-	} else {
-		SDL_SetRelativeMouseMode(SDL_TRUE);
-
-		ignore_mouse = false;
-
-		int delta_x, delta_y;
-		mouse_key = SDL_GetRelativeMouseState(&delta_x, &delta_y);
-
-		mouse_x += 0.4 * delta_x;
-		mouse_y += 0.4 * delta_y;
-
-	}
+	//}
 
 	if(keyMove) {
 

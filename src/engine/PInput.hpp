@@ -76,6 +76,7 @@ void EndKeyboard();
 bool Is_Editing();
 void InjectText(const char* text);
 void InjectKey(int key);
+//void InjectFingerDown(float x, float y);
 void  ReadKeyboardInputOld(char* c);
 
 int  ReadKeyboardNav();

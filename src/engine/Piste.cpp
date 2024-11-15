@@ -71,6 +71,10 @@ static void logic() {
 			PInput::InjectText(event.text.text);
 		else if(event.type == SDL_KEYDOWN && PInput::Is_Editing())
 			PInput::InjectKey(event.key.keysym.scancode);
+
+		/*else if(event.type==SDL_FINGERDOWN){
+			PInput::InjectFingerDown(event.tfinger.x, event.tfinger.y);
+		}*/
 		
 	}
 
