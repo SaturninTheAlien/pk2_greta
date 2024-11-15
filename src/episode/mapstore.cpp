@@ -23,12 +23,7 @@ namespace fs = std::filesystem;
 std::vector<episode_entry> episodes;
 
 void Search_Episodes() {
-
-#ifdef __ANDROID__
-	std::vector<std::string> list = PFilesystem::ScanDirectory_apk(PFilesystem::EPISODES_DIR, "/");
-#else
-	std::vector<std::string> list = PFilesystem::ScanDirectory_s(PFilesystem::EPISODES_DIR, "/");
-#endif
+	std::vector<std::string> list = PFilesystem::ScanOriginalAssetsDirectory(PFilesystem::EPISODES_DIR, "/");
 
 	for (std::string ep : list) {
 		episode_entry e;

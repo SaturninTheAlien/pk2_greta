@@ -136,13 +136,7 @@ void EpisodeClass::load() {
 	}
 	else{
 
-#ifdef __ANDROID__
-		namelist = PFilesystem::ScanDirectory_apk(dir, ".map");
-#else
-		namelist = PFilesystem::ScanDirectory_s(dir, ".map");
-#endif
-
-
+		namelist = PFilesystem::ScanOriginalAssetsDirectory(dir, ".map");
 		for(const std::string& name: namelist){
 			pathlist.emplace_back(PFile::Path((fs::path(dir) / name).string()));
 		}

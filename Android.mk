@@ -13,7 +13,7 @@ LOCAL_SRC_FILES += $(SRC_DIR)/engine/render/PSdl.cpp
 LOCAL_C_INCLUDES := $(SRC_DIR) \
        /home/saturnin/android/projects/SDL2-Android/build/SDL2-2.30.9/include \
        /home/saturnin/android/projects/SDL2-Android/build/SDL2_image-2.8.2/include \
-       /home/saturnin/android/projects/SDL2-Android/build/SDL2_mixer-2.6.3/include \
+       /home/saturnin/android/projects/SDL2-Android/build/SDL2_mixer-2.8.0/include \
        /home/saturnin/android/projects/lib/lib/$(APP_ABI)/include \
        $(PROJECT_ROOT)/lua/src
 

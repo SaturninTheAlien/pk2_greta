@@ -73,6 +73,7 @@ void PK2TouchScreenControls::change(int ui_mode) {
 
 void PK2TouchScreenControls::load() {
 	if(loaded)return;
+	this->loaded = true;
 
 	int button_w = 230, button_h = 220;
 

@@ -82,7 +82,7 @@ ScreensHandler::ScreensHandler():
 		Load_Fonts(tekstit);
 	}
 
-	langlist = PFilesystem::ScanDirectory_s(PFilesystem::LANGUAGE_DIR, ".txt");
+	langlist = PFilesystem::ScanOriginalAssetsDirectory(PFilesystem::LANGUAGE_DIR, ".txt");
 	
 	PInput::SetVibration(Settings.vibration);
 

@@ -433,8 +433,11 @@ std::vector<std::string> ScanDirectory_s(const std::string& name, const std::str
 }
 
 
-#ifdef __ANDROID__
-std::vector<std::string> ScanDirectory_apk(const std::string& name, const std::string& filter){
+std::vector<std::string> ScanOriginalAssetsDirectory(const std::string& name, const std::string& filter){
+
+#ifndef __ANDROID__
+    return ScanDirectory_s(name, filter);
+#else
     JNIEnv* env = (JNIEnv*)SDL_AndroidGetJNIEnv();
 	jobject activity = (jobject)SDL_AndroidGetActivity();
 
@@ -487,7 +490,7 @@ std::vector<std::string> ScanDirectory_apk(const std::string& name, const std::s
     env->DeleteLocalRef(strings_array);
 	
 	return result;
-}
 #endif
+}
 
 }
