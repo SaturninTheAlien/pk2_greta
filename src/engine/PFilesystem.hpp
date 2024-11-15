@@ -55,4 +55,10 @@ std::optional<PFile::Path> FindVanillaAsset(const std::string& name, const std::
 std::optional<PFile::Path> FindEpisodeAsset(const std::string& name, const std::string& default_dir, const std::string& alt_extension="");
 
 std::vector<std::string> ScanDirectory_s(const std::string& name, const std::string& filter="");
+
+
+#ifdef __ANDROID__
+std::vector<std::string> ScanDirectory_apk(const std::string& name, const std::string& filter="");
+#endif
+
 }

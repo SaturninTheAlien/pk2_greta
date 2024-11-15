@@ -19,13 +19,7 @@
 
 
 #ifdef __ANDROID__
-/**
- * @brief 
- * TODO
- * All the Android-exclusive code should be in this file
- */
-#include <android/asset_manager.h>
-#include <android/asset_manager_jni.h>
+#include <jni.h>
 #endif
 
 namespace fs = std::filesystem;
@@ -117,6 +111,10 @@ bool SetDataPath(const std::string& name){
 void SetDefaultAssetsPath() {
 	if(mAssetsPathSet)return;
 
+#ifdef __ANDROID__
+    mDataPath = SDL_AndroidGetInternalStoragePath();
+    mDataPathSet = true;
+#else
 	char* c_path = SDL_GetBasePath();
 	if(c_path==nullptr){
 
@@ -148,6 +146,8 @@ void SetDefaultAssetsPath() {
     if(!success){
         throw PFile::PFileException("Cannot set the default assets path!");
     }
+
+#endif
 }
 
 void SetDefaultDataPath(){
@@ -156,29 +156,22 @@ void SetDefaultDataPath(){
     bool success = false;
 
 
-#ifndef __ANDROID__
-
-#ifdef PK2_PORTABLE
+#ifdef __ANDROID__
+    SetDataPath(SDL_AndroidGetInternalStoragePath());
+#else
+    #ifdef PK2_PORTABLE
     success = SetDataPath((mAssetsPath / "data").string());
-#else
-    char* data_path_p = SDL_GetPrefPath("Piste Gamez", "Pekka Kana 2");
-    if(data_path_p==nullptr){
-        std::ostringstream os;
-        os<<"SDL_GetPrefPath failed: "<<SDL_GetError();
-        throw PFile::PFileException(os.str());
-    }
+    #else
+        char* data_path_p = SDL_GetPrefPath("Piste Gamez", "Pekka Kana 2");
+        if(data_path_p==nullptr){
+            std::ostringstream os;
+            os<<"SDL_GetPrefPath failed: "<<SDL_GetError();
+            throw PFile::PFileException(os.str());
+        }
 
-    success = SetDataPath(data_path_p);
-    SDL_free(data_path_p);
-#endif
-
-#else
-    const char* data_path_p = SDL_AndroidGetExternalStoragePath();
-    if(data_path_p){
         success = SetDataPath(data_path_p);
         SDL_free(data_path_p);
-    }
-    
+    #endif
 #endif
 
     if(!success){
@@ -251,6 +244,69 @@ static std::optional<std::string> FindFile(const fs::path& dir, const std::strin
 }
 
 
+
+
+
+
+std::optional<PFile::Path> FindVanillaAsset(const std::string& name, const std::string& default_dir, const std::string& alt_extension){
+    std::string filename = fs::path(name).filename().string();
+
+#ifdef __ANDROID__
+    /**
+     * apk://assets/sprites/pig.spr2
+     */
+
+    JNIEnv* env = (JNIEnv*)SDL_AndroidGetJNIEnv();
+	jobject activity = (jobject)SDL_AndroidGetActivity();
+
+    jclass clazz(env->GetObjectClass(activity));
+    jmethodID method_id = env->GetMethodID(clazz, "findPK2Asset", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
+    if(method_id==0){
+        throw std::runtime_error("JNI: Method \"findPK2Asset\" not found!");
+    }
+
+    jstring param1 = env->NewStringUTF(name.c_str());
+    jstring param2 = env->NewStringUTF(default_dir.c_str());
+    jstring param3 = alt_extension.empty() ? nullptr : env->NewStringUTF(alt_extension.c_str());
+
+    jstring res = (jstring)env->CallObjectMethod(activity, method_id, param1, param2, param3);
+    env->DeleteLocalRef(param1);
+    env->DeleteLocalRef(param2);  
+
+    if(param3!=nullptr){
+        env->DeleteLocalRef(param3);
+    }
+
+    if(res!=nullptr){
+        const char* utf = env->GetStringUTFChars(res, nullptr);
+
+        PFile::Path p((fs::path(default_dir) / utf).string());
+
+        env->ReleaseStringUTFChars(res, utf);
+        env->DeleteLocalRef(res);
+
+        p.insideAndroidAPK = true;
+
+        return p;
+    }
+
+#else
+    /**
+     * @brief 
+     * sprites/pig.spr2
+     */
+    std::optional<std::string> op = FindFile(mAssetsPath / default_dir, filename, alt_extension);
+    if(op.has_value()){
+        return PFile::Path(*op);
+    }
+
+#endif
+
+    return {};
+}
+
+
+
 std::optional<PFile::Path> FindEpisodeAsset(const std::string& name, const std::string& default_dir, const std::string& alt_extension){
     std::string filename = fs::path(name).filename().string();
     if(filename.empty()) return {};
@@ -277,9 +333,10 @@ std::optional<PFile::Path> FindEpisodeAsset(const std::string& name, const std::
 
         
     }
+    
     else if(!mEpisodeName.empty()){
 
-        
+        #ifndef __ANDROID__
 
         /**
          * @brief 
@@ -300,21 +357,19 @@ std::optional<PFile::Path> FindEpisodeAsset(const std::string& name, const std::
                 return PFile::Path(*op);
             }
         }
-    }
 
-    return {};
-}
-
-std::optional<PFile::Path> FindVanillaAsset(const std::string& name, const std::string& default_dir, const std::string& alt_extension){
-
-    std::string filename = fs::path(name).filename().string();
-    /**
-     * @brief 
-     * sprites/pig.spr2
-     */
-    std::optional<std::string> op = FindFile(mAssetsPath / default_dir, filename, alt_extension);
-    if(op.has_value()){
-        return PFile::Path(*op);
+        #else
+        /**
+         * @brief 
+         * apk://episodes/"episode"/pig.spr2
+         */
+        std::optional<PFile::Path> op = FindVanillaAsset(
+            filename, (fs::path("episodes") / mEpisodeName).string(), alt_extension );
+        if(op.has_value()){
+            return op;
+        }
+        
+        #endif
     }
 
     return {};
@@ -379,70 +434,60 @@ std::vector<std::string> ScanDirectory_s(const std::string& name, const std::str
 
 
 #ifdef __ANDROID__
-/**
- * Is it necessary?
- * Why can't apk be handled as a regular zip.
- * Perhaps we don't need Java to do it.
- */
-std::vector<std::string> scan_apk(const char* dir, const char* type) {
-
-	JNIEnv* env = (JNIEnv*)SDL_AndroidGetJNIEnv();
+std::vector<std::string> ScanDirectory_apk(const std::string& name, const std::string& filter){
+    JNIEnv* env = (JNIEnv*)SDL_AndroidGetJNIEnv();
 	jobject activity = (jobject)SDL_AndroidGetActivity();
-	jclass clazz(env->GetObjectClass(activity));
-	jmethodID method_id = env->GetMethodID(clazz, "listDir", "(Ljava/lang/String;)[Ljava/lang/String;");
 
-	jstring param = env->NewStringUTF(dir);
-	jobjectArray array = (jobjectArray)env->CallObjectMethod(activity, method_id, param);
+    jclass clazz(env->GetObjectClass(activity));
+    jmethodID method_id = env->GetMethodID(clazz, "listPK2Assets", "(Ljava/lang/String;)[Ljava/lang/String;");
+    if(method_id==0){
+        throw std::runtime_error("JNI: Method listPK2Assets not found!");
+    }
 
-	jsize size = env->GetArrayLength(array);
-	
-	std::vector<std::string> result;
+    jstring param = env->NewStringUTF(name.c_str());
+    jobjectArray strings_array = (jobjectArray)env->CallObjectMethod(activity, method_id, param);
+    env->DeleteLocalRef(param);
+    
 
-	for (int i = 0; i < size; i++) {
+    if(strings_array==nullptr){
+        throw std::runtime_error(std::string("Cannot scan the APK directory: ")+name);
+    }
 
-		jstring filename = (jstring)env->GetObjectArrayElement(array, i);
-		jboolean isCopy;
-		const char* file = env->GetStringUTFChars(filename, &isCopy);
 
-		if( file[0] != '.' ) {
+    int len = env->GetArrayLength(strings_array);
+    std::vector<std::string> result;
 
-			if(type[0] == '/' && strstr(file, ".") == NULL) { //provisory way - consider file without '.' a directory
+    for (int i = 0; i < len; i++) {
 
-				result.push_back(file);
-				continue;
+		jstring js = (jstring)env->GetObjectArrayElement(strings_array, i);
+		const char* utf = env->GetStringUTFChars(js, nullptr);
 
-			} else if(type[0] == '\0') {
-			
-				result.push_back(file);
-				continue;
-			
-			} else {
+        std::string s = utf;
 
-				const char* ext = Get_Extension(file);
-				if(strcmp(ext, type) == 0) {
+        env->ReleaseStringUTFChars(js, utf);
+        env->DeleteLocalRef(js);
 
-					result.push_back(file);
-					continue;
 
-				}
-			}
-		}
-
-		if (isCopy == JNI_TRUE) {
-    		env->ReleaseStringUTFChars(filename, file);
-		}
+        if(filter.empty()){
+            result.emplace_back(s);
+        }
+        else if(filter=="/"){
+            if(s.find(".")==std::string::npos){
+                result.emplace_back(s);
+            }
+        }
+        else{
+            std::string extension = PString::lowercase(fs::path(s).extension().string());
+            if(extension==filter){
+                result.emplace_back(s);
+            }
+        }
 	}
 
-
-	env->DeleteLocalRef(activity);
-	env->DeleteLocalRef(clazz);
-
-    PLog::Write(PLog::DEBUG, "PFile", "Scanned APK on \"%s\" for \"%s\". Found %i matches", dir, type, (int)result.size());
-
+    env->DeleteLocalRef(strings_array);
+	
 	return result;
-
 }
-
 #endif
 
 }

@@ -11,15 +11,67 @@
 #include <SDL.h>
 #include <stdexcept>
 
+#ifdef __ANDROID__
+#include <jni.h>
+#include <functional>
+#endif
+
 #include "engine/PFile.hpp"
 
 #include "engine/PLog.hpp"
 #include "engine/platform.hpp"
 #include "engine/PString.hpp"
 
+
+
 namespace fs = std::filesystem;
 
 namespace PFile {
+
+#ifdef __ANDROID__
+
+static void getAndroidAsset(const std::string& name, const std::function<void(jbyte*, int)>& func){
+    JNIEnv* env = (JNIEnv*)SDL_AndroidGetJNIEnv();
+	jobject activity = (jobject)SDL_AndroidGetActivity();
+
+    jclass clazz(env->GetObjectClass(activity));
+    jmethodID method_id = env->GetMethodID(clazz, "getPK2Asset", "(Ljava/lang/String;)[B");
+    /*if(method_id==nullptr){
+        throw std::runtime_error("JNI: Method \"getPK2Asset\" not found!");
+    }*/
+
+    jstring param = env->NewStringUTF(name.c_str());
+    jbyteArray byteArray = (jbyteArray)env->CallObjectMethod(activity, method_id, param);
+    
+    /**
+     * No longer needed
+     */
+    env->DeleteLocalRef(param);
+    //env->DeleteLocalRef(clazz);
+    //env->DeleteLocalRef(activity);
+    
+
+    if(byteArray==nullptr){
+        std::ostringstream os;
+        os<<"APK asset \""<<name<<"\" not found!";
+        throw std::runtime_error(os.str());
+    }
+
+    int len = env->GetArrayLength(byteArray);
+    jbyte* data = env->GetByteArrayElements(byteArray, NULL);
+    if(data==nullptr){
+        env->DeleteLocalRef(byteArray);
+        throw std::runtime_error("JNI: env->GetByteArrayElements failed!");
+    }
+
+    func(data, len);
+    env->ReleaseByteArrayElements(byteArray, data, JNI_ABORT);
+    env->DeleteLocalRef(byteArray);
+}
+
+#endif
+
+
 Path::Path(std::string path) {
 
 	path = path.substr(0, path.find_last_not_of(" ") + 1);
@@ -64,7 +116,26 @@ bool Path::exists()const{
 }
 
 RW Path::GetRW2(std::string mode)const {
-	SDL_RWops* ret;
+
+
+	SDL_RWops* ret = nullptr;
+
+#ifdef __ANDROID__
+	if(this->insideAndroidAPK){
+		void * buffer = nullptr;
+		int size = 0;
+
+		getAndroidAsset(this->path, [&](jbyte* data_j, int size_j){
+			buffer = SDL_malloc(size_j);
+			memcpy(buffer, data_j, size_j);
+			size = size_j;
+		});
+
+		ret = SDL_RWFromConstMem(buffer, size);
+		return RW(ret, buffer);
+	}
+#endif
+
 	if (this->zip_file != nullptr && this->zip_entry.good()) {
 		void * buffer = SDL_malloc(this->zip_entry.size);
 		this->zip_file->read(this->zip_entry, buffer);
@@ -91,6 +162,22 @@ RW Path::GetRW2(std::string mode)const {
 
 
 nlohmann::json Path::GetJSON()const{
+
+#ifdef __ANDROID__
+	if(this->insideAndroidAPK){
+		char * buffer = nullptr;
+
+		getAndroidAsset(this->path, [&](jbyte* data_j, int size){
+			buffer = new char[size + 1];
+			memcpy(buffer, data_j, size);
+			buffer[size] = '\0';
+		});
+
+		nlohmann::json res = nlohmann::json::parse(buffer);
+		delete[] buffer;
+		return res;
+	}
+#endif
 	
 	if(this->zip_file!=nullptr && this->zip_entry.good()){
 
@@ -111,6 +198,24 @@ nlohmann::json Path::GetJSON()const{
 }
 
 std::string Path::GetContentAsString()const{
+
+#ifdef __ANDROID__
+	if(this->insideAndroidAPK){
+		char * buffer = nullptr;
+
+		getAndroidAsset(this->path, [&](jbyte* data_j, int size){
+			buffer = new char[size + 1];
+			memcpy(buffer, data_j, size);
+			buffer[size] = '\0';
+		});
+
+		std::string res = buffer;
+		delete[] buffer;
+		return res;
+	}
+#endif
+
+
 	if(this->zip_file!=nullptr){
 		char * buffer = new char[this->zip_entry.size + 1];
 		buffer[this->zip_entry.size] = '\0';

@@ -1,5 +1,7 @@
 # Contributing to Pekka Kana 2
 
+## This file is obsolete! If you want to contribute, join our Discord server and discuss it first.
+
 ![pekka](res/gfx/manual/chick.png?raw=true)
 The main goal here is to make this a great code for beginners, who want to experiment new things with the power of C/C++ with SDL2.
 The code must be the simplest possible, self explanatory and clean.

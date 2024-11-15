@@ -110,6 +110,10 @@ public:
     nlohmann::json GetJSON()const;
     bool exists()const;
 
+#ifdef __ANDROID__
+    bool insideAndroidAPK = false;
+#endif
+
 private:
     std::string path;
     PZip::PZip* zip_file;

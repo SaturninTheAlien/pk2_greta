@@ -1161,7 +1161,7 @@ void MenuScreen::Draw_Menu_Language() {
 
 void MenuScreen::Draw_Menu_Data() {
 
-#ifdef __ANDROID__
+/*#ifdef __ANDROID__
 
 	int align_left = 80;
 	int align_right = 640 - 70;
@@ -1204,7 +1204,7 @@ void MenuScreen::Draw_Menu_Data() {
 	my += 25;
 	PDraw::font_write(fontti1, data_path.c_str(), align_right - data_path.size()*8, my);
 
-#endif
+#endif*/
 
 	if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_return),180,400))
 		menu_nyt = MENU_MAIN;
