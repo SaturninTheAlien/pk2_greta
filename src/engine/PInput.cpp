@@ -392,7 +392,7 @@ void UpdateTouch(){
 
 	}
 
-	#ifndef __ANDROID__
+	/*#ifndef __ANDROID__
 	if (mouse_key & SDL_BUTTON(SDL_BUTTON_LEFT)) {
 
 		int w, h;
@@ -405,7 +405,7 @@ void UpdateTouch(){
 		touchlist.push_back(touch);
 
 	}
-	#endif
+	#endif*/
 
 }
 

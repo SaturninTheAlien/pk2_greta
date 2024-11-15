@@ -20,6 +20,13 @@ public:
 	void draw()const;
     PRender::RECT src, dst;
     u8 alpha = 0;
+
+
+	bool active = false;
+	int alpha_counter = 0;
+
+	void update();
+
 };
 
 class PK2TouchScreenControls{
@@ -66,8 +73,8 @@ private:
 	int pad_id = 0;
 	bool pad_grab = false;
 
-	int doodle_alpha = 0, egg_alpha = 0, gift_alpha = 0; 
-    bool doodle_active = false, egg_active = false, gift_active = false;
+	//int doodle_alpha = 0, egg_alpha = 0, gift_alpha = 0; 
+    //bool doodle_active = false, egg_active = false, gift_active = false;
 };
 
 extern PK2TouchScreenControls TouchScreenControls;

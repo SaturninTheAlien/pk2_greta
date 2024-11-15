@@ -283,10 +283,51 @@ int PK2TouchScreenControls::getPad() {
 
 }
 
-//TODO Redesign it
 void PK2TouchScreenControls::reset(){
-	doodle_alpha = 0; egg_alpha = 0; gift_alpha = 0; 
-	doodle_active = false; egg_active = false; gift_active = false;
+	//doodle_alpha = 0; egg_alpha = 0; gift_alpha = 0;
+
+	this->gui_doodle.alpha_counter = 0;
+	this->gui_doodle.active = false;
+
+	this->gui_egg.alpha_counter = 0;
+	this->gui_egg.active = false;
+
+
+	this->gui_gift.alpha_counter = 0;
+	this->gui_gift.active = false;
+
+
+	this->gui_menu.alpha_counter = TS_ALPHA_MAX;
+	this->gui_menu.active = true;
+		
+	this->gui_up.active = true;
+	this->gui_down.alpha_counter = TS_ALPHA_MAX;
+
+	this->gui_padbg.active = true;
+	this->gui_padbg.alpha_counter = TS_ALPHA_MAX;
+
+	this->gui_padbt.active = true;
+	this->gui_padbt.alpha_counter = TS_ALPHA_MAX;
+
+	this->gui_tab.active = true;
+}
+
+
+void PK2TouchScreenButton::update(){
+
+	float screen_alpha = Screen_Alpha();
+
+	const int DELTA = 5;
+	if(this->active){
+		this->alpha_counter+=DELTA;
+		if (this->alpha_counter > TS_ALPHA_MAX) this->alpha_counter = TS_ALPHA_MAX;
+	}
+	else {
+		this->alpha_counter -= DELTA;
+		if (this->alpha_counter < 0) this->alpha_counter = 0;
+	}
+
+	this->alpha = static_cast<u8>(screen_alpha * alpha_counter);
 }
 
 void PK2TouchScreenControls::update() {
@@ -295,7 +336,7 @@ void PK2TouchScreenControls::update() {
 		this->load();
 	}
 
-	const int DELTA = 5;
+	
 
 	this->pad_button = 2;
 
@@ -311,52 +352,35 @@ void PK2TouchScreenControls::update() {
 
 	if (UI_mode == UI_GAME_BUTTONS) {
 
-		float alpha = Screen_Alpha();{
+		{
 
 			SpriteClass* Player_Sprite = Game->playerSprite;
 
-			doodle_active = Player_Sprite->ammo2 != nullptr;
-			egg_active = Player_Sprite->ammo1 != nullptr;
-			gift_active = Gifts_Count() > 0;
+			this->gui_doodle.active = Player_Sprite->ammo2 != nullptr;
+			this->gui_egg.active =  Player_Sprite->ammo1 != nullptr;
+			this->gui_gift.active = Gifts_Count() > 0;
 
-			if (doodle_active) {
-				doodle_alpha += DELTA;
-				if (doodle_alpha > TS_ALPHA_MAX) doodle_alpha = TS_ALPHA_MAX;
-			} else {
-				doodle_alpha -= DELTA;
-				if (doodle_alpha < 0) doodle_alpha = 0;
-			}
+			this->gui_up.active = Player_Sprite->player_c < 3;
+			this->gui_down.active = (Player_Sprite->player_c == 1 || (this->gui_up.active && Player_Sprite->weight==0));
 
-			if (egg_active) {
-				egg_alpha += DELTA;
-				if (egg_alpha > TS_ALPHA_MAX) egg_alpha = TS_ALPHA_MAX;
-			} else {
-				egg_alpha -= DELTA;
-				if (egg_alpha < 0) egg_alpha = 0;
-			}
+			
 
-			if (gift_active) {
-				gift_alpha += DELTA;
-				if (gift_alpha > TS_ALPHA_MAX) gift_alpha = TS_ALPHA_MAX;
-			} else {
-				gift_alpha -= DELTA;
-				if (gift_alpha < 0) gift_alpha = 0;
-			}
+			this->gui_padbg.active = Player_Sprite->player_c == 1;
+			this->gui_padbt.active = this->gui_padbg.active;
 
-			gui_doodle.alpha = doodle_alpha * alpha;
-			gui_egg.alpha = egg_alpha * alpha;
-			gui_gift.alpha = gift_alpha * alpha;
 
-			/*gui_doodle.active = doodle_alpha != 0;
-			gui_egg.active = egg_alpha != 0;
-			gui_gift.active = gift_alpha != 0;*/
+			this->gui_doodle.update();
+			this->gui_egg.update();
+			this->gui_gift.update();
+
+		
+			this->gui_up.update();
+			this->gui_down.update();
+
+			this->gui_padbg.update();
+			this->gui_padbt.update();
 		}
 
-		gui_up.alpha = TS_ALPHA_MAX * alpha;
-		gui_down.alpha = TS_ALPHA_MAX * alpha;
-		gui_padbg.alpha = TS_ALPHA_MAX * alpha;
-		gui_padbt.alpha = TS_ALPHA_MAX * alpha;
-		gui_menu.alpha = TS_ALPHA_MAX * alpha;
 
 		this->pad_button = this->getPad();
 
