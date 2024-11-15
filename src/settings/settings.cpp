@@ -46,7 +46,12 @@ void Settings_Init() {
 	Settings.draw_itembar = true;
 
 	Settings.draw_gui = true;
+
+#ifdef __ANDROID__
+	Settings.touchscreen_mode = true;
+#else
 	Settings.touchscreen_mode = false;
+#endif
 
 	Settings.fps = SETTINGS_60FPS;//SETTINGS_VSYNC;
 	Settings.isFullScreen = true;

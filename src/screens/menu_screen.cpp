@@ -323,7 +323,7 @@ void MenuScreen::Draw_Menu_Main() {
 	}
 	my += 20;
 
-	/*if (Settings.touchscreen_mode && Game) {
+	if (Settings.touchscreen_mode && Game) {
 		if (Draw_Menu_Text("map",180,my)) {
 			next_screen = SCREEN_MAP;
 
@@ -331,11 +331,12 @@ void MenuScreen::Draw_Menu_Main() {
 			Game = nullptr;
 		}
 		my += 20;
-	}*/
-
-	if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_exit),180,my)){
-		Fade_Quit();
-		my += 20;
+	}
+	else{
+		if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_exit),180,my)){
+			Fade_Quit();
+			my += 20;
+		}
 	}
 }
 
