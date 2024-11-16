@@ -9,6 +9,7 @@
 #include <vector>
 #include <string>
 
+
 struct episode_entry {
 
     std::string name;
@@ -20,3 +21,8 @@ struct episode_entry {
 extern std::vector<episode_entry> episodes;
 
 void Search_Episodes();
+
+#ifdef __ANDROID__
+void Android_InstallZipEpisode();
+
+#endif

@@ -262,7 +262,6 @@ void MenuScreen::Draw_Menu_Main() {
 	//TODO Test it!
 	//int my = Settings.touchscreen_mode? 260 : 240;//250;
 	int my = 240;
-
 	Draw_BGSquare(160, 200, 640-180, 410, 224);
 
 	if (Episode){
@@ -333,11 +332,24 @@ void MenuScreen::Draw_Menu_Main() {
 		my += 20;
 	}
 	else{
+
+		#ifdef __ANDROID__
+
+		if (Draw_Menu_Text("Install zip",180,my)){
+			Android_InstallZipEpisode();
+		}
+		my += 20;
+
+		#endif
+
+
 		if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_exit),180,my)){
 			Fade_Quit();
-			my += 20;
 		}
+		my += 20;
 	}
+
+	
 }
 
 void MenuScreen::Draw_Menu_Name() {

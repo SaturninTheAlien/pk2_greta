@@ -112,8 +112,8 @@ void SetDefaultAssetsPath() {
 	if(mAssetsPathSet)return;
 
 #ifdef __ANDROID__
-    mDataPath = SDL_AndroidGetInternalStoragePath();
-    mDataPathSet = true;
+    mAssetsPath = "";
+    mAssetsPathSet = true;
 #else
 	char* c_path = SDL_GetBasePath();
 	if(c_path==nullptr){
@@ -157,7 +157,7 @@ void SetDefaultDataPath(){
 
 
 #ifdef __ANDROID__
-    SetDataPath(SDL_AndroidGetInternalStoragePath());
+    success = SetDataPath(SDL_AndroidGetInternalStoragePath());
 #else
     #ifdef PK2_PORTABLE
     success = SetDataPath((mAssetsPath / "data").string());
