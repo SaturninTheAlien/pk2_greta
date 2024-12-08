@@ -85,7 +85,7 @@ class GameClass {
 		void showInfo(const std::string& text);
 
 		void placeSprites();
-		void selectStart(double& pos_x, double& pos_y, u32 sector);
+		void selectStart(double& pos_x, double& pos_y, u32& sector);
 		SpriteClass* selectTeleporter(SpriteClass* entryTelporter, PrototypeClass* exitPrototype);
 
 

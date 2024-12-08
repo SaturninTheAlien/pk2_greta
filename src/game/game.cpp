@@ -579,7 +579,7 @@ void GameClass::placeSprites() {
 	}
 }
 
-void GameClass::selectStart(double& pos_x, double& pos_y, u32 sector) {
+void GameClass::selectStart(double& pos_x, double& pos_y, u32& sector) {
 
 	pos_x = 320;
 	pos_y = 196;
