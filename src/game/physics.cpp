@@ -1395,6 +1395,12 @@ void UpdateSprite(SpriteClass* sprite){
 						  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 			
 			sector->sprites.addProjectileSprite(sprite->ammo1,sprite->x, sprite->y, sprite);
+
+			/**
+			 * To prevent duplication of legacy projectiles
+			 */
+
+			sprite->ammo1 = nullptr;
 			SpriteOnDeath(sprite);
 		}
 		if(sprite->ammo2!=nullptr){
@@ -1402,6 +1408,11 @@ void UpdateSprite(SpriteClass* sprite){
 						  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 			
 			sector->sprites.addProjectileSprite(sprite->ammo2,sprite->x, sprite->y, sprite);
+
+			/**
+			 * To prevent duplication of legacy projectiles
+			 */
+			sprite->ammo2 = nullptr;
 			SpriteOnDeath(sprite);
 		}
 	}
