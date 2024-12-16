@@ -43,7 +43,7 @@ public:
      * @brief 
      * Spawn a sprite as a projectile
      */
-    void addProjectileSprite(PrototypeClass* prototype, double x, double y, SpriteClass* shooter);
+    void addProjectileSprite(PrototypeClass* prototype, SpriteClass* shooter, const std::optional<Point2D> & offset);
     /**
      * @brief 
      * Spawn a sprite from player's gift

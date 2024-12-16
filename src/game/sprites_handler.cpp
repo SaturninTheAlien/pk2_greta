@@ -263,10 +263,30 @@ void SpritesHandler::addGiftSprite(PrototypeClass* prototype){
 	sprite->y += sprite->prototype->height/2;
 }
 
-void SpritesHandler::addProjectileSprite(PrototypeClass* prototype, double x, double y, SpriteClass* shooter){
+void SpritesHandler::addProjectileSprite(PrototypeClass* prototype, SpriteClass* shooter, const std::optional<Point2D>& offset){
 	if(shooter==nullptr){
 		PLog::Write(PLog::WARN, "PK2", "Trying to add ammo sprite with null shooter!");
 		return;
+	}
+
+
+	double x = shooter->x;
+	double y = shooter->y;
+
+	if(offset.has_value()){
+
+		double off_x = -shooter->prototype->width/2 + offset->x;
+		double off_y = -shooter->prototype->height/2 + offset->y;
+
+		if(shooter->flip_x){
+			off_x = -off_x;
+		}
+		if(shooter->flip_y){
+			off_y = -off_y;
+		}
+
+		x += off_x;
+		y += off_y;
 	}
 
 	SpriteClass* sprite  = this->mCreateSprite(prototype, 0, x, y, shooter);

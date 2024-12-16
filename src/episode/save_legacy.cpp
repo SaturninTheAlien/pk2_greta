@@ -21,6 +21,8 @@
 #define SAVES_FILE "saves.dat"
 #define VERSION "3"
 
+#define PE_PATH_SIZE 128
+
 
 struct PK2SAVE_V1{
 	s32   jakso;

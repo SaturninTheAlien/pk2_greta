@@ -532,8 +532,15 @@ void PrototypeClass::setProto20(const nlohmann::json& j){
 	}
 
 	if(j.contains("dead_weight") && j["dead_weight"].is_number()){
-		this->has_dead_weight = true;
 		this->dead_weight = j["dead_weight"].get<double>();
+	}
+
+	if(j.contains("attack1_offset")){
+		this->ammo1_offset = j["attack1_offset"].get<Point2D>();
+	}
+
+	if(j.contains("attack2_offset")){
+		this->ammo2_offset = j["attack2_offset"].get<Point2D>();
 	}
 
 	/**
@@ -644,8 +651,16 @@ void to_json(nlohmann::json& j, const PrototypeClass& c){
 	if(!c.commands_json.is_null()){
 		j["commands"] = c.commands_json;
 	}
-	if(c.has_dead_weight){
-		j["dead_weight"] = c.dead_weight;
+	if(c.dead_weight.has_value()){
+		j["dead_weight"] = *c.dead_weight;
+	}
+
+	if(c.ammo1_offset.has_value()){
+		j["attack1_offset"] = *c.ammo1_offset;
+	}
+
+	if(c.ammo2_offset.has_value()){
+		j["attack2_offset"] = *c.ammo2_offset;
 	}
 
 	if(c.blend_mode!=0){

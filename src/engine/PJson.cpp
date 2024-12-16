@@ -76,3 +76,13 @@ void jsonReadEnumU8(const nlohmann::json& j, const std::string& name, u8& target
 }
 
 }
+
+void to_json(nlohmann::json& j, const Point2D&p){
+	j["x"] = p.x;
+	j["y"] = p.y;
+}
+
+void from_json(const nlohmann::json& j, Point2D&p){
+	j.at("x").get_to(p.x);
+	j.at("y").get_to(p.y);
+}

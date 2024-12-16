@@ -8,6 +8,7 @@
 #include <string>
 #include <map>
 #include <array>
+#include <optional>
 #include <functional>
 
 #include "spriteclass_constants.hpp"
@@ -188,10 +189,15 @@ public:
      * If has_dead_weight set to false, to legacy behaviour
      * (only sprites with weight 0 fall) 
      */
-    
-    bool has_dead_weight = false;
-    double  dead_weight = 0;
 
+    std::optional<double> dead_weight = {};
+
+    /**
+     * @brief
+     * Ammo offesets
+     */
+    std::optional<Point2D> ammo1_offset = {};
+    std::optional<Point2D> ammo2_offset = {};
 
     /**
      * @brief

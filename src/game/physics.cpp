@@ -981,8 +981,8 @@ void UpdateSprite(SpriteClass* sprite){
 	sprite->weight_button = sprite->weight;
 
 	if(sprite->energy < 1){
-		if(sprite->prototype->has_dead_weight){
-			sprite->weight = sprite->prototype->dead_weight;
+		if(sprite->prototype->dead_weight.has_value()){
+			sprite->weight = *sprite->prototype->dead_weight;
 		}
 		else if(sprite->weight == 0){ // Fall when is death
 			sprite->weight = 1;
@@ -1394,7 +1394,7 @@ void UpdateSprite(SpriteClass* sprite){
 			Play_GameSFX(sprite->prototype->sounds[SOUND_ATTACK1],100, (int)sprite->x, (int)sprite->y,
 						  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 			
-			sector->sprites.addProjectileSprite(sprite->ammo1,sprite->x, sprite->y, sprite);
+			sector->sprites.addProjectileSprite(sprite->ammo1,sprite, sprite->prototype->ammo1_offset);
 
 			/**
 			 * To prevent duplication of legacy projectiles
@@ -1407,7 +1407,7 @@ void UpdateSprite(SpriteClass* sprite){
 			Play_GameSFX(sprite->prototype->sounds[SOUND_ATTACK2],100, (int)sprite->x, (int)sprite->y,
 						  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 			
-			sector->sprites.addProjectileSprite(sprite->ammo2,sprite->x, sprite->y, sprite);
+			sector->sprites.addProjectileSprite(sprite->ammo2,sprite, sprite->prototype->ammo2_offset);
 
 			/**
 			 * To prevent duplication of legacy projectiles
@@ -1445,7 +1445,7 @@ void UpdateSprite(SpriteClass* sprite){
 						  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 
 			if (sprite->ammo1 != nullptr) {
-				sector->sprites.addProjectileSprite(sprite->ammo1,sprite->x, sprite->y, sprite);
+				sector->sprites.addProjectileSprite(sprite->ammo1, sprite, sprite->prototype->ammo1_offset);
 		//		if (Level_Prototypes_List[sprite->ammo1].sounds[SOUND_ATTACK1] > -1)
 		//			Play_GameSFX(Level_Prototypes_List[sprite->ammo1].sounds[SOUND_ATTACK1],100, (int)sprite->x, (int)sprite->y,
 		//						  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
@@ -1472,7 +1472,7 @@ void UpdateSprite(SpriteClass* sprite){
 						  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
 
 			if (sprite->ammo2 != nullptr) {
-				sector->sprites.addProjectileSprite(sprite->ammo2,sprite->x, sprite->y, sprite);
+				sector->sprites.addProjectileSprite(sprite->ammo2, sprite, sprite->prototype->ammo2_offset);
 
 		//		if (Level_Prototypes_List[sprite->ammo2].sounds[SOUND_ATTACK1] > -1)
 		//			Play_GameSFX(Level_Prototypes_List[sprite->ammo2].sounds[SOUND_ATTACK1],100, (int)sprite->x, (int)sprite->y,
@@ -1557,7 +1557,7 @@ void UpdateBonusSprite(SpriteClass* sprite){
 
 
 
-	if (sprite->weight != 0 || sprite->prototype->has_dead_weight)	// jos bonuksella on weight, tutkitaan ymp�rist�
+	if (sprite->weight != 0 || sprite->prototype->dead_weight.has_value())	// jos bonuksella on weight, tutkitaan ymp�rist�
 	{
 		// o
 		//

@@ -30,3 +30,6 @@ namespace PJson{
     void jsonReadEnumU8(const nlohmann::json& j, const std::string& name, u8& target,
         const std::map<std::string, u8>& namedValues);
 }
+
+void to_json(nlohmann::json& j, const Point2D&p);
+void from_json(const nlohmann::json& j, Point2D&p);
