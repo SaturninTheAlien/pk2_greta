@@ -377,6 +377,14 @@ AI_Table::AI_Table(){
     Init_AI(AI_TRANSFORM_IF_EVENT2, AI_TRIGGER_EVENT2, [](SpriteClass*s){s->transform();}, true, true, true, true);
 
     /**
+     * @brief
+     * AIs triggered when opening keylocks
+     */
+    Init_AI(AI_DIE_IF_KEYLOCKS_OPENED, AI_TRIGGER_KEYLOCKS_OPENED, AI_Functions::DieIfSkullBlocksChanged, true, true, true, true);
+    Init_AI(AI_TRANSFORM_IF_KEYLOCKS_OPENED, AI_TRIGGER_KEYLOCKS_OPENED, [](SpriteClass*s){s->transform();}, true, true, true, true);
+
+
+    /**
      * @brief 
      * AIs for projectiles
      */

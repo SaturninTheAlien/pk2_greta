@@ -265,6 +265,7 @@ PK2BLOCK LevelSector::getBlock(u32 x, u32 y, const std::array<PK2BLOCK, TILESET_
 }
 
 void LevelSector::openKeylocks(bool effect){
+	this->sprites.onOpeningKeylocks();
 	for (u32 y = 0; y < this->mHeight; y++){
 		for(u32 x = 0; x < this->mWidth; x++){
 			u8 block = this->foreground_tiles[x+y*this->mWidth];

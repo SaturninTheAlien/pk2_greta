@@ -662,6 +662,10 @@ void GameClass::openLocks() {
 	for(LevelSector* sector: this->level.sectors){
 		sector->openKeylocks(sector==this->playerSprite->level_sector);
 	}
+
+	if(this->lua!=nullptr){
+		PK2lua::TriggerEventListeners(PK2lua::LUA_EVENT_KEYLOCKS_OPENED);
+	}
 }
 
 void GameClass::showInfo(const std::string& text) {

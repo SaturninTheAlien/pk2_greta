@@ -108,6 +108,18 @@ void SpritesHandler::onEvent2(){
 	}
 }
 
+void SpritesHandler::onOpeningKeylocks(){
+	for(SpriteClass* sprite: Sprites_List){
+		if(sprite==nullptr||sprite->energy<=0)continue;
+
+		for(const SpriteAI::AI_Class& ai: sprite->prototype->AI_f){
+			if(ai.trigger==AI_TRIGGER_KEYLOCKS_OPENED){
+				ai.func(sprite);
+			}
+		}
+	}
+}
+
 int SpritesHandler::onTickUpdate(int camera_x, int camera_y){
 	const int ACTIVE_BORDER_X = 320;
 	const int ACTIVE_BORDER_y = 240;

@@ -12,8 +12,8 @@
 #include "game/prototype.hpp"
 #include "game/spriteclass.hpp"
 #include "game/levelsector.hpp"
+#include "sfx.hpp"
 namespace PK2lua{
-
 
 void ExposePrototypeClass(sol::state& lua){
 
@@ -43,6 +43,13 @@ void ExposePrototypeClass(sol::state& lua){
         "maxSpeed", sol::readonly(&PrototypeClass::max_speed));
 }
 
+void SpriteMakeSound(SpriteClass*sprite, int soundIndex){
+    if(sprite!=nullptr&&soundIndex>=0 && soundIndex<(int)sprite->prototype->sounds.size()){
+        Play_GameSFX(sprite->prototype->sounds[soundIndex],100, (int)sprite->x, (int)sprite->y,
+        sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
+    }
+}
+
 void ExposeSpriteClass(sol::state& lua){
     lua.new_usertype<SpriteClass>(
         "SpriteClass",
@@ -60,6 +67,8 @@ void ExposeSpriteClass(sol::state& lua){
         "flyToWaypointX", &SpriteClass::flyToWaypointX,
         "flyToWaypointY", &SpriteClass::flyToWaypointY,
         "flyToWaypointXY", &SpriteClass::flyToWaypointXY,
+
+        "makeSound", &SpriteMakeSound,
 
         /**
          * @brief 

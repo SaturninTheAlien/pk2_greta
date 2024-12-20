@@ -19,6 +19,7 @@ public:
     void onSkullBlocksChanged();
     void onEvent1();
     void onEvent2();
+    void onOpeningKeylocks();
 
     int onTickUpdate(int camera_x, int camera_y);
     
