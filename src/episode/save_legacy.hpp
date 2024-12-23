@@ -11,8 +11,9 @@
 
 #include "engine/platform.hpp"
 
-const int SAVES_COUNT = 11;
+#define SAVE_SLOTS_NUMBER 11
 
+namespace PK2save{
 // Save struct is not the ideal way because of byte order
 struct PK2SAVE {
 
@@ -25,7 +26,9 @@ struct PK2SAVE {
 	
 };
 
-extern PK2SAVE saves_list[SAVES_COUNT];
+extern PK2SAVE saves_slots[SAVE_SLOTS_NUMBER];
 
-void Load_SaveFile();
+void LoadSaveSlots();
 int Save_Record(int i);
+
+}

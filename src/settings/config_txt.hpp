@@ -4,13 +4,16 @@
 //#########################
 #pragma once
 
+#include <string>
+
 class Config_txt{
 public:
 
     void readFile();
 
+    bool save_slots = false;
     bool silent_suicide = false;
-	//bool audio_multi_thread = true;
+    std::string player = "pekka";
 	int audio_buffer_size = 1024;
 
     /**

@@ -5,6 +5,7 @@
 #include "config_txt.hpp"
 #include "engine/PLang.hpp"
 #include "engine/PFilesystem.hpp"
+#include <iostream>
 
 //TODO Remove this dependency
 #include "system.hpp"
@@ -16,6 +17,15 @@ static const char default_config[] =
 "\r\n-- Prefer a power of 2: 512 1024 2048 4096 default"
 "\r\n---------------"
 "\r\n*audio_buffer_size:    default"
+"\r\n"
+"\r\n-- To use legacy saving system with \"slots\""
+"\r\n*use_save_slots:    no"
+"\r\n"
+"\r\n"
+"\r\n"
+"\r\n-- Current player"
+"\r\n-- Used to save the game progress if \"save slots\" are disabled."
+"\r\n*player:	pekka"
 "\r\n"
 "\r\n"
 "\r\n -- Silent suicide"
@@ -54,19 +64,27 @@ void Config_txt::readFile(){
 	}
 	//PLog::Write(PLog::DEBUG, "PK2", "Audio buffer size set to %i", configuration.audio_buffer_size);
 
-	/*idx = conf.Search_Id("audio_multi_thread");
+	idx = conf.Search_Id("use_save_slots");
 	if (idx != -1) {
 		const char* txt = conf.Get_Text(idx);
 
 		if (strcmp(txt, "default") == 0)
-			this->audio_multi_thread = false;
+			this->save_slots = true;
 		else if (strcmp(txt, "yes") == 0)
-			this->audio_multi_thread = true;
+			this->save_slots = true;
 		else if (strcmp(txt, "no") == 0)
-			this->audio_multi_thread = false;
+			this->save_slots = false;	
+	}
 
-		
-	}*/
+	if(!this->save_slots){
+		idx = conf.Search_Id("player");
+		if(idx != -1){
+			const char* txt = conf.Get_Text(idx);
+			this->player = txt;
+		}
+
+		std::cout<<"Player: "<<player<<std::endl;
+	}
 	
 	idx = conf.Search_Id("silent_suicide");
 	if(idx != -1){

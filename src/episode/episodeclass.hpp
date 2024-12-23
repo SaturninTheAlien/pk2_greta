@@ -98,12 +98,12 @@ class EpisodeClass {
 		bool isCompleted()const{
 			return this->completed;
 		}
+
+		bool completed = false;
 	private:
 		void loadInfo();
 		void loadLevels();
 		u32 highestLevelNumber = 0;
-		bool completed = false;
-
 		void updateNextLevel();
 
 		std::vector<LevelEntry> levels_list_v;

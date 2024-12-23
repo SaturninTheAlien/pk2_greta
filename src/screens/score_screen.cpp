@@ -14,7 +14,12 @@
 #include "episode/episodeclass.hpp"
 #include "sfx.hpp"
 #include "system.hpp"
+
 #include "settings/settings.hpp"
+#include "settings/config_txt.hpp"
+
+
+#include "episode/save.hpp"
 #include "episode/save_legacy.hpp"
 
 #include "engine/PDraw.hpp"
@@ -344,8 +349,13 @@ void ScoreScreen::Init() {
 
 		}
 
-		// Save backup when finishing a level
-		Save_Record(10);
+		if(config_txt.save_slots){
+			// Save backup when finishing a level
+			PK2save::Save_Record(10);
+		}
+		else{
+			PK2save::SaveModern(Episode);
+		}
 	}
 
 	PSound::set_musicvolume(Settings.music_max_volume);

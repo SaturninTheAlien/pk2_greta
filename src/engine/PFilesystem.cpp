@@ -102,6 +102,7 @@ bool SetDataPath(const std::string& name){
     CreateDirectory(mDataPath.string());
     CreateDirectory( (mDataPath / "scores").string());
     CreateDirectory( (mDataPath / "mapstore").string());
+    CreateDirectory( (mDataPath / "saves").string());
 
     //TODO
     //return false if the directory is not writeable

@@ -8,6 +8,10 @@
 #include "game/levelclass.hpp"
 #include "language.hpp"
 #include "system.hpp"
+
+
+#include "settings/config_txt.hpp"
+#include "save.hpp"
 #include "save_legacy.hpp"
 
 #include "engine/PLog.hpp"
@@ -199,6 +203,14 @@ void EpisodeClass::load() {
 
 	if(!test_level){
 		this->loadLevels();
+		this->openScores();
+
+		if(config_txt.save_slots){
+			this->updateNextLevel();
+		}
+		else{
+			PK2save::LoadModern(this);
+		}		
 	}
 
 	std::optional<PFile::Path> config_path = PFilesystem::FindEpisodeAsset("config.txt", "");
@@ -274,11 +286,8 @@ void EpisodeClass::load() {
 	}
 		
 	this->sfx.loadAllForEpisode(sfx_global, this);
-
-	this->openScores();
+	
 	this->loadInfo();
-
-	this->updateNextLevel();
 }
 
 EpisodeClass::EpisodeClass(int save) {
@@ -288,19 +297,19 @@ EpisodeClass::EpisodeClass(int save) {
 	bool set = false;
 	for (int i = 0; i < sz; i++) {
 
-		if (episodes[i].name.compare(saves_list[save].episode) == 0) {
+		if (episodes[i].name.compare(PK2save::saves_slots[save].episode) == 0) {
 			if (set)
-				PLog::Write(PLog::WARN, "PK2", "Episode conflict on %s, choosing the first one", saves_list[save].episode);
+				PLog::Write(PLog::WARN, "PK2", "Episode conflict on %s, choosing the first one", PK2save::saves_slots[save].episode);
 			else {
 				this->entry = episodes[i];
 				set = true;
 			}
 		}
 	}
-	saves_list[save].name[19] = '\0';
-	this->player_name = saves_list[save].name;
-	this->next_level = saves_list[save].next_level;
-	this->player_score = saves_list[save].score;
+	PK2save::saves_slots[save].name[19] = '\0';
+	this->player_name = PK2save::saves_slots[save].name;
+	this->next_level = PK2save::saves_slots[save].next_level;
+	this->player_score = PK2save::saves_slots[save].score;
 
 	
 
@@ -313,7 +322,7 @@ EpisodeClass::EpisodeClass(int save) {
 
 	for (int j = 0; j < size; j++) {
 
-		this->levels_list_v[j].status = saves_list[save].level_status[j];
+		this->levels_list_v[j].status = PK2save::saves_slots[save].level_status[j];
 	}
 
 }

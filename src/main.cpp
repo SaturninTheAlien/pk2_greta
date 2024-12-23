@@ -37,6 +37,9 @@
 
 #include "utils/file_converter.hpp"
 
+#include "episode/save_legacy.hpp"
+
+
 
 static void start_test(const char* arg) {
 	
@@ -120,6 +123,9 @@ void pk2_main(bool _dev_mode, bool _show_fps, bool _test_level, const std::strin
 
 		if(!_test_level){
 			Search_Episodes();
+			if(config_txt.save_slots){
+				PK2save::LoadSaveSlots();
+			}
 		}	
 
 		std::optional<PFile::Path> iconPath = PFilesystem::FindVanillaAsset("icon.bmp", PFilesystem::GFX_DIR, ".png");
