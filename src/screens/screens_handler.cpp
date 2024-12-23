@@ -140,9 +140,6 @@ ScreensHandler::ScreensHandler():
 	// I propose that we resort to start_music() for powerups that require special effects.	
 
 	sfx_global.loadAll();
-	//Load_SFX();
-
-	//Load_SaveFile();
 
 	Fade_in(FADE_SLOW);
 	PSound::set_musicvolume_now(Settings.music_max_volume);

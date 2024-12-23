@@ -79,6 +79,10 @@ This example starts the level13.map (the robot boss fight) on dev mode:
 ```
 ./pekka-kana-2 --dev --test "rooster island 2/level13.map"
 ```
+Absolute paths to custom locations are also accepted, such as:
+```
+./pekka-kana-2 --test /home/saturnin/pk2_episodes/my_episode/my_level.map
+```
 
 # New features
 * A new sprite format .spr2 based on JSON. The legacy .spr format is still supported for compatibility reasons. All the obsolete c-style arrays in PrototypeClass have been replaced by std::vector, std::string and so there are no limits like max number of AIs and so on. There is still 12 character length limit of the sprite filename length due to the map format. Currently sprite filenames are stored as "name.spr". During the level loading, firstly "name.spr2" is searched for, then "name.spr". If the sprite name is stored as "name", only "name.spr2" is searched for.

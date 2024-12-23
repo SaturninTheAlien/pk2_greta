@@ -52,7 +52,7 @@ static void start_test(const char* arg) {
 
 	//PFile::Path path(arg);
 	episode_entry episode;
-	episode.name = path.parent_path().filename().string();
+	episode.name = path.parent_path().string();
 	episode.is_zip = false;
 
 	Episode = new EpisodeClass("test", episode);

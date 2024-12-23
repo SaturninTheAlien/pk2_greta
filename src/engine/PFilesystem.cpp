@@ -43,8 +43,9 @@ const std::string LIFE_DIR = "rle";
 
 static fs::path mAssetsPath;
 static fs::path mDataPath;
+static fs::path mEpisodePath;
 
-static std::string mEpisodeName;
+//static std::string mEpisodeName;
 static PZip::PZip* mEpisodeZip;
 
 
@@ -194,8 +195,8 @@ PFile::Path GetDataFileW(const std::string& filename){
 }
 
 std::string GetEpisodeDirectory(){
-    if(!mEpisodeName.empty()){
-        return (mAssetsPath / EPISODES_DIR / mEpisodeName).string();
+    if(!mEpisodePath.empty()){
+        return mEpisodePath.string();
     }
 
     return mAssetsPath.string();
@@ -203,8 +204,17 @@ std::string GetEpisodeDirectory(){
 
 
 void SetEpisode(const std::string& episodeName, PZip::PZip* zip_file){
-    mEpisodeName = episodeName;
+    //mEpisodeName = episodeName;
     mEpisodeZip = zip_file;
+    if(zip_file==nullptr){
+        mEpisodePath = episodeName;
+        if(!mEpisodePath.is_absolute()){
+            mEpisodePath = mAssetsPath / "episodes" / mEpisodePath;
+        }
+    }
+    else{
+        mEpisodePath = fs::path("episodes") / episodeName;
+    }
 }
 
 /**
@@ -319,7 +329,7 @@ std::optional<PFile::Path> FindEpisodeAsset(const std::string& name, const std::
          * zip:/episodes/"episode"/pig.spr2
          */
 
-        entry = mEpisodeZip->getEntry( (fs::path("episodes") / mEpisodeName / filename).string(), alt_extension);
+        entry = mEpisodeZip->getEntry( (mEpisodePath / filename).string(), alt_extension);
         if(entry.has_value())return PFile::Path(mEpisodeZip, *entry);
         
         /**
@@ -334,7 +344,7 @@ std::optional<PFile::Path> FindEpisodeAsset(const std::string& name, const std::
         
     }
     
-    else if(!mEpisodeName.empty()){
+    else if(!mEpisodePath.empty()){
 
         #ifndef __ANDROID__
 
@@ -342,7 +352,7 @@ std::optional<PFile::Path> FindEpisodeAsset(const std::string& name, const std::
          * @brief 
          * episodes/"episode"/pig.spr2
          */
-        std::optional<std::string> op = FindFile(mAssetsPath / "episodes" / mEpisodeName, filename, alt_extension);
+        std::optional<std::string> op = FindFile(mEpisodePath, filename, alt_extension);
         if(op.has_value()){
             return PFile::Path(*op);
         }
@@ -352,7 +362,7 @@ std::optional<PFile::Path> FindEpisodeAsset(const std::string& name, const std::
          * episodes/"episode"/sprites/pig.spr2
          */
         if(!default_dir.empty()){
-            op = FindFile(mAssetsPath / "episodes" / mEpisodeName / default_dir, filename, alt_extension);
+            op = FindFile(mEpisodePath / default_dir, filename, alt_extension);
             if(op.has_value()){
                 return PFile::Path(*op);
             }

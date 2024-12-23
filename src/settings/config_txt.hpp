@@ -10,7 +10,7 @@ public:
     void readFile();
 
     bool silent_suicide = false;
-	bool audio_multi_thread = true;
+	//bool audio_multi_thread = true;
 	int audio_buffer_size = 1024;
 
     /**

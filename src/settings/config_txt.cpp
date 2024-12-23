@@ -54,7 +54,7 @@ void Config_txt::readFile(){
 	}
 	//PLog::Write(PLog::DEBUG, "PK2", "Audio buffer size set to %i", configuration.audio_buffer_size);
 
-	idx = conf.Search_Id("audio_multi_thread_x");
+	/*idx = conf.Search_Id("audio_multi_thread");
 	if (idx != -1) {
 		const char* txt = conf.Get_Text(idx);
 
@@ -66,7 +66,7 @@ void Config_txt::readFile(){
 			this->audio_multi_thread = false;
 
 		
-	}
+	}*/
 	
 	idx = conf.Search_Id("silent_suicide");
 	if(idx != -1){
