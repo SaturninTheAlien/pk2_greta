@@ -54,6 +54,7 @@ static void start_test(const char* arg) {
 	episode_entry episode;
 	episode.name = path.parent_path().filename().string();
 	episode.is_zip = false;
+
 	Episode = new EpisodeClass("test", episode);
 
 	Game = new GameClass(path.filename().string());

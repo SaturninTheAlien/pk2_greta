@@ -110,16 +110,8 @@ void EpisodeClass::loadAssets() {
 	}
 }
 
-void EpisodeClass::load() {
-	
-	if (entry.is_zip){
-		this->source_zip.open( (fs::path(PFilesystem::GetDataPath())/"mapstore"/entry.zipfile).string());
-		PFilesystem::SetEpisode(entry.name, &this->source_zip);
-	}
-	else{
-		PFilesystem::SetEpisode(entry.name, nullptr);
-	}
 
+void EpisodeClass::loadLevels(){
 	std::string dir = PFilesystem::GetEpisodeDirectory();
 
 	std::vector<std::string> namelist;
@@ -174,6 +166,39 @@ void EpisodeClass::load() {
 			PLog::Write(PLog::ERR, "PK2 level", e.what());
 		}
 		
+	}
+
+	// Sort levels
+	std::stable_sort(this->levels_list_v.begin(), this->levels_list_v.end(),
+	[](const LevelEntry& a, const LevelEntry& b) {
+		return a.number < b.number;
+	});
+
+	// Set positions
+	int i = 0;
+	for(LevelEntry& entry: this->levels_list_v){
+		if (entry.map_x == 0){
+			entry.map_x = 172 + i*30;
+		}
+		if (entry.map_y == 0){
+			entry.map_y = 270;
+		}
+		++i;
+	}
+}
+
+void EpisodeClass::load() {
+	
+	if (entry.is_zip){
+		this->source_zip.open( (fs::path(PFilesystem::GetDataPath())/"mapstore"/entry.zipfile).string());
+		PFilesystem::SetEpisode(entry.name, &this->source_zip);
+	}
+	else{
+		PFilesystem::SetEpisode(entry.name, nullptr);
+	}
+
+	if(!test_level){
+		this->loadLevels();
 	}
 
 	std::optional<PFile::Path> config_path = PFilesystem::FindEpisodeAsset("config.txt", "");
@@ -247,25 +272,7 @@ void EpisodeClass::load() {
 			PLog::Write(PLog::ERR, "PK2", "Cannot open episode config file.");
 		}
 	}
-
-	// Sort levels
-	std::stable_sort(this->levels_list_v.begin(), this->levels_list_v.end(),
-	[](const LevelEntry& a, const LevelEntry& b) {
-		return a.number < b.number;
-	});
-
-	// Set positions
-	int i = 0;
-	for(LevelEntry& entry: this->levels_list_v){
-		if (entry.map_x == 0){
-			entry.map_x = 172 + i*30;
-		}
-		if (entry.map_y == 0){
-			entry.map_y = 270;
-		}
-		++i;
-	}
-	
+		
 	this->sfx.loadAllForEpisode(sfx_global, this);
 
 	this->openScores();

@@ -20,8 +20,6 @@ namespace sol{
 class GameClass {
 
 	public:
-
-		u32 level_id = -1;
 		LevelClass level;
 		std::string level_file;	
 		
@@ -113,7 +111,12 @@ class GameClass {
 		}
 
 		void startSupermodeMusic();
-	private:		
+
+		int getLevelID()const{
+			return this->level_id;
+		}
+	private:
+		int level_id = -1;
 		bool started = false;
 		int Open_Map();
 

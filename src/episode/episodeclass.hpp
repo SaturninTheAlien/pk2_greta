@@ -69,7 +69,7 @@ class EpisodeClass {
 
 		void load();
 
-		void loadInfo();
+		
 		void loadAssets();
 
 		void  saveScores();
@@ -99,6 +99,8 @@ class EpisodeClass {
 			return this->completed;
 		}
 	private:
+		void loadInfo();
+		void loadLevels();
 		u32 highestLevelNumber = 0;
 		bool completed = false;
 
