@@ -375,7 +375,7 @@ std::optional<PFile::Path> FindEpisodeAsset(const std::string& name, const std::
          * apk://episodes/"episode"/pig.spr2
          */
         std::optional<PFile::Path> op = FindVanillaAsset(
-            filename, (fs::path("episodes") / mEpisodeName).string(), alt_extension );
+            filename, mEpisodePath.string(), alt_extension );
         if(op.has_value()){
             return op;
         }

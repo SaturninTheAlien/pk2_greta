@@ -14,6 +14,12 @@
 #include <windows.h>
 #endif
 
+#ifdef __ANDROID__
+#include <jni.h>
+#include <SDL.h>
+#endif
+
+
 void OpenBrowser(const std::string& url){
     
     #ifndef __ANDROID__
@@ -42,7 +48,7 @@ void OpenBrowser(const std::string& url){
     }
 
     jstring param1 = env->NewStringUTF(url.c_str());
-    (jstring)env->CallObjectMethod(activity, method_id, param1);
+    env->CallObjectMethod(activity, method_id, param1);
     env->DeleteLocalRef(param1);
 
     #endif
