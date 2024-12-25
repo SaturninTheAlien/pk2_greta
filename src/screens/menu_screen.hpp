@@ -17,7 +17,8 @@ enum MENU {
 	MENU_LOAD,
 	MENU_TALLENNA,
 	MENU_LANGUAGE,
-	MENU_DATA
+	MENU_DATA,
+    MENU_LINKS
 
 };
 
@@ -65,6 +66,5 @@ private:
     void Draw_Menu_Episodes();
     void Draw_Menu_Language();
     void Draw_Menu_Data();
-    
- 
+    void Draw_Menu_Links();
 };

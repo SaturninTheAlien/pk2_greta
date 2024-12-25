@@ -4,6 +4,7 @@
 //#########################
 #include <sstream>
 #include "menu_screen.hpp"
+#include "utils/open_browser.hpp"
 
 #include "settings/settings.hpp"
 #include "settings/config_txt.hpp"
@@ -263,9 +264,10 @@ void MenuScreen::Draw_Menu_Main() {
 
 	//TODO Test it!
 	//int my = Settings.touchscreen_mode? 260 : 240;//250;
-	int my = 240;
-	Draw_BGSquare(160, 200, 640-180, 410, 224);
-
+	int my = 223; //240;
+	//Draw_BGSquare(160, 200, 640-180, 410, 224);
+	Draw_BGSquare(160, 200, 640-180, 450, 224);
+	
 	if (Episode){
 		if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_continue),180,my)){
 			if (Game)
@@ -332,6 +334,11 @@ void MenuScreen::Draw_Menu_Main() {
 	}
 	my += 20;
 
+	if (Draw_Menu_Text("links",180,my)){
+		menu_nyt = MENU_LINKS;
+	}
+	my += 20;
+
 	if (Settings.touchscreen_mode && Game) {
 		if (Draw_Menu_Text("map",180,my)) {
 			next_screen = SCREEN_MAP;
@@ -356,10 +363,48 @@ void MenuScreen::Draw_Menu_Main() {
 		if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_exit),180,my)){
 			Fade_Quit();
 		}
-		my += 20;
+		my += 40;
 	}
 
-	
+	/**
+	 * @brief 
+	 * Draw Discord and Github links
+	 */
+	/*if(!Episode){
+
+		int ys = (int)(sin_table((degree)*8))/7;
+		int xs = (int)(cos_table((degree)*8))/9;
+
+		PDraw::image_cutclip(game_assets2, 180 + xs, my + ys, 1, 1, 60, 49);
+	}*/
+}
+
+void MenuScreen::Draw_Menu_Links(){
+	Draw_BGSquare(160, 200, 640-180, 450, 37);
+
+	int my = 223;
+	if (Draw_Menu_Text("Discord",180,my)){
+		OpenBrowser("https://discord.gg/kqDJfYX");
+	}
+	my+=20;
+	if (Draw_Menu_Text("GitHub",180,my)){
+		OpenBrowser("https://github.com/SaturninTheAlien/pk2_greta");
+	}
+	my+=20;
+
+	if (Draw_Menu_Text("Old PG forum",180,my)){
+		OpenBrowser("https://pistegamez.proboards.com");
+	}
+	my+=20;
+
+	if (Draw_Menu_Text("PK2 website",180,my)){
+		OpenBrowser("https://pistegamez.net/game_pk2.html");
+	}
+
+	if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_return),180,400)){
+		menu_nyt = MENU_MAIN;
+	}
+		
 }
 
 void MenuScreen::Draw_Menu_Name() {
@@ -689,38 +734,32 @@ void MenuScreen::Draw_Menu_Graphics() {
 
 		my += 31 + 5;
 
-		if (!Settings.touchscreen_mode) {
-			mx = 100;
-			PDraw::font_write(fontti1, "nearest", mx, my);
-			mx += 15 + 51;
-			PDraw::font_write(fontti1, "linear", mx, my);
-			mx += 15 + 51;
+		mx = 100;
+		PDraw::font_write(fontti1, "nearest", mx, my);
+		mx += 15 + 51;
+		PDraw::font_write(fontti1, "linear", mx, my);
+		mx += 15 + 51;
 
-			/*  Temporarily disabled  */
-			// PDraw::font_write(fontti1, "crt", mx, my);
-			// mx += 15 + 51;
-			// PDraw::font_write(fontti1, "hqx", mx, my);
-			my += 10;
+		/*  Temporarily disabled  */
+		// PDraw::font_write(fontti1, "crt", mx, my);
+		// mx += 15 + 51;
+		// PDraw::font_write(fontti1, "hqx", mx, my);
+		my += 10;
 
-			option = Draw_Radio(100, my, 2, Settings.shader_type);
+		option = Draw_Radio(100, my, 2, Settings.shader_type);
 
-			if (option != -1) {
-				if (option != Settings.shader_type) {
+		if (option != -1) {
+			if (option != Settings.shader_type) {
 
-					int ret = Set_Screen_Mode(option);
-					if (ret == 0) {
-						Settings.shader_type = option;
-						save_settings = true;
-					}
-
+				int ret = Set_Screen_Mode(option);
+				if (ret == 0) {
+					Settings.shader_type = option;
+					save_settings = true;
 				}
+
 			}
 		}
-
 		//Add more options here
-
-
-
 		if(wasFullScreen != Settings.isFullScreen) {// If fullscreen changes
 			save_settings = true;
 			PRender::set_fullscreen(Settings.isFullScreen);
@@ -1259,6 +1298,7 @@ void MenuScreen::Draw() {
 		case MENU_TALLENNA : Draw_Menu_Save();     break;
 		case MENU_LANGUAGE : Draw_Menu_Language(); break;
 		case MENU_DATA     : Draw_Menu_Data();     break;
+		case MENU_LINKS	   : Draw_Menu_Links();	   break;
 		default            : Draw_Menu_Main();     break;
 	}
 
