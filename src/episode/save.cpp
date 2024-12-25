@@ -40,11 +40,11 @@ void from_json(const nlohmann::json& j, SaveEntry& entry){
 
 static fs::path getPathForSaveFile(const EpisodeClass* episode, bool createDirs){
     fs::path p = fs::path(PFilesystem::GetDataPath()) / "saves" / episode->player_name;
-    if(createDirs)PFilesystem::CreateDirectory(p);
+    if(createDirs)PFilesystem::CreateDirectory(p.string());
 
     if(episode->entry.is_zip){
         p = p / PString::removeSuffix(episode->entry.zipfile, ".zip");
-        if(createDirs)PFilesystem::CreateDirectory(p);
+        if(createDirs)PFilesystem::CreateDirectory(p.string());
     }
 
     return p / (episode->entry.name + ".dat");
