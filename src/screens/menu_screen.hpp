@@ -9,6 +9,7 @@
 enum MENU {
 
 	MENU_MAIN,
+    MENU_SETTINGS,
 	MENU_EPISODES,
 	MENU_CONTROLS,
 	MENU_GRAPHICS,
@@ -54,7 +55,7 @@ private:
 
     int  my = 0;
     //bool changed = false;
-    void drawBoolBoxGroup(bool& value, bool& changed, const char* text_true, const char* text_false);
+    void drawBoolBoxGroup(bool& value, bool& changed, const std::string& text_true, const std::string& text_false);
 
     void Draw_Menu_Main();
     void Draw_Menu_Name();
@@ -67,4 +68,6 @@ private:
     void Draw_Menu_Language();
     void Draw_Menu_Data();
     void Draw_Menu_Links();
+
+    void Draw_Menu_Settings();
 };

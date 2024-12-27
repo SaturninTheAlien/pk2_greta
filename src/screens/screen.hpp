@@ -7,6 +7,8 @@
 #include "engine/types.hpp"
 #include "engine/PFile.hpp"
 
+#include <string>
+
 enum SCREEN_TYPE {
 	SCREEN_NOT_SET,
 	SCREEN_FIRST_START,
@@ -33,6 +35,7 @@ public:
 	virtual void Loop()=0;
 	static bool closing_game;
 protected:
-	static bool Draw_Menu_Text(const char *teksti, int x, int y);
+	static bool Draw_Menu_Text(int id, int x, int y);
+	static bool Draw_Menu_Text(const std::string& text, int x, int y);
 	static void Fade_Quit();	
 };

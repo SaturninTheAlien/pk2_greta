@@ -138,7 +138,7 @@ bool MenuScreen::Draw_BoolBox(int x, int y, bool muuttuja, bool active) {
 	return false;
 }
 
-void MenuScreen::drawBoolBoxGroup(bool& value, bool&changed, const char* text_true, const char* text_false){
+void MenuScreen::drawBoolBoxGroup(bool& value, bool&changed, const std::string& text_true, const std::string& text_false){
 	if (value){
 		if (Draw_Menu_Text(text_true,180,my)) {
 			value = false;
@@ -269,7 +269,7 @@ void MenuScreen::Draw_Menu_Main() {
 	Draw_BGSquare(160, 200, 640-180, 450, 224);
 	
 	if (Episode){
-		if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_continue),180,my)){
+		if (Draw_Menu_Text(PK_txt.mainmenu_continue,180,my)){
 			if (Game)
 				next_screen = SCREEN_GAME;
 			else
@@ -280,8 +280,8 @@ void MenuScreen::Draw_Menu_Main() {
 	}
 
 	if(config_txt.save_slots){
-		if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_new_game),180,my)){
-			strncpy(menu_name, tekstit->Get_Text(PK_txt.player_default_name), 20);
+		if (Draw_Menu_Text(PK_txt.mainmenu_new_game,180,my)){
+			strncpy(menu_name, config_txt.player.c_str(), 20);
 			menu_name[19] = '\0';
 
 			menu_name_index = strlen(menu_name);
@@ -296,13 +296,13 @@ void MenuScreen::Draw_Menu_Main() {
 		my += 20;
 
 		if (Episode){
-			if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_save_game),180,my)){
+			if (Draw_Menu_Text(PK_txt.mainmenu_save_game,180,my)){
 				menu_nyt = MENU_TALLENNA;
 			}
 			my += 20;
 		}
 
-		if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_load_game),180,my)){
+		if (Draw_Menu_Text(PK_txt.mainmenu_load_game,180,my)){
 			menu_nyt = MENU_LOAD;
 		}
 		my += 20;	
@@ -314,23 +314,8 @@ void MenuScreen::Draw_Menu_Main() {
 		my += 20;
 	}
 
-	if (Draw_Menu_Text("load language",180,my)){
-		menu_nyt = MENU_LANGUAGE;
-	}
-	my += 20;
-
-	if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_controls),180,my)){
-		menu_nyt = MENU_CONTROLS;
-	}
-	my += 20;
-
-	if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_graphics),180,my)){
-		menu_nyt = MENU_GRAPHICS;
-	}
-	my += 20;
-
-	if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_sounds),180,my)){
-		menu_nyt = MENU_SOUNDS;
+	if(Draw_Menu_Text("Settings",180,my)){
+		menu_nyt = MENU_SETTINGS;
 	}
 	my += 20;
 
@@ -360,7 +345,7 @@ void MenuScreen::Draw_Menu_Main() {
 		#endif
 
 
-		if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_exit),180,my)){
+		if (Draw_Menu_Text(PK_txt.mainmenu_exit,180,my)){
 			Fade_Quit();
 		}
 		my += 40;
@@ -377,6 +362,36 @@ void MenuScreen::Draw_Menu_Main() {
 
 		PDraw::image_cutclip(game_assets2, 180 + xs, my + ys, 1, 1, 60, 49);
 	}*/
+}
+
+void MenuScreen::Draw_Menu_Settings(){
+	Draw_BGSquare(160, 200, 640-180, 450, 37);
+
+	int my = 223;
+
+	if (Draw_Menu_Text("language",180,my)){
+		menu_nyt = MENU_LANGUAGE;
+	}
+	my += 20;
+
+	if (Draw_Menu_Text(PK_txt.mainmenu_controls,180,my)){
+		menu_nyt = MENU_CONTROLS;
+	}
+	my += 20;
+
+	if (Draw_Menu_Text(PK_txt.mainmenu_graphics,180,my)){
+		menu_nyt = MENU_GRAPHICS;
+	}
+	my += 20;
+
+	if (Draw_Menu_Text(PK_txt.mainmenu_sounds,180,my)){
+		menu_nyt = MENU_SOUNDS;
+	}
+	my += 20;
+
+	if (Draw_Menu_Text(PK_txt.mainmenu_return,180,400)){
+		menu_nyt = MENU_MAIN;
+	}
 }
 
 void MenuScreen::Draw_Menu_Links(){
@@ -401,7 +416,7 @@ void MenuScreen::Draw_Menu_Links(){
 		OpenBrowser("https://pistegamez.net/game_pk2.html");
 	}
 
-	if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_return),180,400)){
+	if (Draw_Menu_Text(PK_txt.mainmenu_return,180,400)){
 		menu_nyt = MENU_MAIN;
 	}
 		
@@ -526,7 +541,7 @@ void MenuScreen::Draw_Menu_Name() {
 	}
 
 
-	if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.playermenu_continue),tx_start,ty_start + 50)) {
+	if (Draw_Menu_Text(PK_txt.playermenu_continue,tx_start,ty_start + 50)) {
 
 		editing_name = false;
 		PInput::EndKeyboard();
@@ -536,12 +551,12 @@ void MenuScreen::Draw_Menu_Name() {
 
 	}
 
-	if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.playermenu_clear),tx_start + 180,ty_start + 50)) {
+	if (Draw_Menu_Text(PK_txt.playermenu_clear,tx_start + 180,ty_start + 50)) {
 		memset(menu_name,'\0',sizeof(menu_name));
 		menu_name_index = 0;
 	}
 
-	if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_exit),tx_start,ty_start + 100)) {
+	if (Draw_Menu_Text(PK_txt.mainmenu_exit,tx_start,ty_start + 100)) {
 		menu_nyt = MENU_MAIN;
 		menu_name_index = 0;
 		editing_name = false;
@@ -626,7 +641,7 @@ void MenuScreen::Draw_Menu_Load() {
 
 	my += 20;
 
-	if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_return),180,400))
+	if (Draw_Menu_Text(PK_txt.mainmenu_return,180,400))
 		menu_nyt = MENU_MAIN;
 
 }
@@ -678,7 +693,7 @@ void MenuScreen::Draw_Menu_Save() {
 
 	my += 20;
 
-	if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_return),180,400))
+	if (Draw_Menu_Text(PK_txt.mainmenu_return,180,400))
 		menu_nyt = MENU_MAIN;
 
 }
@@ -828,8 +843,8 @@ void MenuScreen::Draw_Menu_Graphics() {
 
 	}
 
-	if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_return),180,400)){
-		menu_nyt = MENU_MAIN;
+	if (Draw_Menu_Text(PK_txt.mainmenu_return,180,400)){
+		menu_nyt = MENU_SETTINGS;
 		moreOptions = false;
 	}
 
@@ -857,13 +872,13 @@ void MenuScreen::Draw_Menu_Sounds() {
 	PDraw::font_write(fontti2,tekstit->Get_Text(PK_txt.sound_sfx_volume),180,200+my);
 	my += 20;
 
-	if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.sound_less),180,200+my)) {
+	if (Draw_Menu_Text(PK_txt.sound_less,180,200+my)) {
 		key_delay = kdelay;
 		if (Settings.sfx_max_volume > 0)
 			Settings.sfx_max_volume -= 5;
 	}
 
-	if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.sound_more),180+8*15,200+my)) {
+	if (Draw_Menu_Text(PK_txt.sound_more,180+8*15,200+my)) {
 		key_delay = kdelay;
 		if (Settings.sfx_max_volume < 100)
 			Settings.sfx_max_volume += 5;
@@ -877,13 +892,13 @@ void MenuScreen::Draw_Menu_Sounds() {
 	PDraw::font_write(fontti2,tekstit->Get_Text(PK_txt.sound_music_volume),180,200+my);
 	my += 20;
 
-	if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.sound_less),180,200+my)) {
+	if (Draw_Menu_Text(PK_txt.sound_less,180,200+my)) {
 		key_delay = kdelay;
 		if (Settings.music_max_volume > 0)
 			Settings.music_max_volume -= 5;
 	}
 
-	if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.sound_more),180+8*15,200+my)) {
+	if (Draw_Menu_Text(PK_txt.sound_more,180+8*15,200+my)) {
 		key_delay = kdelay;
 		if (Settings.music_max_volume < 100)
 			Settings.music_max_volume += 5;
@@ -891,7 +906,7 @@ void MenuScreen::Draw_Menu_Sounds() {
 	
 	my += 20;
 
-	if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_return),180,400))
+	if (Draw_Menu_Text(PK_txt.mainmenu_return,180,400))
 		menu_nyt = MENU_MAIN;
 	
 	
@@ -968,7 +983,7 @@ void MenuScreen::Draw_Menu_Controls() {
 	}*/
 
 	if (menu_lue_kontrollit == 0){
-		if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.controls_edit),100,my)) {
+		if (Draw_Menu_Text(PK_txt.controls_edit,100,my)) {
 			menu_lue_kontrollit = 1;
 			chosen_menu_id = 0; //Set menu cursor to 0
 		}
@@ -1045,7 +1060,7 @@ void MenuScreen::Draw_Menu_Controls() {
 		}
 	}
 	my += 20;
-	if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_return),180,my)){
+	if (Draw_Menu_Text(PK_txt.mainmenu_return,180,my)){
 		menu_nyt = MENU_MAIN;
 		menu_lue_kontrollit = 0;
 		chosen_menu_id = 0;
@@ -1167,7 +1182,7 @@ void MenuScreen::Draw_Menu_Episodes() {
 	}
 
 	/* sivu / kaikki */
-	if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_return),180,400)){
+	if (Draw_Menu_Text(PK_txt.mainmenu_return,180,400)){
 		menu_nyt = MENU_MAIN;
 		my += 20;
 	}
@@ -1224,7 +1239,7 @@ void MenuScreen::Draw_Menu_Language() {
 
 	}
 
-	if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_return),180,400))
+	if (Draw_Menu_Text(PK_txt.mainmenu_return,180,400))
 		menu_nyt = MENU_MAIN;
 
 }
@@ -1276,7 +1291,7 @@ void MenuScreen::Draw_Menu_Data() {
 
 #endif*/
 
-	if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_return),180,400))
+	if (Draw_Menu_Text(PK_txt.mainmenu_return,180,400))
 		menu_nyt = MENU_MAIN;
 
 }
@@ -1289,6 +1304,7 @@ void MenuScreen::Draw() {
 
 	switch (menu_nyt) {
 		case MENU_MAIN     : Draw_Menu_Main();     break;
+		case MENU_SETTINGS : Draw_Menu_Settings(); break;
 		case MENU_EPISODES : Draw_Menu_Episodes(); break;
 		case MENU_GRAPHICS : Draw_Menu_Graphics(); break;
 		case MENU_SOUNDS   : Draw_Menu_Sounds();   break;

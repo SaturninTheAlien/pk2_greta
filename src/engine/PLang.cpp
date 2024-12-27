@@ -4,9 +4,11 @@
 //#########################
 #include "engine/PLang.hpp"
 #include "engine/PLog.hpp"
+#include "engine/PString.hpp"
 
 #include <SDL.h>
 #include <cstring>
+#include <stdlib.h>
 
 enum {
 	READ_SKIP,
@@ -17,6 +19,8 @@ enum {
 
 const char MARKER_1 = '*',
            MARKER_2 = ':';
+
+const std::string PLang::PLACEHOLDER = ".....";
 
 PLang::PLang() {
 
@@ -87,14 +91,14 @@ bool PLang::Read_File(PFile::Path path){
 	return true;
 }
 
-int PLang::Search_Id(const char *text) {
+int PLang::Search_Id(const std::string& title)const {
 
 	if (!loaded)
 		return -1;
 
 	size_t i;
 	for (i = 0; i < titles.size(); i++)
-		if (titles[i] == text) break;
+		if (titles[i] == title) break;
 
 	if (i >= titles.size())
 		return -1;
@@ -103,18 +107,20 @@ int PLang::Search_Id(const char *text) {
 
 }
 
-const char* PLang::Get_Text(size_t index) {
+
+
+const std::string& PLang::Get_Text(int index)const {
 
 	if (!loaded)
-		return ".....";
+		return PLACEHOLDER;
 
-	if (index < tekstit.size())
-		return tekstit[index].c_str();
+	if (index>=0 && index < tekstit.size())
+		return tekstit[index];
 	else
-		return ".....";
+		return PLACEHOLDER;
 }
 
-int PLang::Set_Text(const char* title, const char* text) {
+int PLang::Set_Text(const std::string& title, const char* text) {
 
 	if (!loaded)
 		return -1;
@@ -131,4 +137,36 @@ int PLang::Set_Text(const char* title, const char* text) {
 	tekstit.push_back(text);
 	return titles.size() - 1;
 
+}
+
+const std::string& PLang::getString(int id, const std::string& def)const{
+	if(id>=0 && id < this->tekstit.size()){
+		return this->tekstit[id];
+	}
+
+	return def;
+}
+
+bool PLang::getBoolean(int id, bool def)const{
+	if(id >= 0 && id < this->tekstit.size()){
+		const std::string& text = PString::lowercase(this->tekstit[id]);
+		if(text=="default")return def;
+		else if(text=="true")return true;
+		else if(text=="false")return false;
+		else if(text=="yes")return true;
+		else if(text=="no")return false;
+	}
+
+	return def;
+}
+
+int PLang::getInteger(int id, int def)const{
+	if(id >= 0 && id < this->tekstit.size()){
+		int tmp = 0;
+		const char* src = this->tekstit[id].c_str();
+		if(sscanf(src, "%i", &tmp)==1){
+			return tmp;
+		}
+	}
+	return def;
 }

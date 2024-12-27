@@ -391,21 +391,21 @@ void PlayingScreen::Draw() {
 
 	if (Game->level_clear) {
 
-		Wavetext_Draw(tekstit->Get_Text(PK_txt.game_clear),fontti2,screen_width/2-120,screen_height/2-9);
+		Wavetext_Draw(tekstit->Get_Text(PK_txt.game_clear).c_str(),fontti2,screen_width/2-120,screen_height/2-9);
 
 	} else if (Game->game_over) {
 	
 		if (Player_Sprite->energy < 1) {
 			
-			Wavetext_Draw(tekstit->Get_Text(PK_txt.game_ko),fontti2,screen_width/2-90,screen_height/2-9-10);
+			Wavetext_Draw(tekstit->Get_Text(PK_txt.game_ko).c_str(),fontti2,screen_width/2-90,screen_height/2-9-10);
 
 		} else if (Game->timeout < 1 && Game->has_time) {
 
-			Wavetext_Draw(tekstit->Get_Text(PK_txt.game_timeout),fontti2,screen_width/2-67,screen_height/2-9-10);
+			Wavetext_Draw(tekstit->Get_Text(PK_txt.game_timeout).c_str(),fontti2,screen_width/2-67,screen_height/2-9-10);
 		
 		}
 
-		Wavetext_Draw(tekstit->Get_Text(PK_txt.game_tryagain),fontti2,screen_width/2-75,screen_height/2-9+10);
+		Wavetext_Draw(tekstit->Get_Text(PK_txt.game_tryagain).c_str(),fontti2,screen_width/2-75,screen_height/2-9+10);
 	
 	}
 

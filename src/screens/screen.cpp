@@ -3,6 +3,8 @@
 #include "sfx.hpp"
 #include "system.hpp"
 #include "gfx/text.hpp"
+#include "language.hpp"
+
 
 unsigned int Screen::chosen_menu_id = 0;
 unsigned int Screen::selected_menu_id = 0;
@@ -17,11 +19,15 @@ void Screen::Fade_Quit() {
 	
 }
 
-bool Screen::Draw_Menu_Text(const char *teksti, int x, int y) {
+bool Screen::Draw_Menu_Text(int id, int x, int y){
+	return Draw_Menu_Text(tekstit->Get_Text(id), x, y);
+}
+
+bool Screen::Draw_Menu_Text(const std::string& text, int x, int y) {
 
 	const int TEXT_H = 20; 
 
-	int length = strlen(teksti) * 15;
+	int length = text.size() * 15;
 
 	bool mouse_on = PInput::mouse_x > x && PInput::mouse_x < x + length 
 		&& PInput::mouse_y > y && PInput::mouse_y < y + TEXT_H
@@ -30,7 +36,7 @@ bool Screen::Draw_Menu_Text(const char *teksti, int x, int y) {
 	if ( mouse_on || (chosen_menu_id == selected_menu_id) ) {
 
 		chosen_menu_id = selected_menu_id;
-		Wavetext_Draw(teksti, fontti3, x, y);//
+		Wavetext_Draw(text.c_str(), fontti3, x, y);//
 
 		int c = Clicked();
 		if ( (c == 1 && mouse_on) || (c > 1) ) {
@@ -44,7 +50,7 @@ bool Screen::Draw_Menu_Text(const char *teksti, int x, int y) {
 		}
 	} else {
 	
-		WavetextSlow_Draw(teksti, fontti2, x, y);
+		WavetextSlow_Draw(text.c_str(), fontti2, x, y);
 	
 	}
 

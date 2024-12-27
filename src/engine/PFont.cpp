@@ -64,23 +64,23 @@ int PFont::load(PFile::Path path) {
 	//int buf_width = atoi(param_file.Get_Text(i));
 
 	i = param_file.Search_Id("image x");
-	int buf_x = atoi(param_file.Get_Text(i));
+	int buf_x = atoi(param_file.Get_Text(i).c_str());
 
 	i = param_file.Search_Id("image y");
-	int buf_y = atoi(param_file.Get_Text(i));
+	int buf_y = atoi(param_file.Get_Text(i).c_str());
 
 	/*i = param_file.Search_Id("letters");
 	this->char_count = strlen(param_file.Get_Text(i));*/
 
 	i = param_file.Search_Id("letter width");
-	this->char_w = atoi(param_file.Get_Text(i));
+	this->char_w = atoi(param_file.Get_Text(i).c_str());
 
 	i = param_file.Search_Id("letter height");
-	this->char_h = atoi(param_file.Get_Text(i));
+	this->char_h = atoi(param_file.Get_Text(i).c_str());
 
 	i = param_file.Search_Id("letters");
 	if(i!=-1){
-		this->initCharlist(param_file.Get_Text(i));
+		this->initCharlist(param_file.Get_Text(i).c_str());
 	}
 	else{
 		this->initCharlist();

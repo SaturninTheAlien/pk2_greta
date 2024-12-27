@@ -30,6 +30,7 @@ Main Menu
 *main menu sounds:			sounds
 *main menu exit game:			exit
 
+*back                       back
 *back to main menu:			back to mainmenu
 
 Load Game
@@ -79,12 +80,14 @@ Graphics
 *graphics menu menus are not transparent:	transparent menu texts off 
 *graphics menu item bar is visible:		item bar is visible
 *graphics menu item bar is not visible:		item bar is not visible
-*graphics menu weather fx on:			weather fx on
-*graphics menu weather fx off:			weather fx off
-*graphics menu bg sprites on:			background sprites on
-*graphics menu bg sprites off:			background sprites off
 *graphics menu game speed normal:		game speed is normal 
 *graphics menu game speed double:		game speed is double 
+
+*graphics menu fullscreen on:           fullscreen on
+*graphics menu fullscreen off:          fullscreen off
+
+*graphics menu gui on:                  in-game gui is visible
+*graphics menu gui on:                  in-game gui is not visible
 
 Player's name
 ------------------------------------------------------------------------------------

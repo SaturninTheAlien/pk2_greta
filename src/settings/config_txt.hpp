@@ -11,16 +11,10 @@ public:
 
     void readFile();
 
-    bool save_slots = false;
+    bool save_slots = true;
     bool silent_suicide = false;
     std::string player = "pekka";
 	int audio_buffer_size = 1024;
-
-    /**
-     * @brief 
-     * Deprecated features, they can be removed
-     */
-    // bool transformation_offset = false;
 };
 
 extern Config_txt config_txt;

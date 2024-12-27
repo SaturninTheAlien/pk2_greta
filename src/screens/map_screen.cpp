@@ -100,7 +100,7 @@ void MapScreen::Draw() {
 		if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_return),100,430))
 			next_screen = SCREEN_MENU;
 	} else {
-		WavetextSlow_Draw(tekstit->Get_Text(PK_txt.mainmenu_return), fontti2, 100, 430);
+		WavetextSlow_Draw(tekstit->Get_Text(PK_txt.mainmenu_return).c_str(), fontti2, 100, 430);
 	}
 
 	//for (u32 i = 0; i < Episode->level_count; i++) {

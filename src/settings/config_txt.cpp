@@ -19,7 +19,7 @@ static const char default_config[] =
 "\r\n*audio_buffer_size:    default"
 "\r\n"
 "\r\n-- To use legacy saving system with \"slots\""
-"\r\n*use_save_slots:    no"
+"\r\n*use_save_slots:    yes"
 "\r\n"
 "\r\n"
 "\r\n"
@@ -48,57 +48,11 @@ void Config_txt::readFile(){
 		rw.close();
 		return;
 	}
-
-	//PLog::Write(PLog::DEBUG, "PK2", "Found config file");
-
-	int idx = conf.Search_Id("audio_buffer_size");
-	if (idx != -1) {
-		const char* txt = conf.Get_Text(idx);
-		int val = atoi(txt);
-
-		if (val > 0) {
-			this->audio_buffer_size = val;
-			
-
-		}
-	}
-	//PLog::Write(PLog::DEBUG, "PK2", "Audio buffer size set to %i", configuration.audio_buffer_size);
-
-	idx = conf.Search_Id("use_save_slots");
-	if (idx != -1) {
-		const char* txt = conf.Get_Text(idx);
-
-		if (strcmp(txt, "default") == 0)
-			this->save_slots = true;
-		else if (strcmp(txt, "yes") == 0)
-			this->save_slots = true;
-		else if (strcmp(txt, "no") == 0)
-			this->save_slots = false;	
-	}
-
-	if(!this->save_slots){
-		idx = conf.Search_Id("player");
-		if(idx != -1){
-			const char* txt = conf.Get_Text(idx);
-			this->player = txt;
-		}
-
-		std::cout<<"Player: "<<player<<std::endl;
-	}
 	
-	idx = conf.Search_Id("silent_suicide");
-	if(idx != -1){
-		const char* txt = conf.Get_Text(idx);
-
-		if (strcmp(txt, "default") == 0)
-			this->silent_suicide = false;
-		else if (strcmp(txt, "yes") == 0)
-			this->silent_suicide = true;
-		else if (strcmp(txt, "no") == 0)
-			this->silent_suicide = false;	
-	}
-
-	//PLog::Write(PLog::DEBUG, "PK2", "Audio multi thread is %s", configuration.audio_multi_thread? "ON" : "OFF");
+	this->audio_buffer_size = conf.getInteger("audio_buffer_size", 1024);
+	this->save_slots = conf.getBoolean("use_save_slots", true);
+	this->player = conf.getString("player", "Pekka");
+	this->silent_suicide = conf.getBoolean("silent_suicide", false);
 }
 
 
