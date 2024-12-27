@@ -261,11 +261,11 @@ int MenuScreen::Draw_Radio(int x, int y, int num, int sel) {
 }
 
 void MenuScreen::Draw_Menu_Main() {
-
-	//TODO Test it!
-	//int my = Settings.touchscreen_mode? 260 : 240;//250;
 	int my = 223; //240;
-	//Draw_BGSquare(160, 200, 640-180, 410, 224);
+	
+	if(Episode){
+		my = 200;
+	}
 	Draw_BGSquare(160, 200, 640-180, 450, 224);
 	
 	if (Episode){
@@ -350,24 +350,16 @@ void MenuScreen::Draw_Menu_Main() {
 		}
 		my += 40;
 	}
-
-	/**
-	 * @brief 
-	 * Draw Discord and Github links
-	 */
-	/*if(!Episode){
-
-		int ys = (int)(sin_table((degree)*8))/7;
-		int xs = (int)(cos_table((degree)*8))/9;
-
-		PDraw::image_cutclip(game_assets2, 180 + xs, my + ys, 1, 1, 60, 49);
-	}*/
 }
 
 void MenuScreen::Draw_Menu_Settings(){
-	Draw_BGSquare(160, 200, 640-180, 450, 37);
+	Draw_BGSquare(160, 200, 640-180, 450, 224);
 
 	int my = 223;
+
+	if(Episode){
+		my = 200;
+	}
 
 	if (Draw_Menu_Text("language",180,my)){
 		menu_nyt = MENU_LANGUAGE;
@@ -907,7 +899,7 @@ void MenuScreen::Draw_Menu_Sounds() {
 	my += 20;
 
 	if (Draw_Menu_Text(PK_txt.mainmenu_return,180,400))
-		menu_nyt = MENU_MAIN;
+		menu_nyt = MENU_SETTINGS;
 	
 	
 	if (Settings.sfx_max_volume < 0)
@@ -1061,7 +1053,7 @@ void MenuScreen::Draw_Menu_Controls() {
 	}
 	my += 20;
 	if (Draw_Menu_Text(PK_txt.mainmenu_return,180,my)){
-		menu_nyt = MENU_MAIN;
+		menu_nyt = MENU_SETTINGS;
 		menu_lue_kontrollit = 0;
 		chosen_menu_id = 0;
 	}
@@ -1240,59 +1232,7 @@ void MenuScreen::Draw_Menu_Language() {
 	}
 
 	if (Draw_Menu_Text(PK_txt.mainmenu_return,180,400))
-		menu_nyt = MENU_MAIN;
-
-}
-
-void MenuScreen::Draw_Menu_Data() {
-
-/*#ifdef __ANDROID__
-
-	int align_left = 80;
-	int align_right = 640 - 70;
-
-	Draw_BGSquare(-0, 30, 640+0, 480-30, 100);
-
-	// TODO - data menu
-	int my = 80;
-
-	PDraw::font_write(fontti1, id_code, align_right - 7*8, my);
-	my += 15;
-
-	PDraw::font_write(fontti2, "data location:", align_left, my);
-
-	if (external_dir) {
-		if (Draw_Menu_Text("external",align_right - 15*8, my)) {
-
-			Move_DataPath(Internal_Path);
-			external_dir = false;
-
-		}
-
-	} else {
-		if (Draw_Menu_Text("internal",align_right - 15*8, my)) {
-
-			if (PUtils::ExternalWriteable()) {
-				Move_DataPath((External_Path));
-				external_dir = true;
-			} else {
-				if (SDL_AndroidRequestPermission("android.permission.WRITE_EXTERNAL_STORAGE")) {
-					Move_DataPath((External_Path));
-					external_dir = true;
-				}
-			}
-
-		}
-
-	}
-
-	my += 25;
-	PDraw::font_write(fontti1, data_path.c_str(), align_right - data_path.size()*8, my);
-
-#endif*/
-
-	if (Draw_Menu_Text(PK_txt.mainmenu_return,180,400))
-		menu_nyt = MENU_MAIN;
+		menu_nyt = MENU_SETTINGS;
 
 }
 
@@ -1313,7 +1253,6 @@ void MenuScreen::Draw() {
 		case MENU_LOAD     : Draw_Menu_Load();     break;
 		case MENU_TALLENNA : Draw_Menu_Save();     break;
 		case MENU_LANGUAGE : Draw_Menu_Language(); break;
-		case MENU_DATA     : Draw_Menu_Data();     break;
 		case MENU_LINKS	   : Draw_Menu_Links();	   break;
 		default            : Draw_Menu_Main();     break;
 	}
