@@ -12,7 +12,7 @@
 
 #include "settings/config_txt.hpp"
 #include "save.hpp"
-#include "save_legacy.hpp"
+#include "save_slots.hpp"
 
 #include "engine/PLog.hpp"
 #include "engine/PFile.hpp"
@@ -268,6 +268,7 @@ void EpisodeClass::load() {
 	this->loadInfo();
 }
 
+/*
 EpisodeClass::EpisodeClass(int save) {
 
 	//Search the id
@@ -303,7 +304,7 @@ EpisodeClass::EpisodeClass(int save) {
 		this->levels_list_v[j].status = PK2save::saves_slots[save].level_status[j];
 	}
 
-}
+}*/
 
 u8 EpisodeClass::getLevelStatus(int level_id)const{
 	if(level_id >= 0 && level_id < (int)this->levels_list_v.size()){

@@ -17,7 +17,7 @@
 #include "language.hpp"
 #include "episode/episodeclass.hpp"
 #include "episode/mapstore.hpp"
-#include "episode/save_legacy.hpp"
+#include "episode/save_slots.hpp"
 #include "system.hpp"
 #include "version.hpp"
 
@@ -650,13 +650,15 @@ void MenuScreen::Draw_Menu_Load() {
 	PDraw::font_write(fontti1,tekstit->Get_Text(PK_txt.loadgame_info),50,110);
 	my = -20;
 
-	for ( int i = 0; i < SAVE_SLOTS_NUMBER; i++ ) {
+	for ( std::size_t i = 0; i < PK2save::saveSlots.size(); i++ ) {
 
 		std::ostringstream os;
+
+		const PK2save::PK2SaveSlot& slot = PK2save::saveSlots[i];
 		
 		if (i == 10) {
 			
-			if(PK2save::saves_slots[i].empty)
+			if(slot.empty)
 				break;
 			os<<"bk. ";
 			my += 13;
@@ -665,18 +667,18 @@ void MenuScreen::Draw_Menu_Load() {
 			os<<i+1<<". ";
 		}
 		
-		if (PK2save::saves_slots[i].empty){
+		if (slot.empty){
 			os<<"empty";
 		}
 		else{
-			os<<PK2save::saves_slots[i].name;
+			os<<slot.player;
 		}
 
 		std::string number = os.str();
 		
 
 		if (Draw_Menu_Text(number.c_str(),100,150+my)) {
-			if (!PK2save::saves_slots[i].empty) {
+			if (!PK2save::saveSlots[i].empty) {
 				if (Game) {
 					delete Game;
 					Game = nullptr;
@@ -686,22 +688,22 @@ void MenuScreen::Draw_Menu_Load() {
 					Episode = nullptr;
 				}
 
-				Episode = new EpisodeClass(i);
+				Episode = new EpisodeClass("", slot.episode);
+				PK2save::LoadSlot(Episode, i);
 				next_screen = SCREEN_MAP;
 			}
 		}
 
-		if (!PK2save::saves_slots[i].empty) {
+		if (!slot.empty) {
 
 			vali = 0;
 			vali += PDraw::font_write(fontti1,tekstit->Get_Text(PK_txt.loadgame_episode),400,150+my);
-			vali += PDraw::font_write(fontti1,PK2save::saves_slots[i].episode,400+vali,150+my);
+			vali += PDraw::font_write(fontti1,slot.episode.name,400+vali,150+my);
 			
 			vali = 0;
-			if (PK2save::saves_slots[i].next_level != UINT32_MAX) {
+			if (!slot.completed) {
 				vali += PDraw::font_write(fontti1,tekstit->Get_Text(PK_txt.loadgame_level),400+vali,160+my);
-				//sprintf(jaksoc, "%u", PK2save::saves_slots[i].next_level);
-				vali += PDraw::font_write(fontti1,std::to_string(PK2save::saves_slots[i].next_level),400+vali,160+my);
+				vali += PDraw::font_write(fontti1,std::to_string(slot.next_level),400+vali,160+my);
 			} else {
 				vali += PDraw::font_write(fontti1,"completed",400+vali,160+my);
 			}
@@ -727,33 +729,35 @@ void MenuScreen::Draw_Menu_Save() {
 	PDraw::font_write(fontti1,tekstit->Get_Text(PK_txt.savegame_info),50,110);
 	my = -20;
 
-	for (int i = 0; i < SAVE_SLOTS_NUMBER - 1; i++) {
+	for (int i = 0; i < 10; i++) {
 		std::ostringstream os;
+		const PK2save::PK2SaveSlot& slot = PK2save::saveSlots[i];
 		os<<i+1<<". ";
 
-		if (PK2save::saves_slots[i].empty){
+		if (slot.empty){
 			os<<"empty";
 		}
 		else{
-			os<<PK2save::saves_slots[i].name;
+			os<<slot.player;
 		}
 
 		std::string number = os.str();
 
-		if (Draw_Menu_Text(number.c_str(),100,150+my))
-			PK2save::Save_Record(i);
+		if (Draw_Menu_Text(number.c_str(),100,150+my) && Episode!=nullptr){
+			PK2save::SaveSlot(Episode, i);
+		}
+			
 
-		if (!PK2save::saves_slots[i].empty) {
+		if (!slot.empty) {
 
 			vali = 0;
 			vali += PDraw::font_write(fontti1,tekstit->Get_Text(PK_txt.savegame_episode),400,150+my);
-			vali += PDraw::font_write(fontti1,PK2save::saves_slots[i].episode,400+vali,150+my);
+			vali += PDraw::font_write(fontti1,slot.episode.name,400+vali,150+my);
 			
 			vali = 0;
-			if (PK2save::saves_slots[i].next_level != UINT32_MAX) {
+			if (!slot.completed) {
 				vali += PDraw::font_write(fontti1,tekstit->Get_Text(PK_txt.savegame_level),400+vali,160+my);
-				//sprintf(jaksoc, "%u", PK2save::saves_slots[i].next_level);
-				vali += PDraw::font_write(fontti1,std::to_string(PK2save::saves_slots[i].next_level),400+vali,160+my);
+				vali += PDraw::font_write(fontti1,std::to_string(slot.next_level),400+vali,160+my);
 			} else {
 				vali += PDraw::font_write(fontti1,"completed",400+vali,160+my);
 			}

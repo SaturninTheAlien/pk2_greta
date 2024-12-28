@@ -25,6 +25,25 @@
 
 namespace fs = std::filesystem;
 
+
+void to_json(nlohmann::json& j,const episode_entry& entry){
+	j["n"] = entry.name;
+	if(entry.is_zip){
+		j["z"] = entry.zipfile;
+	}	
+}
+void from_json(const nlohmann::json& j, episode_entry& entry){
+	j["n"].get_to(entry.name);
+	if(j.contains("z")){
+		entry.is_zip = true;
+		j["z"].get_to(entry.zipfile);
+	}
+	else{
+		entry.is_zip = false;
+	}
+}
+
+
 std::vector<episode_entry> episodes;
 
 void Search_Episodes() {

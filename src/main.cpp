@@ -37,7 +37,7 @@
 
 #include "utils/file_converter.hpp"
 
-#include "episode/save_legacy.hpp"
+#include "episode/save_slots.hpp"
 
 
 

@@ -17,7 +17,6 @@
 
 #include "sfx.hpp"
 
-#define EPISODI_MAX_LEVELS 100
 //50
 
 class LevelEntry{
@@ -63,7 +62,6 @@ class EpisodeClass {
 
 		PLang infos;
 
-		EpisodeClass(int save);
 		EpisodeClass(const std::string& player_name, episode_entry entry);
 		~EpisodeClass();
 

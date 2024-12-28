@@ -20,7 +20,7 @@
 
 
 #include "episode/save.hpp"
-#include "episode/save_legacy.hpp"
+#include "episode/save_slots.hpp"
 
 #include "engine/PDraw.hpp"
 #include "engine/PInput.hpp"
@@ -351,7 +351,7 @@ void ScoreScreen::Init() {
 
 		if(config_txt.save_slots){
 			// Save backup when finishing a level
-			PK2save::Save_Record(10);
+			PK2save::SaveSlot(Episode, 10);
 		}
 		else{
 			PK2save::SaveModern(Episode);
