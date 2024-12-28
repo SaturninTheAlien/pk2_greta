@@ -114,7 +114,7 @@ const std::string& PLang::Get_Text(int index)const {
 	if (!loaded)
 		return PLACEHOLDER;
 
-	if (index>=0 && index < tekstit.size())
+	if (index>=0 && index < (int)tekstit.size())
 		return tekstit[index];
 	else
 		return PLACEHOLDER;
@@ -140,7 +140,7 @@ int PLang::Set_Text(const std::string& title, const char* text) {
 }
 
 const std::string& PLang::getString(int id, const std::string& def)const{
-	if(id>=0 && id < this->tekstit.size()){
+	if(id>=0 && id < (int)this->tekstit.size()){
 		return this->tekstit[id];
 	}
 
@@ -148,7 +148,7 @@ const std::string& PLang::getString(int id, const std::string& def)const{
 }
 
 bool PLang::getBoolean(int id, bool def)const{
-	if(id >= 0 && id < this->tekstit.size()){
+	if(id >= 0 && id < (int)this->tekstit.size()){
 		const std::string& text = PString::lowercase(this->tekstit[id]);
 		if(text=="default")return def;
 		else if(text=="true")return true;
@@ -161,7 +161,7 @@ bool PLang::getBoolean(int id, bool def)const{
 }
 
 int PLang::getInteger(int id, int def)const{
-	if(id >= 0 && id < this->tekstit.size()){
+	if(id >= 0 && id < (int)this->tekstit.size()){
 		int tmp = 0;
 		const char* src = this->tekstit[id].c_str();
 		if(sscanf(src, "%i", &tmp)==1){

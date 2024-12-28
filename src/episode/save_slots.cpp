@@ -302,7 +302,7 @@ void LoadSaveSlots() {
 
 				PK2SaveSlot slot;
 				slot.empty = !slot_v1.not_empty;
-				slot.completed = slot_v1.next_level == UINT32_MAX;
+				slot.completed = (u32)slot_v1.next_level == UINT32_MAX;
 				slot.episode = LegacyFindEpisode(slot_v1.episode); 
 				slot.player = slot_v1.name;
 				slot.score = slot_v1.score;

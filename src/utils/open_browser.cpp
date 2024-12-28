@@ -8,6 +8,7 @@
  * Opening browser utility by Saturnin 
  */
 #include "open_browser.hpp"
+#include "engine/PLog.hpp"
 
 const char* URL_DISCORD = "https://discord.gg/kqDJfYX";
 const char* URL_GITHUB= "https://github.com/SaturninTheAlien/pk2_greta";
@@ -41,7 +42,11 @@ void OpenBrowser(const std::string& url){
     command<<"xdg-open ";
     #endif
     command<<url;
-    system(command.str().c_str());
+
+    int ret = system(command.str().c_str());
+    if(ret!=0){
+        PLog::Write(PLog::WARN, "Cannot open a browser, code: %i", ret);
+    }
 
     #else //Android
 
