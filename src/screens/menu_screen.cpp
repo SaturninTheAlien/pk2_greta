@@ -2,6 +2,7 @@
 //Pekka Kana 2
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
+#include <iostream>
 #include <sstream>
 #include "menu_screen.hpp"
 #include "utils/open_browser.hpp"
@@ -206,6 +207,78 @@ int MenuScreen::Draw_BackNext(int x, int y) {
 	return ret;
 }
 
+bool MenuScreen::drawButton(int x, int y, const PDraw::RECT& rect, const std::string& label){
+
+	int mouse_x = (int)PInput::mouse_x;
+	int mouse_y = (int)PInput::mouse_y;
+
+	bool res = false;
+
+	if(mouse_x > x && mouse_x < x + rect.w &&
+	mouse_y > y && mouse_y < y + rect.h){
+
+		int label_x = x - PDraw::font_get_width(fontti1, label) - 5;
+		int label_y = y + 10;
+
+		PDraw::font_write(fontti1, label, label_x, label_y);
+
+		x += rand()%3 - rand()%3;
+		y += rand()%3 - rand()%3;
+
+		if(Clicked()){
+			if(this->btnKeyDelay==0){
+				res = true;
+			}
+			this->btnKeyDelay = 10;
+		}		
+	}
+
+	PDraw::image_cutclip(game_assets, rect, PDraw::RECT(x, y, 0, 0));
+	return res;
+}
+
+void MenuScreen::drawLinksMenu(){
+	int x = 604;
+	int y = 443;
+
+	if(this->btnKeyDelay>0){
+		--this->btnKeyDelay;
+	}
+
+	if(drawButton(x, y, PDraw::RECT(600, 124, 30, 31), "Links")){
+		this->linksMenuExpanded = !this->linksMenuExpanded;
+	}
+
+	if(this->linksMenuExpanded){
+
+		y -= 47;
+		if(drawButton(x, y, PDraw::RECT(600, 157, 30, 31), "Docs")){
+			OpenBrowser("https://sites.google.com/view/pekka-kana-fanpage/pekka-kana-2");
+		}
+
+		y -= 47;
+		if(drawButton(x, y, PDraw::RECT(569, 157, 30, 31), "PisteGamez")){
+			OpenBrowser("https://pistegamez.net");
+		}
+
+		y -= 47;
+		if(drawButton(x, y, PDraw::RECT(537, 157, 30, 31), "Proboards")){
+			OpenBrowser("https://pistegamez.proboards.com");
+		}
+
+		y -= 47;
+		if(drawButton(x, y, PDraw::RECT(505, 157, 30, 31), "GitHub")){
+			OpenBrowser("https://github.com/SaturninTheAlien/pk2_greta");
+		}
+
+		y -= 47;
+		if(drawButton(x, y, PDraw::RECT(473, 157, 30, 31), "Discord")){
+			OpenBrowser("https://discord.gg/kqDJfYX");
+		}
+	}	
+}
+
+
 
 int MenuScreen::Draw_Radio(int x, int y, int num, int sel) {
 
@@ -297,7 +370,7 @@ void MenuScreen::Draw_Menu_Main() {
 
 		if (Episode){
 			if (Draw_Menu_Text(PK_txt.mainmenu_save_game,180,my)){
-				menu_nyt = MENU_TALLENNA;
+				menu_nyt = MENU_SAVE;
 			}
 			my += 20;
 		}
@@ -316,11 +389,6 @@ void MenuScreen::Draw_Menu_Main() {
 
 	if(Draw_Menu_Text("Settings",180,my)){
 		menu_nyt = MENU_SETTINGS;
-	}
-	my += 20;
-
-	if (Draw_Menu_Text("links",180,my)){
-		menu_nyt = MENU_LINKS;
 	}
 	my += 20;
 
@@ -384,34 +452,6 @@ void MenuScreen::Draw_Menu_Settings(){
 	if (Draw_Menu_Text(PK_txt.mainmenu_return,180,400)){
 		menu_nyt = MENU_MAIN;
 	}
-}
-
-void MenuScreen::Draw_Menu_Links(){
-	Draw_BGSquare(160, 200, 640-180, 450, 37);
-
-	int my = 223;
-	if (Draw_Menu_Text("Discord",180,my)){
-		OpenBrowser("https://discord.gg/kqDJfYX");
-	}
-	my+=20;
-	if (Draw_Menu_Text("GitHub",180,my)){
-		OpenBrowser("https://github.com/SaturninTheAlien/pk2_greta");
-	}
-	my+=20;
-
-	if (Draw_Menu_Text("Old PG forum",180,my)){
-		OpenBrowser("https://pistegamez.proboards.com");
-	}
-	my+=20;
-
-	if (Draw_Menu_Text("PK2 website",180,my)){
-		OpenBrowser("https://pistegamez.net/game_pk2.html");
-	}
-
-	if (Draw_Menu_Text(PK_txt.mainmenu_return,180,400)){
-		menu_nyt = MENU_MAIN;
-	}
-		
 }
 
 void MenuScreen::Draw_Menu_Name() {
@@ -1251,14 +1291,16 @@ void MenuScreen::Draw() {
 		case MENU_CONTROLS : Draw_Menu_Controls(); break;
 		case MENU_NAME     : Draw_Menu_Name();     break;
 		case MENU_LOAD     : Draw_Menu_Load();     break;
-		case MENU_TALLENNA : Draw_Menu_Save();     break;
+		case MENU_SAVE 	   : Draw_Menu_Save();     break;
 		case MENU_LANGUAGE : Draw_Menu_Language(); break;
-		case MENU_LINKS	   : Draw_Menu_Links();	   break;
 		default            : Draw_Menu_Main();     break;
 	}
 
-	if (!Episode)
+	if (!Episode){
 		PDraw::font_write(fontti1, PK2_VERSION_STR_MENU, 0, 470);
+		this->drawLinksMenu();
+	}
+		
 
 	if (!mouse_hidden)
 		Draw_Cursor(PInput::mouse_x, PInput::mouse_y);

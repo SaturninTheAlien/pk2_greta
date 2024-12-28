@@ -120,6 +120,17 @@ int PFont::getCharacterPos(const PString::UTF8_Char& u8c)const{
 	return -1;
 }
 
+int PFont::getTextWidth(const char *text) {
+	int charsNumber = 0;
+	const char* curr_char = text;
+	PString::UTF8_Char u8c;
+	while (*curr_char!='\0'){
+		curr_char = u8c.read(curr_char);
+		charsNumber+=1;
+	}
+	return char_w * charsNumber;
+}
+
 int PFont::write(int posx, int posy, const char *text) {
 	
 	int ox = posx;

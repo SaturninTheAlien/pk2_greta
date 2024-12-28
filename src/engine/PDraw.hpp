@@ -14,10 +14,12 @@
 
 namespace PDraw {
 
-struct RECT {
+class RECT {
+public:
+    RECT()=default;
+    RECT(s32 x, s32 y, s32 w, s32 h): x(x), y(y), w(w), h(h){}
 
-    s32 x, y, w, h;
-
+    s32 x=0, y=0, w=0, h=0;
 };
 
 void  rotate_palette(u8 start, u8 end);
@@ -68,6 +70,8 @@ int   font_create(int image, int x, int y, int width, int height, int count);
 int   font_create(PFile::Path path);
 int   font_write(int font_index, const std::string& text, int x, int y);
 int   font_writealpha_s(int font_index, const std::string& text, int x, int y, int alpha);
+int   font_get_width(int font_index, const std::string& text);
+
 bool  font_accept_char(int font_index, PString::UTF8_Char u8c);
 
 void  set_buffer_size(int w, int h);

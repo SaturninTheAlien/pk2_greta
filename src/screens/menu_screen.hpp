@@ -16,11 +16,12 @@ enum MENU {
 	MENU_SOUNDS,
 	MENU_NAME,
 	MENU_LOAD,
-	MENU_TALLENNA,
-	MENU_LANGUAGE,
-    MENU_LINKS
-
+	MENU_SAVE,
+	MENU_LANGUAGE
 };
+namespace PDraw{
+    class RECT;
+}
 
 class MenuScreen: public Screen{
 public:
@@ -56,6 +57,14 @@ private:
     //bool changed = false;
     void drawBoolBoxGroup(bool& value, bool& changed, const std::string& text_true, const std::string& text_false);
 
+    //bool drawButton(int x, int y, const PDraw::RECT& rect);
+    void drawLinksMenu();
+    bool drawButton(int x, int y, const PDraw::RECT& rect, const std::string& label);
+
+    int btnKeyDelay = 0;
+    bool linksMenuExpanded = false;
+
+
     void Draw_Menu_Main();
     void Draw_Menu_Name();
     void Draw_Menu_Load();
@@ -65,7 +74,5 @@ private:
     void Draw_Menu_Controls();
     void Draw_Menu_Episodes();
     void Draw_Menu_Language();
-    void Draw_Menu_Links();
-
     void Draw_Menu_Settings();
 };

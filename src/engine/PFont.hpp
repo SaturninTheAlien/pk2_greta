@@ -29,6 +29,7 @@ private:
 	int get_image(int x,int y,int img_source);
 
 public:
+	int getTextWidth(const char* text);
 	int write(int posx, int posy, const char *text);
 	int write_trasparent(int posx, int posy, const char* text, int alpha);
 	

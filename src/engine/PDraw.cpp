@@ -731,22 +731,34 @@ int font_create(PFile::Path path) {
 
 }
 
+int font_get_width(int font_index, const std::string& text){
+    if (font_index < 0 || font_index >= (int)fontList.size())
+        return 1;
+    
+    return fontList[font_index]->getTextWidth(text.c_str());
+}
+
 int font_write(int font_index, const std::string& text, int x, int y) {
 
-    if (font_index < 0)
-        return 1;
+    if (font_index < 0 || font_index >= (int)fontList.size())
+        return 0;
     
     return fontList[font_index]->write(x, y, text.c_str());
 
 }
 
 int font_writealpha_s(int font_index, const std::string& text, int x, int y, int alpha) {
+    if (font_index < 0 || font_index >= (int)fontList.size())
+        return 0;
 
     return fontList[font_index]->write_trasparent(x + x_offset, y + y_offset, text.c_str(), alpha);
 
 }
 
 bool font_accept_char(int font_index, PString::UTF8_Char u8c){
+    if (font_index < 0 || font_index >= (int)fontList.size())
+        return false;
+
     return fontList[font_index]->acceptChar(u8c);
 }
 
