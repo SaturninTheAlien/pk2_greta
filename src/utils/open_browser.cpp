@@ -8,6 +8,13 @@
  * Opening browser utility by Saturnin 
  */
 #include "open_browser.hpp"
+
+const char* URL_DISCORD = "https://discord.gg/kqDJfYX";
+const char* URL_GITHUB= "https://github.com/SaturninTheAlien/pk2_greta";
+const char* URL_PROBOARDS ="https://pistegamez.proboards.com";
+const char* URL_PISTEGAMEZ = "https://pistegamez.net";
+const char* URL_MAKYUNI = "https://sites.google.com/view/pekka-kana-fanpage/pekka-kana-2";
+
 #include <sstream>
 
 #ifdef _WIN32

@@ -18,6 +18,12 @@ static const char default_config[] =
 "\r\n---------------"
 "\r\n*audio_buffer_size:    default"
 "\r\n"
+"\r\n-- To determine how the links menu should look like"
+"\r\n-- Available options are: main_menu, bottom, none"
+"\r\n*links_menu:    main_menu"
+"\r\n"
+"\r\n"
+"\r\n"
 "\r\n-- To use legacy saving system with \"slots\""
 "\r\n*use_save_slots:    yes"
 "\r\n"
@@ -47,6 +53,24 @@ void Config_txt::readFile(){
 		rw.write(default_config, sizeof(default_config) - 1);
 		rw.close();
 		return;
+	}
+
+
+	int idx = conf.Search_Id("links_menu");
+	if(idx!=-1){
+		std::string val = conf.getString("links_menu", "default");
+		if(val=="default"){
+			this->links_menu = LINKS_MENU_MAIN;
+		}
+		else if(val=="main_menu"){
+			this->links_menu = LINKS_MENU_MAIN;
+		}
+		else if(val=="bottom"){
+			this->links_menu = LINKS_MENU_BOTTOM;
+		}
+		else if(val=="none"){
+			this->links_menu = LINKS_MENU_NONE;
+		}
 	}
 	
 	this->audio_buffer_size = conf.getInteger("audio_buffer_size", 1024);

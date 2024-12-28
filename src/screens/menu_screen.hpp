@@ -17,7 +17,8 @@ enum MENU {
 	MENU_NAME,
 	MENU_LOAD,
 	MENU_SAVE,
-	MENU_LANGUAGE
+	MENU_LANGUAGE,
+    MENU_LINKS
 };
 namespace PDraw{
     class RECT;
@@ -58,7 +59,7 @@ private:
     void drawBoolBoxGroup(bool& value, bool& changed, const std::string& text_true, const std::string& text_false);
 
     //bool drawButton(int x, int y, const PDraw::RECT& rect);
-    void drawLinksMenu();
+    void drawLinksMenuBottom();
     bool drawButton(int x, int y, const PDraw::RECT& rect, const std::string& label);
 
     int btnKeyDelay = 0;
@@ -75,4 +76,5 @@ private:
     void Draw_Menu_Episodes();
     void Draw_Menu_Language();
     void Draw_Menu_Settings();
+    void Draw_Menu_Links();
 };

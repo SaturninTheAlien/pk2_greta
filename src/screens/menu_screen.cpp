@@ -237,7 +237,7 @@ bool MenuScreen::drawButton(int x, int y, const PDraw::RECT& rect, const std::st
 	return res;
 }
 
-void MenuScreen::drawLinksMenu(){
+void MenuScreen::drawLinksMenuBottom(){
 	int x = 604;
 	int y = 443;
 
@@ -253,27 +253,27 @@ void MenuScreen::drawLinksMenu(){
 
 		y -= 47;
 		if(drawButton(x, y, PDraw::RECT(600, 157, 30, 31), "Docs")){
-			OpenBrowser("https://sites.google.com/view/pekka-kana-fanpage/pekka-kana-2");
+			OpenBrowser(URL_MAKYUNI);
 		}
 
 		y -= 47;
 		if(drawButton(x, y, PDraw::RECT(569, 157, 30, 31), "PisteGamez")){
-			OpenBrowser("https://pistegamez.net");
+			OpenBrowser(URL_PISTEGAMEZ);
 		}
 
 		y -= 47;
 		if(drawButton(x, y, PDraw::RECT(537, 157, 30, 31), "Proboards")){
-			OpenBrowser("https://pistegamez.proboards.com");
+			OpenBrowser(URL_PROBOARDS);
 		}
 
 		y -= 47;
 		if(drawButton(x, y, PDraw::RECT(505, 157, 30, 31), "GitHub")){
-			OpenBrowser("https://github.com/SaturninTheAlien/pk2_greta");
+			OpenBrowser(URL_GITHUB);
 		}
 
 		y -= 47;
 		if(drawButton(x, y, PDraw::RECT(473, 157, 30, 31), "Discord")){
-			OpenBrowser("https://discord.gg/kqDJfYX");
+			OpenBrowser(URL_DISCORD);
 		}
 	}	
 }
@@ -391,6 +391,13 @@ void MenuScreen::Draw_Menu_Main() {
 		menu_nyt = MENU_SETTINGS;
 	}
 	my += 20;
+	
+	if(config_txt.links_menu == LINKS_MENU_MAIN){
+		if(Draw_Menu_Text("Links",180,my)){
+			menu_nyt = MENU_LINKS;
+		}
+		my += 20;
+	}
 
 	if (Settings.touchscreen_mode && Game) {
 		if (Draw_Menu_Text("map",180,my)) {
@@ -417,6 +424,38 @@ void MenuScreen::Draw_Menu_Main() {
 			Fade_Quit();
 		}
 		my += 40;
+	}
+}
+
+void MenuScreen::Draw_Menu_Links(){
+	Draw_BGSquare(160, 200, 640-180, 450, 224);
+	int my = 223;
+	if(Episode){
+		my = 200;
+	}
+
+	if (Draw_Menu_Text("Discord",180,my)){
+		OpenBrowser(URL_DISCORD);
+	}
+	my += 20;
+	if (Draw_Menu_Text("GitHub",180,my)){
+		OpenBrowser(URL_GITHUB);
+	}
+	my += 20;
+	if (Draw_Menu_Text("ProBoards",180,my)){
+		OpenBrowser(URL_PROBOARDS);
+	}
+	my += 20;
+	if (Draw_Menu_Text("PisteGamez.net",180,my)){
+		OpenBrowser(URL_PISTEGAMEZ);
+	}
+	my += 20;
+	if (Draw_Menu_Text("Makyuni",180,my)){
+		OpenBrowser(URL_MAKYUNI);
+	}
+
+	if (Draw_Menu_Text(PK_txt.mainmenu_return,180,400)){
+		menu_nyt = MENU_MAIN;
 	}
 }
 
@@ -1092,6 +1131,8 @@ void MenuScreen::Draw_Menu_Controls() {
 		}
 	}
 	my += 20;
+	if(my < 400)my=400;
+
 	if (Draw_Menu_Text(PK_txt.mainmenu_return,180,my)){
 		menu_nyt = MENU_SETTINGS;
 		menu_lue_kontrollit = 0;
@@ -1293,12 +1334,15 @@ void MenuScreen::Draw() {
 		case MENU_LOAD     : Draw_Menu_Load();     break;
 		case MENU_SAVE 	   : Draw_Menu_Save();     break;
 		case MENU_LANGUAGE : Draw_Menu_Language(); break;
+		case MENU_LINKS    : Draw_Menu_Links();    break;
 		default            : Draw_Menu_Main();     break;
 	}
 
 	if (!Episode){
 		PDraw::font_write(fontti1, PK2_VERSION_STR_MENU, 0, 470);
-		this->drawLinksMenu();
+		if(config_txt.links_menu==LINKS_MENU_BOTTOM){
+			this->drawLinksMenuBottom();
+		}
 	}
 		
 
