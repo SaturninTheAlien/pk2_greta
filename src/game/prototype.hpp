@@ -56,7 +56,7 @@ public:
     int     type = TYPE_NOTHING;
 
     std::array<std::string, SPRITE_SOUNDS_NUMBER> sound_files = {""};
-    std::array<int, SPRITE_SOUNDS_NUMBER> sounds = {-1};
+    std::array<int, SPRITE_SOUNDS_NUMBER> sounds = {-1, -1, -1,  -1, -1, -1,  -1};
 
     //int     framet[SPRITE_MAX_FRAMEJA] = {0};
     std::vector<int>frames;
