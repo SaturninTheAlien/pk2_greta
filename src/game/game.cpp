@@ -8,11 +8,14 @@
 #include "system.hpp"
 #include "gfx/text.hpp"
 #include "gfx/particles.hpp"
+#include "gfx/effect.hpp"
 #include "gfx/bg_particles.hpp"
+
 #include "episode/episodeclass.hpp"
 
 #include "settings/settings.hpp"
 #include "settings/config_txt.hpp"
+
 
 #include "gfx/touchscreen.hpp"
 #include "language.hpp"
@@ -343,15 +346,27 @@ void GameClass::update(int& debug_active_sprites){
 				key_delay = 20;
 				this->finish();
 			}
-			/*
 			if (PInput::Keydown(PInput::A)) {
-				//key_delay = 20;
-				PrototypeClass*proto = this->spritesHandler.getLevelPrototype(this->level.player_sprite_index);
-				if(proto!=nullptr){
-					*Player_Sprite = SpriteClass(proto, 1, Player_Sprite->x, Player_Sprite->y);
+				key_delay = 20;
+				if(this->initialPlayerPrototype!=nullptr){
+
+					PrototypeClass* ammo1 = Player_Sprite->ammo1;
+					PrototypeClass* ammo2 = Player_Sprite->ammo2;
+
+					Player_Sprite->energy = 10;
+					Player_Sprite->transformTo(this->initialPlayerPrototype);
 					Effect_Stars(Player_Sprite->x, Player_Sprite->y, COLOR_VIOLET);
+
+					if(Player_Sprite->ammo1==nullptr){
+						Player_Sprite->ammo1 = ammo1;
+					}
+
+					if(Player_Sprite->ammo2==nullptr){
+						Player_Sprite->ammo2 = ammo2;
+					}
+
 				}
-			}*/
+			}
 		}
 		if (PInput::Keydown(PInput::U))
 			Player_Sprite->b = -10;
@@ -532,6 +547,8 @@ void GameClass::placeSprites() {
 	if(player_prototype==nullptr){
 		throw PExcept::PException("Null player prototype is quite serious error!");
 	}
+
+	this->initialPlayerPrototype = player_prototype;
 
 	// Add player
 	{

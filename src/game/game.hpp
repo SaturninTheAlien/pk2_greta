@@ -116,6 +116,7 @@ class GameClass {
 			return this->level_id;
 		}
 	private:
+		PrototypeClass* initialPlayerPrototype = nullptr;
 		int level_id = -1;
 		bool started = false;
 		int Open_Map();
