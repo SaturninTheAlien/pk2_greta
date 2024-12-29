@@ -321,12 +321,24 @@ void GameClass::update(int& debug_active_sprites){
 				this->change_skulls = true;
 				key_delay = 20;
 			}
-			/*if (PInput::Keydown(PInput::R)) {
-				this->Select_Start();
+			if (PInput::Keydown(PInput::R)) {
+
 				Player_Sprite->energy = 10;
 				Player_Sprite->removed = false;
+				this->game_over = false;
+
+				double pos_x = 0;
+				double pos_y = 0;
+
+				u32 sector_id = 0;
+
+				this->selectStart(pos_x, pos_y, sector_id);
+				pos_x += 17;
+
+				this->teleportPlayer(pos_x, pos_y, this->level.sectors[sector_id]);
+				
 				key_delay = 20;
-			}*/
+			}
 			if (PInput::Keydown(PInput::END)) {
 				key_delay = 20;
 				this->finish();
