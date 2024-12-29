@@ -100,15 +100,22 @@ const char* UTF8_Char::read(const char *str){
 
 	int bytes = getBytesNumber(*str);
     char* data_ptr = this->data;
+    if(bytes==1){
+        *data_ptr = *str;
+        ++str;
+    }
+    else{
+        for(int i=0;i<bytes;++i){
+            //if(*str=='\0')return str;
+            // Not a correct following byte, it also works when *str=='\0'
+            if( ((*str) & 0x80) == 0)return str;
 
-	for(int i=0;i<bytes;++i){
-		if(*str=='\0')return str;
+            *data_ptr = *str;
 
-		*data_ptr = *str;
-
-        ++data_ptr;
-		++str;
-	}
+            ++data_ptr;
+            ++str;
+        }
+    }
 
 	return str;
 }
