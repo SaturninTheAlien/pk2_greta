@@ -5,6 +5,7 @@
 #pragma once
 
 #include "screen.hpp"
+#include "widgets.hpp"
 
 enum MENU {
 
@@ -20,12 +21,14 @@ enum MENU {
 	MENU_LANGUAGE,
     MENU_LINKS
 };
-namespace PDraw{
-    class RECT;
-}
 
 class MenuScreen: public Screen{
 public:
+    MenuScreen()
+    :playerNameEdit(19, "/\\~:"){
+
+    }
+
     void Init();
     void Loop();
     void Draw();
@@ -41,30 +44,19 @@ private:
     MenuRect bg_square;
     int menu_nyt = MENU_MAIN;
     int menu_lue_kontrollit = 0;
+ 
+    PK2gui::TextInput playerNameEdit;
 
-    uint menu_name_index = 0;
-    char menu_name_last_mark = '\0';
-    char menu_name[20] = "";
     uint episode_page = 0;
     uint langlistindex = 0;
-    bool editing_name = false;
-
     void Draw_BGSquare(int left, int top, int right, int bottom, u8 pvari);
-    bool Draw_BoolBox(int x, int y, bool muuttuja, bool active);
     int  Draw_BackNext(int x, int y);
     int  Draw_Radio(int x, int y, int num, int sel);
 
     int  my = 0;
-    //bool changed = false;
     void drawBoolBoxGroup(bool& value, bool& changed, const std::string& text_true, const std::string& text_false);
 
-    //bool drawButton(int x, int y, const PDraw::RECT& rect);
-    void drawLinksMenuBottom();
-    bool drawButton(int x, int y, const PDraw::RECT& rect, const std::string& label);
-
-    int btnKeyDelay = 0;
-    bool linksMenuExpanded = false;
-
+    PK2gui::LinksMenu bottomLinksMenu;
 
     void Draw_Menu_Main();
     void Draw_Menu_Name();

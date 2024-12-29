@@ -181,7 +181,6 @@ bool Keydown(u32 key) {
 }
 
 bool text_editing = false;
-char keyboard_text[32];
 PString::UTF8_Char keyboard_input;
 int keyboard_key = 0;
 
@@ -189,17 +188,13 @@ void StartKeyboard() {
 
 	SDL_StartTextInput();
 	text_editing = true;
-	keyboard_text[0] = '\0';
 	keyboard_input = PString::UTF8_Char();
 	
 }
 
 void EndKeyboard() {
-
 	SDL_StopTextInput();
 	text_editing = false;
-	keyboard_text[0] = '\0';
-
 }
 
 bool Is_Editing() {
@@ -209,44 +204,13 @@ bool Is_Editing() {
 }
 
 void InjectText(const char* text) {
-
-	strcpy(keyboard_text, text);
 	keyboard_input.read(text);
-
 }
 
 void InjectKey(int key) {
 	
 	keyboard_key = key;
 
-}
-
-static bool accept_char(char c) {
-
-	const char* chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.!? ";
-
-	return strchr(chars, c);
-	//return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
-	//	|| c == '.' || c == '!' || c == '?' || c == ' '; //Just number, letter, space dot
-
-}
-
-// TODO - remove this
-void ReadKeyboardInputOld(char* c) {
-
-	if (accept_char(keyboard_text[0])) {
-		
-		*c = keyboard_text[0];
-	
-	} else {
-
-		*c = '\0';
-
-	}
-	
-	keyboard_text[0] = '\0';
-
-	//return ReadKeyboardNav();
 }
 
 int ReadKeyboardNav(){

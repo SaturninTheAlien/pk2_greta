@@ -113,32 +113,6 @@ void MenuScreen::Draw_BGSquare(int left, int top, int right, int bottom, u8 pvar
 	PDraw::screen_fill(right-1,top,right,bottom,138);
 }
 
-bool MenuScreen::Draw_BoolBox(int x, int y, bool muuttuja, bool active) {
-	
-	PDraw::RECT img_src, img_dst = {x , y, 0, 0};
-
-	if(muuttuja) img_src = {504,124,31,31};
-	else img_src = {473,124,31,31};
-
-	if(active){
-		PDraw::image_cutclip(game_assets,img_src,img_dst);
-	} else{
-		PDraw::image_cutcliptransparent(game_assets,img_src,img_dst,50, 255);
-		return false;
-	}
-
-	if (PInput::mouse_x > x && PInput::mouse_x < x+30 && PInput::mouse_y > y && PInput::mouse_y < y+31){
-		if (Clicked()){
-
-			Play_MenuSFX(sfx_global.menu_sound, 100);
-			key_delay = 20;
-			return true;
-		}
-	}
-
-	return false;
-}
-
 void MenuScreen::drawBoolBoxGroup(bool& value, bool&changed, const std::string& text_true, const std::string& text_false){
 	if (value){
 		if (Draw_Menu_Text(text_true,180,my)) {
@@ -151,7 +125,7 @@ void MenuScreen::drawBoolBoxGroup(bool& value, bool&changed, const std::string& 
 			changed = true;
 		}
 	}
-	if (Draw_BoolBox(100, my, value, true)) {
+	if (PK2gui::Draw_BoolBox(100, my, value, true)) {
 		value = !value;
 		changed = true;
 	}
@@ -206,78 +180,6 @@ int MenuScreen::Draw_BackNext(int x, int y) {
 
 	return ret;
 }
-
-bool MenuScreen::drawButton(int x, int y, const PDraw::RECT& rect, const std::string& label){
-
-	int mouse_x = (int)PInput::mouse_x;
-	int mouse_y = (int)PInput::mouse_y;
-
-	bool res = false;
-
-	if(mouse_x > x && mouse_x < x + rect.w &&
-	mouse_y > y && mouse_y < y + rect.h){
-
-		int label_x = x - PDraw::font_get_width(fontti1, label) - 5;
-		int label_y = y + 10;
-
-		PDraw::font_write(fontti1, label, label_x, label_y);
-
-		x += rand()%3 - rand()%3;
-		y += rand()%3 - rand()%3;
-
-		if(Clicked()){
-			if(this->btnKeyDelay==0){
-				res = true;
-			}
-			this->btnKeyDelay = 10;
-		}		
-	}
-
-	PDraw::image_cutclip(game_assets, rect, PDraw::RECT(x, y, 0, 0));
-	return res;
-}
-
-void MenuScreen::drawLinksMenuBottom(){
-	int x = 604;
-	int y = 443;
-
-	if(this->btnKeyDelay>0){
-		--this->btnKeyDelay;
-	}
-
-	if(drawButton(x, y, PDraw::RECT(600, 124, 30, 31), "Links")){
-		this->linksMenuExpanded = !this->linksMenuExpanded;
-	}
-
-	if(this->linksMenuExpanded){
-
-		y -= 47;
-		if(drawButton(x, y, PDraw::RECT(600, 157, 30, 31), "Docs")){
-			OpenBrowser(URL_MAKYUNI);
-		}
-
-		y -= 47;
-		if(drawButton(x, y, PDraw::RECT(569, 157, 30, 31), "PisteGamez")){
-			OpenBrowser(URL_PISTEGAMEZ);
-		}
-
-		y -= 47;
-		if(drawButton(x, y, PDraw::RECT(537, 157, 30, 31), "Proboards")){
-			OpenBrowser(URL_PROBOARDS);
-		}
-
-		y -= 47;
-		if(drawButton(x, y, PDraw::RECT(505, 157, 30, 31), "GitHub")){
-			OpenBrowser(URL_GITHUB);
-		}
-
-		y -= 47;
-		if(drawButton(x, y, PDraw::RECT(473, 157, 30, 31), "Discord")){
-			OpenBrowser(URL_DISCORD);
-		}
-	}	
-}
-
 
 
 int MenuScreen::Draw_Radio(int x, int y, int num, int sel) {
@@ -354,14 +256,8 @@ void MenuScreen::Draw_Menu_Main() {
 
 	if(config_txt.save_slots){
 		if (Draw_Menu_Text(PK_txt.mainmenu_new_game,180,my)){
-			strncpy(menu_name, config_txt.player.c_str(), 20);
-			menu_name[19] = '\0';
-
-			menu_name_index = strlen(menu_name);
-			menu_name_last_mark = ' ';
-			
-			editing_name = true;
-			PInput::StartKeyboard();
+			this->playerNameEdit.setText(config_txt.player);
+			this->playerNameEdit.startInput();
 
 			menu_nyt = MENU_NAME;
 			key_delay = 30;
@@ -494,146 +390,30 @@ void MenuScreen::Draw_Menu_Settings(){
 }
 
 void MenuScreen::Draw_Menu_Name() {
-
-	bool mouse_on_text = false;
-	size_t nameSize = strlen(menu_name);
-
-	int keyboard_size = 0;
 	Draw_BGSquare(90, 160, 640-90, 480-80, 224);
 
-	/*if(Settings.touchscreen_mode)
-		keyboard_size = 180;
-	else
-		keyboard_size = 0;
-
-	if (Settings.touchscreen_mode)
-		Draw_BGSquare(90, 20, 640-90, 220, 224);
-	else
-		Draw_BGSquare(90, 160, 640-90, 480-80, 224);*/
-	
 	int tx_start = 180;
-	int tx_end = tx_start + 15*20;
-	int ty_start = 254 - keyboard_size;
-	int ty_end = ty_start + 18;
-
-	if (PInput::mouse_x >= tx_start && PInput::mouse_x <= tx_end && PInput::mouse_y >= ty_start && PInput::mouse_y <= ty_end)
-		mouse_on_text = true; //Mouse is in text
-
-	if (mouse_on_text && PInput::MouseLeft() && key_delay == 0) {
-
-		PInput::StartKeyboard();
-		editing_name = true;
-		menu_name_index = (PInput::mouse_x - 180) / 15; //Set text cursor with the mouse
-		key_delay = 10;
+	int ty_start = 254;
 	
+	if(this->playerNameEdit.draw(tekstit->Get_Text(PK_txt.playermenu_type_name),
+	tx_start, ty_start)){
+		menu_nyt = MENU_EPISODES;
 	}
-
-	if (menu_name_index >= 20)
-		menu_name_index = 19;
-
-	if (menu_name_index >= nameSize)
-		menu_name_index = nameSize;
-
-	if (menu_name_index < 0)
-		menu_name_index = 0;
-
-	
-	PDraw::font_write(fontti2,tekstit->Get_Text(PK_txt.playermenu_type_name),tx_start,ty_start - 30);
-
-	PDraw::screen_fill(tx_start-2, ty_start-2, tx_end+4, ty_end+4, 0);
-	PDraw::screen_fill(tx_start, ty_start, tx_end, ty_end, mouse_on_text? 54:50);
-
-	if (editing_name) { //Draw text cursor
-		int mx = menu_name_index*15 + tx_start + rand() % 2;
-		PDraw::screen_fill(mx-2, ty_start, mx+6+3, ty_end+3, 0);
-		PDraw::screen_fill(mx-1, ty_start, mx+6, ty_end, 96+16);
-		PDraw::screen_fill(mx+4, ty_start, mx+6, ty_end, 96+8);
-	}
-
-	WavetextSlow_Draw(menu_name,fontti2,tx_start,ty_start-1);
-	PDraw::font_writealpha_s(fontti3,menu_name,tx_start,ty_start-1,15);
-
-	if (editing_name) {
-
-		char in;
-
-		// TO DO
-		// allow entering UTF-8 characters
-		int key = PInput::ReadKeyboardNav();
-		PInput::ReadKeyboardInputOld(&in);
-
-		if (in != '\0') {
-
-			for(uint j = sizeof(menu_name) - 1; j > menu_name_index; j--)
-				menu_name[j] = menu_name[j-1];
-			
-			menu_name[menu_name_index] = in;
-			menu_name_index++;
-			menu_name[19] = '\0';
-
-		}
-
-		if (PInput::Keydown(PInput::JOY_START) && key_delay == 0 && editing_name) {
-			editing_name = false;
-			PInput::EndKeyboard();
-		}
-
-		if (key == PInput::DEL) {
-			for (int c=menu_name_index;c<19;c++)
-				menu_name[c] = menu_name[c+1];
-			menu_name[19] = '\0';
-		}
-
-		if (key == PInput::BACK && menu_name_index != 0) {
-			for (int c=menu_name_index-1;c<19;c++)
-				menu_name[c] = menu_name[c+1];
-			menu_name[19] = '\0';
-			if(menu_name[menu_name_index] == '\0') menu_name[menu_name_index-1] = '\0';
-			menu_name_index--;
-		}
-
-		if (key == PInput::RETURN && menu_name[0] != '\0') {
-			editing_name = false;
-			PInput::EndKeyboard();
-
-			chosen_menu_id = 1;
-		}
-
-		if (key == PInput::LEFT) {
-			menu_name_index--;
-			key_delay = 8;
-		}
-
-		if (key == PInput::RIGHT) {
-			menu_name_index++;
-			key_delay = 8;
-		}
-
-	}
-
+	selected_menu_id+=1;
 
 	if (Draw_Menu_Text(PK_txt.playermenu_continue,tx_start,ty_start + 50)) {
-
-		editing_name = false;
-		PInput::EndKeyboard();
-		
+		this->playerNameEdit.endInput();		
 		menu_nyt = MENU_EPISODES;
-		//chosen_menu_id = selected_menu_id = 1;
-
 	}
 
 	if (Draw_Menu_Text(PK_txt.playermenu_clear,tx_start + 180,ty_start + 50)) {
-		memset(menu_name,'\0',sizeof(menu_name));
-		menu_name_index = 0;
+		this->playerNameEdit.clear();
 	}
 
 	if (Draw_Menu_Text(PK_txt.mainmenu_exit,tx_start,ty_start + 100)) {
+		this->playerNameEdit.endInput();
 		menu_nyt = MENU_MAIN;
-		menu_name_index = 0;
-		editing_name = false;
-		PInput::EndKeyboard();
 	}
-
 }
 
 void MenuScreen::Draw_Menu_Load() {
@@ -800,7 +580,7 @@ void MenuScreen::Draw_Menu_Graphics() {
 				Settings.isFullScreen = true;
 			}
 		}
-		if (Draw_BoolBox(100, my, Settings.isFullScreen, true)) {
+		if (PK2gui::Draw_BoolBox(100, my, Settings.isFullScreen, true)) {
 			Settings.isFullScreen = !Settings.isFullScreen;
 		}
 		my += 40;
@@ -1240,7 +1020,7 @@ void MenuScreen::Draw_Menu_Episodes() {
 			}
 
 			if(config_txt.save_slots){
-				Episode = new EpisodeClass(menu_name, episodes[i]);
+				Episode = new EpisodeClass(this->playerNameEdit.getText(), episodes[i]);
 			}
 			else{
 				Episode = new EpisodeClass(config_txt.player, episodes[i]);
@@ -1345,7 +1125,7 @@ void MenuScreen::Draw() {
 	if (!Episode){
 		PDraw::font_write(fontti1, PK2_VERSION_STR_MENU, 0, 470);
 		if(config_txt.links_menu==LINKS_MENU_BOTTOM){
-			this->drawLinksMenuBottom();
+			this->bottomLinksMenu.draw();
 		}
 	}
 		
@@ -1402,8 +1182,11 @@ void MenuScreen::Init() {
 void MenuScreen::Loop() {
 	
 	if (key_delay == 0 && menu_lue_kontrollit == 0) {
-		if (PInput::Keydown(PInput::UP) || (PInput::Keydown(PInput::LEFT) && !editing_name)
-			|| PInput::Keydown(PInput::JOY_UP) || (PInput::Keydown(PInput::JOY_LEFT) && !editing_name)){
+
+		if (PInput::Keydown(PInput::UP) || 
+		    (PInput::Keydown(PInput::LEFT) && !this->playerNameEdit.isEditing()) ||
+		    PInput::Keydown(PInput::JOY_UP) ||
+			(PInput::Keydown(PInput::JOY_LEFT) && !this->playerNameEdit.isEditing())){
 			chosen_menu_id--;
 			mouse_hidden = true;
 
@@ -1413,8 +1196,10 @@ void MenuScreen::Loop() {
 			key_delay = 9;
 		}
 
-		if (PInput::Keydown(PInput::DOWN) || (PInput::Keydown(PInput::RIGHT) && !editing_name)
-			|| PInput::Keydown(PInput::JOY_DOWN) || (PInput::Keydown(PInput::JOY_RIGHT) && !editing_name)){
+		if (PInput::Keydown(PInput::DOWN)||
+		    (PInput::Keydown(PInput::RIGHT) && !this->playerNameEdit.isEditing())||
+			PInput::Keydown(PInput::JOY_DOWN)||
+			(PInput::Keydown(PInput::JOY_RIGHT) && !this->playerNameEdit.isEditing())){
 			chosen_menu_id++;
 			mouse_hidden = true;
 
@@ -1442,10 +1227,6 @@ void MenuScreen::Loop() {
 		chosen_menu_id = 0;
 	}
 
-	if (menu_nyt != MENU_NAME){ //TODO - Why run this every frame?
-		editing_name = false;
-		PInput::EndKeyboard();
-	}
 	int menu_ennen = menu_nyt;
 
 	static int mx, my, mb;

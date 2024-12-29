@@ -77,7 +77,6 @@ bool Is_Editing();
 void InjectText(const char* text);
 void InjectKey(int key);
 //void InjectFingerDown(float x, float y);
-void  ReadKeyboardInputOld(char* c);
 
 int  ReadKeyboardNav();
 PString::UTF8_Char ReadKeyboardInput();
@@ -87,7 +86,7 @@ bool ControllerFound();
 int  Vibrate(int length);
 void SetMousePosition(int x, int y);
 
-std::vector<touch_t> GetTouch();
+//std::vector<touch_t> GetTouch();
 int GetTouchPos(float& x, float& y);
 
 float GetAxis(int axis);
