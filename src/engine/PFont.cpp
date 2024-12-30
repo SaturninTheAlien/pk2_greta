@@ -69,9 +69,6 @@ int PFont::load(PFile::Path path) {
 	i = param_file.Search_Id("image y");
 	int buf_y = atoi(param_file.Get_Text(i).c_str());
 
-	/*i = param_file.Search_Id("letters");
-	this->char_count = strlen(param_file.Get_Text(i));*/
-
 	i = param_file.Search_Id("letter width");
 	this->char_w = atoi(param_file.Get_Text(i).c_str());
 
@@ -85,8 +82,11 @@ int PFont::load(PFile::Path path) {
 	else{
 		this->initCharlist();
 	}
-	
 
+	i = param_file.Search_Id("line spacing");
+	if(i!=-1){
+		this->lineSep = param_file.getInteger(i, 0);
+	}
 	//this->initCharlist();
 
 	i = param_file.Search_Id("image");
@@ -120,18 +120,39 @@ int PFont::getCharacterPos(const PString::UTF8_Char& u8c)const{
 	return -1;
 }
 
-int PFont::getTextWidth(const char *text) {
-	int charsNumber = 0;
+std::pair<int, int> PFont::getTextSize(const char *text)const {
+	
+	int textWidth = 0;
+	int textHeight = this->char_h;
+	int width = 0;
+
 	const char* curr_char = text;
 	PString::UTF8_Char u8c;
 	while (*curr_char!='\0'){
-		curr_char = u8c.read(curr_char);
-		charsNumber+=1;
+		if(*curr_char == '\n'){
+			++curr_char;
+			if(width > textWidth){
+				textWidth = width;
+			}
+
+			width = 0;
+			textHeight += this->lineSep;
+			textHeight += this->char_h;
+		}
+		else{
+			curr_char = u8c.read(curr_char);
+			width += this->char_w;
+		}		
 	}
-	return char_w * charsNumber;
+
+	if(width > textWidth){
+		textWidth = width;
+	}
+
+	return std::make_pair(textWidth, textHeight);
 }
 
-int PFont::write(int posx, int posy, const char *text) {
+int PFont::write_line(int posx, int posy, const char *text) {
 	
 	int ox = posx;
 
@@ -162,7 +183,71 @@ int PFont::write(int posx, int posy, const char *text) {
 	return char_w * charsNumber;
 }
 
-int PFont::write_trasparent(int posx, int posy, const char* text, int alpha) {
+std::pair<int,int> PFont::write(int posx, int posy, const char *text)const {
+	
+	int ox = posx;
+
+	PDraw::RECT srcrect, dstrect;
+	srcrect.y = 0;
+	srcrect.w = char_w;
+	srcrect.h = char_h;
+	dstrect.y = posy;
+
+	dstrect.w = char_w;
+	dstrect.h = char_h;
+
+
+	int textWidth = 0;
+	int textHeight = this->char_h;
+	int width = 0;
+
+	PString::UTF8_Char u8c;
+	while (*text!='\0'){
+
+		if(*text=='\n'){
+			++text;
+
+			/**
+			 * @brief 
+			 * carriage return 
+			 */
+			if(width > textWidth){
+				textWidth = width;
+			}
+			width=0;
+			ox = posx;
+
+			/**
+			 * @brief 
+			 * New line
+			 */
+			dstrect.y += this->lineSep;
+			dstrect.y += this->char_h;
+
+			textHeight += this->lineSep;
+			textHeight += this->char_h;
+		}
+		else{
+			text = u8c.read(text);
+			int ix = this->getCharacterPos(u8c);
+			if(ix!=-1){
+				srcrect.x = ix;
+				dstrect.x = ox;
+				PDraw::image_cutclip(image_index,srcrect,dstrect);
+			}
+
+			ox += this->char_w;
+			width += this->char_w;
+		}
+	}
+	if(width > textWidth){
+		textWidth = width;
+	}
+	
+	return std::make_pair(textWidth, textHeight);
+}
+
+std::pair<int,int> PFont::write_trasparent(int posx, int posy, const char* text, int alpha)const {
 
 	u8 *back_buffer, *txt_buffer;
 	u32 back_w, txt_w;
@@ -182,47 +267,81 @@ int PFont::write_trasparent(int posx, int posy, const char* text, int alpha) {
 
 
 	PString::UTF8_Char u8c;
-	int i = 0;
+
+	int textWidth = 0;
+	int textHeight = this->char_h;
+
+	int width = 0;
+
 	while (*text!='\0'){
-		text = u8c.read(text);
-		int ix = this->getCharacterPos(u8c);
-		if(ix!=-1){
-			for (uint x = 0; x < char_w; x++) {
-				
-				int fx = posx + x + i * char_w;
-				if(fx < 0 || fx >= w) break;
+		if(*text=='\n'){
+			++text;
 
-				for (uint y = 0; y < char_h; y++) {
+			/**
+			 * @brief 
+			 * carriage return 
+			 */
+			if(width > textWidth){
+				textWidth = width;
+			}
+			width=0;
+			//ox = posx;
+
+			/**
+			 * @brief 
+			 * New line
+			 */
+			posy += this->lineSep;
+			posy += this->char_h;
+			textHeight += this->lineSep;
+			textHeight += this->char_h;		
+		}
+		else{
+
+			text = u8c.read(text);
+			int ix = this->getCharacterPos(u8c);
+			if(ix!=-1){
+
+				for (uint x = 0; x < char_w; x++) {
 					
-					int fy = posy + y;
-					if (fy < 0 || fy >= h) break;
+					int fx = posx + x + width;
+					if(fx < 0 || fx >= w) break;
+
+					for (uint y = 0; y < char_h; y++) {
+						
+						int fy = posy + y;
+						if (fy < 0 || fy >= h) break;
 
 
-					color1 = txt_buffer[ix + x + y * txt_w];
+						color1 = txt_buffer[ix + x + y * txt_w];
 
-					if (color1 != 255) {
-					
-						// Mix colors
-						color1 &= (u8)0b00011111;
-						color2 = back_buffer[fx + fy * back_w];
-						color3 = color2 & (u8)0b11100000;
-						color2-= color3;
-						color1 = (color1 * a1 + color2 * a2)/100;
+						if (color1 != 255) {
+						
+							// Mix colors
+							color1 &= (u8)0b00011111;
+							color2 = back_buffer[fx + fy * back_w];
+							color3 = color2 & (u8)0b11100000;
+							color2-= color3;
+							color1 = (color1 * a1 + color2 * a2)/100;
 
-						back_buffer[fx + fy * back_w] = color1 + color3;
+							back_buffer[fx + fy * back_w] = color1 + color3;
 
+						}
 					}
 				}
 			}
+			width+=this->char_w;
 		}
-
-		++i;
 	}
 	
 	PDraw::drawscreen_end();
 	PDraw::drawimage_end(image_index);
 
-	return i * char_w;
+	if(width > textWidth){
+		textWidth = width;
+	}
+
+	return std::make_pair(textWidth, textHeight);
 }
 
 PFont::PFont(int img_source, int x, int y, int width, int height, int count) {

@@ -8,6 +8,8 @@ Font attributes
 *letter width:	8
 *letter height:	10
 
+*line spacing: 2
+
 
 
 

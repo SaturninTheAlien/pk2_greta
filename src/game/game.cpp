@@ -712,6 +712,44 @@ void GameClass::showInfo(const std::string& text) {
 	}
 }
 
+void GameClass::drawInfoText(){
+	if(this->info_timer > 0){
+		std::pair<int, int> box_size = PDraw::font_get_text_size(fontti1, this->info_text);
+
+		box_size.first += 8;
+		box_size.second += 8;
+
+		PDraw::RECT infoBG(screen_width/2-(box_size.first/2), 60,
+						screen_width/2+(box_size.first/2), 60 + box_size.second);
+
+		int tmp = (box_size.second - this->info_timer) / 2;
+
+		if(tmp > 0){
+
+			infoBG.y += tmp;
+			infoBG.h -= tmp;
+		}
+		else if(this->info_timer > INFO_TIME - box_size.second){
+			//int tmp = 10 - (INFO_TIME - this->info_timer) / 2;
+			tmp = (box_size.second - INFO_TIME + this->info_timer) / 2;
+
+			infoBG.y += tmp;
+			infoBG.h -= tmp;
+ 		}
+
+		PDraw::screen_fill(infoBG.x-1,infoBG.y-1,infoBG.w+1,infoBG.h+1,51);
+		PDraw::screen_fill(infoBG.x, infoBG.y, infoBG.w, infoBG.h, 38);
+
+		//tmp = this->info_timer - 11
+		tmp = this->info_timer - 1 - box_size.second;
+
+		if (tmp >= 100)
+			PDraw::font_write(fontti1,this->info_text,infoBG.x+4,infoBG.y+4);
+		else if(tmp > 0)
+			PDraw::font_writealpha_s(fontti1,this->info_text,infoBG.x+4,infoBG.y+4,tmp);
+	}
+}
+
 void GameClass::setCamera(){
 
 	LevelSector* sector = this->playerSprite->level_sector;

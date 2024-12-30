@@ -425,9 +425,9 @@ void MenuScreen::Draw_Menu_Load() {
 
 	Draw_BGSquare(40, 70, 640-40, 410, 67);
 
-	PDraw::font_write(fontti2,tekstit->Get_Text(PK_txt.loadgame_title),50,90);
-	PDraw::font_write(fontti1,id_code,500,90);
-	PDraw::font_write(fontti1,tekstit->Get_Text(PK_txt.loadgame_info),50,110);
+	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.loadgame_title),50,90);
+	PDraw::font_write_line(fontti1,id_code,500,90);
+	PDraw::font_write_line(fontti1,tekstit->Get_Text(PK_txt.loadgame_info),50,110);
 	my = -20;
 
 	for ( std::size_t i = 0; i < PK2save::saveSlots.size(); i++ ) {
@@ -477,15 +477,15 @@ void MenuScreen::Draw_Menu_Load() {
 		if (!slot.empty) {
 
 			vali = 0;
-			vali += PDraw::font_write(fontti1,tekstit->Get_Text(PK_txt.loadgame_episode),400,150+my);
-			vali += PDraw::font_write(fontti1,slot.episode.name,400+vali,150+my);
+			vali += PDraw::font_write_line(fontti1,tekstit->Get_Text(PK_txt.loadgame_episode),400,150+my);
+			vali += PDraw::font_write_line(fontti1,slot.episode.name,400+vali,150+my);
 			
 			vali = 0;
 			if (!slot.completed) {
-				vali += PDraw::font_write(fontti1,tekstit->Get_Text(PK_txt.loadgame_level),400+vali,160+my);
-				vali += PDraw::font_write(fontti1,std::to_string(slot.next_level),400+vali,160+my);
+				vali += PDraw::font_write_line(fontti1,tekstit->Get_Text(PK_txt.loadgame_level),400+vali,160+my);
+				vali += PDraw::font_write_line(fontti1,std::to_string(slot.next_level),400+vali,160+my);
 			} else {
-				vali += PDraw::font_write(fontti1,"completed",400+vali,160+my);
+				vali += PDraw::font_write_line(fontti1,"completed",400+vali,160+my);
 			}
 		}
 
@@ -505,8 +505,8 @@ void MenuScreen::Draw_Menu_Save() {
 
 	Draw_BGSquare(40, 70, 640-40, 410, 224);
 
-	PDraw::font_write(fontti2,tekstit->Get_Text(PK_txt.savegame_title),50,90);
-	PDraw::font_write(fontti1,tekstit->Get_Text(PK_txt.savegame_info),50,110);
+	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.savegame_title),50,90);
+	PDraw::font_write_line(fontti1,tekstit->Get_Text(PK_txt.savegame_info),50,110);
 	my = -20;
 
 	for (int i = 0; i < 10; i++) {
@@ -531,15 +531,15 @@ void MenuScreen::Draw_Menu_Save() {
 		if (!slot.empty) {
 
 			vali = 0;
-			vali += PDraw::font_write(fontti1,tekstit->Get_Text(PK_txt.savegame_episode),400,150+my);
-			vali += PDraw::font_write(fontti1,slot.episode.name,400+vali,150+my);
+			vali += PDraw::font_write_line(fontti1,tekstit->Get_Text(PK_txt.savegame_episode),400,150+my);
+			vali += PDraw::font_write_line(fontti1,slot.episode.name,400+vali,150+my);
 			
 			vali = 0;
 			if (!slot.completed) {
-				vali += PDraw::font_write(fontti1,tekstit->Get_Text(PK_txt.savegame_level),400+vali,160+my);
-				vali += PDraw::font_write(fontti1,std::to_string(slot.next_level),400+vali,160+my);
+				vali += PDraw::font_write_line(fontti1,tekstit->Get_Text(PK_txt.savegame_level),400+vali,160+my);
+				vali += PDraw::font_write_line(fontti1,std::to_string(slot.next_level),400+vali,160+my);
 			} else {
-				vali += PDraw::font_write(fontti1,"completed",400+vali,160+my);
+				vali += PDraw::font_write_line(fontti1,"completed",400+vali,160+my);
 			}
 		}
 
@@ -565,7 +565,7 @@ void MenuScreen::Draw_Menu_Graphics() {
 
 	Draw_BGSquare(40, 70, 640-40, 410, 224);
 
-	PDraw::font_write(fontti2,tekstit->Get_Text(PK_txt.gfx_title),50,90);
+	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.gfx_title),50,90);
 
 	if(moreOptions){
 		bool wasFullScreen = Settings.isFullScreen;
@@ -588,13 +588,13 @@ void MenuScreen::Draw_Menu_Graphics() {
 		//TODO - Fix touch position when screen fit
 
 		mx = 100;
-		PDraw::font_write(fontti1, "vsync", mx, my);
+		PDraw::font_write_line(fontti1, "vsync", mx, my);
 		mx += 15 + 51;
-		PDraw::font_write(fontti1, "60fps", mx, my);
+		PDraw::font_write_line(fontti1, "60fps", mx, my);
 		mx += 15 + 51;
-		PDraw::font_write(fontti1, "85fps", mx, my);
+		PDraw::font_write_line(fontti1, "85fps", mx, my);
 		mx += 15 + 51;
-		PDraw::font_write(fontti1, "120fps", mx, my);
+		PDraw::font_write_line(fontti1, "120fps", mx, my);
 		my += 10;
 
 		option = Draw_Radio(100, my, 4, Settings.fps);
@@ -605,15 +605,15 @@ void MenuScreen::Draw_Menu_Graphics() {
 		my += 31 + 5;
 
 		mx = 100;
-		PDraw::font_write(fontti1, "nearest", mx, my);
+		PDraw::font_write_line(fontti1, "nearest", mx, my);
 		mx += 15 + 51;
-		PDraw::font_write(fontti1, "linear", mx, my);
+		PDraw::font_write_line(fontti1, "linear", mx, my);
 		mx += 15 + 51;
 
 		/*  Temporarily disabled  */
-		// PDraw::font_write(fontti1, "crt", mx, my);
+		// PDraw::font_write_line(fontti1, "crt", mx, my);
 		// mx += 15 + 51;
-		// PDraw::font_write(fontti1, "hqx", mx, my);
+		// PDraw::font_write_line(fontti1, "hqx", mx, my);
 		my += 10;
 
 		option = Draw_Radio(100, my, 2, Settings.shader_type);
@@ -718,13 +718,13 @@ void MenuScreen::Draw_Menu_Sounds() {
 	u8 sfx_volume = Settings.sfx_max_volume;
 	u8 mus_volume = Settings.music_max_volume;
 
-	PDraw::font_write(fontti2,tekstit->Get_Text(PK_txt.sound_title),50,90);
+	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.sound_title),50,90);
 	my += 20;
 
 	PDraw::screen_fill(404,224+my,404+Settings.sfx_max_volume,244+my,0);
 	PDraw::screen_fill(400,220+my,400+Settings.sfx_max_volume,240+my,81);
 
-	PDraw::font_write(fontti2,tekstit->Get_Text(PK_txt.sound_sfx_volume),180,200+my);
+	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.sound_sfx_volume),180,200+my);
 	my += 20;
 
 	if (Draw_Menu_Text(PK_txt.sound_less,180,200+my)) {
@@ -744,7 +744,7 @@ void MenuScreen::Draw_Menu_Sounds() {
 	PDraw::screen_fill(404,224+my,404+Settings.music_max_volume,244+my,0);
 	PDraw::screen_fill(400,220+my,400+Settings.music_max_volume,240+my,112);
 
-	PDraw::font_write(fontti2,tekstit->Get_Text(PK_txt.sound_music_volume),180,200+my);
+	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.sound_music_volume),180,200+my);
 	my += 20;
 
 	if (Draw_Menu_Text(PK_txt.sound_less,180,200+my)) {
@@ -799,31 +799,31 @@ void MenuScreen::Draw_Menu_Controls() {
 
 	Draw_BGSquare(40, 70, 640-40, 410, 224);
 
-	PDraw::font_write(fontti2,tekstit->Get_Text(PK_txt.controls_title),50,90);
+	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.controls_title),50,90);
 
 	if (menu_lue_kontrollit > 0){
 		PDraw::screen_fill(299,my-16+menu_lue_kontrollit*20,584,4+my+menu_lue_kontrollit*20,0);
 		PDraw::screen_fill(295,my-20+menu_lue_kontrollit*20,580,my+menu_lue_kontrollit*20,50);
 	}
 
-	PDraw::font_write(fontti2,tekstit->Get_Text(PK_txt.controls_moveleft),100,my);my+=20;
-	PDraw::font_write(fontti2,tekstit->Get_Text(PK_txt.controls_moveright),100,my);my+=20;
-	PDraw::font_write(fontti2,tekstit->Get_Text(PK_txt.controls_jump),100,my);my+=20;
-	PDraw::font_write(fontti2,tekstit->Get_Text(PK_txt.controls_duck),100,my);my+=20;
-	PDraw::font_write(fontti2,tekstit->Get_Text(PK_txt.controls_walkslow),100,my);my+=20;
-	PDraw::font_write(fontti2,tekstit->Get_Text(PK_txt.controls_eggattack),100,my);my+=20;
-	PDraw::font_write(fontti2,tekstit->Get_Text(PK_txt.controls_doodleattack),100,my);my+=20;
-	PDraw::font_write(fontti2,tekstit->Get_Text(PK_txt.controls_useitem),100,my);my+=20;
+	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.controls_moveleft),100,my);my+=20;
+	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.controls_moveright),100,my);my+=20;
+	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.controls_jump),100,my);my+=20;
+	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.controls_duck),100,my);my+=20;
+	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.controls_walkslow),100,my);my+=20;
+	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.controls_eggattack),100,my);my+=20;
+	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.controls_doodleattack),100,my);my+=20;
+	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.controls_useitem),100,my);my+=20;
 
 	my = 130;
-	PDraw::font_write(fontti2,PInput::KeyName(Input->left),380,my);my+=20;
-	PDraw::font_write(fontti2,PInput::KeyName(Input->right),380,my);my+=20;
-	PDraw::font_write(fontti2,PInput::KeyName(Input->jump),380,my);my+=20;
-	PDraw::font_write(fontti2,PInput::KeyName(Input->down),380,my);my+=20;
-	PDraw::font_write(fontti2,PInput::KeyName(Input->walk_slow),380,my);my+=20;
-	PDraw::font_write(fontti2,PInput::KeyName(Input->attack1),380,my);my+=20;
-	PDraw::font_write(fontti2,PInput::KeyName(Input->attack2),380,my);my+=20;
-	PDraw::font_write(fontti2,PInput::KeyName(Input->open_gift),380,my);my+=20;
+	PDraw::font_write_line(fontti2,PInput::KeyName(Input->left),380,my);my+=20;
+	PDraw::font_write_line(fontti2,PInput::KeyName(Input->right),380,my);my+=20;
+	PDraw::font_write_line(fontti2,PInput::KeyName(Input->jump),380,my);my+=20;
+	PDraw::font_write_line(fontti2,PInput::KeyName(Input->down),380,my);my+=20;
+	PDraw::font_write_line(fontti2,PInput::KeyName(Input->walk_slow),380,my);my+=20;
+	PDraw::font_write_line(fontti2,PInput::KeyName(Input->attack1),380,my);my+=20;
+	PDraw::font_write_line(fontti2,PInput::KeyName(Input->attack2),380,my);my+=20;
+	PDraw::font_write_line(fontti2,PInput::KeyName(Input->open_gift),380,my);my+=20;
 
 	/*
 	if (PInput::mouse_x > 310 && PInput::mouse_x < 580 && PInput::mouse_y > 130 && PInput::mouse_y < my-20){
@@ -978,7 +978,7 @@ void MenuScreen::Draw_Menu_Episodes() {
 
 	Draw_BGSquare(80, 130, 640-80, 450, 224);
 
-	PDraw::font_write(fontti2,tekstit->Get_Text(PK_txt.episodes_choose_episode),50,90);
+	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.episodes_choose_episode),50,90);
 	my += 80;
 
 	size_t size = episodes.size();
@@ -989,12 +989,12 @@ void MenuScreen::Draw_Menu_Episodes() {
 		int x = 50;//500,
 		int y = 50;//300;
 		
-		//vali += PDraw::font_write(fontti1,"page:",x,y+40);
+		//vali += PDraw::font_write_line(fontti1,"page:",x,y+40);
 		//sprintf(luku, "%i", episode_page + 1);
-		vali += PDraw::font_write(fontti1,std::to_string(episode_page + 1),x+vali,y+20);
-		vali += PDraw::font_write(fontti1,"/",x+vali,y+20);
+		vali += PDraw::font_write_line(fontti1,std::to_string(episode_page + 1),x+vali,y+20);
+		vali += PDraw::font_write_line(fontti1,"/",x+vali,y+20);
 		//sprintf(luku, "%i", int(size/10) + 1);
-		vali += PDraw::font_write(fontti1,std::to_string(int(size/10) + 1),x+vali,y+20);
+		vali += PDraw::font_write_line(fontti1,std::to_string(int(size/10) + 1),x+vali,y+20);
 
 		int nappi = Draw_BackNext(x,y);
 
@@ -1031,9 +1031,9 @@ void MenuScreen::Draw_Menu_Episodes() {
 		}
 
 		if (episodes[i].is_zip)
-			PDraw::font_write(fontti1, episodes[i].zipfile, 450, 95+my);
+			PDraw::font_write_line(fontti1, episodes[i].zipfile, 450, 95+my);
 		else
-			PDraw::font_write(fontti1, "original game", 450, 95+my);
+			PDraw::font_write_line(fontti1, "original game", 450, 95+my);
 		
 		my += 20;
 	}
@@ -1044,7 +1044,7 @@ void MenuScreen::Draw_Menu_Episodes() {
 		my += 20;
 	}
 
-	//PDraw::font_write(fontti1,tekstit->Get_Text(PK_txt.episodes_get_more),140,440);
+	//PDraw::font_write_line(fontti1,tekstit->Get_Text(PK_txt.episodes_get_more),140,440);
 
 }
 
@@ -1052,7 +1052,7 @@ void MenuScreen::Draw_Menu_Language() {
 
 	Draw_BGSquare(110, 130, 640-110, 450, 224);
 
-	PDraw::font_write(fontti2,"select a language:",50,100);
+	PDraw::font_write_line(fontti2,"select a language:",50,100);
 
 	int my = 150;
 
@@ -1123,7 +1123,7 @@ void MenuScreen::Draw() {
 	}
 
 	if (!Episode){
-		PDraw::font_write(fontti1, PK2_VERSION_STR_MENU, 0, 470);
+		PDraw::font_write_line(fontti1, PK2_VERSION_STR_MENU, 0, 470);
 		if(config_txt.links_menu==LINKS_MENU_BOTTOM){
 			this->bottomLinksMenu.draw();
 		}

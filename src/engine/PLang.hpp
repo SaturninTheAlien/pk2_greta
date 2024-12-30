@@ -50,8 +50,10 @@ class PLang {
 	private:
 
 		static const std::string PLACEHOLDER;
-	
-		std::vector<std::string> tekstit;
-		std::vector<std::string> titles;
+
+		//std::vector<std::pair<std::string, std::string>> texts;
+		
+		std::vector<std::string> values;
+		std::vector<std::string> keys;
 	
 };

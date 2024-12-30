@@ -731,25 +731,34 @@ int font_create(PFile::Path path) {
 
 }
 
-int font_get_width(int font_index, const std::string& text){
+std::pair<int, int> font_get_text_size(int font_index, const std::string& text){
     if (font_index < 0 || font_index >= (int)fontList.size())
-        return 1;
+        return std::make_pair(0, 0);
     
-    return fontList[font_index]->getTextWidth(text.c_str());
+    return fontList[font_index]->getTextSize(text.c_str());
 }
 
-int font_write(int font_index, const std::string& text, int x, int y) {
+int font_write_line(int font_index, const std::string& text, int x, int y) {
 
     if (font_index < 0 || font_index >= (int)fontList.size())
         return 0;
+    
+    return fontList[font_index]->write_line(x, y, text.c_str());
+
+}
+
+std::pair<int, int> font_write(int font_index, const std::string& text, int x, int y) {
+
+    if (font_index < 0 || font_index >= (int)fontList.size())
+        return std::make_pair(0,0);
     
     return fontList[font_index]->write(x, y, text.c_str());
 
 }
 
-int font_writealpha_s(int font_index, const std::string& text, int x, int y, int alpha) {
+std::pair<int, int> font_writealpha_s(int font_index, const std::string& text, int x, int y, int alpha) {
     if (font_index < 0 || font_index >= (int)fontList.size())
-        return 0;
+        return std::make_pair(0,0);
 
     return fontList[font_index]->write_trasparent(x + x_offset, y + y_offset, text.c_str(), alpha);
 
@@ -870,7 +879,12 @@ int terminate(){
     if (game_palette->refcount != 1)
         PLog::Write(PLog::ERR, "PDraw", "Missing some palette reference");
 
+    //for(int i =0)
     SDL_FreePalette(game_palette);
+
+    for(int i=0;i<(int)paletteList.size();++i){
+        palette_delete(i);
+    }
 
     IMG_Quit();
 

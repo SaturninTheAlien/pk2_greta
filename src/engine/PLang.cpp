@@ -38,8 +38,8 @@ bool PLang::Read_File(PFile::Path path){
 
 	try{
 		PFile::RW io = path.GetRW2("r");
-		tekstit.clear();
-		titles.clear();
+		values.clear();
+		keys.clear();
 
 		u8 marker;
 		int table_index = -1;
@@ -56,8 +56,8 @@ bool PLang::Read_File(PFile::Path path){
 				case READ_SKIP:
 					if (marker == MARKER_1) {
 						read = READ_TITLE;
-						tekstit.push_back("");
-						titles.push_back("");
+						values.push_back("");
+						keys.push_back("");
 						table_index++;
 					} 
 					break;
@@ -66,7 +66,7 @@ bool PLang::Read_File(PFile::Path path){
 					if (marker == MARKER_2)
 						read = READ_SPACE;
 					else
-						titles[table_index] += marker;
+						keys[table_index] += marker;
 					break;
 				
 				case READ_SPACE:
@@ -75,7 +75,7 @@ bool PLang::Read_File(PFile::Path path){
 					read = READ_TEXT;
 					
 				case READ_TEXT:
-					tekstit[table_index] += marker;
+					values[table_index] += marker;
 					break;
 
 			}
@@ -85,7 +85,16 @@ bool PLang::Read_File(PFile::Path path){
 	catch(const PFile::PFileException& e){
 		PLog::Write(PLog::ERR, "Plang", e.what());
 		return false;
-	}	
+	}
+
+	for(std::string& str: this->values){
+		std::string::size_type index = 0;
+		while ((index = str.find("\\n", index)) != std::string::npos) {
+			str.replace(index, 2, "\n");
+			++index;
+		}
+	}
+	
 
 	loaded = true;
 	return true;
@@ -97,10 +106,10 @@ int PLang::Search_Id(const std::string& title)const {
 		return -1;
 
 	size_t i;
-	for (i = 0; i < titles.size(); i++)
-		if (titles[i] == title) break;
+	for (i = 0; i < keys.size(); i++)
+		if (keys[i] == title) break;
 
-	if (i >= titles.size())
+	if (i >= keys.size())
 		return -1;
 
 	return i;
@@ -114,8 +123,8 @@ const std::string& PLang::Get_Text(int index)const {
 	if (!loaded)
 		return PLACEHOLDER;
 
-	if (index>=0 && index < (int)tekstit.size())
-		return tekstit[index];
+	if (index>=0 && index < (int)values.size())
+		return values[index];
 	else
 		return PLACEHOLDER;
 }
@@ -128,28 +137,28 @@ int PLang::Set_Text(const std::string& title, const char* text) {
 	int idx = this->Search_Id(title);
 	if (idx != -1) {
 	
-		tekstit[idx] = text;
+		values[idx] = text;
 		return idx;
 	
 	}
 
-	titles.push_back(title);
-	tekstit.push_back(text);
-	return titles.size() - 1;
+	keys.push_back(title);
+	values.push_back(text);
+	return keys.size() - 1;
 
 }
 
 const std::string& PLang::getString(int id, const std::string& def)const{
-	if(id>=0 && id < (int)this->tekstit.size()){
-		return this->tekstit[id];
+	if(id>=0 && id < (int)this->values.size()){
+		return this->values[id];
 	}
 
 	return def;
 }
 
 bool PLang::getBoolean(int id, bool def)const{
-	if(id >= 0 && id < (int)this->tekstit.size()){
-		const std::string& text = PString::lowercase(this->tekstit[id]);
+	if(id >= 0 && id < (int)this->values.size()){
+		const std::string& text = PString::lowercase(this->values[id]);
 		if(text=="default")return def;
 		else if(text=="true")return true;
 		else if(text=="false")return false;
@@ -161,9 +170,9 @@ bool PLang::getBoolean(int id, bool def)const{
 }
 
 int PLang::getInteger(int id, int def)const{
-	if(id >= 0 && id < (int)this->tekstit.size()){
+	if(id >= 0 && id < (int)this->values.size()){
 		int tmp = 0;
-		const char* src = this->tekstit[id].c_str();
+		const char* src = this->values[id].c_str();
 		if(sscanf(src, "%i", &tmp)==1){
 			return tmp;
 		}

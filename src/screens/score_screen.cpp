@@ -243,26 +243,26 @@ int ScoreScreen::Draw_ScoreCount() {
 
 		//if (apples_counted >= Game->apples_count && apples_counted > 0) {
 
-		//	PDraw::font_write(fontti2, "You have found all apples!", 100 + rand()%2, my + rand()%2);
+		//	PDraw::font_write_line(fontti2, "You have found all apples!", 100 + rand()%2, my + rand()%2);
 		//	my += 25;
 
 		//}
 
 		if (map_new_record) {
 
-			PDraw::font_write(fontti2,tekstit->Get_Text(PK_txt.score_screen_new_level_hiscore),100+rand()%2,my+rand()%2);
+			PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.score_screen_new_level_hiscore),100+rand()%2,my+rand()%2);
 			my += 25;
 
 		}
 		if (map_new_time_record) {
 
-			PDraw::font_write(fontti2,tekstit->Get_Text(PK_txt.score_screen_new_level_best_time),100+rand()%2,my+rand()%2);
+			PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.score_screen_new_level_best_time),100+rand()%2,my+rand()%2);
 			my += 25;
 
 		}
 		if (episode_new_record) {
 
-			PDraw::font_write(fontti2,tekstit->Get_Text(PK_txt.score_screen_new_episode_hiscore),100+rand()%2,my+rand()%2);
+			PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.score_screen_new_episode_hiscore),100+rand()%2,my+rand()%2);
 			my += 25;
 
 		}

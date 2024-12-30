@@ -1238,7 +1238,7 @@ void DisplayInfo(SpriteClass* sprite){
 	int index = Episode->infos.Search_Id(sinfo.c_str());
 	if (index != -1)
 		Game->showInfo(Episode->infos.Get_Text(index));
-	else if(info<100)
+	else if(info<(int)PK_txt.infos.size())
 		Game->showInfo(tekstit->Get_Text(PK_txt.infos[info]));
 }
 

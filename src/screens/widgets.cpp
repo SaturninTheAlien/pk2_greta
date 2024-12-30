@@ -118,9 +118,7 @@ bool TextInput::draw(const std::string& title, int tx_start, int ty_start){
 		this->selectedIndex = 0;
 	}
 
-    PDraw::font_write(fontti2, title, tx_start,ty_start - 30);
-	
-	//PDraw::font_write(fontti2,tekstit->Get_Text(PK_txt.`),tx_start,ty_start - 30);
+    PDraw::font_write_line(fontti2, title, tx_start,ty_start - 30);
 
 	PDraw::screen_fill(tx_start-2, ty_start-2, tx_end+4, ty_end+4, 0);
 	PDraw::screen_fill(tx_start, ty_start, tx_end, ty_end, mouse_on_text? 54:50);
@@ -143,11 +141,11 @@ bool TextInput::draw(const std::string& title, int tx_start, int ty_start){
 
 		if (Settings.transparent_text) {
 		
-			x += PDraw::font_writealpha_s(fontti2 ,u8c.c_str(),x-xs,y+ys,75);
+			x += PDraw::font_writealpha_s(fontti2 ,u8c.c_str(),x-xs,y+ys,75).first;
 		
 		} else {
-			PDraw::font_write(fontti4,u8c.c_str(),x-xs+1,y+ys+1);
-			x += PDraw::font_write(fontti2 ,u8c.c_str(),x-xs,y+ys);
+			PDraw::font_write_line(fontti4,u8c.c_str(),x-xs+1,y+ys+1);
+			x += PDraw::font_write_line(fontti2 ,u8c.c_str(),x-xs,y+ys);
 		}
 		i+=1;
 	}
@@ -155,7 +153,7 @@ bool TextInput::draw(const std::string& title, int tx_start, int ty_start){
     x = tx_start;
 
 	for(const PString::UTF8_Char& u8c: this->buffer){
-		x += PDraw::font_writealpha_s(fontti3, u8c.c_str(), x, y, 15);
+		x += PDraw::font_writealpha_s(fontti3, u8c.c_str(), x, y, 15).first;
 	}
 
     if (this->editing) {
@@ -258,10 +256,10 @@ bool LinksMenu::drawButton(int x, int y, const PDraw::RECT& rect, const std::str
 	if(mouse_x > x && mouse_x < x + rect.w &&
 	mouse_y > y && mouse_y < y + rect.h){
 
-		int label_x = x - PDraw::font_get_width(fontti1, label) - 5;
+		int label_x = x - PDraw::font_get_text_size(fontti1, label).first - 5;
 		int label_y = y + 10;
 
-		PDraw::font_write(fontti1, label, label_x, label_y);
+		PDraw::font_write_line(fontti1, label, label_x, label_y);
 
 		x += rand()%3 - rand()%3;
 		y += rand()%3 - rand()%3;

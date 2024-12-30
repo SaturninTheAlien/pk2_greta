@@ -73,7 +73,7 @@ int CreditsText_Draw(const char *text, int font, int x, int y, u32 start, u32 en
 			if (pros < 100)
 				PDraw::font_writealpha_s(font,text,x,y,pros);
 			else
-				PDraw::font_write(font,text,x,y);
+				PDraw::font_write_line(font,text,x,y);
 		}
 
 	}
@@ -92,7 +92,7 @@ int WavetextLap_Draw(const char *text, int fontti, int x, int y, float lap) {
 		int xs = (int)(cos_table((i+degree)*8))/(9.f/(lap*2.5));
 
 		PDraw::font_write(fontti4, u8c.c_str(), x+pos-xs+3,y+ys+3);
-		pos += PDraw::font_write(fontti, u8c.c_str(), x+pos-xs,y+ys);
+		pos += PDraw::font_write_line(fontti, u8c.c_str(), x+pos-xs,y+ys);
 		++i;
 	}
 
@@ -113,7 +113,7 @@ int Wavetext_Draw(const char *text, int fontti, int x, int y) {
 		int xs = (int)(cos_table((i+degree)*8))/9;
 
 		PDraw::font_write(fontti4,u8c.c_str(),x+pos-xs+3,y+ys+3);
-		pos += PDraw::font_write(fontti,u8c.c_str(),x+pos-xs,y+ys);
+		pos += PDraw::font_write_line(fontti,u8c.c_str(),x+pos-xs,y+ys);
 		++i;
 	}
 
@@ -135,13 +135,13 @@ int WavetextSlow_Draw(const char *text, int fontti, int x, int y) {
 		int xs = (int)(cos_table((i+degree)*4))/11;
 
 		if (Settings.transparent_text) {
-		
-			pos += PDraw::font_writealpha_s(fontti,u8c.c_str(),x+pos-xs,y+ys,75);
+			auto[width, _] = PDraw::font_writealpha_s(fontti,u8c.c_str(),x+pos-xs,y+ys,75);
+			pos += width;
 		
 		} else {
 
 			PDraw::font_write(fontti4,u8c.c_str(),x+pos-xs+1,y+ys+1);
-			pos += PDraw::font_write(fontti,u8c.c_str(),x+pos-xs,y+ys);
+			pos += PDraw::font_write_line(fontti,u8c.c_str(),x+pos-xs,y+ys);
 		
 		}
 		++i;
@@ -154,7 +154,7 @@ int WavetextSlow_Draw(const char *text, int fontti, int x, int y) {
 int ShadowedText_Draw(const std::string& text, int x, int y) {
 
 	PDraw::font_write(fontti4, text, x + 2, y + 2);
-	return PDraw::font_write(fontti2, text, x, y);
+	return PDraw::font_write_line(fontti2, text, x, y);
 
 }
 

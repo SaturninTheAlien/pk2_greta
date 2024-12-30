@@ -68,9 +68,10 @@ int   create_shadow(int index, u32 width, u32 height);
 
 int   font_create(int image, int x, int y, int width, int height, int count);
 int   font_create(PFile::Path path);
-int   font_write(int font_index, const std::string& text, int x, int y);
-int   font_writealpha_s(int font_index, const std::string& text, int x, int y, int alpha);
-int   font_get_width(int font_index, const std::string& text);
+int   font_write_line(int font_index, const std::string& text, int x, int y);
+std::pair<int, int> font_write(int font_index, const std::string& text, int x, int y);
+std::pair<int, int> font_writealpha_s(int font_index, const std::string& text, int x, int y, int alpha);
+std::pair<int, int> font_get_text_size(int font_index, const std::string& text);
 
 bool  font_accept_char(int font_index, PString::UTF8_Char u8c);
 
