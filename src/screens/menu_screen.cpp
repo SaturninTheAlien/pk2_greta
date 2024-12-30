@@ -277,26 +277,26 @@ void MenuScreen::Draw_Menu_Main() {
 		my += 20;	
 	}
 	else{
-		if (Draw_Menu_Text("Play episode",180,my)){
+		if (Draw_Menu_Text(PK_txt.setup_play,180,my)){
 			menu_nyt = MENU_EPISODES;
 		}
 		my += 20;
 	}
 
-	if(Draw_Menu_Text("Settings",180,my)){
+	if(Draw_Menu_Text(PK_txt.setup_options,180,my)){
 		menu_nyt = MENU_SETTINGS;
 	}
 	my += 20;
 	
 	if(config_txt.links_menu == LINKS_MENU_MAIN){
-		if(Draw_Menu_Text("Links",180,my)){
+		if(Draw_Menu_Text(PK_txt.mainmenu_links,180,my)){
 			menu_nyt = MENU_LINKS;
 		}
 		my += 20;
 	}
 
 	if (Settings.touchscreen_mode && Game) {
-		if (Draw_Menu_Text("map",180,my)) {
+		if (Draw_Menu_Text(PK_txt.mainmenu_map,180,my)) {
 			next_screen = SCREEN_MAP;
 
 			delete Game;
@@ -572,11 +572,11 @@ void MenuScreen::Draw_Menu_Graphics() {
 		int  oldfps = Settings.fps;
 
 		if (Settings.isFullScreen){
-			if (Draw_Menu_Text("fullscreen mode is on",180,my)){
+			if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.gfx_fullscreen_on),180,my)){
 				Settings.isFullScreen = false;
 			}
 		} else{
-			if (Draw_Menu_Text("fullscreen mode is off",180,my)){
+			if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.gfx_fullscreen_off),180,my)){
 				Settings.isFullScreen = true;
 			}
 		}
@@ -656,7 +656,7 @@ void MenuScreen::Draw_Menu_Graphics() {
 			}	
 		}
 
-		if (Draw_Menu_Text("back",100,360)) {
+		if (Draw_Menu_Text(PK_txt.mainmenu_back,100,360)) {
 			moreOptions = false;
 			chosen_menu_id = 0; //Set menu cursor to 0
 		}
@@ -677,13 +677,13 @@ void MenuScreen::Draw_Menu_Graphics() {
 		
 		this->drawBoolBoxGroup(Settings.draw_gui,
 							save_settings,
-							"In-Game GUI is enabled",
-							"In-Game GUI is disabled");
+							tekstit->Get_Text(PK_txt.gfx_gui_on),
+							tekstit->Get_Text(PK_txt.gfx_gui_off));
 
 		this->drawBoolBoxGroup(Settings.touchscreen_mode,
 							save_settings,
-							"Touchscreen mode on",
-							"Touchscreen mode off");
+							tekstit->Get_Text(PK_txt.gfx_touchscreen_on),
+							tekstit->Get_Text(PK_txt.gfx_touchscreen_off));
 
 		this->drawBoolBoxGroup(Settings.double_speed,
 							save_settings,
@@ -691,7 +691,7 @@ void MenuScreen::Draw_Menu_Graphics() {
 							tekstit->Get_Text(PK_txt.gfx_speed_normal));
 
 		//if (!Settings.touchscreen_mode)
-			if (Draw_Menu_Text("more",100,360)){
+			if (Draw_Menu_Text(PK_txt.mainmenu_more,100,360)){
 				moreOptions = true;
 				chosen_menu_id = 0; //Set menu cursor to 0
 			}
@@ -849,7 +849,7 @@ void MenuScreen::Draw_Menu_Controls() {
 	if (menu_lue_kontrollit == 0){
 		if (Input == &Settings.keyboard) {
 
-			if (Draw_Menu_Text("use game controller",100,my)) {
+			if (Draw_Menu_Text(PK_txt.controls_use_controller ,100,my)) {
 				Settings.using_controller = SET_TRUE;
 				Input = &Settings.joystick;
 				chosen_menu_id = 0; //Set menu cursor to 0
@@ -858,7 +858,7 @@ void MenuScreen::Draw_Menu_Controls() {
 
 		} else {
 
-			if (Draw_Menu_Text("use keyboard",100,my)) {
+			if (Draw_Menu_Text(PK_txt.controls_use_keyboard,100,my)) {
 				Settings.using_controller = SET_FALSE;
 				Input = &Settings.keyboard;
 				chosen_menu_id = 0; //Set menu cursor to 0
@@ -870,7 +870,7 @@ void MenuScreen::Draw_Menu_Controls() {
 
 	my += 20;
 
-	if (Draw_Menu_Text("get default",100,my)) {
+	if (Draw_Menu_Text(PK_txt.controls_get_default,100,my)) {
 
 		if (Input == &Settings.keyboard) {
 			Input->left      = PInput::LEFT;
@@ -902,13 +902,13 @@ void MenuScreen::Draw_Menu_Controls() {
 
 	// TODO - Change this
 	if (Settings.vibration > 0){
-		if (Draw_Menu_Text("turn on vibration",100,my)){
+		if (Draw_Menu_Text(PK_txt.controls_vibration_on,100,my)){
 			Settings.vibration = 0;
 			PInput::SetVibration(Settings.vibration);
 			save_settings = true;
 		}
 	} else {
-		if (Draw_Menu_Text("turn off vibration",100,my)){
+		if (Draw_Menu_Text(PK_txt.controls_vibration_off,100,my)){
 			Settings.vibration = 0xFFFF/2;
 			PInput::SetVibration(Settings.vibration);
 			save_settings = true;

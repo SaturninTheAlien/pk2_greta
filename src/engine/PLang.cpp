@@ -116,6 +116,17 @@ int PLang::Search_Id(const std::string& title)const {
 
 }
 
+int PLang::searchLocalizedText(const std::string& title) {
+
+	int id = this->Search_Id(title);
+	if(id==-1){
+		id = keys.size();
+		keys.emplace_back(title);
+		values.emplace_back(std::string("...") + title + "...");
+	}
+	return id;
+}
+
 
 
 const std::string& PLang::Get_Text(int index)const {

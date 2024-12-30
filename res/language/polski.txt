@@ -1,7 +1,7 @@
 Setup 
 ------------------------------------------------------------------------------------
 *setup options:				Ustawienia
-*setup video modes:			Tryb graficzny
+*setup video modes:			Grafika
 *setup music & sounds:			Muzyka i efekty dźwiękowe
 *setup music:				Muzyka
 *setup sounds:				Efekty dźwiękowe
@@ -15,7 +15,7 @@ Intro
 *intro a game by:			gra stworzona przez
 *intro original character design:	projekt oryginalnych postaci
 *intro tested by:			przetestowana przez
-*intro thanks to:			podziękowania
+*intro thanks to:			podziękowania dla
 *intro translation:			polskie tłumaczenie
 *intro translator:			wielu autorów
 
@@ -29,6 +29,11 @@ Main Menu
 *main menu graphics:			Grafika
 *main menu sounds:			Dźwięk
 *main menu exit game:			Wyjście
+
+*main menu map:				mapa
+*main menu links:			linki
+*main menu back:			Powrót
+*main menu more:			Więcej
 
 *back to main menu:			powrót do menu
 
@@ -58,9 +63,12 @@ Game Controls
 *controls menu doodle attack:		atak megafonem
 *controls menu use item:		użycie przedmiotu
 *controls menu edit:			edycja
-*controls menu keyboard def:		klawiatura
-*controls menu gamepad4:		gamepad 4 przyciski
-*controls menu gamepad6:		gamepad 6 przycisków
+
+*controls menu default:			przywróć domyślne
+*controls menu use keyboard:		użyj klawiatury
+*controls menu use controller:		użyj kontrolera
+*controls menu vibration on:		kontroler wibruje
+*controls menu vibration off:		kontroler nie wibruje
 
 Sounds
 ------------------------------------------------------------------------------------
@@ -73,19 +81,25 @@ Sounds
 Graphics
 ------------------------------------------------------------------------------------
 *graphics menu title:				ustawienia grafiki
-*graphics menu transparency fx on:		przezroczystość wł
-*graphics menu transparency fx off:		przezroczystość wył
 *graphics menu menus are transparent:		przezroczysty tekst wł
 *graphics menu menus are not transparent:	przezroczysty tekst wył
 *graphics menu item bar is visible:		pasek przedmiotów widoczny
 *graphics menu item bar is not visible:		pasek przedmiotów niewidoczny
-
 *graphics menu game speed normal:		szybkość gry: normalna
 *graphics menu game speed double:		szybkość gry: podwójna
 
+*graphics menu gui on:			gui wł
+*graphics menu gui off:			gui wył
+
+*graphics menu fullscreen on:		pełny ekran wł
+*graphics menu fullscreen off:		pełny ekran wył
+
+*graphics menu touchscreen on:		tryb ekranu dotykowego wł
+*graphics menu touchscreen off:		tryb ekranu dotykowego wył
+
 Player's name
 ------------------------------------------------------------------------------------
-*player screen type your name:		wpisz nazwę gracza
+*player screen type your name:		wpisz imię gracza
 *player screen continue:		dalej
 *player screen clear:			wyczyść
 *player default name:			pekka
@@ -93,19 +107,18 @@ Player's name
 Episodes
 ------------------------------------------------------------------------------------
 *episode menu choose episode:		wybierz epizod
-*episode menu get more episodes at:	więcej epizodów na http://www.pistegamez.net
 *episode menu no maps:			nie znaleziono poziomów
 
 Map
 ------------------------------------------------------------------------------------
-*map screen total score:		całkowity wynik
+*map screen total score:		wynik
 *map screen next level:			następny poziom
-*episode best player:			najlepszy gracz epizodu:
-*episode hiscore:			najlepszy wynik epizodu:
-*level best player:			najlepszy gracz poziomu:
-*level hiscore:				najlepszy wynik poziomu:
-*level fastest player:			najszybszy gracz:
-*level best time:			najlepszy czas:
+*episode best player:			mistrz epizodu:
+*episode hiscore:			najlepszy wynik
+*level best player:			najlepszy gracz
+*level hiscore:				wynik:
+*level fastest player:			najszybszy gracz
+*level best time:			czas:
 
 Scores
 ------------------------------------------------------------------------------------
@@ -127,7 +140,7 @@ Game
 *score:					punkty:
 *game time:				czas:
 *energy:				energia:
-*items:					pozycja:
+*items:					przedmioty:
 *attack 1:				megafon:
 *attack 2:				jajka:
 *keys:					klucze:
@@ -141,6 +154,9 @@ Game
 *new doodle attack:			nowy megafon!
 *new egg attack:			nowe jajko!
 *new item:				nowy przedmiot!
+
+*invisibility:				niewidzialność:
+*supermode:				supertryb:
 
 *loading:				wczytywanie...
 
@@ -156,11 +172,11 @@ Info Signs
 *info02:			bombarduj wrogów jajkami!
 *info03:			szukaj znaku wyjścia!
 *info04:			kłódki zostaną otwarte gdy zbierzesz wszystkie klucze.
-*info05:			aby wcisnąć przycisk skocz na niego.
+*info05:			wciśnij przycisk skacząc na niego.
 *info06:			zielony przycisk porusza ściany z zieloną strzałką.
 *info07:			niebieski przycisk porusza ściany z niebieską strzałką.
 *info08:			pomarańczowy przycisk wyłącza ogień.
-*info09:			możesz używać przedmiotów kiedy potrzebujesz.
+*info09:			możesz używać przedmiotów kiedy tylko chcesz.
 *info10:			pióra przywracają energię.
 *info11:			teleportery bywają zdradliwe! nie zgub się!
 *info12:			nokauty przeciwników i bonusy polepszają twój wynik.

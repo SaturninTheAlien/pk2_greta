@@ -126,140 +126,162 @@ int Load_Language(const std::string& language) {
 	
 	// Load_Fonts(tekstit);
 
-	// Aloitusikkuna
-	PK_txt.setup_options			= tekstit->Search_Id("setup options");
-	PK_txt.setup_videomodes			= tekstit->Search_Id("setup video modes");
-	PK_txt.setup_music_and_sounds	= tekstit->Search_Id("setup music & sounds");
-	PK_txt.setup_music				= tekstit->Search_Id("setup music");
-	PK_txt.setup_sounds				= tekstit->Search_Id("setup sounds");
-	PK_txt.setup_language			= tekstit->Search_Id("setup language");
-	PK_txt.setup_play				= tekstit->Search_Id("setup play");
-	PK_txt.setup_exit				= tekstit->Search_Id("setup exit");
+	// Setup
+	PK_txt.setup_options			= tekstit->searchLocalizedText("setup options");
+	PK_txt.setup_videomodes			= tekstit->searchLocalizedText("setup video modes");
+	PK_txt.setup_music_and_sounds	= tekstit->searchLocalizedText("setup music & sounds");
+	PK_txt.setup_music				= tekstit->searchLocalizedText("setup music");
+	PK_txt.setup_sounds				= tekstit->searchLocalizedText("setup sounds");
+	PK_txt.setup_language			= tekstit->searchLocalizedText("setup language");
+	PK_txt.setup_play				= tekstit->searchLocalizedText("setup play");
+	PK_txt.setup_exit				= tekstit->searchLocalizedText("setup exit");
 
 	// Intro
-	PK_txt.intro_presents			= tekstit->Search_Id("intro presents");
-	PK_txt.intro_a_game_by			= tekstit->Search_Id("intro a game by");
-	PK_txt.intro_original			= tekstit->Search_Id("intro original character design");
-	PK_txt.intro_tested_by			= tekstit->Search_Id("intro tested by");
-	PK_txt.intro_thanks_to			= tekstit->Search_Id("intro thanks to");
-	PK_txt.intro_translation		= tekstit->Search_Id("intro translation");
-	PK_txt.intro_translator			= tekstit->Search_Id("intro translator");
+	PK_txt.intro_presents			= tekstit->searchLocalizedText("intro presents");
+	PK_txt.intro_a_game_by			= tekstit->searchLocalizedText("intro a game by");
+	PK_txt.intro_original			= tekstit->searchLocalizedText("intro original character design");
+	PK_txt.intro_tested_by			= tekstit->searchLocalizedText("intro tested by");
+	PK_txt.intro_thanks_to			= tekstit->searchLocalizedText("intro thanks to");
+	PK_txt.intro_translation		= tekstit->searchLocalizedText("intro translation");
+	PK_txt.intro_translator			= tekstit->searchLocalizedText("intro translator");
 
-	// P��valikko
-	PK_txt.mainmenu_new_game		= tekstit->Search_Id("main menu new game");
-	PK_txt.mainmenu_continue		= tekstit->Search_Id("main menu continue");
-	PK_txt.mainmenu_load_game		= tekstit->Search_Id("main menu load game");
-	PK_txt.mainmenu_save_game		= tekstit->Search_Id("main menu save game");
-	PK_txt.mainmenu_controls		= tekstit->Search_Id("main menu controls");
-	PK_txt.mainmenu_graphics		= tekstit->Search_Id("main menu graphics");
-	PK_txt.mainmenu_sounds			= tekstit->Search_Id("main menu sounds");
-	PK_txt.mainmenu_exit			= tekstit->Search_Id("main menu exit game");
+	// Menu
+	PK_txt.mainmenu_new_game		= tekstit->searchLocalizedText("main menu new game");
+	PK_txt.mainmenu_continue		= tekstit->searchLocalizedText("main menu continue");
+	PK_txt.mainmenu_load_game		= tekstit->searchLocalizedText("main menu load game");
+	PK_txt.mainmenu_save_game		= tekstit->searchLocalizedText("main menu save game");
+	PK_txt.mainmenu_controls		= tekstit->searchLocalizedText("main menu controls");
+	PK_txt.mainmenu_graphics		= tekstit->searchLocalizedText("main menu graphics");
+	PK_txt.mainmenu_sounds			= tekstit->searchLocalizedText("main menu sounds");
+	PK_txt.mainmenu_exit			= tekstit->searchLocalizedText("main menu exit game");
 
-	PK_txt.mainmenu_return			= tekstit->Search_Id("back to main menu");
+	PK_txt.mainmenu_map  			= tekstit->searchLocalizedText("main menu map");
+	PK_txt.mainmenu_links			= tekstit->searchLocalizedText("main menu links");
+	PK_txt.mainmenu_back			= tekstit->searchLocalizedText("main menu back");
+	PK_txt.mainmenu_more			= tekstit->searchLocalizedText("main menu more");
 
-	// charging_timer
-	PK_txt.loadgame_title			= tekstit->Search_Id("load menu title");
-	PK_txt.loadgame_info			= tekstit->Search_Id("load menu info");
-	PK_txt.loadgame_episode			= tekstit->Search_Id("load menu episode");
-	PK_txt.loadgame_level			= tekstit->Search_Id("load menu level");
-
-	// Tallennus
-	PK_txt.savegame_title			= tekstit->Search_Id("save menu title");
-	PK_txt.savegame_info			= tekstit->Search_Id("save menu info");
-	PK_txt.savegame_episode			= tekstit->Search_Id("save menu episode");
-	PK_txt.savegame_level			= tekstit->Search_Id("save menu level");
-
-	// Kontrollit
-	PK_txt.controls_title			= tekstit->Search_Id("controls menu title");
-	PK_txt.controls_moveleft		= tekstit->Search_Id("controls menu move left");
-	PK_txt.controls_moveright		= tekstit->Search_Id("controls menu move right");
-	PK_txt.controls_jump			= tekstit->Search_Id("controls menu jump");
-	PK_txt.controls_duck			= tekstit->Search_Id("controls menu duck");
-	PK_txt.controls_walkslow		= tekstit->Search_Id("controls menu walk slow");
-	PK_txt.controls_eggattack		= tekstit->Search_Id("controls menu egg attack");
-	PK_txt.controls_doodleattack	= tekstit->Search_Id("controls menu doodle attack");
-	PK_txt.controls_useitem			= tekstit->Search_Id("controls menu use item");
-	PK_txt.controls_edit			= tekstit->Search_Id("controls menu edit");
-	PK_txt.controls_kbdef			= tekstit->Search_Id("controls menu keyboard def");
-	PK_txt.controls_gp4def			= tekstit->Search_Id("controls menu gamepad4");
-	PK_txt.controls_gp6def			= tekstit->Search_Id("controls menu gamepad6");
-
-	PK_txt.gfx_title				= tekstit->Search_Id("graphics menu title");
+	PK_txt.mainmenu_return			= tekstit->searchLocalizedText("back to main menu");
 	
-	// PK_txt.gfx_tfx_on				= tekstit->Search_Id("graphics menu transparency fx on");
-	// PK_txt.gfx_tfx_off				= tekstit->Search_Id("graphics menu transparency fx off");
 
-	PK_txt.gfx_tmenus_on			= tekstit->Search_Id("graphics menu menus are transparent");
-	PK_txt.gfx_tmenus_off			= tekstit->Search_Id("graphics menu menus are not transparent");
-	PK_txt.gfx_items_on				= tekstit->Search_Id("graphics menu item bar is visible");
-	PK_txt.gfx_items_off			= tekstit->Search_Id("graphics menu item bar is not visible");
+	// load menu
+	PK_txt.loadgame_title			= tekstit->searchLocalizedText("load menu title");
+	PK_txt.loadgame_info			= tekstit->searchLocalizedText("load menu info");
+	PK_txt.loadgame_episode			= tekstit->searchLocalizedText("load menu episode");
+	PK_txt.loadgame_level			= tekstit->searchLocalizedText("load menu level");
 
-	// PK_txt.gfx_weather_on			= tekstit->Search_Id("graphics menu weather fx on");
-	// PK_txt.gfx_weather_off			= tekstit->Search_Id("graphics menu weather fx off");
-	// PK_txt.gfx_bgsprites_on			= tekstit->Search_Id("graphics menu bg sprites on");
-	// PK_txt.gfx_bgsprites_off		= tekstit->Search_Id("graphics menu bg sprites off");
+	// save menu
+	PK_txt.savegame_title			= tekstit->searchLocalizedText("save menu title");
+	PK_txt.savegame_info			= tekstit->searchLocalizedText("save menu info");
+	PK_txt.savegame_episode			= tekstit->searchLocalizedText("save menu episode");
+	PK_txt.savegame_level			= tekstit->searchLocalizedText("save menu level");
 
-	PK_txt.gfx_speed_normal			= tekstit->Search_Id("graphics menu game speed normal");
-	PK_txt.gfx_speed_double			= tekstit->Search_Id("graphics menu game speed double");
+	// controls
+	PK_txt.controls_title			= tekstit->searchLocalizedText("controls menu title");
+	PK_txt.controls_moveleft		= tekstit->searchLocalizedText("controls menu move left");
+	PK_txt.controls_moveright		= tekstit->searchLocalizedText("controls menu move right");
+	PK_txt.controls_jump			= tekstit->searchLocalizedText("controls menu jump");
+	PK_txt.controls_duck			= tekstit->searchLocalizedText("controls menu duck");
+	PK_txt.controls_walkslow		= tekstit->searchLocalizedText("controls menu walk slow");
+	PK_txt.controls_eggattack		= tekstit->searchLocalizedText("controls menu egg attack");
+	PK_txt.controls_doodleattack	= tekstit->searchLocalizedText("controls menu doodle attack");
+	PK_txt.controls_useitem			= tekstit->searchLocalizedText("controls menu use item");
+	PK_txt.controls_edit			= tekstit->searchLocalizedText("controls menu edit");
 
-	PK_txt.sound_title				= tekstit->Search_Id("sounds menu title");
-	PK_txt.sound_sfx_volume			= tekstit->Search_Id("sounds menu sfx volume");
-	PK_txt.sound_music_volume		= tekstit->Search_Id("sounds menu music volume");
-	PK_txt.sound_more				= tekstit->Search_Id("sounds menu more");
-	PK_txt.sound_less				= tekstit->Search_Id("sounds menu less");
+	PK_txt.controls_get_default     = tekstit->searchLocalizedText("controls menu default");
+	PK_txt.controls_use_keyboard    = tekstit->searchLocalizedText("controls menu use keyboard");
+	PK_txt.controls_use_controller  = tekstit->searchLocalizedText("controls menu use controller");
 
-	PK_txt.playermenu_type_name		= tekstit->Search_Id("player screen type your name");
-	PK_txt.playermenu_continue		= tekstit->Search_Id("player screen continue");
-	PK_txt.playermenu_clear			= tekstit->Search_Id("player screen clear");
-	PK_txt.player_default_name		= tekstit->Search_Id("player default name");
+	PK_txt.controls_vibration_on    = tekstit->searchLocalizedText("controls menu vibration on");
+	PK_txt.controls_vibration_off   = tekstit->searchLocalizedText("controls menu vibration off");
 
-	PK_txt.episodes_choose_episode	= tekstit->Search_Id("episode menu choose episode");
-	PK_txt.episodes_no_maps			= tekstit->Search_Id("episode menu no maps");
-	PK_txt.episodes_get_more		= tekstit->Search_Id("episode menu get more episodes at");
+	PK_txt.gfx_title				= tekstit->searchLocalizedText("graphics menu title");
 
-	PK_txt.map_total_score			= tekstit->Search_Id("map screen total score");
-	PK_txt.map_next_level			= tekstit->Search_Id("map screen next level");
-	PK_txt.map_episode_best_player	= tekstit->Search_Id("episode best player");
-	PK_txt.map_episode_hiscore		= tekstit->Search_Id("episode hiscore");
-	PK_txt.map_level_best_player	= tekstit->Search_Id("level best player");
-	PK_txt.map_level_hiscore		= tekstit->Search_Id("level hiscore");
-	PK_txt.map_level_fastest_player = tekstit->Search_Id("level fastest player");
-	PK_txt.map_level_best_time		= tekstit->Search_Id("level best time");
 
-	PK_txt.score_screen_title		= tekstit->Search_Id("score screen title");
-	PK_txt.score_screen_level_score	= tekstit->Search_Id("score screen level score");
-	PK_txt.score_screen_bonus_score	= tekstit->Search_Id("score screen bonus score");
-	PK_txt.score_screen_time_score	= tekstit->Search_Id("score screen time score");
-	PK_txt.score_screen_energy_score= tekstit->Search_Id("score screen energy score");
-	PK_txt.score_screen_item_score	= tekstit->Search_Id("score screen item score");
-	PK_txt.score_screen_total_score	= tekstit->Search_Id("score screen total score");
-	PK_txt.score_screen_new_level_hiscore	= tekstit->Search_Id("score screen new level hiscore");
-	PK_txt.score_screen_new_level_best_time= tekstit->Search_Id("score screen new level best time");
-	PK_txt.score_screen_new_episode_hiscore= tekstit->Search_Id("score screen new episode hiscore");
-	PK_txt.score_screen_continue		= tekstit->Search_Id("score screen continue");
+	//
 
-	PK_txt.game_score				= tekstit->Search_Id("score");
-	PK_txt.game_time				= tekstit->Search_Id("game time");
-	PK_txt.game_energy				= tekstit->Search_Id("energy");
-	PK_txt.game_items				= tekstit->Search_Id("items");
-	PK_txt.game_attack1				= tekstit->Search_Id("attack 1");
-	PK_txt.game_attack2				= tekstit->Search_Id("attack 2");
-	PK_txt.game_keys				= tekstit->Search_Id("keys");
-	PK_txt.game_clear				= tekstit->Search_Id("level clear");
-	PK_txt.game_timebonus			= tekstit->Search_Id("time bonus");
-	PK_txt.game_ko					= tekstit->Search_Id("knocked out");
-	PK_txt.game_timeout				= tekstit->Search_Id("time out");
-	PK_txt.game_tryagain			= tekstit->Search_Id("try again");
-	PK_txt.game_locksopen			= tekstit->Search_Id("locks open");
-	PK_txt.game_newdoodle			= tekstit->Search_Id("new doodle attack");
-	PK_txt.game_newegg				= tekstit->Search_Id("new egg attack");
-	PK_txt.game_newitem				= tekstit->Search_Id("new item");
-	PK_txt.game_loading				= tekstit->Search_Id("loading");
-	PK_txt.game_paused				= tekstit->Search_Id("game paused");
+	PK_txt.gfx_gui_on				= tekstit->searchLocalizedText("graphics menu gui on");
+	PK_txt.gfx_gui_off				= tekstit->searchLocalizedText("graphics menu gui off");
 
-	PK_txt.end_congratulations	= tekstit->Search_Id("end congratulations");
-	PK_txt.end_chickens_saved	= tekstit->Search_Id("end chickens saved");
-	PK_txt.end_the_end			= tekstit->Search_Id("end the end");
+	PK_txt.gfx_fullscreen_on  	    = tekstit->searchLocalizedText("graphics menu fullscreen on");
+	PK_txt.gfx_fullscreen_off       = tekstit->searchLocalizedText("graphics menu fullscreen off");
+
+	PK_txt.gfx_touchscreen_on       = tekstit->searchLocalizedText("graphics menu touchscreen on");
+	PK_txt.gfx_touchscreen_off      = tekstit->searchLocalizedText("graphics menu touchscreen off");
+
+	//
+
+	PK_txt.gfx_tmenus_on			= tekstit->searchLocalizedText("graphics menu menus are transparent");
+	PK_txt.gfx_tmenus_off			= tekstit->searchLocalizedText("graphics menu menus are not transparent");
+	PK_txt.gfx_items_on				= tekstit->searchLocalizedText("graphics menu item bar is visible");
+	PK_txt.gfx_items_off			= tekstit->searchLocalizedText("graphics menu item bar is not visible");
+
+	PK_txt.gfx_speed_normal			= tekstit->searchLocalizedText("graphics menu game speed normal");
+	PK_txt.gfx_speed_double			= tekstit->searchLocalizedText("graphics menu game speed double");
+
+	PK_txt.sound_title				= tekstit->searchLocalizedText("sounds menu title");
+	PK_txt.sound_sfx_volume			= tekstit->searchLocalizedText("sounds menu sfx volume");
+	PK_txt.sound_music_volume		= tekstit->searchLocalizedText("sounds menu music volume");
+	PK_txt.sound_more				= tekstit->searchLocalizedText("sounds menu more");
+	PK_txt.sound_less				= tekstit->searchLocalizedText("sounds menu less");
+
+	PK_txt.playermenu_type_name		= tekstit->searchLocalizedText("player screen type your name");
+	PK_txt.playermenu_continue		= tekstit->searchLocalizedText("player screen continue");
+	PK_txt.playermenu_clear			= tekstit->searchLocalizedText("player screen clear");
+	PK_txt.player_default_name		= tekstit->searchLocalizedText("player default name");
+
+	PK_txt.episodes_choose_episode	= tekstit->searchLocalizedText("episode menu choose episode");
+	PK_txt.episodes_no_maps			= tekstit->searchLocalizedText("episode menu no maps");
+
+	PK_txt.map_total_score			= tekstit->searchLocalizedText("map screen total score");
+	PK_txt.map_next_level			= tekstit->searchLocalizedText("map screen next level");
+	PK_txt.map_episode_best_player	= tekstit->searchLocalizedText("episode best player");
+	PK_txt.map_episode_hiscore		= tekstit->searchLocalizedText("episode hiscore");
+	PK_txt.map_level_best_player	= tekstit->searchLocalizedText("level best player");
+	PK_txt.map_level_hiscore		= tekstit->searchLocalizedText("level hiscore");
+	PK_txt.map_level_fastest_player = tekstit->searchLocalizedText("level fastest player");
+	PK_txt.map_level_best_time		= tekstit->searchLocalizedText("level best time");
+
+	PK_txt.score_screen_title		= tekstit->searchLocalizedText("score screen title");
+	PK_txt.score_screen_level_score	= tekstit->searchLocalizedText("score screen level score");
+	PK_txt.score_screen_bonus_score	= tekstit->searchLocalizedText("score screen bonus score");
+	PK_txt.score_screen_time_score	= tekstit->searchLocalizedText("score screen time score");
+	PK_txt.score_screen_energy_score= tekstit->searchLocalizedText("score screen energy score");
+	PK_txt.score_screen_item_score	= tekstit->searchLocalizedText("score screen item score");
+	PK_txt.score_screen_total_score	= tekstit->searchLocalizedText("score screen total score");
+	PK_txt.score_screen_new_level_hiscore	= tekstit->searchLocalizedText("score screen new level hiscore");
+	PK_txt.score_screen_new_level_best_time= tekstit->searchLocalizedText("score screen new level best time");
+	PK_txt.score_screen_new_episode_hiscore= tekstit->searchLocalizedText("score screen new episode hiscore");
+	PK_txt.score_screen_continue		= tekstit->searchLocalizedText("score screen continue");
+
+	PK_txt.game_score				= tekstit->searchLocalizedText("score");
+	PK_txt.game_time				= tekstit->searchLocalizedText("game time");
+	PK_txt.game_energy				= tekstit->searchLocalizedText("energy");
+	PK_txt.game_items				= tekstit->searchLocalizedText("items");
+	PK_txt.game_attack1				= tekstit->searchLocalizedText("attack 1");
+	PK_txt.game_attack2				= tekstit->searchLocalizedText("attack 2");
+	PK_txt.game_keys				= tekstit->searchLocalizedText("keys");
+	PK_txt.game_clear				= tekstit->searchLocalizedText("level clear");
+	PK_txt.game_timebonus			= tekstit->searchLocalizedText("time bonus");
+	PK_txt.game_ko					= tekstit->searchLocalizedText("knocked out");
+	PK_txt.game_timeout				= tekstit->searchLocalizedText("time out");
+	PK_txt.game_tryagain			= tekstit->searchLocalizedText("try again");
+	PK_txt.game_locksopen			= tekstit->searchLocalizedText("locks open");
+	PK_txt.game_newdoodle			= tekstit->searchLocalizedText("new doodle attack");
+	PK_txt.game_newegg				= tekstit->searchLocalizedText("new egg attack");
+	PK_txt.game_newitem				= tekstit->searchLocalizedText("new item");
+	PK_txt.game_loading				= tekstit->searchLocalizedText("loading");
+	PK_txt.game_paused				= tekstit->searchLocalizedText("game paused");
+
+	//
+
+	PK_txt.game_invisible			= tekstit->searchLocalizedText("invisibility");
+	PK_txt.game_supermode			= tekstit->searchLocalizedText("supermode");
+
+	//
+
+	PK_txt.end_congratulations	= tekstit->searchLocalizedText("end congratulations");
+	PK_txt.end_chickens_saved	= tekstit->searchLocalizedText("end chickens saved");
+	PK_txt.end_the_end			= tekstit->searchLocalizedText("end the end");
 
 	std::string index;
 	for (uint i = 1; i < MAX_INFOS; i++) {
@@ -268,7 +290,7 @@ int Load_Language(const std::string& language) {
 		if (i < 10) index += '0';
 		index += std::to_string(i);
 
-		PK_txt.infos[i] = tekstit->Search_Id(index.c_str());
+		PK_txt.infos[i] = tekstit->searchLocalizedText(index.c_str());
 
 	}
 

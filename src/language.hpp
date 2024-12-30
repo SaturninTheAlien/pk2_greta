@@ -48,6 +48,11 @@ public:
 
 		mainmenu_return = -1,
 
+		mainmenu_map  = -1,
+		mainmenu_links = -1,
+		mainmenu_back = -1,
+		mainmenu_more = -1,
+
 		loadgame_title = -1,
 		loadgame_info = -1,
 		loadgame_episode = -1,
@@ -68,14 +73,16 @@ public:
 		controls_doodleattack = -1,
 		controls_useitem = -1,
 		controls_edit = -1,
-		controls_kbdef = -1,
-		controls_gp4def = -1,
-		controls_gp6def = -1,
+
+		controls_get_default = -1,
+		controls_use_keyboard = -1,
+		controls_use_controller = -1,
+
+		controls_vibration_on = -1,
+		controls_vibration_off = -1,
 
 		gfx_title = -1,
-		
-		// gfx_tfx_on = -1,
-		// gfx_tfx_off = -1,
+	
 
 		gfx_tmenus_on = -1,
 		gfx_tmenus_off = -1,
@@ -83,11 +90,18 @@ public:
 		gfx_items_on = -1,
 		gfx_items_off = -1,
 
-		// gfx_weather_on = -1,
-		// gfx_weather_off = -1,
+		//NEW GE keys
 
-		// gfx_bgsprites_on = -1,
-		// gfx_bgsprites_off = -1,
+		gfx_gui_on = -1,
+		gfx_gui_off = -1,
+
+		gfx_touchscreen_on = -1,
+		gfx_touchscreen_off = -1,
+
+		gfx_fullscreen_on = -1,
+		gfx_fullscreen_off = -1,
+
+		//
 
 		gfx_speed_normal = -1,
 		gfx_speed_double = -1,
@@ -105,7 +119,6 @@ public:
 
 		episodes_choose_episode = -1,
 		episodes_no_maps = -1,
-		episodes_get_more = -1,
 
 		map_total_score = -1,
 		map_next_level = -1,
@@ -146,6 +159,11 @@ public:
 		game_newitem = -1,
 		game_loading = -1,
 		game_paused = -1,
+
+		//
+		game_invisible = -1,
+		game_supermode = -1,
+		//
 
 		end_congratulations = -1,
 		end_chickens_saved = -1,

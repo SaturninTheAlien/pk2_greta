@@ -247,7 +247,7 @@ void PlayingScreen::Draw_InGame_UI(){
 	// Draw Invisible
 	/////////////////
 	if(Player_Sprite->super_mode_timer > 0){
-		vali = PDraw::font_write_line(fontti1,"supermode:",60,my+27);
+		vali = PDraw::font_write_line(fontti1, tekstit->Get_Text(PK_txt.game_supermode),60,my+27);
 		//sprintf(luku, "%i", Player_Sprite->invisible_timer/60);
 		std::string super_mode_timer_s = std::to_string(Player_Sprite->super_mode_timer/60);
 		PDraw::font_write_line(fontti2,super_mode_timer_s,60+vali+1,my+27+1);
@@ -255,7 +255,7 @@ void PlayingScreen::Draw_InGame_UI(){
 	}
 
 	else if(Player_Sprite->invisible_timer > 0){
-		vali = PDraw::font_write_line(fontti1,"invisible:",60,my+27);
+		vali = PDraw::font_write_line(fontti1,tekstit->Get_Text(PK_txt.game_invisible),60,my+27);
 		//sprintf(luku, "%i", Player_Sprite->invisible_timer/60);
 		std::string invisible_timer_s = std::to_string(Player_Sprite->invisible_timer/60);
 		PDraw::font_write_line(fontti2,invisible_timer_s,60+vali+1,my+27+1);

@@ -47,6 +47,7 @@ class PLang {
 		const std::string& Get_Text(int index)const;
 		int Search_Id(const std::string& title)const;
 
+		int searchLocalizedText(const std::string& title);
 	private:
 
 		static const std::string PLACEHOLDER;

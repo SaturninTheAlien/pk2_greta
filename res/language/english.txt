@@ -30,7 +30,16 @@ Main Menu
 *main menu sounds:			sounds
 *main menu exit game:			exit
 
-*back                       back
+---- New GE keys:
+
+*main menu map:             map
+*main menu links:           links
+*main menu back:            back
+*main menu more:            more
+
+----
+
+
 *back to main menu:			back to mainmenu
 
 Load Game
@@ -59,9 +68,16 @@ Game Controls
 *controls menu doodle attack:		doodle attack
 *controls menu use item:		use item
 *controls menu edit:			edit
-*controls menu keyboard def:		keyboard defaults
-*controls menu gamepad4:		gamepad defaults 4 buttons 
-*controls menu gamepad6:		gamepad defaults 6 buttons
+
+---- New GE keys:
+
+*controls menu default:                 get default
+*controls menu use keyboard:            use keyboard
+*controls menu use controller:          use game controller
+*controls menu vibration on:            game controller vibrates
+*controls menu vibration off:           game controller does not vibrate
+
+---- 
 
 Sounds
 ------------------------------------------------------------------------------------
@@ -74,8 +90,6 @@ Sounds
 Graphics
 ------------------------------------------------------------------------------------
 *graphics menu title:				graphics
-*graphics menu transparency fx on:		transparency fx on
-*graphics menu transparency fx off:		transparency fx off
 *graphics menu menus are transparent:		transparent menu texts on
 *graphics menu menus are not transparent:	transparent menu texts off 
 *graphics menu item bar is visible:		item bar is visible
@@ -83,11 +97,18 @@ Graphics
 *graphics menu game speed normal:		game speed is normal 
 *graphics menu game speed double:		game speed is double 
 
+---- New GE keys:
+
+*graphics menu gui on:                  in-game gui is visible
+*graphics menu gui off:                 in-game gui is not visible
+
 *graphics menu fullscreen on:           fullscreen on
 *graphics menu fullscreen off:          fullscreen off
 
-*graphics menu gui on:                  in-game gui is visible
-*graphics menu gui on:                  in-game gui is not visible
+*graphics menu touchscreen on:          touchscreen mode on
+*graphics menu touchscreen off:         touchscreen mode off
+
+----
 
 Player's name
 ------------------------------------------------------------------------------------
@@ -99,8 +120,7 @@ Player's name
 Episodes
 ------------------------------------------------------------------------------------
 *episode menu choose episode:		choose an episode
-*episode menu get more episodes at:	get more episodes at http://pistegamez.cjb.net
-*episode menu no maps:			episode has no maps!?
+*episode menu no maps:			no levels found
 
 Map
 ------------------------------------------------------------------------------------
@@ -146,6 +166,13 @@ Game
 *new doodle attack:			a new doodle!
 *new egg attack:			a new egg!
 *new item:				a new item!
+
+---- NEW GE keys
+
+*invisibility:        invisibility:
+*supermode:           supermode:
+
+---- 
 
 *loading:				loading...
 
