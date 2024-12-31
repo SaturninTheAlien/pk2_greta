@@ -188,8 +188,6 @@ void ScoresTable::save(PFile::Path path)const{
 
     nlohmann::json j = *this;
 
-    //std::cout<<j.dump(4)<<std::endl;
-
     file.writeCBOR(j);
 
     file.close();

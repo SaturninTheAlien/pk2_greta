@@ -38,7 +38,7 @@ GameClass::GameClass(int idx):
 spritePrototypes(Episode){
 
 	this->level_id = idx;
-	this->level_file =  Episode->getLevelFilename(idx);
+	this->level_file =  Episode->getLevelFilename(idx, true);
 
 	if(Episode->getLevelStatus(idx) & LEVEL_PASSED ){
 		this->repeating = true;

@@ -157,8 +157,6 @@ std::vector<std::string> PZip::findSubdirectories(const std::string& dirname_cAs
 		 */
 		st_name = st_name.substr(dirname.size() + 1, st_name.size());
 
-		//std::cout<<st_name<<std::endl;
-
 		auto pos = st_name.find("/");
 		if(pos==std::string::npos)continue;
 
@@ -194,8 +192,6 @@ std::vector<PZipEntry> PZip::scanDirectory(const std::string& filename_cAsE, con
 		if(st.name==nullptr)continue;
 
 		std::string st_name = st.name;
-
-		//std::cout<<st_name<<std::endl;
 		
 		if(!filename.empty() && PString::lowercase(st_name).compare(0, filename.size(), filename)!=0)continue;
 

@@ -83,8 +83,6 @@ void SaveModern(const EpisodeClass* episode){
 
     j["levels"] = saveEntries;
 
-    //std::cout<<j.dump(4)<<std::endl;
-
     PFile::RW rw = PFile::Path(getPathForSaveFile(episode, true).string()).GetRW2("w");
     rw.writeCBOR(j);
     rw.close();

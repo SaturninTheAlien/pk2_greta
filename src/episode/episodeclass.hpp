@@ -6,6 +6,7 @@
 
 #include <string>
 #include <vector>
+#include <optional>
 
 #include "mapstore.hpp"
 #include "scores_table.hpp"
@@ -19,6 +20,12 @@
 
 //50
 
+class ProxyLevelEntry{
+public:
+	u32 weight = 1;
+	std::string filename;
+};
+
 class LevelEntry{
 public:
 	std::string fileName;
@@ -30,6 +37,12 @@ public:
 	int icon_id = 0;
 	u32 number = 0;
 	u8 status = 0;
+
+	std::optional<std::vector<ProxyLevelEntry>> proxies;
+
+	void loadLevelHeader(PFile::Path levelFile);
+	std::string getLevelFilename(bool proxy)const;
+
 };
 
 enum LEVEL_STATUS {
@@ -82,7 +95,7 @@ class EpisodeClass {
 		u8 getLevelStatus(int level_id)const;
 		void updateLevelStatus(int level_id, u8 status);
 
-		std::string getLevelFilename(int level_id)const;
+		std::string getLevelFilename(int level_id, bool executeProxies=false)const;
 		int findLevelbyFilename(const std::string& levelFilename)const;
 
 		const std::vector<LevelEntry>& getLevelEntries()const{

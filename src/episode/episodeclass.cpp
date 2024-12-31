@@ -26,8 +26,43 @@
 #include <cstring>
 #include <string>
 #include <filesystem>
+#include <iostream>
 
 namespace fs = std::filesystem;
+
+
+void LevelEntry::loadLevelHeader(PFile::Path levelFile){
+	LevelClass temp;
+
+	temp.load(levelFile, true);
+
+	this->levelName = temp.name;
+	this->map_x = temp.icon_x;
+	this->map_y = temp.icon_y;
+	this->number = temp.level_number;
+	this->icon_id = temp.icon_id;
+}
+
+std::string LevelEntry::getLevelFilename(bool proxy)const{
+	if(proxy && this->proxies.has_value()){
+		const std::vector<ProxyLevelEntry>& proxies = *this->proxies;
+		
+		u32 total_probability = 0;
+		for(const ProxyLevelEntry&p : proxies){
+			total_probability += p.weight;
+		}
+
+		int r = rand() % total_probability;
+		for(const ProxyLevelEntry&p : proxies){
+			r-= (int)p.weight;
+			if(r<0){
+				return p.filename;
+			}
+		}
+	}
+
+	return this->fileName;
+}
 
 EpisodeClass* Episode = nullptr;
 
@@ -115,55 +150,126 @@ void EpisodeClass::loadAssets() {
 }
 
 
+void from_json(const nlohmann::json& j, ProxyLevelEntry& proxy){
+
+	proxy.filename = j["file"].get<std::string>();
+	PJson::jsonReadU32(j,"weight", proxy.weight);
+}
+
+
 void EpisodeClass::loadLevels(){
 	std::string dir = PFilesystem::GetEpisodeDirectory();
 
-	std::vector<std::string> namelist;
-	std::vector<PFile::Path> pathlist;
+
+	std::vector<PFile::Path> proxyLevelFiles;
+	std::vector<std::string> proxyLevelNames;
+
+	if(entry.is_zip){
+		std::vector<PZip::PZipEntry> v = this->source_zip.scanDirectory(
+			std::string("episodes/")+this->entry.name, ".proxy");
+		for(const PZip::PZipEntry& en: v){
+			proxyLevelFiles.emplace_back(PFile::Path(&this->source_zip, en));
+			proxyLevelNames.emplace_back(en.name);
+		}
+	}
+	else{
+
+		proxyLevelNames = PFilesystem::ScanOriginalAssetsDirectory(dir, ".proxy");
+		for(const std::string& name: proxyLevelNames){
+			proxyLevelFiles.emplace_back(PFile::Path((fs::path(dir) / name).string()));
+		}
+	}
+
+	std::vector<PFile::Path> realLevelFiles;
+	std::vector<std::string> realLevelNames;
 
 
 	if(entry.is_zip){
 		std::vector<PZip::PZipEntry> v = this->source_zip.scanDirectory(
 			std::string("episodes/")+this->entry.name, ".map");
 		for(const PZip::PZipEntry& en: v){
-			pathlist.emplace_back(PFile::Path(&this->source_zip, en));
-			namelist.emplace_back(en.name);
+			realLevelFiles.emplace_back(PFile::Path(&this->source_zip, en));
+			realLevelNames.emplace_back(en.name);
 		}
 	}
 	else{
 
-		namelist = PFilesystem::ScanOriginalAssetsDirectory(dir, ".map");
-		for(const std::string& name: namelist){
-			pathlist.emplace_back(PFile::Path((fs::path(dir) / name).string()));
+		realLevelNames = PFilesystem::ScanOriginalAssetsDirectory(dir, ".map");
+		for(const std::string& name: realLevelNames){
+			realLevelFiles.emplace_back(PFile::Path((fs::path(dir) / name).string()));
 		}
-
 	}
 
-	std::size_t levelsNumber = namelist.size();
+
+	std::vector<std::string> hiddenLevels;
+
+	std::size_t n = proxyLevelNames.size();
+	for(std::size_t i=0;i<n;++i){
+		try{
+			LevelEntry levelEntry;
+			levelEntry.fileName = proxyLevelNames[i];
+			nlohmann::json j = proxyLevelFiles[i].GetJSON();
+
+			PJson::jsonReadString(j, "name", levelEntry.levelName);
+			PJson::jsonReadU32(j, "number", levelEntry.number);
+			PJson::jsonReadInt(j, "map_x", levelEntry.map_x);
+			PJson::jsonReadInt(j, "map_y", levelEntry.map_y);
+			PJson::jsonReadInt(j, "icon_id", levelEntry.icon_id);
+
+			std::vector<ProxyLevelEntry> proxies = j["levels"].get<std::vector<ProxyLevelEntry>>();
+
+			for(const ProxyLevelEntry& p: proxies){
+
+				/**
+				 * @brief 
+				 * Check if level from proxy exist
+				 */
+
+				if(std::find(realLevelNames.begin(),
+				realLevelNames.end(), p.filename)==realLevelNames.end()){
+					std::ostringstream os;
+					os<<"Level \""<<p.filename<<"\" not found!";
+					throw std::runtime_error(os.str());
+				}
+
+				/**
+				 * @brief 
+				 * Hide levels used by proxies
+				 */
+				if(std::find(hiddenLevels.begin(), hiddenLevels.end(), p.filename)== hiddenLevels.end()){
+					hiddenLevels.push_back(p.filename);
+				}
+			}
+			
+			levelEntry.proxies = proxies;
+			this->levels_list_v.push_back(levelEntry);
+		}
+		catch(const std::exception& e){
+			PLog::Write(PLog::ERR, "%s", e.what());
+		}
+	}
+
+	std::size_t levelsNumber = realLevelNames.size();
 
 	// Read levels plain data
 	for (u32 i = 0; i < levelsNumber; i++) {
 
 		try{
 			LevelEntry levelEntry;
+			levelEntry.fileName = realLevelNames[i];
 
-			LevelClass temp;
+			/**
+			 * @brief 
+			 * Hidden levels shouldn't appear on the map screen
+			 */
+			if(std::find(hiddenLevels.begin(), hiddenLevels.end(), levelEntry.fileName)!=hiddenLevels.end()){
+				continue;
+			}
 
-			levelEntry.fileName = namelist[i];
-
-			temp.load(pathlist[i], true);
-
-			levelEntry.levelName = temp.name;
-			levelEntry.map_x = temp.icon_x;
-			levelEntry.map_y = temp.icon_y;
-
-			levelEntry.number = temp.level_number;
+			levelEntry.loadLevelHeader(realLevelFiles[i]);
 			if(levelEntry.number > this->highestLevelNumber){
 				this->highestLevelNumber = levelEntry.number;
 			}
-
-			levelEntry.icon_id = temp.icon_id;
-
 			this->levels_list_v.emplace_back(levelEntry);
 		}
 		catch(const std::exception& e){
@@ -322,9 +428,9 @@ void EpisodeClass::updateLevelStatus(int level_id, u8 status){
 	}
 }
 
-std::string EpisodeClass::getLevelFilename(int level_id)const{
+std::string EpisodeClass::getLevelFilename(int level_id,bool executeProxies)const{
 	if(level_id >= 0 && level_id < (int)this->levels_list_v.size()){
-		return this->levels_list_v[level_id].fileName;
+		return this->levels_list_v[level_id].getLevelFilename(executeProxies);
 	}
 	throw std::runtime_error(std::string("Level with id=")+std::to_string(level_id)+" not found!");
 }

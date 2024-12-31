@@ -173,6 +173,11 @@ void MapScreen::Draw() {
 			if (paluu == 2) {
 				if (type != 2 || dev_mode) {
 
+					if(Game!=nullptr){
+						delete Game;
+						Game = nullptr;
+					}
+
 					Game = new GameClass(i);
 					
 					going_to_game = true;
