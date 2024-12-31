@@ -117,7 +117,14 @@ void Tileset::animateWaterfall(){
 		for (y=416;y<448;y++)
 			temp[x-32+(y-416)*32] = buffer[x+y*width];
 
-	color2 = (temp[0]/32)*32;	// mahdollistaa erivriset vesiputoukset
+	color2 = temp[0];
+	x = 1;
+	while (color2==255 && x<32){
+		color2 = temp[x];
+		++x;
+	}	
+
+	color2 = (color2/32)*32;	// mahdollistaa erivriset vesiputoukset
 
 	for (x=32;x<64;x++)
 	{
