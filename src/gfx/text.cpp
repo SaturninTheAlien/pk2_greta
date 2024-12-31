@@ -59,7 +59,7 @@ void Load_Fonts(PLang* lang) {
 	mLoadFont(lang, fontti4, "font big font shadow", "ScandicBig3.txt");
 }
 
-int CreditsText_Draw(const char *text, int font, int x, int y, u32 start, u32 end, u32 time){
+int CreditsText_Draw(const std::string& text, int font, int x, int y, u32 start, u32 end, u32 time){
 	int pros = 100;
 	if (time > start && time < end) {
 

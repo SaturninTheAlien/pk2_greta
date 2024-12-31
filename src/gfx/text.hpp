@@ -16,7 +16,7 @@ extern int fontti5;
 
 void Load_Fonts(PLang* lang);
 
-int CreditsText_Draw(const char *text, int font, int x, int y, u32 start, u32 end, u32 time);
+int CreditsText_Draw(const std::string& text, int font, int x, int y, u32 start, u32 end, u32 time);
 int Wavetext_Draw(const char *text, int fontti, int x, int y);
 int WavetextLap_Draw(const char *text, int fontti, int x, int y, float lap);
 int WavetextSlow_Draw(const char *text, int fontti, int x, int y);
