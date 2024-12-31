@@ -14,6 +14,6 @@
 
 namespace PK2lua{
 
-void ExposeSectorClass(sol::state& lua);
+void ExposeSectorClass(sol::state& lua, sol::table& PK2_API);
 
 }

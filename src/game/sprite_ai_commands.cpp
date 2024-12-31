@@ -332,6 +332,27 @@ bool EffectCommand::execute(SpriteClass*sprite){
     return true;
 }
 
+
+class WeatherCommand: public Command{
+public:
+    WeatherCommand(int weatherId):weatherId(weatherId){}
+    bool execute(SpriteClass*sprite);
+private:
+    int weatherId=0;
+};
+
+
+bool WeatherCommand::execute(SpriteClass*sprite){
+
+    LevelSector*sector = sprite->level_sector;
+    if(sector->weather != this->weatherId){
+        sector->weather = this->weatherId;
+        BG_Particles::Init(this->weatherId);
+    }
+
+    return true;
+}
+
 void Parse_Commands(const nlohmann::json& j_in, std::vector<Command*>& commands_v, int prototypeWidth, int prototypeHeight){
     if(!j_in.is_array()){
         throw PExcept::PException("Commands field has to be an array!");
@@ -397,6 +418,9 @@ void Parse_Commands(const nlohmann::json& j_in, std::vector<Command*>& commands_
                 }
                 else if(command_name=="effect"){
                     state = 15;
+                }
+                else if(command_name=="weather"){
+                    state = 16;
                 }
             }
             break;
@@ -532,6 +556,51 @@ void Parse_Commands(const nlohmann::json& j_in, std::vector<Command*>& commands_
             }
 
             state=0;
+            break;
+
+        case 16:{
+
+            int weather_id = 0;
+
+            if(j.is_number_integer()){
+                weather_id = j.get<int>();
+                commands_v.push_back(new WeatherCommand(weather_id));
+            }
+            else if(j.is_string()){
+                std::string weather = j.get<std::string>();
+                if(weather=="normal"){
+                    weather_id = WEATHER_NORMAL;
+                }
+                else if(weather=="rain"){
+                    weather_id = WEATHER_RAIN;
+                }
+                else if(weather=="leaves"){
+                    weather_id = WEATHER_LEAVES;
+                }
+                else if(weather=="rain_and_leaves"){
+                    weather_id = WEATHER_RAIN_LEAVES;
+                }
+                else if(weather=="snow"){
+                    weather_id = WEATHER_SNOW;
+                }
+                else if(weather=="dandelions"){
+                    weather_id = WEATHER_DANDELIONS;
+                }
+
+                else{
+                    std::ostringstream os;
+                    os<<"Unknown game weather: "<<weather;
+                    throw std::runtime_error(os.str());
+                }
+
+                commands_v.push_back(new WeatherCommand(weather_id));
+            }
+
+            state=0;
+
+        }
+
+            
             break;
 
         default:

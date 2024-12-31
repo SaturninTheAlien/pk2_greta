@@ -38,6 +38,13 @@ void setFGTile(LevelSector*sector, int pos_x, int pos_y, int value){
     } 
 }
 
+void setWeather(LevelSector*sector, int value){
+    if(sector!=nullptr && sector->weather != value){
+        sector->weather = value;
+        BG_Particles::Init(value);
+    }
+}
+
 SpriteClass* AddSprite3(LevelSector*sector, PrototypeClass* prototype, double x, double y, SpriteClass*parent){
     if(sector!=nullptr && prototype!=nullptr){
         return sector->sprites.addLuaSprite(prototype, x, y, parent);
@@ -53,7 +60,17 @@ SpriteClass* AddSprite4(LevelSector*sector, PrototypeClass* prototype, double x,
 }
 
 
-void ExposeSectorClass(sol::state& lua){
+void ExposeSectorClass(sol::state& lua, sol::table& PK2_API){
+
+    PK2_API["weather"] = lua.create_table_with(
+        "NORMAL", WEATHER_NORMAL,
+        "RAIN", WEATHER_RAIN,
+        "RAIN_AND_LEAVES", WEATHER_RAIN_LEAVES,
+        "LEAVES", WEATHER_LEAVES,
+        "SNOW", WEATHER_SNOW,
+        "DANDELIONS", WEATHER_DANDELIONS);
+
+
     lua.new_usertype<LevelSector>(
         "LevelSector",
         sol::no_constructor,
@@ -63,7 +80,10 @@ void ExposeSectorClass(sol::state& lua){
         "setFgTile", setFGTile,
         "getWidth", &LevelSector::getWidth,
         "getHeight", &LevelSector::getHeight,
-        "addSprite", sol::overload(AddSprite3, AddSprite4)
+        "addSprite", sol::overload(AddSprite3, AddSprite4),
+
+        "weather", sol::readonly(&LevelSector::weather),
+        "setWeather", setWeather
     );
 }
 

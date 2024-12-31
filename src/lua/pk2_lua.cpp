@@ -105,11 +105,13 @@ sol::state* CreateGameLuaVM(const std::string& main_lua_script){
 
     PLog::Write(PLog::INFO, "PK2lua", "Running main.lua");
 
-    ExposeSectorClass(*lua);
+    sol::table PK2_API = lua->create_table();
+
+    ExposeSectorClass(*lua, PK2_API);
     ExposePrototypeClass(*lua);
     ExposeSpriteClass(*lua);
 
-    sol::table PK2_API = lua->create_table();
+    
 
     ExposeSpriteListAPI(PK2_API);
     ExposeCommandsAPI(PK2_API);
