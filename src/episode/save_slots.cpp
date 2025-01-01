@@ -68,6 +68,8 @@ void from_json(const nlohmann::json& j, PK2SaveSlot& slot){
 
 const int LEGACY_PE_PATH_SIZE = 128;
 const int LEGACY_SAVE_SLOTS_NUMBER = 11;
+const int SAVE_SLOTS_NUMBER = 11;
+
 const int EPISODI_MAX_LEVELS = 100;
 
 const char* SAVES_FILE = "saves.dat";
@@ -109,7 +111,7 @@ std::vector<PK2SaveSlot> saveSlots;
 
 void ClearSlots() {
 	saveSlots.clear();
-	saveSlots.resize(11);
+	saveSlots.resize(SAVE_SLOTS_NUMBER);
 }
 
 
@@ -159,7 +161,11 @@ void LoadSaveSlots() {
 	char version[2];
 
 	PFile::Path path = PFilesystem::GetDataFileW(SAVES_FILE);
-	if(!path.exists())return;
+	if(!path.exists()){
+		ClearSlots();
+		Save_All_Records();
+		return;
+	}
 
 	try
 	{
@@ -342,8 +348,8 @@ void LoadSaveSlots() {
 		Save_All_Records();
 	}
 
-	if(saveSlots.size() < 11){
-		saveSlots.resize(11);
+	if(saveSlots.size() < SAVE_SLOTS_NUMBER){
+		saveSlots.resize(SAVE_SLOTS_NUMBER);
 	}
 }
 
