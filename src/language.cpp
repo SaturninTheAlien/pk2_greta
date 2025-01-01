@@ -25,32 +25,16 @@ const char* GetDefaultLanguageName() {
 
 	PLog::Write(PLog::DEBUG, "PK2", "Searching language from code: %s", loc);
 
-	if(strcmp(loc, "bg") == 0)
-		return "bulgarian.txt";
-	
-	if(strcmp(loc, "ca") == 0)
-		return "catala.txt";
-	
-	//"cesky.txt"
-	if(strcmp(loc, "cs") == 0)
-		return "czech.txt";
-
-	if(strcmp(loc, "da") == 0)
-		return "danish.txt";
-	
-	//"deutsch.txt"
-	//"deutsch2.txt"
-	//"deutsch3.txt"
-	if(strcmp(loc, "nl") == 0)
-		return "deutsch5.txt";
-	
 	if(strcmp(loc, "en") == 0)
 		return "english.txt";
+
+	else if(strcmp(loc, "pl") == 0)
+		return "polski.txt";
+
+	else if(strcmp(loc, "de") == 0)
+		return "deutsch.txt";
 	
-	//"espanol castellano.txt"
-	//"castellano.txt"
-	//"spanish.txt"
-	if(strcmp(loc, "es") == 0)
+	/*if(strcmp(loc, "es") == 0)
 		return "espanol.txt";
 	
 	//"francais.txt"
@@ -104,7 +88,7 @@ const char* GetDefaultLanguageName() {
 		return "swedish.txt";
 
 	if(strcmp(loc, "tr") == 0)
-		return "turkish.txt";
+		return "turkish.txt";*/
 	
 	return "english.txt";
 
