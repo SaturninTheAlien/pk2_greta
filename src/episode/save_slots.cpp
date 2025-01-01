@@ -212,6 +212,7 @@ void LoadSaveSlots() {
 				slot.episode = LegacyFindEpisode(slot_v3.episode); 
 				slot.player = slot_v3.name;
 				slot.score = slot_v3.score;
+				slot.next_level = slot_v3.next_level;
 
 				for(int i=0;i<EPISODI_MAX_LEVELS;++i){
 					PK2SaveLevelEntry entry;
@@ -298,7 +299,7 @@ void LoadSaveSlots() {
 				slot_v1.episode[path_size - 1] = '\0';
 
 				file.read(&slot_v1.name, 20);
-				slot_v1.episode[19] = '\0';
+				slot_v1.name[19] = '\0';
 				
 				file.read(&slot_v1.not_empty, 1);
 				file.read(&slot_v1.levels_passed, jakso_lapaisty_size);
@@ -312,6 +313,7 @@ void LoadSaveSlots() {
 				slot.episode = LegacyFindEpisode(slot_v1.episode); 
 				slot.player = slot_v1.name;
 				slot.score = slot_v1.score;
+				slot.next_level = slot_v1.next_level;
 
 				for(int i=0; i<99; ++i){
 					PK2SaveLevelEntry entry;
