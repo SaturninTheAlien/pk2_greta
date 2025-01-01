@@ -174,7 +174,7 @@ void IntroScreen::Draw(){
 		start += 10;
 		end += 10;
 
-		CreditsText_Draw("Deta",		fontti1, x, y, start, end, intro_counter);
+		CreditsText_Draw("Daeta",		fontti1, x, y, start, end, intro_counter);
 		y += LINE_SEPARATOR;
 		start += 10;
 		end += 10;
