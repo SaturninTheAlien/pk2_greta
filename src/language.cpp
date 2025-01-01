@@ -36,6 +36,9 @@ const char* GetDefaultLanguageName() {
 
 	else if(strcmp(loc, "es") == 0)
 		return "espanol.txt";
+
+	else if(strcmp(loc, "pt") == 0)
+		return "portugues brasil.txt";
 	
 	/*;
 	//"francais.txt"
@@ -66,14 +69,6 @@ const char* GetDefaultLanguageName() {
 	
 	if(strcmp(loc, "pl") == 0)
 		return "polski.txt";
-	
-	//"portugues brasil.txt"
-	if(strcmp(loc, "pt") == 0)
-		return "portugues brasil2.txt";
-	
-	//"russian.txt"
-	if(strcmp(loc, "ru") == 0)
-		return "russkii russian.txt";
 	
 	//"slovak.txt"
 	if(strcmp(loc, "sk") == 0)
