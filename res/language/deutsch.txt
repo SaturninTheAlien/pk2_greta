@@ -9,6 +9,9 @@ Setup
 *setup play:				Spielen
 *setup exit:				Beenden
 
+
+*back to settings menu:     Zurück zu den Einstellungen
+
 Intro
 ------------------------------------------------------------------------------------
 *intro presents:			präsentiert 2003
@@ -18,6 +21,9 @@ Intro
 *intro thanks to:			danke an
 *intro translation:			deutsche übersetzung
 *intro translator:			daeta
+*intro game created by:     Spiel ursprünglich entwickelt von
+*intro game improved by:    erweitert und verbessert von
+*intro community:           und alle anderen pistegamerz
 
 Main Menu
 ------------------------------------------------------------------------------------
@@ -51,11 +57,12 @@ Load Game
 
 Save Game
 ------------------------------------------------------------------------------------
-*save menu title:			Speichern
-*save menu info:			Klicke auf einen Spielstand um ihn zu speichern
-*save menu episode:			Episode: 
-*save menu level:			Level: 
-*save menu empty slot:      Leer
+*save menu title:			            Speichern
+*save menu info:			            Klicke auf einen Spielstand um ihn zu speichern
+*save menu episode:			            Episode: 
+*save menu level:			            Level: 
+*save menu empty slot:                  Leer
+*save menu episode completed:           Vervollständigt
 
 Game Controls
 ------------------------------------------------------------------------------------
@@ -90,13 +97,15 @@ Sounds
 
 Graphics
 ------------------------------------------------------------------------------------
-*graphics menu title:				Grafik
+*graphics menu title:				        Grafik
 *graphics menu menus are transparent:		Menü Text ist transparent
 *graphics menu menus are not transparent:	Menü Text ist nicht transparent 
 *graphics menu item bar is visible:		    Inventar ist sichtbar
 *graphics menu item bar is not visible:		Inventar ist nicht sichtbar
 *graphics menu game speed normal:		    Spielgeschwindigkeit ist normal 
 *graphics menu game speed double:		    Spielgeschwindigkeit ist verdoppelt
+*graphics menu game speed:                  Spielgeschwindigkeit
+*graphics menu texture filtering:           Filterung
 
 ---- New GE keys:
 
