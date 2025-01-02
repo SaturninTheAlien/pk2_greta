@@ -187,7 +187,7 @@ int MenuScreen::Draw_Radio(int x, int y, int num, int sel) {
 	const PDraw::RECT sel_src = {504,124,31,31};
 	const PDraw::RECT uns_src = {473,124,31,31};
 	
-	int val = 35;
+	int val = 50;
 
 	int randx = rand()%3 - rand()%3;
 	int randy = rand()%3 - rand()%3;
@@ -587,28 +587,42 @@ void MenuScreen::Draw_Menu_Graphics() {
 
 		//TODO - Fix touch position when screen fit
 
-		mx = 100;
-		PDraw::font_write_line(fontti1, "vsync", mx, my);
-		mx += 15 + 51;
-		PDraw::font_write_line(fontti1, "60fps", mx, my);
-		mx += 15 + 51;
-		PDraw::font_write_line(fontti1, "85fps", mx, my);
-		mx += 15 + 51;
-		PDraw::font_write_line(fontti1, "120fps", mx, my);
-		my += 10;
+		int dx  = PDraw::font_get_text_size(fontti1, tekstit->Get_Text(PK_txt.gfx_texture_filtering)).first;
+		int dx2 = PDraw::font_get_text_size(fontti1, tekstit->Get_Text(PK_txt.gfx_game_speed)).first;
 
-		option = Draw_Radio(100, my, 4, Settings.fps);
+		if(dx2 > dx){
+			dx = dx2;
+		}
+
+		dx += 10;
+
+		PDraw::font_write_line(fontti1, tekstit->Get_Text(PK_txt.gfx_game_speed), 100, my + 17);
+
+		mx = 100 + dx;
+
+		PDraw::font_write_line(fontti1, "v-sync", mx, my);
+		mx += 15 + 68;
+		PDraw::font_write_line(fontti1, "60 fps", mx, my);
+		mx += 15 + 68;
+		PDraw::font_write_line(fontti1, "85 fps", mx, my);
+		/*mx += 15 + 51;
+		PDraw::font_write_line(fontti1, "120fps", mx, my);*/
+
+		my += 10;
+		option = Draw_Radio(100 + dx, my, 3, Settings.fps);
 
 		if (option != -1)
 			Settings.fps = option;
 
-		my += 31 + 5;
+		my += 31 + 10;
 
-		mx = 100;
+		PDraw::font_write_line(fontti1, tekstit->Get_Text(PK_txt.gfx_texture_filtering), 100, my + 17);
+
+		mx = 100 + dx;
 		PDraw::font_write_line(fontti1, "nearest", mx, my);
-		mx += 15 + 51;
+		mx += 15 + 68;
 		PDraw::font_write_line(fontti1, "linear", mx, my);
-		mx += 15 + 51;
+		mx += 15 + 68;
 
 		/*  Temporarily disabled  */
 		// PDraw::font_write_line(fontti1, "crt", mx, my);
@@ -616,7 +630,7 @@ void MenuScreen::Draw_Menu_Graphics() {
 		// PDraw::font_write_line(fontti1, "hqx", mx, my);
 		my += 10;
 
-		option = Draw_Radio(100, my, 2, Settings.shader_type);
+		option = Draw_Radio(100 + dx, my, 2, Settings.shader_type);
 
 		if (option != -1) {
 			if (option != Settings.shader_type) {
@@ -698,7 +712,7 @@ void MenuScreen::Draw_Menu_Graphics() {
 
 	}
 
-	if (Draw_Menu_Text(PK_txt.mainmenu_return,180,400)){
+	if (Draw_Menu_Text(PK_txt.settingsmenu_return,180,400)){
 		menu_nyt = MENU_SETTINGS;
 		moreOptions = false;
 	}
@@ -761,7 +775,7 @@ void MenuScreen::Draw_Menu_Sounds() {
 	
 	my += 20;
 
-	if (Draw_Menu_Text(PK_txt.mainmenu_return,180,400))
+	if (Draw_Menu_Text(PK_txt.settingsmenu_return,180,400))
 		menu_nyt = MENU_SETTINGS;
 	
 	
@@ -843,31 +857,6 @@ void MenuScreen::Draw_Menu_Controls() {
 			chosen_menu_id = 0; //Set menu cursor to 0
 		}
 	}
-
-	my += 30;
-
-	if (menu_lue_kontrollit == 0){
-		if (Input == &Settings.keyboard) {
-
-			if (Draw_Menu_Text(PK_txt.controls_use_controller ,100,my)) {
-				Settings.using_controller = SET_TRUE;
-				Input = &Settings.joystick;
-				chosen_menu_id = 0; //Set menu cursor to 0
-				save_settings = true;
-			}
-
-		} else {
-
-			if (Draw_Menu_Text(PK_txt.controls_use_keyboard,100,my)) {
-				Settings.using_controller = SET_FALSE;
-				Input = &Settings.keyboard;
-				chosen_menu_id = 0; //Set menu cursor to 0
-				save_settings = true;
-			}
-
-		}
-	}
-
 	my += 20;
 
 	if (Draw_Menu_Text(PK_txt.controls_get_default,100,my)) {
@@ -898,6 +887,30 @@ void MenuScreen::Draw_Menu_Controls() {
 		save_settings = true;
 	}
 
+	my += 30;
+
+	if (menu_lue_kontrollit == 0){
+		if (Input == &Settings.keyboard) {
+
+			if (Draw_Menu_Text(PK_txt.controls_use_controller ,100,my)) {
+				Settings.using_controller = SET_TRUE;
+				Input = &Settings.joystick;
+				chosen_menu_id = 0; //Set menu cursor to 0
+				save_settings = true;
+			}
+
+		} else {
+
+			if (Draw_Menu_Text(PK_txt.controls_use_keyboard,100,my)) {
+				Settings.using_controller = SET_FALSE;
+				Input = &Settings.keyboard;
+				chosen_menu_id = 0; //Set menu cursor to 0
+				save_settings = true;
+			}
+
+		}
+	}
+
 	my += 20;
 
 	// TODO - Change this
@@ -917,7 +930,7 @@ void MenuScreen::Draw_Menu_Controls() {
 	my += 20;
 	if(my < 400)my=400;
 
-	if (Draw_Menu_Text(PK_txt.mainmenu_return,180,my)){
+	if (Draw_Menu_Text(PK_txt.settingsmenu_return,180,my)){
 		menu_nyt = MENU_SETTINGS;
 		menu_lue_kontrollit = 0;
 		chosen_menu_id = 0;
@@ -1096,7 +1109,7 @@ void MenuScreen::Draw_Menu_Language() {
 
 	}
 
-	if (Draw_Menu_Text(PK_txt.mainmenu_return,180,400))
+	if (Draw_Menu_Text(PK_txt.settingsmenu_return,180,400))
 		menu_nyt = MENU_SETTINGS;
 
 }

@@ -43,6 +43,7 @@ Main Menu
 *main menu more:			Więcej
 
 *back to main menu:			powrót do menu
+*back to settings menu:     powrót do ustawień
 
 Load Game
 ------------------------------------------------------------------------------------
@@ -106,6 +107,9 @@ Graphics
 
 *graphics menu touchscreen on:		tryb ekranu dotykowego wł
 *graphics menu touchscreen off:		tryb ekranu dotykowego wył
+
+*graphics menu game speed:              szybkość gry
+*graphics menu texture filtering:       filtrowanie
 
 Player's name
 ------------------------------------------------------------------------------------

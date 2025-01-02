@@ -145,6 +145,8 @@ int Load_Language(const std::string& language) {
 	PK_txt.mainmenu_more			= tekstit->searchLocalizedText("main menu more");
 
 	PK_txt.mainmenu_return			= tekstit->searchLocalizedText("back to main menu");
+
+	PK_txt.settingsmenu_return      = tekstit->searchLocalizedText("back to settings menu");
 	
 
 	// load menu
@@ -194,6 +196,9 @@ int Load_Language(const std::string& language) {
 
 	PK_txt.gfx_touchscreen_on       = tekstit->searchLocalizedText("graphics menu touchscreen on");
 	PK_txt.gfx_touchscreen_off      = tekstit->searchLocalizedText("graphics menu touchscreen off");
+
+	PK_txt.gfx_texture_filtering    = tekstit->searchLocalizedText("graphics menu texture filtering");
+	PK_txt.gfx_game_speed           = tekstit->searchLocalizedText("graphics menu game speed");
 
 	//
 

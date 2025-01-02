@@ -44,10 +44,11 @@ Main Menu
 *main menu back:            back
 *main menu more:            more
 
+*back to settings menu:     back to settings menu
 ----
 
 
-*back to main menu:			back to mainmenu
+*back to main menu:			back to main menu
 
 Load Game
 ------------------------------------------------------------------------------------
@@ -73,7 +74,7 @@ Save Game
 
 Game Controls
 ------------------------------------------------------------------------------------
-*controls menu title:			controlls
+*controls menu title:			controls
 *controls menu move left:		move left
 *controls menu move right:		move right
 *controls menu jump:			jump
@@ -122,6 +123,9 @@ Graphics
 
 *graphics menu touchscreen on:          touchscreen mode on
 *graphics menu touchscreen off:         touchscreen mode off
+
+*graphics menu game speed:              game speed
+*graphics menu texture filtering:       filtering
 
 ----
 

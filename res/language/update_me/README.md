@@ -19,6 +19,8 @@ If you speak one of these languages, you could help!
 *main menu back:            back
 *main menu more:            more
 
+*back to settings menu:     back to settings menu
+
 *graphics menu gui on:                  in-game gui on
 *graphics menu gui off:                 in-game gui off
 
@@ -28,9 +30,11 @@ If you speak one of these languages, you could help!
 *graphics menu touchscreen on:          touchscreen mode on
 *graphics menu touchscreen off:         touchscreen mode off
 
+*graphics menu game speed:              game speed
+*graphics menu texture filtering:       filtering
+
 *save menu empty slot:                  empty
 *save menu episode completed:           completed
-
 
 *controls menu default:                 get default
 *controls menu use keyboard:            use keyboard
