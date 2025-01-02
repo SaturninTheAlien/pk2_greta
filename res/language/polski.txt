@@ -12,12 +12,19 @@ Setup
 Intro
 ------------------------------------------------------------------------------------
 *intro presents:			prezentuje (2003)
-*intro a game by:			gra stworzona przez
-*intro original character design:	projekt oryginalnych postaci
+*intro original character design:	pierwotny projekt postaci
 *intro tested by:			przetestowana przez
 *intro thanks to:			podziękowania dla
 *intro translation:			polskie tłumaczenie
 *intro translator:			wielu autorów
+
+-- new GE keys --
+
+*intro game created by:     gra pierwotnie stworzona przez
+*intro game improved by:    nowa wersja stworzona przez
+*intro community:           całej społeczności PisteGamez
+
+--
 
 Main Menu
 ------------------------------------------------------------------------------------
@@ -50,6 +57,9 @@ Save Game
 *save menu info:			kliknij pozycje gdzie chcesz zapisać stan gry
 *save menu episode:			epizod: 
 *save menu level:			poziom: 
+
+*save menu empty slot:                  pusty
+*save menu episode completed:           ukończony
 
 Game Controls
 ------------------------------------------------------------------------------------

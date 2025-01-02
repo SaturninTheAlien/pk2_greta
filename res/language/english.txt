@@ -12,12 +12,19 @@ Setup
 Intro
 ------------------------------------------------------------------------------------
 *intro presents:			presents 2003
-*intro a game by:			a game by
 *intro original character design:	original character design
 *intro tested by:			tested by
 *intro thanks to:			thanks to
 *intro translation:			english translation
-*intro translator:			janne kivilahti
+*intro translator:			janne kivilahti and others
+
+-- new GE keys --
+
+*intro game created by:     game originally created by
+*intro game improved by:    improved by
+*intro community:           and all the other pistegamerz
+
+--
 
 Main Menu
 ------------------------------------------------------------------------------------
@@ -55,6 +62,14 @@ Save Game
 *save menu info:			click the slot where you want to save
 *save menu episode:			episode: 
 *save menu level:			level: 
+
+---- New GE keys:
+
+*save menu empty slot:                  empty
+*save menu episode completed:           completed
+
+
+----
 
 Game Controls
 ------------------------------------------------------------------------------------

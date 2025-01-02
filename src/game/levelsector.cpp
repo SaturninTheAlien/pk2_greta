@@ -9,6 +9,7 @@
 #include "engine/PSound.hpp"
 #include "engine/PLog.hpp"
 #include "engine/PFilesystem.hpp"
+#include "episode/episodeclass.hpp"
 
 
 LevelSector::LevelSector(std::size_t width, std::size_t height):
@@ -195,9 +196,11 @@ int arrows_block_degree, int button1_timer_y, int button2_timer_y, int button3_t
 					px += block_animation_frame * 32;
 
 				//hide drift tiles
-				else if(block == BLOCK_DRIFT_LEFT || block == BLOCK_DRIFT_RIGHT)
-					continue;
-
+				else if(block == BLOCK_DRIFT_LEFT || block == BLOCK_DRIFT_RIGHT){
+					if(Episode!=nullptr && !Episode->visible_wind){
+						continue;
+					}
+				}
 				PDraw::image_cutclip(this->tileset1->getImage(), x*32-(camera_x%32)+ax, y*32-(camera_y%32)+ay, px, py, px+32, py+32);
 			}
 		}

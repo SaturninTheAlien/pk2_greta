@@ -70,6 +70,7 @@ class EpisodeClass {
 		bool no_ending = false;
 		std::string collectable_name = "big apple";
 		bool transformation_offset = false;
+		bool visible_wind = false;
 
 		ScoresTable scoresTable;
 

@@ -30,7 +30,10 @@ public:
 		setup_exit = -1,
 
 		intro_presents = -1,
-		intro_a_game_by = -1,
+		intro_game_created_by = -1,
+		intro_game_improved_by = -1,
+		intro_community = -1,
+
 		intro_original = -1,
 		intro_tested_by = -1,
 		intro_thanks_to = -1,
@@ -62,6 +65,9 @@ public:
 		savegame_info = -1,
 		savegame_episode = -1,
 		savegame_level = -1,
+
+		savegame_empty = -1,
+		savegame_completed = -1,
 
 		controls_title = -1,
 		controls_moveleft = -1,

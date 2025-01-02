@@ -241,7 +241,7 @@ void MenuScreen::Draw_Menu_Main() {
 	if(Episode){
 		my = 200;
 	}
-	Draw_BGSquare(160, 200, 640-180, 450, 224);
+	Draw_BGSquare(160, 200, 640-180, 380, 224);
 	
 	if (Episode){
 		if (Draw_Menu_Text(PK_txt.mainmenu_continue,180,my)){
@@ -448,7 +448,7 @@ void MenuScreen::Draw_Menu_Load() {
 		}
 		
 		if (slot.empty){
-			os<<"empty";
+			os<<tekstit->Get_Text(PK_txt.savegame_empty);
 		}
 		else{
 			os<<slot.player;
@@ -485,7 +485,7 @@ void MenuScreen::Draw_Menu_Load() {
 				vali += PDraw::font_write_line(fontti1,tekstit->Get_Text(PK_txt.loadgame_level),400+vali,160+my);
 				vali += PDraw::font_write_line(fontti1,std::to_string(slot.next_level),400+vali,160+my);
 			} else {
-				vali += PDraw::font_write_line(fontti1,"completed",400+vali,160+my);
+				vali += PDraw::font_write_line(fontti1,tekstit->Get_Text(PK_txt.savegame_completed), 400+vali,160+my);
 			}
 		}
 
@@ -515,7 +515,7 @@ void MenuScreen::Draw_Menu_Save() {
 		os<<i+1<<". ";
 
 		if (slot.empty){
-			os<<"empty";
+			os<<tekstit->Get_Text(PK_txt.savegame_empty);
 		}
 		else{
 			os<<slot.player;
@@ -539,7 +539,7 @@ void MenuScreen::Draw_Menu_Save() {
 				vali += PDraw::font_write_line(fontti1,tekstit->Get_Text(PK_txt.savegame_level),400+vali,160+my);
 				vali += PDraw::font_write_line(fontti1,std::to_string(slot.next_level),400+vali,160+my);
 			} else {
-				vali += PDraw::font_write_line(fontti1,"completed",400+vali,160+my);
+				vali += PDraw::font_write_line(fontti1,tekstit->Get_Text(PK_txt.savegame_completed),400+vali,160+my);
 			}
 		}
 

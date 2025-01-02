@@ -363,6 +363,7 @@ void EpisodeClass::load() {
 			}
 
 			this->transformation_offset = config.getBoolean("potion_transformation_offset", false);
+			this->visible_wind = config.getBoolean("visible_wind", false);
 		}
 		else{
 			PLog::Write(PLog::ERR, "PK2", "Cannot open episode config file.");

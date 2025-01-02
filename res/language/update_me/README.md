@@ -9,6 +9,11 @@ If you speak one of these languages, you could help!
 ## New keys to be translated:
 
 ```
+
+*intro game created by:     game originally created by
+*intro game improved by:    improved by
+*intro community:           and all the other pistegamerz
+
 *main menu map:             map
 *main menu links:           links
 *main menu back:            back
@@ -23,6 +28,8 @@ If you speak one of these languages, you could help!
 *graphics menu touchscreen on:          touchscreen mode on
 *graphics menu touchscreen off:         touchscreen mode off
 
+*save menu empty slot:                  empty
+*save menu episode completed:           completed
 
 
 *controls menu default:                 get default
@@ -38,6 +45,8 @@ If you speak one of these languages, you could help!
 ## Keys that are no longer used (to be removed):
 
 ```
+*intro a game by:
+
 *transparency fx on:
 *transparency fx off:
 

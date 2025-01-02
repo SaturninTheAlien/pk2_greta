@@ -71,7 +71,7 @@ void IntroScreen::Draw(){
 
 		start +=20;
 		end += 20;*/
-		CreditsText_Draw("Game created by", fontti1, x, y, start, end, intro_counter);
+		CreditsText_Draw(tekstit->Get_Text(PK_txt.intro_game_created_by), fontti1, x, y, start, end, intro_counter);
 		y += LINE_SEPARATOR_TITLE;
 		start += 10;
 		end += 10;
@@ -81,18 +81,7 @@ void IntroScreen::Draw(){
 		start += 20;
 		end += 20;
 
-		CreditsText_Draw(tekstit->Get_Text(PK_txt.intro_original) + ":", fontti1, x, y, start, end, intro_counter);
-		y += LINE_SEPARATOR_TITLE;
-		start += 10;
-		end += 10;
-
-		CreditsText_Draw("antti suuronen 1998",		fontti1, x, y, start, end, intro_counter); // + 50
-		y += SECTION_SEPARATOR;
-		start += 20;
-		end += 20;
-
-
-		CreditsText_Draw("Improved by", fontti1, x, y, start, end, intro_counter);
+		CreditsText_Draw(tekstit->Get_Text(PK_txt.intro_game_improved_by), fontti1, x, y, start, end, intro_counter);
 		y += LINE_SEPARATOR_TITLE;
 		start += 10;
 		end += 10;
@@ -118,6 +107,16 @@ void IntroScreen::Draw(){
 		end += 10;
 
 		CreditsText_Draw("Yamano",			fontti1, x, y, start, end, intro_counter);
+		y += SECTION_SEPARATOR;
+		start += 20;
+		end += 20;
+
+		CreditsText_Draw(tekstit->Get_Text(PK_txt.intro_original), fontti1, x, y, start, end, intro_counter);
+		y += LINE_SEPARATOR_TITLE;
+		start += 10;
+		end += 10;
+
+		CreditsText_Draw("antti suuronen 1998",		fontti1, x, y, start, end, intro_counter); // + 50
 		y += LINE_SEPARATOR;
 		start += 10;
 		end += 10;
@@ -131,7 +130,7 @@ void IntroScreen::Draw(){
 		u32 start = testaajat_alku;
 		u32 end = testaajat_loppu;
 
-		CreditsText_Draw(tekstit->Get_Text(PK_txt.intro_tested_by).c_str(),fontti1, x, y, start, testaajat_loppu, intro_counter);
+		CreditsText_Draw(tekstit->Get_Text(PK_txt.intro_tested_by),fontti1, x, y, start, testaajat_loppu, intro_counter);
 		y += LINE_SEPARATOR_TITLE;
 		start += 10;
 		end += 10;
@@ -157,7 +156,7 @@ void IntroScreen::Draw(){
 		end += 30;
 		
 		
-		CreditsText_Draw(tekstit->Get_Text(PK_txt.intro_thanks_to).c_str(),fontti1, x, y, start, end, intro_counter);
+		CreditsText_Draw(tekstit->Get_Text(PK_txt.intro_thanks_to),fontti1, x, y, start, end, intro_counter);
 		y += LINE_SEPARATOR_TITLE;
 		start += 10;
 		end += 10;
@@ -183,19 +182,21 @@ void IntroScreen::Draw(){
 		y += LINE_SEPARATOR;
 		start += 10;
 		end += 10;
-		CreditsText_Draw("And the whole Piste Gamez community!",		fontti1, x, y, start, end, intro_counter);
+		CreditsText_Draw(tekstit->Get_Text(PK_txt.intro_community),		fontti1, x, y, start, end, intro_counter);
 		y += SECTION_SEPARATOR;
 		start += 10;
 		end += 10;
 
 		CreditsText_Draw("powered by", fontti1, x, y, start, end, intro_counter);
-		y += LINE_SEPARATOR;
+		y += LINE_SEPARATOR_TITLE;
+		start += 10;
+		end += 10;
 		CreditsText_Draw("SDL 2",  fontti1, x, y, start, end, intro_counter);
 	}
 
 	if (intro_counter > kaantaja_alku) {
-		CreditsText_Draw(tekstit->Get_Text(PK_txt.intro_translation).c_str(), fontti1, 120, 230, kaantaja_alku, kaantaja_loppu, intro_counter);
-		CreditsText_Draw(tekstit->Get_Text(PK_txt.intro_translator).c_str(),  fontti1, 120, 250, kaantaja_alku+20, kaantaja_loppu+20, intro_counter);
+		CreditsText_Draw(tekstit->Get_Text(PK_txt.intro_translation), fontti1, 120, 230, kaantaja_alku, kaantaja_loppu, intro_counter);
+		CreditsText_Draw(tekstit->Get_Text(PK_txt.intro_translator),  fontti1, 120, 250, kaantaja_alku+20, kaantaja_loppu+20, intro_counter);
 	}
 }
 

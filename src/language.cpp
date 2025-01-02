@@ -118,12 +118,16 @@ int Load_Language(const std::string& language) {
 
 	// Intro
 	PK_txt.intro_presents			= tekstit->searchLocalizedText("intro presents");
-	PK_txt.intro_a_game_by			= tekstit->searchLocalizedText("intro a game by");
+	//PK_txt.intro_a_game_by			= tekstit->searchLocalizedText("intro a game by");
 	PK_txt.intro_original			= tekstit->searchLocalizedText("intro original character design");
 	PK_txt.intro_tested_by			= tekstit->searchLocalizedText("intro tested by");
 	PK_txt.intro_thanks_to			= tekstit->searchLocalizedText("intro thanks to");
 	PK_txt.intro_translation		= tekstit->searchLocalizedText("intro translation");
 	PK_txt.intro_translator			= tekstit->searchLocalizedText("intro translator");
+
+	PK_txt.intro_game_created_by    = tekstit->searchLocalizedText("intro game created by");
+	PK_txt.intro_game_improved_by   = tekstit->searchLocalizedText("intro game improved by");
+	PK_txt.intro_community          = tekstit->searchLocalizedText("intro community");
 
 	// Menu
 	PK_txt.mainmenu_new_game		= tekstit->searchLocalizedText("main menu new game");
@@ -154,6 +158,9 @@ int Load_Language(const std::string& language) {
 	PK_txt.savegame_info			= tekstit->searchLocalizedText("save menu info");
 	PK_txt.savegame_episode			= tekstit->searchLocalizedText("save menu episode");
 	PK_txt.savegame_level			= tekstit->searchLocalizedText("save menu level");
+
+	PK_txt.savegame_empty			= tekstit->searchLocalizedText("save menu empty slot");
+	PK_txt.savegame_completed   	= tekstit->searchLocalizedText("save menu episode completed");
 
 	// controls
 	PK_txt.controls_title			= tekstit->searchLocalizedText("controls menu title");
