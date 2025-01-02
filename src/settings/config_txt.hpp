@@ -12,6 +12,12 @@ enum{
     LINKS_MENU_BOTTOM
 };
 
+enum{
+    VSYNC_DEFAULT,
+    VSYNC_ENABLED,
+    VSYNC_DISABLED
+};
+
 class Config_txt{
 public:
 
@@ -22,6 +28,8 @@ public:
     bool silent_suicide = false;
     std::string player = "pekka";
 	int audio_buffer_size = 1024;
+    int fps = 60;
+    int vsync = VSYNC_DEFAULT;
 };
 
 extern Config_txt config_txt;

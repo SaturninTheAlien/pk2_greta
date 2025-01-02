@@ -5,6 +5,8 @@
 #include "config_txt.hpp"
 #include "engine/PLang.hpp"
 #include "engine/PFilesystem.hpp"
+#include "engine/PString.hpp"
+
 #include <iostream>
 
 //TODO Remove this dependency
@@ -21,6 +23,13 @@ static const char default_config[] =
 "\r\n-- To determine how the links menu should look like"
 "\r\n-- Available options are: main_menu, bottom, none"
 "\r\n*links_menu:    main_menu"
+"\r\n"
+"\r\n"
+"\r\n-- The speed of the game logic, ticks per second."
+"\r\n-- Available options are: detect60, V-sync, or a number such as 60, 75"
+"\r\n-- If set detect60, the game tries V-sync, but if it's running too fast, it fallbacks to 60 FPS."
+"\r\n"
+"\r\n*game_speed:  detect60"
 "\r\n"
 "\r\n"
 "\r\n"
@@ -59,7 +68,7 @@ void Config_txt::readFile(){
 	int idx = conf.Search_Id("links_menu");
 	if(idx!=-1){
 		std::string val = conf.getString("links_menu", "default");
-		if(val=="default"){
+		if(val=="default" || val=="detect60"){
 			this->links_menu = LINKS_MENU_MAIN;
 		}
 		else if(val=="main_menu"){
@@ -70,6 +79,26 @@ void Config_txt::readFile(){
 		}
 		else if(val=="none"){
 			this->links_menu = LINKS_MENU_NONE;
+		}
+	}
+
+	idx = conf.Search_Id("game_speed");
+	if(idx!=-1){
+		std::string val = PString::lowercase(conf.Get_Text(idx));
+		if(val=="default"){
+			this->vsync = VSYNC_DEFAULT;
+			this->fps = 60;
+		}
+		else if(val=="vsync" || val=="v-sync"){
+			this->vsync = VSYNC_ENABLED;
+			this->fps = 60;
+		}
+		else{
+			int number = conf.getInteger(idx, 0);
+			if(number > 0){
+				this->vsync = VSYNC_DISABLED;
+				this->fps = number;
+			}
 		}
 	}
 	

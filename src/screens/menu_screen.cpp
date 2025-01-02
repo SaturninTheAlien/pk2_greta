@@ -569,7 +569,6 @@ void MenuScreen::Draw_Menu_Graphics() {
 
 	if(moreOptions){
 		bool wasFullScreen = Settings.isFullScreen;
-		int  oldfps = Settings.fps;
 
 		if (Settings.isFullScreen){
 			if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.gfx_fullscreen_on),180,my)){
@@ -584,25 +583,6 @@ void MenuScreen::Draw_Menu_Graphics() {
 			Settings.isFullScreen = !Settings.isFullScreen;
 		}
 		my += 40;
-
-		//TODO - Fix touch position when screen fit
-
-		mx = 100;
-		PDraw::font_write_line(fontti1, "vsync", mx, my);
-		mx += 15 + 51;
-		PDraw::font_write_line(fontti1, "60fps", mx, my);
-		mx += 15 + 51;
-		PDraw::font_write_line(fontti1, "85fps", mx, my);
-		mx += 15 + 51;
-		PDraw::font_write_line(fontti1, "120fps", mx, my);
-		my += 10;
-
-		option = Draw_Radio(100, my, 4, Settings.fps);
-
-		if (option != -1)
-			Settings.fps = option;
-
-		my += 31 + 5;
 
 		mx = 100;
 		PDraw::font_write_line(fontti1, "nearest", mx, my);
@@ -633,27 +613,6 @@ void MenuScreen::Draw_Menu_Graphics() {
 		if(wasFullScreen != Settings.isFullScreen) {// If fullscreen changes
 			save_settings = true;
 			PRender::set_fullscreen(Settings.isFullScreen);
-		}
-
-		if (Settings.fps != oldfps) {
-			int ret = -1;
-			save_settings = true;
-			if (Settings.fps == SETTINGS_VSYNC)
-				ret = Piste::set_fps(-1);
-			else if (Settings.fps == SETTINGS_60FPS)
-				ret = Piste::set_fps(60);
-			else if (Settings.fps == SETTINGS_85FPS)
-				ret = Piste::set_fps(85);
-			else if (Settings.fps == SETTINGS_120FPS)
-				ret = Piste::set_fps(120);
-			
-			if (ret != 0) {
-				PLog::Write(PLog::ERR, "PK2", "FPS mode not supported, changing to 60fps");
-				Piste::set_fps(60);
-				Settings.fps = SETTINGS_60FPS;
-				if (oldfps == SETTINGS_60FPS)
-					save_settings = false;
-			}	
 		}
 
 		if (Draw_Menu_Text(PK_txt.mainmenu_back,100,360)) {

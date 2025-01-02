@@ -13,6 +13,10 @@
 
 namespace Piste {
 
+
+static bool detect_60 = false;
+static int detect_60_counter = 1;
+
 static int desired_fps = 60;
 
 static bool ready = false;
@@ -175,6 +179,21 @@ void loop(std::function<void()> GameLogic) {
 			avrg_fps = 1000.f * UPDATE_FPS / elapsed_time;	
 
 			last_time += elapsed_time;
+
+			if(detect_60){
+				if(detect_60_counter > 0){
+					detect_60_counter -= 1;
+				}
+				else{
+					PLog::Write(PLog::INFO, "Piste", "Detected refrash rate: %f!", avrg_fps);
+					if(avrg_fps > 65){
+						PLog::Write(PLog::INFO, "Piste", "The game is running too fast!");
+						PLog::Write(PLog::INFO, "Piste", "Disabling V-sync and setting FPS to 60!");
+						set_fps(60);
+					}
+					detect_60 = false;
+				}
+			}
 		
 		}
 		
@@ -206,12 +225,24 @@ int set_fps(int fps) {
 
 	desired_fps = fps;
 
-	PLog::Write(PLog::DEBUG, "Piste", "FPS set to %i", fps);
-	
-	// Vsync true
-	if (fps == -1)
+	if(fps == -2){
+		detect_60 = true;
+		detect_60_counter = 1;
+
+		PLog::Write(PLog::DEBUG, "Piste", "Trying V-sync!");
 		return PRender::set_vsync(true);
-	
+	}
+
+	detect_60 = false;
+
+	// Vsync true
+	if (fps == -1){
+		PLog::Write(PLog::DEBUG, "Piste", "V-sync enabled manually!");
+		return PRender::set_vsync(true);
+	}
+
+	PLog::Write(PLog::DEBUG, "Piste", "FPS set to %i", fps);
+
 	return PRender::set_vsync(false);
 
 }

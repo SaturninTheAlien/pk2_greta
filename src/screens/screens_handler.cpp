@@ -7,7 +7,10 @@
 
 #include "exceptions.hpp"
 #include "sfx.hpp"
+
 #include "settings/settings.hpp"
+#include "settings/config_txt.hpp"
+
 #include "gfx/touchscreen.hpp"
 
 #include "gfx/text.hpp"
@@ -106,21 +109,19 @@ ScreensHandler::ScreensHandler():
 
 	ret = -1;
 
-	if (Settings.fps == SETTINGS_VSYNC)
+	if(config_txt.vsync==VSYNC_DEFAULT){
+		ret = Piste::set_fps(-2);
+	}
+	else if(config_txt.vsync==VSYNC_ENABLED){
 		ret = Piste::set_fps(-1);
-	else if (Settings.fps == SETTINGS_30FPS)
-		ret = Piste::set_fps(30);
-	else if (Settings.fps == SETTINGS_60FPS)
-		ret = Piste::set_fps(60);
-	else if (Settings.fps == SETTINGS_85FPS)
-		ret = Piste::set_fps(85);
-	else if (Settings.fps == SETTINGS_120FPS)
-		ret = Piste::set_fps(120);
+	}
+	else{
+		ret = Piste::set_fps(config_txt.fps);
+	}
 
 	if (ret != 0) {
 		PLog::Write(PLog::ERR, "PK2", "FPS mode not supported, changing to 60fps");
 		Piste::set_fps(60);
-		Settings.fps = SETTINGS_60FPS;
 		Settings_Save();
 	}
 

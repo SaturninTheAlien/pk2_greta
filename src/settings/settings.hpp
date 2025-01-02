@@ -62,7 +62,7 @@ public:
 	bool  draw_gui = false;
 	bool  touchscreen_mode = false;
 	
-	int   fps;
+	//int   fps;
 	bool  isFullScreen = true;
 	bool  double_speed = false;
 	u8    shader_type;
