@@ -373,14 +373,30 @@ void GameClass::update(int& debug_active_sprites){
 		if (PInput::Keydown(PInput::E)) {
 			Player_Sprite->energy = 10;
 			this->game_over = false;
-		} if (PInput::Keydown(PInput::V))
-			Player_Sprite->invisible_timer = 3000;
-		if (PInput::Keydown(PInput::S)) {
-			this->startSupermodeMusic();			
-			Player_Sprite->super_mode_timer = 490;
-			key_delay = 30;
-		}
+		}		
+		if(key_delay==0){
 
+			if (PInput::Keydown(PInput::V)){
+				if(Player_Sprite->invisible_timer>1){
+					Player_Sprite->invisible_timer = 1;
+				}
+				else{
+					Player_Sprite->invisible_timer = 3000;
+				}
+				key_delay = 30;
+			}
+
+			if (PInput::Keydown(PInput::S)) {
+				if(Player_Sprite->super_mode_timer>1){
+					Player_Sprite->super_mode_timer = 1;
+				}
+				else{
+					this->startSupermodeMusic();
+					Player_Sprite->super_mode_timer = 3000;
+				}
+				key_delay = 30;
+			}
+		}
 	}
 }
 
