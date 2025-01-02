@@ -20,9 +20,9 @@ Intro
 
 -- new GE keys --
 
-*intro game created by:     gra pierwotnie stworzona przez
+*intro game created by:     gra stworzona przez
 *intro game improved by:    nowa wersja stworzona przez
-*intro community:           całej społeczności PisteGamez
+*intro community:           i całej społeczności PisteGamez
 
 --
 

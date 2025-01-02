@@ -277,8 +277,12 @@ int Load_Language(const std::string& language) {
 		if (i < 10) index += '0';
 		index += std::to_string(i);
 
-		PK_txt.infos[i] = tekstit->searchLocalizedText(index.c_str());
-
+		if(i<20){
+			PK_txt.infos[i] = tekstit->searchLocalizedText(index.c_str());
+		}
+		else{
+			PK_txt.infos[i] = tekstit->Search_Id(index.c_str());
+		}
 	}
 
 	return 0;
