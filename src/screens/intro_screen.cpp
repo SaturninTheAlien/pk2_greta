@@ -52,7 +52,20 @@ void IntroScreen::Draw(){
 		if (x > 120)
 			x = 120;
 
-		PDraw::image_cutclip(bg_screen,/*120*/x,230, 37, 230, 194, 442);
+		int pros = pistelogo_loppu - intro_counter;
+
+		int y = 230;
+		if(pros < 100){
+			//PDraw::image_cutcliptransparent(bg_screen, 32, 50, 160, 129, x, y, pros, 255);
+			//PDraw::image_cutcliptransparent(bg_screen, 37, 376, 194, 66, /*120*/x,y + 146, pros, 192);
+
+			PDraw::image_cutcliptransparent(bg_screen, 37, 230, 194 - 37, 442 - 230, x,y , pros, 255);
+		}
+		else{
+			PDraw::image_cutclip(bg_screen,/*120*/x,y, 37, 230, 194, 442);
+		}
+
+		
 
 		CreditsText_Draw(tekstit->Get_Text(PK_txt.intro_presents).c_str(), fontti1, 230, 400, pistelogo_alku, pistelogo_loppu-20, intro_counter);
 
