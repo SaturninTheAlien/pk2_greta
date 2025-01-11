@@ -57,6 +57,10 @@ filename(filename), type(type){
         os<<"SFX";        
     }
     break;
+    case MISSING_GFX:{
+        os<<"GFX texture";        
+    }
+    break;
 
     default:
         os<<"Unknown";

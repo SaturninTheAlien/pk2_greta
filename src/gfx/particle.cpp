@@ -5,6 +5,7 @@
 #include "gfx/particle.hpp"
 
 #include "engine/PDraw.hpp"
+#include "game/game.hpp"
 
 #include "settings/settings.hpp"
 #include "system.hpp"
@@ -66,30 +67,30 @@ void Particle::draw_dot() {
 void Particle::draw_star() {
 
 	if (alpha > 99)
-		PDraw::image_cutclip(game_assets, x-cam_x, y-cam_y, 1, 1, 11, 11);
+		PDraw::image_cutclip(Game->gfxTexture, x-cam_x, y-cam_y, 1, 1, 11, 11);
 	else
-		PDraw::image_cutcliptransparent(game_assets, 2, 2, 10, 10, x-cam_x, y-cam_y, alpha, color);
+		PDraw::image_cutcliptransparent(Game->gfxTexture, 2, 2, 10, 10, x-cam_x, y-cam_y, alpha, color);
 
 }
 
 void Particle::draw_hit() {
 
 	int framex = ((degree%12)/3) * 58;
-	PDraw::image_cutclip(game_assets,x-cam_x-28+8, y-cam_y-27+8,1+framex,83,1+57+framex,83+55);
+	PDraw::image_cutclip(Game->gfxTexture,x-cam_x-28+8, y-cam_y-27+8,1+framex,83,1+57+framex,83+55);
 }
 
 void Particle::draw_light() {
-	PDraw::image_cutcliptransparent(game_assets, 1, 14, 13, 13, x-cam_x, y-cam_y, alpha, color);
+	PDraw::image_cutcliptransparent(Game->gfxTexture, 1, 14, 13, 13, x-cam_x, y-cam_y, alpha, color);
 }
 
 void Particle::draw_spark() {
-	PDraw::image_cutcliptransparent(game_assets, 99, 14, 7, 7, x-cam_x, y-cam_y, alpha, color);
+	PDraw::image_cutcliptransparent(Game->gfxTexture, 99, 14, 7, 7, x-cam_x, y-cam_y, alpha, color);
 }
 
 void Particle::draw_feather() {
 
 	int xplus = (anim/7) * 21;
-	PDraw::image_cutclip(game_assets,x-cam_x,y-cam_y,14+xplus,1,34+xplus,12);
+	PDraw::image_cutclip(Game->gfxTexture,x-cam_x,y-cam_y,14+xplus,1,34+xplus,12);
 	anim++;
 	if (anim > 63)
 		anim = 0;
@@ -107,7 +108,7 @@ void Particle::draw_smoke() {
 		if (frame > 16)
 			yplus = 32;
 
-		PDraw::image_cutclip(game_assets,x-cam_x,y-cam_y,1+xplus,338+yplus,34+xplus,367+yplus);
+		PDraw::image_cutclip(Game->gfxTexture,x-cam_x,y-cam_y,1+xplus,338+yplus,34+xplus,367+yplus);
 		anim++;
 	}
 
@@ -116,10 +117,10 @@ void Particle::draw_smoke() {
 void Particle::draw_dust() {
 
 	if (alpha > 99)
-		PDraw::image_cutclip(game_assets,x-cam_x,y-cam_y,226,2,224,49);
+		PDraw::image_cutclip(Game->gfxTexture,x-cam_x,y-cam_y,226,2,224,49);
 	else
-		PDraw::image_cutcliptransparent(game_assets, 226, 2, 18, 19, int(x)-cam_x, int(y)-cam_y, alpha, color);
-	PDraw::image_cutclip(game_assets,x-cam_x,y-cam_y,226, 2, 18, 19);
+		PDraw::image_cutcliptransparent(Game->gfxTexture, 226, 2, 18, 19, int(x)-cam_x, int(y)-cam_y, alpha, color);
+	PDraw::image_cutclip(Game->gfxTexture,x-cam_x,y-cam_y,226, 2, 18, 19);
 
 }
 

@@ -83,6 +83,8 @@ public:
     Tileset* tileset2 = nullptr;
     Background* background = nullptr;
 
+    int gfxTexture = -1;
+
     SpritesHandler sprites;
 
     /**

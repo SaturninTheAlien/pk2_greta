@@ -1,6 +1,8 @@
 #include "sprites_handler.hpp"
 #include "spriteclass.hpp"
 
+#include "game.hpp"
+
 #include "engine/PLog.hpp"
 #include "engine/PDraw.hpp"
 #include "engine/PInput.hpp"
@@ -468,7 +470,7 @@ void SpritesHandler::drawSprites(int camera_x, int camera_y, bool gamePaused, in
 				int framex = ((degree%12)/3) * 58;
 				u32 hit_x = sprite->x-8;
 				u32 hit_y = sprite->y-8;
-				PDraw::image_cutclip(game_assets,hit_x-camera_x-28+8, hit_y-camera_y-27+8,1+framex,83,1+57+framex,83+55);
+				PDraw::image_cutclip(Game->gfxTexture,hit_x-camera_x-28+8, hit_y-camera_y-27+8,1+framex,83,1+57+framex,83+55);
 			}
 
 			bool blinking = dev_mode && sprite->isPlayer() && PInput::Keydown(PInput::Y);
@@ -482,7 +484,7 @@ void SpritesHandler::drawSprites(int camera_x, int camera_y, bool gamePaused, in
 				for (int stars=0; stars<3; stars++){
 					double star_x = sprite->x - 8  + sin_table((stars*120+degree)*2)      / 3;
 					double star_y = sprite->y - 18 + cos_table((stars*120+degree)*2 + sx) / 8;
-					PDraw::image_cutclip(game_assets,star_x-camera_x, star_y-camera_y,1,1,11,11);
+					PDraw::image_cutclip(Game->gfxTexture,star_x-camera_x, star_y-camera_y,1,1,11,11);
 				}
 			}
 

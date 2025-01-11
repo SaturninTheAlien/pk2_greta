@@ -581,6 +581,9 @@ void GameClass::placeSprites() {
 		this->setCamera();
 	}
 
+	//set GFX
+	this->gfxTexture = this->playerSprite->level_sector->gfxTexture;
+
 	// Add other sprites
 	for(LevelSector* sector: this->level.sectors){
 
@@ -695,6 +698,9 @@ void GameClass::teleportPlayer(double x, double y, LevelSector*sector){
 		if(sector->music_name!=previous_sector->music_name){
 			sector->startMusic();
 		}
+
+		//Change GFX texture
+		this->gfxTexture = sector->gfxTexture;
 	}
 
 	Fade_in(FADE_NORMAL);

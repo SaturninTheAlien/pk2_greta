@@ -5,6 +5,7 @@
 #include "bg_particle.hpp"
 #include "system.hpp"
 #include "engine/PDraw.hpp"
+#include "game/game.hpp"
 
 
 static void DrawWaterdrop(const BgParticle& p, int cam_x, int cam_y) {
@@ -28,7 +29,7 @@ static void DrawLeaf2(const BgParticle& p, int cam_x, int cam_y){
 		ky = int(p.y)-cam_y,
 		frame = (int(p.y/10)%4)*23;
 
-	PDraw::image_cutclip(game_assets,kx,ky,1+frame,141,21+frame,152);
+	PDraw::image_cutclip(Game->gfxTexture,kx,ky,1+frame,141,21+frame,152);
 
 }
 
@@ -38,7 +39,7 @@ static void DrawLeaf3(const BgParticle& p, int cam_x, int cam_y) {
 		ky = int(p.y)-cam_y,
 		frame = (int(p.y/5)%4)*20;
 
-	PDraw::image_cutclip(game_assets,kx,ky,93+frame,141,109+frame,150);
+	PDraw::image_cutclip(Game->gfxTexture,kx,ky,93+frame,141,109+frame,150);
 
 }
 
@@ -48,7 +49,7 @@ static void DrawLeaf4(const BgParticle& p, int cam_x, int cam_y) {
 		ky = int(p.y)-cam_y,
 		frame = (int(p.y/5)%2)*14;
 
-	PDraw::image_cutclip(game_assets,kx,ky,173+frame,141,183+frame,150);
+	PDraw::image_cutclip(Game->gfxTexture,kx,ky,173+frame,141,183+frame,150);
 }
 
 static void DrawFlake1(const BgParticle& p, int cam_x, int cam_y) {
@@ -56,7 +57,7 @@ static void DrawFlake1(const BgParticle& p, int cam_x, int cam_y) {
 	int kx = int(p.x)-cam_x,
 		ky = int(p.y)-cam_y;
 
-	PDraw::image_cutclip(game_assets,kx,ky,1,155,8,162);
+	PDraw::image_cutclip(Game->gfxTexture,kx,ky,1,155,8,162);
 }
 
 static void DrawFlake2(const BgParticle& p, int cam_x, int cam_y) {
@@ -64,7 +65,7 @@ static void DrawFlake2(const BgParticle& p, int cam_x, int cam_y) {
 	int kx = int(p.x)-cam_x,
 		ky = int(p.y)-cam_y;
 
-	PDraw::image_cutclip(game_assets,kx,ky,11,155,16,160);
+	PDraw::image_cutclip(Game->gfxTexture,kx,ky,11,155,16,160);
 
 }
 
@@ -73,7 +74,7 @@ static void DrawFlake3(const BgParticle& p, int cam_x, int cam_y) {
 	int kx = int(p.x)-cam_x,
 		ky = int(p.y)-cam_y;
 
-	PDraw::image_cutclip(game_assets,kx,ky,19,155,22,158);
+	PDraw::image_cutclip(Game->gfxTexture,kx,ky,19,155,22,158);
 
 }
 
@@ -95,7 +96,7 @@ static void DrawDandelion1(const BgParticle& p, int cam_x, int cam_y){
 		ky = int(p.y)-cam_y,
 		frame = (int(p.y/10)%4)*12;
 
-	PDraw::image_cutclip(game_assets,kx,ky,
+	PDraw::image_cutclip(Game->gfxTexture,kx,ky,
         1+frame,165, 10+frame, 176);
 }
 
@@ -105,7 +106,7 @@ static void DrawDandelion2(const BgParticle& p, int cam_x, int cam_y){
 		ky = int(p.y)-cam_y,
 		frame = (int(p.y/5)%4)*12;
 
-	PDraw::image_cutclip(game_assets,kx,ky,
+	PDraw::image_cutclip(Game->gfxTexture,kx,ky,
         49+frame,165,58+frame,175);    
 }
 
@@ -115,7 +116,7 @@ static void DrawDandelion3(const BgParticle& p, int cam_x, int cam_y){
 		ky = int(p.y)-cam_y,
 		frame = (int(p.y/5)%2)*9;
 
-	PDraw::image_cutclip(game_assets,kx,ky,
+	PDraw::image_cutclip(Game->gfxTexture,kx,ky,
         97+frame,165,103+frame,171);    
 }
 

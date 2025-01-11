@@ -148,16 +148,16 @@ int MenuScreen::Draw_BackNext(int x, int y) {
 		&& !mouse_hidden;
 
 	if (mouse_on1 || chosen_menu_id == selected_menu_id) {
-		PDraw::image_cutclip(game_assets,x+randx,y+randy,566,124,566+31,124+31);
+		PDraw::image_cutclip(global_gfx_texture,x+randx,y+randy,566,124,566+31,124+31);
 		chosen_menu_id = selected_menu_id;
 	} else
-		PDraw::image_cutclip(game_assets,x,y,566,124,566+31,124+31);
+		PDraw::image_cutclip(global_gfx_texture,x,y,566,124,566+31,124+31);
 
 	if (mouse_on2 || chosen_menu_id == selected_menu_id+1) {
-		PDraw::image_cutclip(game_assets,x+val+randx,y+randy,535,124,535+31,124+31);
+		PDraw::image_cutclip(global_gfx_texture,x+val+randx,y+randy,535,124,535+31,124+31);
 		chosen_menu_id = selected_menu_id+1;
 	} else
-		PDraw::image_cutclip(game_assets,x+val,y,535,124,535+31,124+31);
+		PDraw::image_cutclip(global_gfx_texture,x+val,y,535,124,535+31,124+31);
 
 	int ret = 0;
 
@@ -224,9 +224,9 @@ int MenuScreen::Draw_Radio(int x, int y, int num, int sel) {
 		
 		PDraw::RECT img_dst = { xn, yn, 0, 0};
 		if (sel == i)
-			PDraw::image_cutclip(game_assets,sel_src,img_dst);
+			PDraw::image_cutclip(global_gfx_texture,sel_src,img_dst);
 		else
-			PDraw::image_cutclip(game_assets,uns_src,img_dst);
+			PDraw::image_cutclip(global_gfx_texture,uns_src,img_dst);
 
 	}
 

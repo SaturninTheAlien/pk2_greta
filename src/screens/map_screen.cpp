@@ -44,11 +44,11 @@ int MapScreen::PK_Draw_Map_Button(int x, int y, int type){
 		}
 
 		if (type == 0)
-			PDraw::image_cutcliptransparent(game_assets, 247, 1, 25, 25, x-3, y-3, 60, 32);
+			PDraw::image_cutcliptransparent(global_gfx_texture, 247, 1, 25, 25, x-3, y-3, 60, 32);
 		if (type == 1)
-			PDraw::image_cutcliptransparent(game_assets, 247, 1, 25, 25, x-3, y-3, 60, 96);
+			PDraw::image_cutcliptransparent(global_gfx_texture, 247, 1, 25, 25, x-3, y-3, 60, 96);
 		if (type == 2)
-			PDraw::image_cutcliptransparent(game_assets, 247, 1, 25, 25, x-3, y-3, 60, 64);
+			PDraw::image_cutcliptransparent(global_gfx_texture, 247, 1, 25, 25, x-3, y-3, 60, 64);
 
 		ret = 1;
 	}
@@ -59,10 +59,10 @@ int MapScreen::PK_Draw_Map_Button(int x, int y, int type){
 		flash = 0;
 	
 	if (type == 1)
-		PDraw::image_cutcliptransparent(game_assets, 247, 1, 25, 25, x-3, y-3, flash, 96);
+		PDraw::image_cutcliptransparent(global_gfx_texture, 247, 1, 25, 25, x-3, y-3, flash, 96);
 
 	if (((degree/45)+1)%4==0 || type==0)
-		PDraw::image_cutclip(game_assets,x-1,y-1,1 + 25*type,58,23 + 25*type,80);
+		PDraw::image_cutclip(global_gfx_texture,x-1,y-1,1 + 25*type,58,23 + 25*type,80);
 
 	return ret;
 }
@@ -121,10 +121,10 @@ void MapScreen::Draw() {
 
 			int icon = entry.icon_id;
 
-			int assets = game_assets;
+			int assets = global_gfx_texture;
 			if (icon >= 22) {
 				icon -= 22;
-				assets = game_assets2;
+				assets = global_gfx_texture2;
 			}
 
 			PDraw::image_cutclip(assets,x-9,y-14,1+(icon*28),452,28+(icon*28),479);
@@ -134,24 +134,24 @@ void MapScreen::Draw() {
 				int sinx = (int)(sin_table(degree)/2);
 				int cosy = (int)(cos_table(degree)/2);
 				int pekkaframe = 28*((degree%360)/120);
-				PDraw::image_cutclip(game_assets,x+sinx-8,y-17+cosy,157+pekkaframe,46,182+pekkaframe,80);
+				PDraw::image_cutclip(global_gfx_texture,x+sinx-8,y-17+cosy,157+pekkaframe,46,182+pekkaframe,80);
 			}
 
 			int paluu = PK_Draw_Map_Button(x-5, y-10, type);
 
 			if (!Episode->ignore_collectable) {
 				if (entry.status & LEVEL_ALLAPPLES){
-					PDraw::image_cutclip(game_assets2, 
+					PDraw::image_cutclip(global_gfx_texture2, 
 						x - 10,
 						y, 45, 379, 58, 394);
 				}
 				else if(entry.status & LEVEL_HAS_BIG_APPLES){
-					PDraw::image_cutclip(game_assets2, 
+					PDraw::image_cutclip(global_gfx_texture2, 
 						x - 10,
 						y, 45, 397, 58, 412);
 				}
 				//else //TODO - draw transparent apples
-				//	PDraw::image_cutcliptransparent(game_assets2, 
+				//	PDraw::image_cutcliptransparent(global_gfx_texture2, 
 				//		45, 379, 58-45, 394-379, x - 10, y, sin_table(degree)*3 - 10, COLOR_GRAY);
 			}
 
@@ -165,7 +165,7 @@ void MapScreen::Draw() {
 					a = 100 - (dd - order) * 5;
 				
 				if (a > 0)
-					PDraw::image_cutcliptransparent(game_assets, 247, 1, 25, 25, x-8, y-13, a, COLOR_TURQUOISE);
+					PDraw::image_cutcliptransparent(global_gfx_texture, 247, 1, 25, 25, x-8, y-13, a, COLOR_TURQUOISE);
 
 			}
 
@@ -202,7 +202,7 @@ void MapScreen::Draw() {
 
 				int info_x = 489+3, info_y = 341-26;
 
-				PDraw::image_cutclip(game_assets,info_x-3,info_y+26,473,0,608,122);
+				PDraw::image_cutclip(global_gfx_texture,info_x-3,info_y+26,473,0,608,122);
 
 				info_y += 30;
 				info_y += PDraw::font_write(fontti1,entry.levelName,info_x,info_y).second;

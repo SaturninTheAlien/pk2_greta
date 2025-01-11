@@ -26,6 +26,8 @@ sprites(this), mWidth(width), mHeight(height){
 		memset(this->sprite_tiles, u8(255), this->mSize);
 		memset(this->edges, false, this->mSize);
     }
+
+	this->gfxTexture = global_gfx_texture;
 }
 
 LevelSector::~LevelSector(){

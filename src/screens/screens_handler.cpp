@@ -128,13 +128,13 @@ ScreensHandler::ScreensHandler():
 	if(!p.has_value()){
 		throw std::runtime_error("\"pk2stuff.bmp\" not found!");
 	}	
-	PDraw::image_load(game_assets, *p, true);
+	PDraw::image_load(global_gfx_texture, *p, true);
 
 	p = PFilesystem::FindVanillaAsset("pk2stuff2.bmp", PFilesystem::GFX_DIR);
 	if(!p.has_value()){
 		throw std::runtime_error("\"pk2stuff2.bmp\" not found!");
 	}
-	PDraw::image_load(game_assets2, *p, true);
+	PDraw::image_load(global_gfx_texture2, *p, true);
 
 	//PSound::load_overlay_music(PFile::Path("music" PE_SEP "super.xm"));  // why? what is so special about this one xm that it needs to be loaded at runtime?
 	// I propose that we resort to start_music() for powerups that require special effects.	
@@ -156,8 +156,8 @@ ScreensHandler::~ScreensHandler(){
 	this->screens_map.clear();
 	sfx_global.free();
 
-	PDraw::image_delete(game_assets);
-	PDraw::image_delete(game_assets2);
+	PDraw::image_delete(global_gfx_texture);
+	PDraw::image_delete(global_gfx_texture2);
 }
 
 

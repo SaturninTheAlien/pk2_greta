@@ -25,9 +25,9 @@ bool Draw_BoolBox(int x, int y, bool value, bool active){
 	else img_src = {473,124,31,31};
 
 	if(active){
-		PDraw::image_cutclip(game_assets,img_src,img_dst);
+		PDraw::image_cutclip(global_gfx_texture,img_src,img_dst);
 	} else{
-		PDraw::image_cutcliptransparent(game_assets,img_src,img_dst,50, 255);
+		PDraw::image_cutcliptransparent(global_gfx_texture,img_src,img_dst,50, 255);
 		return false;
 	}
 
@@ -272,7 +272,7 @@ bool LinksMenu::drawButton(int x, int y, const PDraw::RECT& rect, const std::str
 		}		
 	}
 
-	PDraw::image_cutclip(game_assets, rect, PDraw::RECT(x, y, 0, 0));
+	PDraw::image_cutclip(global_gfx_texture, rect, PDraw::RECT(x, y, 0, 0));
 	return res;
 }
 

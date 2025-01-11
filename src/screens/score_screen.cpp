@@ -138,7 +138,7 @@ int ScoreScreen::Draw_ScoreCount() {
 
 		x = (int)(sin_table(degree+i*10)*2)+kerroin;
 		y = (int)(cos_table(degree+i*10)*2);//10 | 360 | 2
-		//PDraw::image_clip(game_assets,320+x,240+y,157,46,181,79);
+		//PDraw::image_clip(global_gfx_texture,320+x,240+y,157,46,181,79);
 		int kuutio = (int)(sin_table(degree+i*3));
 		if (kuutio < 0) kuutio = -kuutio;
 
@@ -149,13 +149,13 @@ int ScoreScreen::Draw_ScoreCount() {
 
 		x = (int)(sin_table(degree+i*10)*3);
 		y = (int)(cos_table(degree+i*10)*3);//10 | 360 | 3
-		//PDraw::image_clip(game_assets,320+x,240+y,157,46,181,79);
+		//PDraw::image_clip(global_gfx_texture,320+x,240+y,157,46,181,79);
 		int kuutio = (int)(sin_table(degree+i*2))+18;
 		if (kuutio < 0) kuutio = -kuutio;//0;//
 		if (kuutio > 100) kuutio = 100;
 
 		//PDraw::screen_fill(320+x,240+y,320+x+kuutio,240+y+kuutio,COLOR_TURQUOISE+10);
-		PDraw::image_cutcliptransparent(game_assets, 247, 1, 25, 25, 320+x, 240+y, kuutio, 32);
+		PDraw::image_cutcliptransparent(global_gfx_texture, 247, 1, 25, 25, 320+x, 240+y, kuutio, 32);
 
 	}
 	/* --------- */
@@ -217,13 +217,13 @@ int ScoreScreen::Draw_ScoreCount() {
 		for (; i < apples_counted; i++) {
 
 			if (apples_counted >= Game->apples_count)
-				PDraw::image_cutclip(game_assets2, apples_xoffset + i * 32 + rand()%2, my + rand()%2, 61, 379, 87, 406);
+				PDraw::image_cutclip(global_gfx_texture2, apples_xoffset + i * 32 + rand()%2, my + rand()%2, 61, 379, 87, 406);
 			else
-				PDraw::image_cutclip(game_assets2, apples_xoffset + i * 32, my, 61, 379, 87, 406);
+				PDraw::image_cutclip(global_gfx_texture2, apples_xoffset + i * 32, my, 61, 379, 87, 406);
 
 		}
 		for (; i < Game->apples_count; i++)
-			PDraw::image_cutcliptransparent(game_assets2, 61, 379, 26, 26, apples_xoffset + i * 32, my, 20, 0);
+			PDraw::image_cutcliptransparent(global_gfx_texture2, 61, 379, 26, 26, apples_xoffset + i * 32, my, 20, 0);
 		
 	}
 	PDraw::reset_mask();

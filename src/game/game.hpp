@@ -20,6 +20,9 @@ namespace sol{
 class GameClass {
 
 	public:
+		int gfxTexture = -1;
+
+
 		LevelClass level;
 		std::string level_file;	
 		

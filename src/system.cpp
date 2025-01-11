@@ -22,8 +22,8 @@ int screen_height = 480;
 char id_code[8] = "";
 
 int default_palette = -1;
-int game_assets = -1;
-int game_assets2 = -1;
+int global_gfx_texture = -1;
+int global_gfx_texture2 = -1;
 
 int bg_screen = -1;
 
@@ -148,7 +148,7 @@ int Clicked() {
 }
 
 void Draw_Cursor(int x, int y) {
-	PDraw::image_cutclip(game_assets,x,y,621,461,640,480);
+	PDraw::image_cutclip(global_gfx_texture,x,y,621,461,640,480);
 }
 
 int Set_Screen_Size(int w, int h) {

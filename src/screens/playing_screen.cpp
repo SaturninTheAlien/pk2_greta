@@ -221,7 +221,7 @@ void PlayingScreen::Draw_InGame_Lower_Menu() {
 			Game->item_pannel_x--;
 
 		if (Game->item_pannel_x > -215)
-			PDraw::image_cutclip(game_assets,Game->item_pannel_x,screen_height-60,
+			PDraw::image_cutclip(Game->gfxTexture,Game->item_pannel_x,screen_height-60,
 									1,216,211,266);
 		if (Game->item_pannel_x > 5)
 			PDraw::font_write_line(fontti1,tekstit->Get_Text(PK_txt.game_items),15,screen_height-65);
@@ -266,12 +266,12 @@ void PlayingScreen::Draw_InGame_UI(){
 	/////////////////
 	if (Game->apples_count > 0) {
 		if (Game->apples_got == Game->apples_count)
-			PDraw::image_cutcliptransparent(game_assets2, 
+			PDraw::image_cutcliptransparent(global_gfx_texture2, 
 				45, 379, 13, 15, 
 				my, my, 
 				sin_table(degree)*1.5+60, COLOR_RED);
 		else
-			PDraw::image_cutcliptransparent(game_assets2, 
+			PDraw::image_cutcliptransparent(global_gfx_texture2, 
 				45, 379, 13, 15, 
 				my, my, 
 				0, COLOR_GRAY);

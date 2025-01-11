@@ -113,12 +113,10 @@ class LevelClass {
     void calculateBlockTypes();
     void moveBlocks(u32 button1, u32 button2, u32 button3);
     //void placeSprites(PrototypesHandler& prototypes);
-private:
-
-    
-    
+private:    
     Tileset* mLoadTileset(const std::string& tilesetName);
     Background* mLoadBackground(const std::string& backgroundName);
+    int mLoadGfxTexture(const std::string& name);
 
     /**
      * @brief 
@@ -126,6 +124,7 @@ private:
      */
     std::vector<Tileset*>mTilesets;
     std::vector<Background*>mBackgrounds;
+    std::vector<std::pair<int, std::string>> mGfxTextures;
 
     static void readTiles(PFile::RW& file,
         u8 compression,

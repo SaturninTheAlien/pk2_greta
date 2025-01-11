@@ -19,8 +19,8 @@ extern int screen_height;
 
 extern char id_code[8];
 
-extern int game_assets;
-extern int game_assets2;
+extern int global_gfx_texture;
+extern int global_gfx_texture2;
 extern int default_palette;
 
 

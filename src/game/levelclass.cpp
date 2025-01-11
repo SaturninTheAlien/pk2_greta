@@ -12,6 +12,7 @@
 #include "engine/PInput.hpp"
 #include "engine/PLog.hpp"
 #include "engine/PJson.hpp"
+#include "engine/PFilesystem.hpp"
 
 #include <cinttypes>
 #include <cstring>
@@ -64,6 +65,12 @@ void LevelClass::clear(){
 		}
 	}
 	this->mBackgrounds.clear();
+
+	for(std::pair<int, std::string>&p : this->mGfxTextures){
+		PDraw::image_delete(p.first);
+	}
+
+	this->mGfxTextures.clear();
 }
 
 void LevelClass::load(PFile::Path path, bool headerOnly) {
@@ -388,6 +395,12 @@ void LevelClass::loadVersion15(PFile::Path path, bool headerOnly){
 		jsonReadInt(j, "fire_color_1", sector->fire_color_1);
 		jsonReadInt(j, "fire_color_2", sector->fire_color_2);
 
+		std::string custom_gfx_texture = "";
+		jsonReadString(j, "gfx", custom_gfx_texture);
+		if(custom_gfx_texture!=""){
+			sector->gfxTexture = this->mLoadGfxTexture(custom_gfx_texture);
+		}
+
 
 		// Background tiles
 		readTiles(file, compression, sector->getWidth(), sector->size(), sector->background_tiles);
@@ -701,4 +714,27 @@ Background* LevelClass::mLoadBackground(const std::string& backgroundName){
 	background->load(backgroundName);
 
 	return background;
+}
+
+int LevelClass::mLoadGfxTexture(const std::string& name){
+	for(const std::pair<int, std::string>& pair: this->mGfxTextures){
+		if(pair.second==name){
+			return pair.first;
+		}
+	}
+
+	std::optional<PFile::Path> p = PFilesystem::FindAsset(name, PFilesystem::GFX_DIR);
+	if(p.has_value()){
+		int res = PDraw::image_load(*p);
+		if(res>=0){
+			this->mGfxTextures.push_back(std::make_pair(res, name));
+			return res;
+		}
+		else{
+			std::ostringstream os;
+			os<<"Unable to load GFX texture: \""<<name<<"\"";
+			throw std::runtime_error(os.str());
+		}
+	}
+	throw PExcept::FileNotFoundException(this->name, PExcept::MISSING_GFX);
 }

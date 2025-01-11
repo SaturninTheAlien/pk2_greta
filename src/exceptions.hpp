@@ -24,7 +24,8 @@ enum{
     MISSING_MUSIC=5,
     MISSING_LEVEL=6,
     MISSING_ENGLISH_TEXT=7,
-    MISSING_SFX=8
+    MISSING_SFX=8,
+    MISSING_GFX=9
 };
 
 class PException: public std::exception{

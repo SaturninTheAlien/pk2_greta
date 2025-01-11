@@ -135,7 +135,7 @@ void EpisodeClass::loadAssets() {
 		PLog::Write(PLog::ERR, "PK2", "Can't load pk2stuff"); //"Can't load map bg"
 	}
 	else{
-		PDraw::image_load(game_assets, *path, true);
+		PDraw::image_load(global_gfx_texture, *path, true);
 	}
 
 	path = PFilesystem::FindAsset("pk2stuff2.png",
@@ -145,7 +145,7 @@ void EpisodeClass::loadAssets() {
 		PLog::Write(PLog::ERR, "PK2", "Can't load pk2stuff2"); //"Can't load map bg"
 	}
 	else{
-		PDraw::image_load(game_assets2, *path, true);
+		PDraw::image_load(global_gfx_texture2, *path, true);
 	}
 }
 
