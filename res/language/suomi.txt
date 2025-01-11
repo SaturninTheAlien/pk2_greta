@@ -184,15 +184,38 @@ Font Information
 *font path:			language/fonts/
 
 
+----NEW GE keys:
 
+*main menu map:             kartta
+*main menu links:           linkit
+*main menu back:            takaisin
+*main menu more:            lisää
 
+*graphics menu gui on:                  pelin sisäinen gui päällä
+*graphics menu gui off:                 pelin sisäinen gui pois päältä
 
+*graphics menu fullscreen on:           kokoruudun tila päällä
+*graphics menu fullscreen off:          kokoruudun tila pois päältä
 
+*graphics menu touchscreen on:          kosketusnäyttö päällä
+*graphics menu touchscreen off:         kosketusnäyttö pois päältä
 
+*controls menu default:                 oletusasetukset
+*controls menu use keyboard:            käytä näppäimistöä
+*controls menu use controller:          käytä peliohjainta
+*controls menu vibration on:            peliohjain värisee
+*controls menu vibration off:           peliohjain ei värisee
 
+*invisibility:        näkymättömyys:
+*supermode:           supertila:
 
+*intro game created by:     pelin alkuperäinen kehittäjä
+*intro game improved by:    parannukset
+*intro community:           ja kaikki muut pistegamerzit
 
+*back to settings menu:     takaisin asetuksiin
+*save menu empty slot:      tyhjä
+*save menu episode completed:           läpäisty
 
-
-
-
+*graphics menu game speed:              pelin nopeus
+*graphics menu texture filtering:       filteröinti

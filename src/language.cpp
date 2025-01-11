@@ -39,6 +39,9 @@ const char* GetDefaultLanguageName() {
 
 	else if(strcmp(loc, "pt") == 0)
 		return "portugues brasil.txt";
+
+	else if(strcmp(loc, "fi") == 0)
+		return "suomi.txt";
 	
 	/*;
 	//"francais.txt"
@@ -67,9 +70,6 @@ const char* GetDefaultLanguageName() {
 	if(strcmp(loc, "nl") == 0)
 		return "nederlands.txt";
 	
-	if(strcmp(loc, "pl") == 0)
-		return "polski.txt";
-	
 	//"slovak.txt"
 	if(strcmp(loc, "sk") == 0)
 		return "slovenscina.txt";
@@ -77,8 +77,7 @@ const char* GetDefaultLanguageName() {
 	//"savo.txt"
 	//"slangi.txt"
 	//"tervola.txt"	
-	if(strcmp(loc, "fi") == 0)
-		return "suomi.txt";
+	
 	
 	if(strcmp(loc, "sv") == 0)
 		return "swedish.txt";
