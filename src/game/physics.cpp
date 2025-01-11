@@ -1224,7 +1224,7 @@ void UpdateSprite(SpriteClass* sprite){
 	}
 
 	if (!sprite->can_move_down)
-		if (sprite->b >= 0){ //If sprite is falling
+		if (sprite->b >= 0 && sprite->weight > 0){ //If sprite is falling
 			if (sprite->jump_timer > 0){
 				if (sprite->jump_timer >= 90+10){
 					Play_GameSFX(Episode->sfx.pump_sound,30,(int)sprite->x, (int)sprite->y,
