@@ -1216,7 +1216,9 @@ void ThrowableWeapon2(SpriteClass*sprite, SpriteClass*shooter){
 }
 
 void ProjectileEgg(SpriteClass*sprite, SpriteClass*shooter){
-	sprite->y = shooter->y+10;
+	if(!shooter->prototype->ammo1_offset.has_value()){
+		sprite->y = shooter->y+10;
+	}
 	sprite->a = shooter->a / 1.5;
 }
 
