@@ -98,6 +98,7 @@ int ScoreScreen::LevelScore_Compare(int level_id, int score, int apples, int tim
 		newScore.hasTime = Game->has_time;		
 		if(Game->has_time){
 			this->map_new_time_record = true;
+			newScore.bestTime = time;
 			newScore.fastestPlayer = Episode->player_name;
 		}
 

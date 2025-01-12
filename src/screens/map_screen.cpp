@@ -89,7 +89,7 @@ void MapScreen::Draw() {
 
 	if (Episode->next_level <= Episode->getHighestLevelNumber()) {
 		ysize = PDraw::font_write(fontti1,tekstit->Get_Text(PK_txt.map_next_level),100,120).first;
-		PDraw::font_write_line(fontti1,std::to_string(Episode->next_level),100+ysize+15,120);
+		PDraw::font_write_line(fontti1,std::to_string(Episode->next_level),100+ysize + 8,120);
 	}
 
 	if (Episode->getLevelsNumber() == 0) {
