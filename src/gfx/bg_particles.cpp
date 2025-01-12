@@ -12,7 +12,7 @@ namespace BG_Particles{
 
 static std::array<BgParticle, BACKGROUND_PARTICLES_NUMBER> bg_particles;
 
-void Init(int weather){
+void Init(int weather, int rain_color){
 
 	for(BgParticle& particle: bg_particles){
 		particle.setType(BGPARTICLE_NOTHING);
@@ -26,6 +26,7 @@ void Init(int weather){
 	if (weather == WEATHER_RAIN || weather == WEATHER_RAIN_LEAVES){
 		for(BgParticle& p : bg_particles){
 			p.setType(BGPARTICLE_WATERDROP);
+			p.color = (u8)rain_color;
 		}
 	}
 	

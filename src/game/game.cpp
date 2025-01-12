@@ -515,8 +515,10 @@ int GameClass::Open_Map() {
 
 	Particles_Clear();
 
-	BG_Particles::Init(this->playerSprite->level_sector->weather);
-	this->playerSprite->level_sector->startMusic();
+	LevelSector* sector = this->playerSprite->level_sector;
+
+	BG_Particles::Init(sector->weather, sector->rain_color);
+	sector->startMusic();
 	
 	return 0;
 }
@@ -691,7 +693,7 @@ void GameClass::teleportPlayer(double x, double y, LevelSector*sector){
 		sector->background->setPalette();
 
 		//Change weather
-		BG_Particles::Init(sector->weather);
+		BG_Particles::Init(sector->weather, sector->rain_color);
 		Particles_Clear();
 
 		//Change music

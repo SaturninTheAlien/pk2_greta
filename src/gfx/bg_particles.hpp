@@ -18,7 +18,7 @@ enum {
 
 namespace BG_Particles{
 
-void Init(int weather);
+void Init(int weather, int rain_color);
 void Draw(int camera_x, int camera_y);
 void Update(int camera_x, int camera_y);
 

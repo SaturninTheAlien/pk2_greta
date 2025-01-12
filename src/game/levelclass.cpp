@@ -401,6 +401,8 @@ void LevelClass::loadVersion15(PFile::Path path, bool headerOnly){
 			sector->gfxTexture = this->mLoadGfxTexture(custom_gfx_texture);
 		}
 
+		jsonReadInt(j, "rain_color", sector->rain_color);
+
 
 		// Background tiles
 		readTiles(file, compression, sector->getWidth(), sector->size(), sector->background_tiles);
@@ -466,6 +468,9 @@ void LevelClass::saveVersion15(PFile::Path path)const{
 		j["splash_color"] = sector->splash_color;
 		j["fire_color_1"] = sector->fire_color_1;
 		j["fire_color_2"] = sector->fire_color_2;
+
+		j["gfx"] = sector->gfxTexture;
+		j["rain_color"] = sector->rain_color;
 
 		file.writeCBOR(j);
 

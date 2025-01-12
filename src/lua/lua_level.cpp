@@ -41,7 +41,7 @@ void setFGTile(LevelSector*sector, int pos_x, int pos_y, int value){
 void setWeather(LevelSector*sector, int value){
     if(sector!=nullptr && sector->weather != value){
         sector->weather = value;
-        BG_Particles::Init(value);
+        BG_Particles::Init(value, sector->rain_color);
     }
 }
 

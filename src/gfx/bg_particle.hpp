@@ -4,6 +4,8 @@
 //#########################
 #pragma once
 
+#include "engine/types.hpp"
+
 enum{
     BGPARTICLE_NOTHING,
 	BGPARTICLE_WATERDROP,
@@ -44,7 +46,9 @@ public:
 
     void update(){
         this->mUpdate(*this);
-    }    
+    }
+
+    u8 color = 40;
 private:
     int mType = 0;
     void (*mDraw)(const BgParticle& p, int cam_x, int cam_y) = nullptr;

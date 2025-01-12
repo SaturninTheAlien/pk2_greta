@@ -113,6 +113,7 @@ public:
     int     fire_color_1 = 64;  //red
     int     fire_color_2 = 128; //orange
 
+    int     rain_color = 40;
 
 private:
     std::size_t mWidth, mHeight, mSize;

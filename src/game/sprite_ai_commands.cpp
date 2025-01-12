@@ -347,7 +347,7 @@ bool WeatherCommand::execute(SpriteClass*sprite){
     LevelSector*sector = sprite->level_sector;
     if(sector->weather != this->weatherId){
         sector->weather = this->weatherId;
-        BG_Particles::Init(this->weatherId);
+        BG_Particles::Init(this->weatherId, sector->rain_color);
     }
 
     return true;

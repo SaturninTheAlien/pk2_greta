@@ -12,7 +12,7 @@ static void DrawWaterdrop(const BgParticle& p, int cam_x, int cam_y) {
 	
     int kx = int(p.x)-cam_x;
 	int ky = int(p.y)-cam_y;
-	PDraw::screen_fill(kx,ky,kx+1,ky+4,40+(int)p.b);
+	PDraw::screen_fill(kx,ky,kx+1,ky+4,p.color+(u8)p.b);
 }
 
 static void DrawLeaf1(const BgParticle& p, int cam_x, int cam_y) {
