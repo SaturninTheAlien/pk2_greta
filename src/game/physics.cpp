@@ -1224,20 +1224,23 @@ void UpdateSprite(SpriteClass* sprite){
 	}
 
 	if (!sprite->can_move_down)
-		if (sprite->b >= 0 && sprite->weight > 0){ //If sprite is falling
+		if (sprite->b >= 0 ){ //If sprite is falling
 			if (sprite->jump_timer > 0){
 				if (sprite->jump_timer >= 90+10){
-					Play_GameSFX(Episode->sfx.pump_sound,30,(int)sprite->x, (int)sprite->y,
+
+					if(sprite->weight>0){
+						Play_GameSFX(Episode->sfx.pump_sound,30,(int)sprite->x, (int)sprite->y,
 				                  int(25050-sprite->weight*3000),true);
 
-					//Particles_New(	PARTICLE_DUST_CLOUDS,sprite->x+rand()%5-rand()%5-10,sprite_bottom+rand()%3-rand()%3,
-					//			  0,-0.2,rand()%50+20,0,0);
+						//Particles_New(	PARTICLE_DUST_CLOUDS,sprite->x+rand()%5-rand()%5-10,sprite_bottom+rand()%3-rand()%3,
+						//			  0,-0.2,rand()%50+20,0,0);
 
-					if (rand()%7 == 1) {
-						Particles_New(PARTICLE_SMOKE,sprite->x+rand()%5-rand()%5-10,sprite_bottom+rand()%3-rand()%3,
-									  	   0.3,-0.1,450,0,0);
-						Particles_New(PARTICLE_SMOKE,sprite->x+rand()%5-rand()%5-10,sprite_bottom+rand()%3-rand()%3,
-									  	   -0.3,-0.1,450,0,0);
+						if (rand()%7 == 1) {
+							Particles_New(PARTICLE_SMOKE,sprite->x+rand()%5-rand()%5-10,sprite_bottom+rand()%3-rand()%3,
+											0.3,-0.1,450,0,0);
+							Particles_New(PARTICLE_SMOKE,sprite->x+rand()%5-rand()%5-10,sprite_bottom+rand()%3-rand()%3,
+											-0.3,-0.1,450,0,0);
+						}
 					}
 
 					if (sprite->weight > 1) {
