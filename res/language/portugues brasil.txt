@@ -19,6 +19,14 @@ Intro
 *intro translation:			Tradução em Português por
 *intro translator:			Alexandre Cury, sunsetquasar
 
+-- new GE keys --
+
+*intro game created by:     jogo criado originalmente por
+*intro game improved by:    aprimorado por
+*intro community:           e todos os outros pistegamerz
+
+--
+
 Main Menu
 ------------------------------------------------------------------------------------
 *main menu new game:			Começar um Novo Jogo
@@ -27,7 +35,7 @@ Main Menu
 *main menu save game:			Salvar Jogo
 *main menu controls:			Controles
 *main menu graphics:			Gráficos	
-*main menu sounds:			Sons
+*main menu sounds:				Sons
 *main menu exit game:			Sair
 
 ---- New GE keys:
@@ -36,6 +44,8 @@ Main Menu
 *main menu links:           Links
 *main menu back:            Voltar
 *main menu more:            Mais
+
+*back to settings menu:     Voltar às opções
 
 ----
 
@@ -59,6 +69,7 @@ Save Game
 ---- New GE key:
 
 *save menu empty slot:			vazio
+*save menu episode completed:   completado
 
 ----
 
@@ -122,6 +133,9 @@ Graphics
 
 *graphics menu touchscreen on:          Modo touch ligado
 *graphics menu touchscreen off:         Modo touch desligado
+
+*graphics menu game speed:              velocidade de jogo
+*graphics menu texture filtering:       filtragem
 
 ----
 

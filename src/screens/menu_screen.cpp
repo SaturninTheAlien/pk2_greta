@@ -1069,26 +1069,27 @@ void MenuScreen::Draw_Menu_Language() {
 
 	int my = 150;
 
-	uint end = langlist.size();
+	std::size_t end = langlist.size();
 	if (end > langlistindex + 10)
 		end = langlistindex + 10;
 
-	for ( uint i = langlistindex; i < end; i++ ) {
+	for ( std::size_t i = langlistindex; i < end; i++ ) {
 
 		std::string lang_name = PString::removeSuffix(langlist[i], ".txt");
 
 		if(Draw_Menu_Text(lang_name.c_str(),150,my)) {
 
-			Load_Language(langlist[i]);
+			Settings.language = langlist[i];
 
 			try{
-				Settings.language = langlist[i];
+				Load_Language(Settings.language);
 				Settings_Save();
 			}
 			catch(const std::exception& e){
-				PLog::Write(PLog::ERR, "PK2 Fonts", e.what());
+				PLog::Write(PLog::ERR, "PK2", e.what());
+				//Fallback to English
+				Settings.language = "english.txt";
 				Load_Language(Settings.language);
-				Load_Fonts(tekstit);
 			}
 		}
 		

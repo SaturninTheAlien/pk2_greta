@@ -9,9 +9,13 @@
 #include "engine/PFilesystem.hpp"
 
 #include <filesystem>
+#include "exceptions.hpp"
+#include "gfx/text.hpp"
+
 
 #include <cstring>
 #include <string>
+#include <sstream>
 
 std::vector<std::string> langlist;
 
@@ -42,6 +46,9 @@ const char* GetDefaultLanguageName() {
 
 	else if(strcmp(loc, "fi") == 0)
 		return "suomi.txt";
+
+	else if(strcmp(loc, "it") == 0)
+		return "italiano.txt";
 	
 	/*;
 	//"francais.txt"
@@ -61,8 +68,7 @@ const char* GetDefaultLanguageName() {
 	if(strcmp(loc, "id") == 0)
 		return "indonesian.txt";
 	
-	if(strcmp(loc, "it") == 0)
-		return "italiano.txt";
+	
 	
 	if(strcmp(loc, "mk") == 0)
 		return "macedonian.txt";
@@ -89,21 +95,24 @@ const char* GetDefaultLanguageName() {
 
 }
 
-int Load_Language(const std::string& language) {
+void Load_Language(const std::string& language) {
 
 	namespace fs = std::filesystem;
 
 	std::optional<PFile::Path> path = PFilesystem::FindVanillaAsset(language, PFilesystem::LANGUAGE_DIR);
 	if(!path.has_value()){
-		return -1;
+		throw PExcept::FileNotFoundException(language, PExcept::MISSING_LANG);
 	}
 	
 	PLog::Write(PLog::DEBUG, "PK2", "Loading language from %s", path->c_str());
 
-	if (!tekstit->Read_File(*path))
-		return -1;	
+	if (!tekstit->Read_File(*path)){
+		std::ostringstream os;
+		os<<"Cannot open the language file: \""<<language;
+		throw std::runtime_error(os.str());
+	}
 	
-	// Load_Fonts(tekstit);
+	Load_Fonts(tekstit);
 
 	// Setup
 	PK_txt.setup_options			= tekstit->searchLocalizedText("setup options");
@@ -218,7 +227,7 @@ int Load_Language(const std::string& language) {
 	PK_txt.playermenu_type_name		= tekstit->searchLocalizedText("player screen type your name");
 	PK_txt.playermenu_continue		= tekstit->searchLocalizedText("player screen continue");
 	PK_txt.playermenu_clear			= tekstit->searchLocalizedText("player screen clear");
-	PK_txt.player_default_name		= tekstit->searchLocalizedText("player default name");
+	//PK_txt.player_default_name		= tekstit->searchLocalizedText("player default name");
 
 	PK_txt.episodes_choose_episode	= tekstit->searchLocalizedText("episode menu choose episode");
 	PK_txt.episodes_no_maps			= tekstit->searchLocalizedText("episode menu no maps");
@@ -252,7 +261,7 @@ int Load_Language(const std::string& language) {
 	PK_txt.game_attack2				= tekstit->searchLocalizedText("attack 2");
 	PK_txt.game_keys				= tekstit->searchLocalizedText("keys");
 	PK_txt.game_clear				= tekstit->searchLocalizedText("level clear");
-	PK_txt.game_timebonus			= tekstit->searchLocalizedText("time bonus");
+	//PK_txt.game_timebonus			= tekstit->searchLocalizedText("time bonus");
 	PK_txt.game_ko					= tekstit->searchLocalizedText("knocked out");
 	PK_txt.game_timeout				= tekstit->searchLocalizedText("time out");
 	PK_txt.game_tryagain			= tekstit->searchLocalizedText("try again");
@@ -288,6 +297,4 @@ int Load_Language(const std::string& language) {
 			PK_txt.infos[i] = tekstit->Search_Id(index.c_str());
 		}
 	}
-
-	return 0;
 }

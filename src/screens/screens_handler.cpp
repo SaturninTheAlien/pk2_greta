@@ -10,7 +10,6 @@
 #include "settings/settings.hpp"
 #include "gfx/touchscreen.hpp"
 
-#include "gfx/text.hpp"
 #include "system.hpp"
 #include "language.hpp"
 
@@ -54,32 +53,16 @@ ScreensHandler::ScreensHandler():
 		delete tekstit;
 		tekstit = nullptr;
 	}
-
 	tekstit = new PLang();
-	if (Load_Language(Settings.language) != 0) {
-
-		PLog::Write(PLog::ERR, "PK2", "Could not find %s!", Settings.language.c_str());
-		Settings.language = "english.txt";
-		
-		if(Load_Language(Settings.language) != 0) {
-			throw PExcept::FileNotFoundException("english.txt", PExcept::MISSING_ENGLISH_TEXT);
-		}
-
-	}
 
 	try{
-		Load_Fonts(tekstit);
+		Load_Language(Settings.language);
 	}
 	catch(const std::exception& e){
 		PLog::Write(PLog::ERR, "PK2", e.what());
-
 		//Fallback to English
 		Settings.language = "english.txt";
-		if(Load_Language(Settings.language) != 0) {
-			throw PExcept::FileNotFoundException("english.txt", PExcept::MISSING_ENGLISH_TEXT);
-		}
-		
-		Load_Fonts(tekstit);
+		Load_Language(Settings.language);
 	}
 
 	langlist = PFilesystem::ScanOriginalAssetsDirectory(PFilesystem::LANGUAGE_DIR, ".txt");

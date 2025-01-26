@@ -49,7 +49,7 @@ filename(filename), type(type){
         os<<"Level";
     }
     break;
-    case MISSING_ENGLISH_TEXT:{
+    case MISSING_LANG:{
         os<<"Language file";        
     }
     break;

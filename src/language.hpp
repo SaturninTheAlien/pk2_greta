@@ -126,7 +126,7 @@ public:
 		playermenu_type_name = -1,
 		playermenu_continue = -1,
 		playermenu_clear = -1,
-		player_default_name = -1,
+		//player_default_name = -1,
 
 		episodes_choose_episode = -1,
 		episodes_no_maps = -1,
@@ -160,7 +160,7 @@ public:
 		game_attack2 = -1,
 		game_keys = -1,
 		game_clear = -1,
-		game_timebonus = -1,
+		//game_timebonus = -1,
 		game_ko = -1,
 		game_timeout = -1,
 		game_tryagain = -1,
@@ -190,4 +190,4 @@ extern LANGUAGE PK_txt;
 extern std::vector<std::string> langlist;
 
 const char* GetDefaultLanguageName();
-int Load_Language(const std::string& language);
+void Load_Language(const std::string& language);
