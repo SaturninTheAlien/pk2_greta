@@ -584,6 +584,22 @@ void BonusSpriteCollected(SpriteClass* sprite, SpriteClass* collector){
 			}
 			break;
 
+			case AI_EMIT_EVENT1_IF_BONUS_COLLECTED:{
+				Game->event1 = true;
+			}
+			break;
+
+			case AI_EMIT_EVENT2_IF_BONUS_COLLECTED:{
+				Game->event2 = true;
+			}
+			break;
+
+			case AI_CHANGE_SKULLS_IF_BONUS_COLLECTED:{
+				Game->change_skulls = true;
+			}
+			break;
+
+
 			default:
 				break;
 			}

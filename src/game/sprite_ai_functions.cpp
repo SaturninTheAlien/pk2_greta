@@ -1313,7 +1313,7 @@ void ProjectileAimAtPlayer(SpriteClass*sprite, SpriteClass*shooter){
 
 		double eps2 = dx*dx + dy*dy; 
 		
-		if(eps2 < v*v){
+		if(eps2 <= v*v){
 			ProjectileAimRandomly(sprite, shooter);
 		}
 		else{
