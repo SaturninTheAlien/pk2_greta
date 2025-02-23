@@ -34,6 +34,8 @@ void Follow_Player(SpriteClass*s);
 void Follow_Player_If_Seen(SpriteClass*s);
 void Follow_Player_Vert_Hori(SpriteClass*s);
 void Follow_Player_If_Seen_Vert_Hori(SpriteClass*s);
+void Follow_Player_Diagonally(SpriteClass*s);
+
 void Look_at_Player(SpriteClass* s);
 
 
@@ -50,6 +52,9 @@ void Attack_1_If_Player_Above(SpriteClass*s);
 void Attack_2_If_Player_Above(SpriteClass*s);
 void Transform_If_Player_Above(SpriteClass*s);
 void Transform_If_Player_Below(SpriteClass*s);
+
+void Attack_1_if_Player_Nearby(SpriteClass*s);
+void Attack_2_if_Player_Nearby(SpriteClass*s);
 
 void Jump_If_Player_Above(SpriteClass*s);
 void Jump_If_Player_in_Front(SpriteClass*s);
@@ -150,6 +155,8 @@ void ThrowableWeapon2(SpriteClass*sprite, SpriteClass*shooter);
 void ProjectileEgg(SpriteClass*sprite, SpriteClass*shooter);
 void StaticProjectile(SpriteClass*sprite, SpriteClass*shooter);
 
+void ProjectileAimRandomly(SpriteClass*sprite, SpriteClass*shooter);
+void ProjectileAimAtPlayer(SpriteClass*sprite, SpriteClass*shooter);
 
 /**
  * @brief 

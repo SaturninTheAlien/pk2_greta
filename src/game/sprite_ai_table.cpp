@@ -335,6 +335,10 @@ AI_Table::AI_Table(){
 
     Init_AI(AI_INFINITE_ENERGY, AI_TRIGGER_DAMAGE, AI_Functions::InfiniteEnergy);
 
+    Init_AI(AI_FOLLOW_PLAYER_DIAGONALLY, AI_TRIGGER_ALIVE, AI_Functions::Follow_Player_Diagonally);
+    Init_AI(AI_ATTACK_1_IF_PLAYER_NEARBY, AI_TRIGGER_ALIVE, AI_Functions::Attack_1_if_Player_Nearby);
+    Init_AI(AI_ATTACK_2_IF_PLAYER_NEARBY, AI_TRIGGER_ALIVE, AI_Functions::Attack_2_if_Player_Nearby);
+
     /**
      * @brief 
      * AIs triggered on game start
@@ -394,6 +398,10 @@ AI_Table::AI_Table(){
 
     Init_AI_Projectile(AI_EGG, AI_Functions::ProjectileEgg);
     Init_AI_Projectile(AI_EGG2, AI_Functions::ProjectileEgg);
+
+    Init_AI_Projectile(AI_PROJECTILE_AIM_RANDOMLY, AI_Functions::ProjectileAimRandomly);
+    Init_AI_Projectile(AI_PROJECTILE_AIM_AT_PLAYER, AI_Functions::ProjectileAimAtPlayer);
+
 
     /**
      * @brief 

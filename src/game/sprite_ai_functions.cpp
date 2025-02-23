@@ -429,6 +429,12 @@ void Follow_Player_If_Seen_Vert_Hori(SpriteClass*s){
 	}
 }
 
+void Follow_Player_Diagonally(SpriteClass*s){
+	if(player!=nullptr){
+		s->flyToWaypointXY(player->x, player->y);
+	}
+}
+
 void Look_at_Player(SpriteClass*s){
 	if(player!=nullptr){
 		s->flip_x = player->x < s->x;
@@ -652,6 +658,43 @@ void Jump_If_Player_in_Front(SpriteClass*s){
 
 				s->jump_timer = 1;
 			}
+		}
+	}
+}
+
+
+void Attack_1_if_Player_Nearby(SpriteClass*s){
+	if(player!=nullptr){
+		double k = s->prototype->player_detection.x;
+		double l = s->prototype->player_detection.y;
+		double x = s->x - player->x;
+		double y = s->y - player->y;
+
+		k = k*k;
+		l = l*l;
+		x = x*x;
+		y = y*y;
+
+		if(x*l + y*k < k*l){
+			s->attack1_timer = s->prototype->attack1_time;
+		}
+	}
+}
+
+void Attack_2_if_Player_Nearby(SpriteClass*s){
+	if(player!=nullptr){
+		double k = s->prototype->player_detection.x;
+		double l = s->prototype->player_detection.y;
+		double x = s->x - player->x;
+		double y = s->y - player->y;
+
+		k = k*k;
+		l = l*l;
+		x = x*x;
+		y = y*y;
+
+		if(x*l + y*k < k*l){
+			s->attack2_timer = s->prototype->attack1_time;
 		}
 	}
 }
@@ -1247,6 +1290,38 @@ void ProjectileEgg(SpriteClass*sprite, SpriteClass*shooter){
 void StaticProjectile(SpriteClass*sprite, SpriteClass*shooter){
 	sprite->a = 0;
 	sprite->b = 0;
+}
+
+
+void ProjectileAimRandomly(SpriteClass*sprite, SpriteClass*){
+	double angle = (double(rand())/RAND_MAX) * 2 * M_PI;
+	double v = sprite->prototype->max_speed;
+
+	sprite->a = v * cos(angle);
+	sprite->b = v * sin(angle);
+}
+
+void ProjectileAimAtPlayer(SpriteClass*sprite, SpriteClass*shooter){
+	if(player==nullptr){
+		ProjectileAimRandomly(sprite, shooter);
+	}
+	else{
+		double v = sprite->prototype->max_speed;
+
+		double dx = player->x - sprite->x;
+		double dy = player->y - sprite->y;
+
+		double eps2 = dx*dx + dy*dy; 
+		
+		if(eps2 < v*v){
+			ProjectileAimRandomly(sprite, shooter);
+		}
+		else{
+			double z = sqrt(eps2);
+			sprite->a = v * dx / z;
+			sprite->b = v * dy / z;
+		}
+	}
 }
 
 
