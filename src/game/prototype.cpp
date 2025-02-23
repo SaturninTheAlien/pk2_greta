@@ -543,6 +543,10 @@ void PrototypeClass::setProto20(const nlohmann::json& j){
 		this->ammo2_offset = j["attack2_offset"].get<Point2D>();
 	}
 
+	if(j.contains("player_detection")){
+		this->player_detection = j["player_detection"].get<Point2D>();
+	}
+
 	/**
 	 * Experimental
 	 */
@@ -662,6 +666,8 @@ void to_json(nlohmann::json& j, const PrototypeClass& c){
 	if(c.ammo2_offset.has_value()){
 		j["attack2_offset"] = *c.ammo2_offset;
 	}
+
+	j["player_detection"] = c.player_detection;
 
 	if(c.blend_mode!=0){
 		j["blend_mode"] = c.blend_mode;

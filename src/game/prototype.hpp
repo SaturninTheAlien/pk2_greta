@@ -200,6 +200,13 @@ public:
     std::optional<Point2D> ammo2_offset = {};
 
     /**
+     * @brief 
+     * Player detection range
+     */
+
+    Point2D player_detection = Point2D(200, 350);
+
+    /**
      * @brief
      * To fix the bomb and legacy projectiles bugs with the new sprite system
      */

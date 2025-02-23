@@ -506,7 +506,10 @@ void Attack_2_Nonstop(SpriteClass*s){
 void Attack_1_if_Player_in_Front(SpriteClass*s){
 	if (s->damage_timer == 0 && player!=nullptr)
 	{
-		if ((player->x - s->x < 200 && player->x - s->x > -200) &&
+
+		double detection = s->prototype->player_detection.x;
+
+		if ((player->x - s->x < detection && player->x - s->x > -detection) &&
 			(player->y - s->y < s->prototype->height && player->y - s->y > -s->prototype->height))
 		{
 			if ((player->x < s->x && s->flip_x) || (player->x > s->x && !s->flip_x))
@@ -519,7 +522,9 @@ void Attack_1_if_Player_in_Front(SpriteClass*s){
 void Attack_2_if_Player_in_Front(SpriteClass*s){
 	if (s->damage_timer == 0 && player!=nullptr)
 	{
-		if ((player->x - s->x < 200 && player->x - s->x > -200) &&
+		double detection = s->prototype->player_detection.x;
+
+		if ((player->x - s->x < detection && player->x - s->x > -detection) &&
 			(player->y - s->y < s->prototype->height && player->y - s->y > -s->prototype->height))
 		{
 			if ((player->x < s->x && s->flip_x) || (player->x > s->x && !s->flip_x))
@@ -532,8 +537,11 @@ void Attack_2_if_Player_in_Front(SpriteClass*s){
 void Attack_1_if_Player_Below(SpriteClass*s){
 	if (s->damage_timer == 0 && player!=nullptr)
 	{
+
+		double detection = s->prototype->player_detection.y;
+
 		if ((player->x - s->x < s->prototype->width && player->x - s->x > -s->prototype->width) &&
-			(player->y > s->y && player->y - s->y < 350))
+			(player->y > s->y && player->y - s->y < detection))
 		{
 			s->attack1_timer = s->prototype->attack2_time;
 		}
@@ -547,8 +555,11 @@ void Attack_1_if_Player_Below(SpriteClass*s){
 void Attack_1_If_Player_Above(SpriteClass*s){
 	if (s->damage_timer == 0 && player!=nullptr)
 	{
+
+		double detection = s->prototype->player_detection.y;
+
 		if ((player->x - s->x < s->prototype->width && player->x - s->x > -s->prototype->width) &&
-			(player->y < s->y && s->y - player->y < 350))
+			(player->y < s->y && s->y - player->y < detection))
 		{
 			s->attack1_timer = s->prototype->attack1_time;
 		}
@@ -563,8 +574,10 @@ void Attack_1_If_Player_Above(SpriteClass*s){
 void Attack_2_If_Player_Above(SpriteClass*s){
 	if (s->damage_timer == 0 && player!=nullptr)
 	{
+		double detection = s->prototype->player_detection.y;
+
 		if ((player->x - s->x < s->prototype->width && player->x - s->x > -s->prototype->width) &&
-			(player->y < s->y && s->y - player->y < 350))
+			(player->y < s->y && s->y - player->y < detection))
 		{
 			s->attack2_timer = s->prototype->attack2_time;
 		}
@@ -578,8 +591,11 @@ void Attack_2_If_Player_Above(SpriteClass*s){
  */
 void Transform_If_Player_Above(SpriteClass*s){
 	if(player!=nullptr){
+
+		double detection = s->prototype->player_detection.y;
+
 		if ((player->x - s->x < s->prototype->width && player->x - s->x > -s->prototype->width) &&
-			(player->y < s->y && s->y - player->y < 350))
+			(player->y < s->y && s->y - player->y < detection))
 		{
 			if(s->prototype->charge_time==0){
 				s->transform();
@@ -593,8 +609,11 @@ void Transform_If_Player_Above(SpriteClass*s){
 
 void Transform_If_Player_Below(SpriteClass*s){
 	if(player!=nullptr){
+
+		double detection = s->prototype->player_detection.y;
+
 		if ((player->x - s->x < s->prototype->width && player->x - s->x > -s->prototype->width) &&
-			(player->y > s->y && player->y - s->y < 350))
+			(player->y > s->y && player->y - s->y < detection))
 		{
 			if(s->prototype->charge_time==0){
 				s->transform();
@@ -611,8 +630,10 @@ void Transform_If_Player_Below(SpriteClass*s){
 void Jump_If_Player_Above(SpriteClass*s){
 	if (s->jump_timer == 0 && player!=nullptr){
 
+		double detection = s->prototype->player_detection.y;
+
 		if ((player->x - s->x < s->prototype->width && player->x - s->x > -s->prototype->width) &&
-			(player->y < s->y && s->y - player->y < 350)){
+			(player->y < s->y && s->y - player->y < detection)){
 
 			s->jump_timer = 1;
 		}
@@ -622,8 +643,9 @@ void Jump_If_Player_Above(SpriteClass*s){
 
 void Jump_If_Player_in_Front(SpriteClass*s){
 	if (s->jump_timer == 0 && player!=nullptr){
+		double detection = s->prototype->player_detection.x;
 		
-		if ((player->x - s->x < 200 && player->x - s->x > -200) &&
+		if ((player->x - s->x < detection && player->x - s->x > -detection) &&
 			(player->y - s->y < s->prototype->height && player->y - s->y > -s->prototype->height)){
 
 			if ((player->x < s->x && s->flip_x) || (player->x > s->x && !s->flip_x)){
