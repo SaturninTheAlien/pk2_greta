@@ -135,7 +135,7 @@ int WavetextSlow_Draw(const char *text, int fontti, int x, int y) {
 		int xs = (int)(cos_table((i+degree)*4))/11;
 
 		if (Settings.transparent_text) {
-			auto[width, _] = PDraw::font_writealpha_s(fontti,u8c.c_str(),x+pos-xs,y+ys,75);
+			auto[width, _] = PDraw::font_writealpha_s(fontti,u8c.c_str(),x+pos-xs,y+ys,75, 1);
 			pos += width;
 		
 		} else {

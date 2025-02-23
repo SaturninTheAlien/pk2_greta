@@ -247,7 +247,7 @@ std::pair<int,int> PFont::write(int posx, int posy, const char *text)const {
 	return std::make_pair(textWidth, textHeight);
 }
 
-std::pair<int,int> PFont::write_trasparent(int posx, int posy, const char* text, int alpha)const {
+std::pair<int,int> PFont::write_trasparent(int posx, int posy, const char* text, int alpha, int blendMode)const {
 
 	u8 *back_buffer, *txt_buffer;
 	u32 back_w, txt_w;
@@ -316,16 +316,31 @@ std::pair<int,int> PFont::write_trasparent(int posx, int posy, const char* text,
 						color1 = txt_buffer[ix + x + y * txt_w];
 
 						if (color1 != 255) {
-						
-							// Mix colors
-							color1 &= (u8)0b00011111;
-							color2 = back_buffer[fx + fy * back_w];
-							color3 = color2 & (u8)0b11100000;
-							color2-= color3;
-							color1 = (color1 * a1 + color2 * a2)/100;
 
-							back_buffer[fx + fy * back_w] = color1 + color3;
+							if(blendMode==0){
+								// Mix colors
+								color1 &= (u8)0b00011111;
+								color2 = back_buffer[fx + fy * back_w];
+								color3 = color2 & (u8)0b11100000;
+								color2-= color3;
+								color1 = (color1 * a1 + color2 * a2)/100;
 
+								back_buffer[fx + fy * back_w] = color1 + color3;
+							}
+							else if(blendMode==1){
+
+								if((color1 >> 5) == 2){
+									color1 -= 2;
+								}
+
+								color1 &= (u8)0b00011111;
+								color2 = back_buffer[fx + fy * back_w];
+								color3 = color2 & (u8)0b11100000;
+								color2-= color3;
+								color1 = (color1 * a1 + color2 * a2)/100;
+
+								back_buffer[fx + fy * back_w] = color1 + color3;
+							}
 						}
 					}
 				}

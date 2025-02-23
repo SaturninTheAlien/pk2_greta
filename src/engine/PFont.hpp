@@ -36,7 +36,7 @@ public:
 
 	std::pair<int, int> getTextSize(const char* text)const;
 	std::pair<int, int> write(int posx, int posy, const char *text)const;
-	std::pair<int,int> write_trasparent(int posx, int posy, const char* text, int alpha)const;
+	std::pair<int,int> write_trasparent(int posx, int posy, const char* text, int alpha, int blendMode)const;
 	
 	PFont(int img_source, int x, int y, int width, int height, int count);
 	PFont();

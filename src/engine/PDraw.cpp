@@ -756,11 +756,11 @@ std::pair<int, int> font_write(int font_index, const std::string& text, int x, i
 
 }
 
-std::pair<int, int> font_writealpha_s(int font_index, const std::string& text, int x, int y, int alpha) {
+std::pair<int, int> font_writealpha_s(int font_index, const std::string& text, int x, int y, int alpha, int blendMode) {
     if (font_index < 0 || font_index >= (int)fontList.size())
         return std::make_pair(0,0);
 
-    return fontList[font_index]->write_trasparent(x + x_offset, y + y_offset, text.c_str(), alpha);
+    return fontList[font_index]->write_trasparent(x + x_offset, y + y_offset, text.c_str(), alpha, blendMode);
 
 }
 
