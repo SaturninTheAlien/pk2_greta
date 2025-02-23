@@ -1137,9 +1137,10 @@ void UpdateSprite(SpriteClass* sprite){
 								
 								sprite2->damage_taken        = sprite->prototype->damage;
 								sprite2->damage_taken_type = sprite->prototype->damage_type;
-								
-								if ( !(sprite2->isPlayer() && sprite2->invisible_timer) ) //If sprite2 isn't a invisible player
-									sprite->attack1_timer = sprite->prototype->attack1_time; //Then sprite attack??
+							
+								if(!sprite->HasAI(AI_NO_CONTACT_ATTACK_ANIMATION)){
+									sprite->attack1_timer = sprite->prototype->attack1_time;
+								}
 
 								if (sprite2->prototype->type == TYPE_PROJECTILE && sprite2->canDamageOnCollision(sprite)) {
 									sprite->damage_taken = sprite2->prototype->damage;
