@@ -71,6 +71,7 @@ class EpisodeClass {
 		std::string collectable_name = "big apple";
 		bool transformation_offset = false;
 		bool visible_wind = false;
+		bool supermode_music = true;
 
 		ScoresTable scoresTable;
 

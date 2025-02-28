@@ -364,6 +364,7 @@ void EpisodeClass::load() {
 
 			this->transformation_offset = config.getBoolean("potion_transformation_offset", false);
 			this->visible_wind = config.getBoolean("visible_wind", false);
+			this->supermode_music = config.getBoolean("supermode_music", true);
 		}
 		else{
 			PLog::Write(PLog::ERR, "PK2", "Cannot open episode config file.");

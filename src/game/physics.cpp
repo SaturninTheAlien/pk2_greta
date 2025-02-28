@@ -553,7 +553,7 @@ void BonusSpriteCollected(SpriteClass* sprite, SpriteClass* collector){
 			break;
 			case AI_BONUS_SUPERMODE:{
 				collector->super_mode_timer = sprite->prototype->charge_time;
-				if(collector == Game->playerSprite){
+				if(collector == Game->playerSprite && Episode->supermode_music){
 					Game->startSupermodeMusic();
 				}
 				//PSound::play_overlay_music();
