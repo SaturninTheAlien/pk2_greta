@@ -95,8 +95,8 @@ public:
 		gfx_tmenus_on = -1,
 		gfx_tmenus_off = -1,
 		
-		gfx_items_on = -1,
-		gfx_items_off = -1,
+		/*gfx_items_on = -1,
+		gfx_items_off = -1,*/
 
 		//NEW GE keys
 

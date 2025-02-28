@@ -43,8 +43,6 @@ void Settings_Init() {
 	Settings.language = GetDefaultLanguageName();
 
 	Settings.transparent_text = false;
-	Settings.draw_itembar = true;
-
 	Settings.draw_gui = true;
 
 #ifdef __ANDROID__

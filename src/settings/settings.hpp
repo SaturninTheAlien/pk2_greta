@@ -57,7 +57,6 @@ public:
 	std::string language;
 
 	bool  transparent_text = false;
-	bool  draw_itembar = true;
 
 	bool  draw_gui = false;
 	bool  touchscreen_mode = false;

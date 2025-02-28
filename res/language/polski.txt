@@ -94,8 +94,6 @@ Graphics
 *graphics menu title:				ustawienia grafiki
 *graphics menu menus are transparent:		przezroczysty tekst wł
 *graphics menu menus are not transparent:	przezroczysty tekst wył
-*graphics menu item bar is visible:		pasek przedmiotów widoczny
-*graphics menu item bar is not visible:		pasek przedmiotów niewidoczny
 *graphics menu game speed normal:		szybkość gry: normalna
 *graphics menu game speed double:		szybkość gry: podwójna
 

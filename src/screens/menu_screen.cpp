@@ -683,11 +683,6 @@ void MenuScreen::Draw_Menu_Graphics() {
 							save_settings,
 							tekstit->Get_Text(PK_txt.gfx_tmenus_on),
 							tekstit->Get_Text(PK_txt.gfx_tmenus_off));
-
-		this->drawBoolBoxGroup(Settings.draw_itembar,
-							save_settings,
-							tekstit->Get_Text(PK_txt.gfx_items_on),
-							tekstit->Get_Text(PK_txt.gfx_items_off));
 		
 		this->drawBoolBoxGroup(Settings.draw_gui,
 							save_settings,

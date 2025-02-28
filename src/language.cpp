@@ -212,8 +212,6 @@ void Load_Language(const std::string& language) {
 
 	PK_txt.gfx_tmenus_on			= tekstit->searchLocalizedText("graphics menu menus are transparent");
 	PK_txt.gfx_tmenus_off			= tekstit->searchLocalizedText("graphics menu menus are not transparent");
-	PK_txt.gfx_items_on				= tekstit->searchLocalizedText("graphics menu item bar is visible");
-	PK_txt.gfx_items_off			= tekstit->searchLocalizedText("graphics menu item bar is not visible");
 
 	PK_txt.gfx_speed_normal			= tekstit->searchLocalizedText("graphics menu game speed normal");
 	PK_txt.gfx_speed_double			= tekstit->searchLocalizedText("graphics menu game speed double");
