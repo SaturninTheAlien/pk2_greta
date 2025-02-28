@@ -615,7 +615,7 @@ void BonusSpriteCollected(SpriteClass* sprite, SpriteClass* collector){
 			PotionTransformation(collector, sprite->prototype->transformation);
 		}
 
-		if (sprite->prototype->ammo2 != nullptr){
+		if (sprite->prototype->ammo2 != nullptr && collector->ammo2 != sprite->prototype->ammo2){
 			collector->ammo2 = sprite->prototype->ammo2;
 
 			if(!showed_info && collector == Game->playerSprite){
@@ -629,7 +629,7 @@ void BonusSpriteCollected(SpriteClass* sprite, SpriteClass* collector){
 			}
 		}
 
-		if (sprite->prototype->ammo1 != nullptr){
+		if (sprite->prototype->ammo1 != nullptr && collector->ammo1 != sprite->prototype->ammo1){
 			collector->ammo1 = sprite->prototype->ammo1;
 
 			if(!showed_info && collector == Game->playerSprite){
