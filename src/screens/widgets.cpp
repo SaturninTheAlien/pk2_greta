@@ -292,7 +292,7 @@ void LinksMenu::draw(){
 	if(this->expanded){
 
 		y -= 47;
-		if(drawButton(x, y, PDraw::RECT(600, 157, 30, 31), "Docs")){
+		if(drawButton(x, y, PDraw::RECT(600, 157, 30, 31), "Documentation")){
 			OpenBrowser(URL_MAKYUNI);
 		}
 

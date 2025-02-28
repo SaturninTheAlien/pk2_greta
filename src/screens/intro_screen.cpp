@@ -59,10 +59,10 @@ void IntroScreen::Draw(){
 			//PDraw::image_cutcliptransparent(bg_screen, 32, 50, 160, 129, x, y, pros, 255);
 			//PDraw::image_cutcliptransparent(bg_screen, 37, 376, 194, 66, /*120*/x,y + 146, pros, 192);
 
-			PDraw::image_cutcliptransparent(bg_screen, 37, 230, 194 - 37, 442 - 230, x,y , pros, 255);
+			PDraw::image_cutcliptransparent(bg_screen, 37, 230, 194 - 37, 443 - 230, x,y , pros, 255);
 		}
 		else{
-			PDraw::image_cutclip(bg_screen,/*120*/x,y, 37, 230, 194, 442);
+			PDraw::image_cutclip(bg_screen,/*120*/x,y, 37, 230, 194, 443);
 		}
 
 		

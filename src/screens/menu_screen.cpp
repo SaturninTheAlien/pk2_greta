@@ -129,7 +129,7 @@ void MenuScreen::drawBoolBoxGroup(bool& value, bool&changed, const std::string& 
 		value = !value;
 		changed = true;
 	}
-	my += 30;
+	my += 40;//30;
 }
 
 
@@ -236,11 +236,8 @@ int MenuScreen::Draw_Radio(int x, int y, int num, int sel) {
 }
 
 void MenuScreen::Draw_Menu_Main() {
-	int my = 223; //240;
-	
-	if(Episode){
-		my = 200;
-	}
+	int my = Episode==nullptr ? 223 : 240; //200
+
 	Draw_BGSquare(160, 200, 640-180, 380, 224);
 	
 	if (Episode){
@@ -346,7 +343,7 @@ void MenuScreen::Draw_Menu_Links(){
 		OpenBrowser(URL_PISTEGAMEZ);
 	}
 	my += 20;
-	if (Draw_Menu_Text("Makyuni",180,my)){
+	if (Draw_Menu_Text("Documentation",180,my)){
 		OpenBrowser(URL_MAKYUNI);
 	}
 
@@ -820,8 +817,8 @@ void MenuScreen::Draw_Menu_Controls() {
 	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.controls_jump),100,my);my+=20;
 	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.controls_duck),100,my);my+=20;
 	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.controls_walkslow),100,my);my+=20;
-	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.controls_eggattack),100,my);my+=20;
 	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.controls_doodleattack),100,my);my+=20;
+	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.controls_eggattack),100,my);my+=20;
 	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.controls_useitem),100,my);my+=20;
 
 	my = 130;
@@ -830,8 +827,8 @@ void MenuScreen::Draw_Menu_Controls() {
 	PDraw::font_write_line(fontti2,PInput::KeyName(Input->jump),380,my);my+=20;
 	PDraw::font_write_line(fontti2,PInput::KeyName(Input->down),380,my);my+=20;
 	PDraw::font_write_line(fontti2,PInput::KeyName(Input->walk_slow),380,my);my+=20;
-	PDraw::font_write_line(fontti2,PInput::KeyName(Input->attack1),380,my);my+=20;
 	PDraw::font_write_line(fontti2,PInput::KeyName(Input->attack2),380,my);my+=20;
+	PDraw::font_write_line(fontti2,PInput::KeyName(Input->attack1),380,my);my+=20;
 	PDraw::font_write_line(fontti2,PInput::KeyName(Input->open_gift),380,my);my+=20;
 
 	/*
@@ -908,21 +905,24 @@ void MenuScreen::Draw_Menu_Controls() {
 
 	my += 20;
 
-	// TODO - Change this
-	if (Settings.vibration > 0){
-		if (Draw_Menu_Text(PK_txt.controls_vibration_on,100,my)){
-			Settings.vibration = 0;
-			PInput::SetVibration(Settings.vibration);
-			save_settings = true;
+	if(Settings.using_controller == SET_TRUE){
+
+		if (Settings.vibration > 0){
+			if (Draw_Menu_Text(PK_txt.controls_vibration_on,100,my)){
+				Settings.vibration = 0;
+				PInput::SetVibration(Settings.vibration);
+				save_settings = true;
+			}
+		} else {
+			if (Draw_Menu_Text(PK_txt.controls_vibration_off,100,my)){
+				Settings.vibration = 0xFFFF/2;
+				PInput::SetVibration(Settings.vibration);
+				save_settings = true;
+			}
 		}
-	} else {
-		if (Draw_Menu_Text(PK_txt.controls_vibration_off,100,my)){
-			Settings.vibration = 0xFFFF/2;
-			PInput::SetVibration(Settings.vibration);
-			save_settings = true;
-		}
+		my += 20;
 	}
-	my += 20;
+	
 	if(my < 400)my=400;
 
 	if (Draw_Menu_Text(PK_txt.settingsmenu_return,180,my)){
@@ -957,8 +957,8 @@ void MenuScreen::Draw_Menu_Controls() {
 					case 3 : Input->jump      = k; break;
 					case 4 : Input->down      = k; break;
 					case 5 : Input->walk_slow = k; break;
-					case 6 : Input->attack1   = k; break;
-					case 7 : Input->attack2   = k; break;
+					case 6 : Input->attack2   = k; break;
+					case 7 : Input->attack1   = k; break;
 					case 8 : Input->open_gift = k; break;
 					default: Play_MenuSFX(sfx_global.moo_sound,100); break;
 				}
@@ -1016,7 +1016,10 @@ void MenuScreen::Draw_Menu_Episodes() {
 	for (uint i = episode_page*10; i < episode_page*10 + 10; i++) {
 		if (i >= size)
 			break;
-		
+
+		if (episodes[i].is_zip)
+			PDraw::font_write_line(fontti1, episodes[i].zipfile, 450, 95+my);
+
 		if (Draw_Menu_Text( episodes[i].name.c_str(), 110, 90+my)) {
 			if (Game) {
 				delete Game;
@@ -1037,11 +1040,6 @@ void MenuScreen::Draw_Menu_Episodes() {
 			
 			next_screen = SCREEN_MAP;
 		}
-
-		if (episodes[i].is_zip)
-			PDraw::font_write_line(fontti1, episodes[i].zipfile, 450, 95+my);
-		else
-			PDraw::font_write_line(fontti1, "original game", 450, 95+my);
 		
 		my += 20;
 	}
@@ -1060,7 +1058,7 @@ void MenuScreen::Draw_Menu_Language() {
 
 	Draw_BGSquare(110, 130, 640-110, 450, 224);
 
-	PDraw::font_write_line(fontti2,"select a language:",50,100);
+	PDraw::font_write_line(fontti2,"choose a language",50,100);
 
 	int my = 150;
 
