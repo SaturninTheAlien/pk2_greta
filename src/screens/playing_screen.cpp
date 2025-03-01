@@ -451,6 +451,11 @@ void PlayingScreen::Loop(){
 					}					
 					key_delay = 20;
 				}
+
+				if(PInput::Keydown(PInput::F1)){
+					Settings.draw_gui = !Settings.draw_gui;
+					key_delay = 20;
+				}
 			}
 		}
 

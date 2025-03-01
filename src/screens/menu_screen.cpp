@@ -685,16 +685,16 @@ void MenuScreen::Draw_Menu_Graphics() {
 							save_settings,
 							tekstit->Get_Text(PK_txt.gfx_gui_on),
 							tekstit->Get_Text(PK_txt.gfx_gui_off));
-
-		this->drawBoolBoxGroup(Settings.touchscreen_mode,
-							save_settings,
-							tekstit->Get_Text(PK_txt.gfx_touchscreen_on),
-							tekstit->Get_Text(PK_txt.gfx_touchscreen_off));
-
+		
 		this->drawBoolBoxGroup(Settings.double_speed,
 							save_settings,
 							tekstit->Get_Text(PK_txt.gfx_speed_double),
 							tekstit->Get_Text(PK_txt.gfx_speed_normal));
+
+		this->drawBoolBoxGroup(Settings.touchscreen_mode,
+			save_settings,
+			tekstit->Get_Text(PK_txt.gfx_touchscreen_on),
+			tekstit->Get_Text(PK_txt.gfx_touchscreen_off));
 
 		//if (!Settings.touchscreen_mode)
 			if (Draw_Menu_Text(PK_txt.mainmenu_more,100,360)){
@@ -881,6 +881,24 @@ void MenuScreen::Draw_Menu_Controls() {
 
 	my += 30;
 
+	if(Settings.using_controller == SET_TRUE){
+
+		if (Settings.vibration > 0){
+			if (Draw_Menu_Text(PK_txt.controls_vibration_on,100,my)){
+				Settings.vibration = 0;
+				PInput::SetVibration(Settings.vibration);
+				save_settings = true;
+			}
+		} else {
+			if (Draw_Menu_Text(PK_txt.controls_vibration_off,100,my)){
+				Settings.vibration = 0xFFFF/2;
+				PInput::SetVibration(Settings.vibration);
+				save_settings = true;
+			}
+		}
+	}
+	my += 20;
+
 	if (menu_lue_kontrollit == 0){
 		if (Input == &Settings.keyboard) {
 
@@ -905,23 +923,6 @@ void MenuScreen::Draw_Menu_Controls() {
 
 	my += 20;
 
-	if(Settings.using_controller == SET_TRUE){
-
-		if (Settings.vibration > 0){
-			if (Draw_Menu_Text(PK_txt.controls_vibration_on,100,my)){
-				Settings.vibration = 0;
-				PInput::SetVibration(Settings.vibration);
-				save_settings = true;
-			}
-		} else {
-			if (Draw_Menu_Text(PK_txt.controls_vibration_off,100,my)){
-				Settings.vibration = 0xFFFF/2;
-				PInput::SetVibration(Settings.vibration);
-				save_settings = true;
-			}
-		}
-		my += 20;
-	}
 	
 	if(my < 400)my=400;
 
