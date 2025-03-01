@@ -273,7 +273,7 @@ enum {
 
     AI_LOOK_AT_PLAYER, //176
     AI_RUN_AWAY_FROM_SUPERMODE_PLAYER, //177
-   
+      
 
     // AI_154 - AI_200
 
@@ -296,8 +296,9 @@ enum {
 
 
     AI_CHICK = 400,
-    AI_CHICKBOX,
-    AI_DESTRUCTED_NEXT_TO_PLAYER,
+    AI_CHICKBOX, //401
+    AI_DESTRUCTED_NEXT_TO_PLAYER, //402
+    AI_TRANSFORM_IF_DEAD, //403
 
 };
 

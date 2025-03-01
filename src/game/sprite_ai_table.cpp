@@ -311,6 +311,8 @@ AI_Table::AI_Table(){
         Game->event2=true;
     });
 
+    Init_AI(AI_TRANSFORM_IF_DEAD, AI_TRIGGER_DEATH, [](SpriteClass*s){s->transform();});
+
     /**
      * @brief 
      * AIs triggered on damage
