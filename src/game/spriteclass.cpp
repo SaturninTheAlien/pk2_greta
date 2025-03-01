@@ -150,6 +150,10 @@ void SpriteClass::draw(int kamera_x, int kamera_y){
 
 			case 1:
 				PDraw::image_cliptransparent(prototype->frames_mirror[frame], x-l-1, y-h, prototype->blend_alpha, COLOR_NORMAL);
+				break;
+			case 13:
+				PDraw::image_clip_mirror(prototype->frames_mirror[frame], x-l-1, y-h);
+				break;
 
 			default:
 				break;
@@ -177,6 +181,9 @@ void SpriteClass::draw(int kamera_x, int kamera_y){
 				PDraw::image_cliptransparent(prototype->frames[frame], x-l-1, y-h, prototype->blend_alpha, COLOR_NORMAL);
 				break;
 
+			case 13:
+				PDraw::image_clip_mirror(prototype->frames[frame], x-l-1, y-h);
+				break;
 
 			default:
 				break;

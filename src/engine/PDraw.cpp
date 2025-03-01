@@ -459,9 +459,9 @@ int image_cutcliptransparent(int index, int src_x, int src_y, int src_w, int src
 
     drawimage_start(index, imagePix, imagePitch);
     drawscreen_start(screenPix, screenPitch);
-    
-    for (int posx = x_start; posx < x_end; posx++)
-        for (int posy = y_start; posy < y_end; posy++) {
+    for (int posy = y_start; posy < y_end; posy++)
+        for (int posx = x_start; posx < x_end; posx++)
+         {
 
             u8 color1 = imagePix[ posx + imagePitch * posy ];
             if (color1 != 255) {
@@ -488,6 +488,116 @@ int image_cutcliptransparent(int index, int src_x, int src_y, int src_w, int src
     return 0;
 
 }
+
+int image_cutclipmirror(int index, int src_x, int src_y, int src_w, int src_h,
+    int dst_x, int dst_y);
+
+int   image_clip_mirror(int index, int x, int y){
+
+    return image_cutclipmirror(
+        index,
+        0,
+        0,
+        imageList[index]->w,
+        imageList[index]->h, 
+        x,
+        y);
+}
+
+//experimental
+int image_cutclipmirror(int index, int src_x, int src_y, int src_w, int src_h,
+    int dst_x, int dst_y) {
+
+    dst_x += x_offset;
+    dst_y += y_offset;
+
+    int x_start = src_x;
+    if (dst_x < 0) x_start -= dst_x;
+
+    int x_end = src_x + src_w;
+    int dx = dst_x + (src_w - frameBuffer8->w);
+    if (dx > int(x_end)) return -1;
+    if (dx > 0) x_end -= dx;
+
+    if (x_start >= x_end) return -1;
+
+
+    int y_start = src_y;
+    if (dst_y < 0) y_start -= dst_y;
+
+    int y_end = src_y + src_h;
+    int dy = dst_y + (src_h - frameBuffer8->h);
+    if (dy > int(y_end)) return -1;
+    if (dy > 0) y_end -= dy;
+
+    if (y_start >= y_end) return -1;
+
+
+    u8 *imagePix = nullptr;
+    u8 *screenPix = nullptr;
+    u32 imagePitch, screenPitch;
+
+    drawimage_start(index, imagePix, imagePitch);
+    drawscreen_start(screenPix, screenPitch);
+
+    for (int posy = y_start; posy < y_end; posy++)
+        for (int posx = x_start; posx < x_end; posx++){
+        {
+            u8 color1 = imagePix[ posx + imagePitch * posy ];
+            if(color1 == 255)continue;
+
+            int screen_x = posx + dst_x - src_x;
+            int screen_y = posy + dst_y - src_y;
+            int fy = screen_x + screenPitch * screen_y;
+
+            if(color1 < 224 || color1 >= 240){                
+                screenPix[fy] = imagePix[ posx + imagePitch * posy];
+            }
+            else if(color1 == 224){
+                int y2 = dst_y - posy - src_y;
+
+                if(y2>=0){
+                    screenPix[fy] = screenPix[screen_x + screenPitch * y2];
+                }
+            }
+            else if(color1 == 225){
+                int x2 = dst_x - posx - src_x;
+                if(x2 >= 0){
+                    screenPix[fy] = screenPix[x2 + screenPitch * screen_y];
+                }
+            }
+            else if(color1 == 226){
+
+                int x2 = 2*x_end + dst_x - posx - src_x;
+                if(x2 < frameBuffer8->w){
+                    screenPix[fy] = screenPix[x2 + screenPitch * screen_y];
+                }
+            }
+
+            else if(color1 == 225){
+                int x2 = dst_x - posx - src_x;
+                if(x2 >= 0){
+                    screenPix[fy] = screenPix[x2 + screenPitch * screen_y];
+                }
+            }
+            else if(color1 == 227){
+
+                int y2 = 2*y_end + dst_y - posy - src_y;
+                if(y2 < frameBuffer8->h){
+                    screenPix[fy] = screenPix[screen_x + screenPitch * y2];
+                }
+            }
+        }
+    }
+
+    drawscreen_end();
+    drawimage_end(index);
+
+    return 0;
+
+}
+
+
 
 void image_getsize(int index, int& w, int& h) {
 
