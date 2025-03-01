@@ -358,29 +358,36 @@ void PlayingScreen::Draw() {
 	}
 
 	if (Game->paused) {
-
-		PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.game_paused),screen_width/2-82,screen_height/2-9);
-
+		const std::string& txt = tekstit->Get_Text(PK_txt.game_paused);
+		std::pair<int, int> p = PDraw::font_get_text_size(fontti2, txt);
+		PDraw::font_write_line(fontti2,txt,screen_width/2-p.first/2,screen_height/2-p.second/2);
 	}
 
 	if (Game->level_clear) {
-
-		Wavetext_Draw(tekstit->Get_Text(PK_txt.game_clear).c_str(),fontti2,screen_width/2-120,screen_height/2-9);
+		const std::string& txt = tekstit->Get_Text(PK_txt.game_clear);
+		std::pair<int,int> p = PDraw::font_get_text_size(fontti2, txt);
+		Wavetext_Draw(txt.c_str(),fontti2,screen_width/2-p.first/2,screen_height/2-p.second/2);
 
 	} else if (Game->game_over) {
-	
+
 		if (Player_Sprite->energy < 1) {
-			
-			Wavetext_Draw(tekstit->Get_Text(PK_txt.game_ko).c_str(),fontti2,screen_width/2-90,screen_height/2-9-10);
+			const std::string& txt = tekstit->Get_Text(PK_txt.game_ko);
+			std::pair<int, int> p = PDraw::font_get_text_size(fontti2, txt);
+
+			Wavetext_Draw(txt.c_str(),fontti2,screen_width/2-p.first/2,screen_height/2 - p.second);
 
 		} else if (Game->timeout < 1 && Game->has_time) {
 
-			Wavetext_Draw(tekstit->Get_Text(PK_txt.game_timeout).c_str(),fontti2,screen_width/2-67,screen_height/2-9-10);
-		
+			const std::string& txt = tekstit->Get_Text(PK_txt.game_timeout);
+			std::pair<int, int> p = PDraw::font_get_text_size(fontti2, txt);
+
+			Wavetext_Draw(txt.c_str(),fontti2,screen_width/2-p.first/2,screen_height/2 - p.second);
 		}
 
-		Wavetext_Draw(tekstit->Get_Text(PK_txt.game_tryagain).c_str(),fontti2,screen_width/2-75,screen_height/2-9+10);
-	
+		const std::string& txt = tekstit->Get_Text(PK_txt.game_tryagain);
+		std::pair<int, int> p = PDraw::font_get_text_size(fontti2, txt);
+
+		Wavetext_Draw(txt.c_str(),fontti2,screen_width/2-p.first/2,screen_height/2 );
 	}
 
 	/**

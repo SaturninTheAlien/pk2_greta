@@ -2,6 +2,8 @@
 //Pekka Kana 2
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
+#include <iostream>
+
 #include "map_screen.hpp"
 
 #include "engine/PLog.hpp"
@@ -93,7 +95,10 @@ void MapScreen::Draw() {
 	}
 
 	if (Episode->getLevelsNumber() == 0) {
-		PDraw::font_write(fontti2,tekstit->Get_Text(PK_txt.episodes_no_maps),180,290);
+		const std::string& txt = tekstit->Get_Text(PK_txt.episodes_no_maps);
+		std::pair<int, int> p = PDraw::font_get_text_size(fontti2, txt);
+		PDraw::font_write(fontti2, txt, 320 - p.first/2, 240 - p.second);
+		//PDraw::font_write(fontti2,txt,180,290);
 	}
 	
 	if (!going_to_game) {
@@ -375,7 +380,13 @@ void MapScreen::Loop() {
 		//Draw "loading" text
 		PDraw::set_offset(screen_width, screen_height);
 		PDraw::screen_fill(0);
-		PDraw::font_write_line(fontti2, tekstit->Get_Text(PK_txt.game_loading), screen_width / 2 - 82, screen_height / 2 - 9);
+
+		const std::string& txt = tekstit->Get_Text(PK_txt.game_loading);
+		std::pair<int, int> p = PDraw::font_get_text_size(fontti2, txt);
+
+		int x = screen_width / 2 - p.first / 2;
+		int y = screen_height / 2 - p.second / 2;
+		PDraw::font_write(fontti2, txt, x, y);
 		Fade_out(0);
 
 	}
