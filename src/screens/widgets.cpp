@@ -192,6 +192,7 @@ bool TextInput::draw(const std::string& title, int tx_start, int ty_start){
 			for (int c= this->selectedIndex; c < (int)this->buffer.size(); c++){
                 this->buffer[c - 1] = this->buffer[c];
             }
+			this->buffer[(int)this->buffer.size() - 1] = ' ';
             --this->selectedIndex;
 		}
 
