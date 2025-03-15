@@ -160,8 +160,6 @@ void Load_Language(const std::string& language) {
 	// load menu
 	PK_txt.loadgame_title			= tekstit->searchLocalizedText("load menu title");
 	PK_txt.loadgame_info			= tekstit->searchLocalizedText("load menu info");
-	PK_txt.loadgame_episode			= tekstit->searchLocalizedText("load menu episode");
-	PK_txt.loadgame_level			= tekstit->searchLocalizedText("load menu level");
 
 	// save menu
 	PK_txt.savegame_title			= tekstit->searchLocalizedText("save menu title");

@@ -54,8 +54,6 @@ Load Game
 ------------------------------------------------------------------------------------
 *load menu title:			load game
 *load menu info:			click the saved game you want to load
-*load menu episode:			episode: 
-*load menu level:			level: 
 
 Save Game
 ------------------------------------------------------------------------------------
@@ -132,7 +130,6 @@ Player's name
 *player screen type your name:		write your name
 *player screen continue:		ready
 *player screen clear:			clear
-*player default name:			pekka
 
 Episodes
 ------------------------------------------------------------------------------------

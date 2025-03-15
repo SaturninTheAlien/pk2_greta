@@ -474,12 +474,12 @@ void MenuScreen::Draw_Menu_Load() {
 		if (!slot.empty) {
 
 			vali = 0;
-			vali += PDraw::font_write_line(fontti1,tekstit->Get_Text(PK_txt.loadgame_episode),400,150+my);
+			vali += PDraw::font_write_line(fontti1,tekstit->Get_Text(PK_txt.savegame_episode),400,150+my);
 			vali += PDraw::font_write_line(fontti1,slot.episode.name,400+vali,150+my);
 			
 			vali = 0;
 			if (!slot.completed) {
-				vali += PDraw::font_write_line(fontti1,tekstit->Get_Text(PK_txt.loadgame_level),400+vali,160+my);
+				vali += PDraw::font_write_line(fontti1,tekstit->Get_Text(PK_txt.savegame_level),400+vali,160+my);
 				vali += PDraw::font_write_line(fontti1,std::to_string(slot.next_level),400+vali,160+my);
 			} else {
 				vali += PDraw::font_write_line(fontti1,tekstit->Get_Text(PK_txt.savegame_completed), 400+vali,160+my);

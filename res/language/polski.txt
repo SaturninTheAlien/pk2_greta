@@ -49,8 +49,6 @@ Load Game
 ------------------------------------------------------------------------------------
 *load menu title:			wczytaj grę
 *load menu info:			kliknij stan gry który chcesz wczytać
-*load menu episode:			epizod: 
-*load menu level:			poziom: 
 
 Save Game
 ------------------------------------------------------------------------------------
@@ -114,7 +112,6 @@ Player's name
 *player screen type your name:		wpisz imię gracza
 *player screen continue:		dalej
 *player screen clear:			wyczyść
-*player default name:			pekka
 
 Episodes
 ------------------------------------------------------------------------------------

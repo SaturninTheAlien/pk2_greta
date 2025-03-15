@@ -60,8 +60,6 @@ public:
 
 		loadgame_title = -1,
 		loadgame_info = -1,
-		loadgame_episode = -1,
-		loadgame_level = -1,
 
 		savegame_title = -1,
 		savegame_info = -1,
