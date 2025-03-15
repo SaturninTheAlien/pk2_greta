@@ -270,6 +270,9 @@ AI_Table::AI_Table(){
 
     Init_AI(AI_DIE_IF_TOUCHES_WALL, AI_TRIGGER_ALIVE, AI_Functions::DieIfTouchesWall, true, true, true, false);
 
+    Init_AI(AI_TRANSFORM_IF_TOUCHES_FLOOR, AI_TRIGGER_ALIVE, AI_Functions::TransformIfTouchesFloor, true, true, true, true);
+    Init_AI(AI_TRANSFORM_IF_TOUCHES_WALL, AI_TRIGGER_ALIVE, AI_Functions::TransformIfTouchesWall, true, true, true, true);
+
     Init_AI(AI_SELF_TRANSFORMATION_RANDOM_PROTOTYPE, AI_TRIGGER_ALIVE, AI_Functions::Self_Transformation_Random_Prototype, true, true, true, true);
 
     Init_AI(AI_BONUS_CANNOT_BE_PUSHED, AI_TRIGGER_ANYWAY, AI_Functions::CannotBePushed, false, false, true, false);

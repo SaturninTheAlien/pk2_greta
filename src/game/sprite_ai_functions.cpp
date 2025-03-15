@@ -1095,6 +1095,15 @@ void DieIfTouchesWall(SpriteClass*s){
 	}
 }
 
+void TransformIfTouchesWall(SpriteClass*s){
+	if( !s->can_move_right || !s->can_move_left ||
+		(!s->can_move_down && s->b >= 0) ||
+		(!s->can_move_up && s->b <= 0 )) {
+			
+		s->transform();
+	}
+}
+
 void CannotBePushed(SpriteClass*s){
 	s->a = 0;
 	s->x = s->orig_x;

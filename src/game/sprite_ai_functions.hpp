@@ -103,6 +103,10 @@ void NpcCollectBonuses(SpriteClass*s);
 void DieIfTouchesWall(SpriteClass*s);
 void CannotBePushed(SpriteClass*s);
 
+
+void TransformIfTouchesFloor(SpriteClass*s);
+void TransformIfTouchesWall(SpriteClass*s);
+
 /**
  * @brief 
  * AIs triggered on death
