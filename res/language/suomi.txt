@@ -204,7 +204,7 @@ Font Information
 *controls menu use keyboard:            käytä näppäimistöä
 *controls menu use controller:          käytä peliohjainta
 *controls menu vibration on:            peliohjain värisee
-*controls menu vibration off:           peliohjain ei värisee
+*controls menu vibration off:           peliohjain ei värise
 
 *invisibility:        näkymättömyys:
 *supermode:           supertila:

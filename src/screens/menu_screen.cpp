@@ -407,7 +407,7 @@ void MenuScreen::Draw_Menu_Name() {
 		this->playerNameEdit.clear();
 	}
 
-	if (Draw_Menu_Text(PK_txt.mainmenu_exit,tx_start,ty_start + 100)) {
+	if (Draw_Menu_Text(PK_txt.mainmenu_back,tx_start,ty_start + 100)) {
 		this->playerNameEdit.endInput();
 		menu_nyt = MENU_MAIN;
 	}
