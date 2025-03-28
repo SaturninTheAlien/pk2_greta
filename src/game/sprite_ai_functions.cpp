@@ -1115,6 +1115,29 @@ void CannotBePushed(SpriteClass*s){
 	s->x = s->orig_x;
 }
 
+void WienerProcess(SpriteClass*s){
+
+	/**
+	 * If you were wondering what's this:
+	 * https://en.wikipedia.org/wiki/Wiener_process *  
+	 */
+
+	double angle = (double(rand())/RAND_MAX) * 2 * M_PI;
+
+	/** 
+	 * Box–Muller transform
+	 */
+	
+	double u1 =  sqrt(-2 * log((double(rand())/RAND_MAX)));
+	double u2 = (double(rand())/RAND_MAX) * 2 * M_PI;
+
+	double t = u1 * cos(u2) * s->prototype->max_speed / 3.5;
+
+	s -> a = t * cos(angle);
+	s -> b = t * sin(angle);
+}
+
+
 /**
  * @brief 
  * AIs triggered on death

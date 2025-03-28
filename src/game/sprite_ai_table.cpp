@@ -277,6 +277,8 @@ AI_Table::AI_Table(){
 
     Init_AI(AI_BONUS_CANNOT_BE_PUSHED, AI_TRIGGER_ANYWAY, AI_Functions::CannotBePushed, false, false, true, false);
 
+    Init_AI(AI_WIENER_PROCESS, AI_TRIGGER_ALIVE, AI_Functions::WienerProcess, true, false, true, true);
+
 
 
 

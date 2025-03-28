@@ -335,10 +335,24 @@ void SpriteOffscreen(SpriteClass* sprite){
 
 void SpriteOnDamage(SpriteClass* sprite){
 	sprite->energy -= sprite->damage_taken;
-	sprite->damage_timer = DAMAGE_TIME;
+	
+	switch (sprite->damage_taken_type)
+	{
+	case DAMAGE_ELECTRIC:
+		sprite->damage_timer = 6 * DAMAGE_TIME;
+		break;
+	case DAMAGE_INSTANT:
+		sprite->damage_timer = 1;
+		break;
+	default:
+		sprite->damage_timer = DAMAGE_TIME;
+		break;
+	}
+
+	/*sprite->damage_timer = DAMAGE_TIME;
 
 	if (sprite->damage_taken_type == DAMAGE_ELECTRIC)
-		sprite->damage_timer *= 6;
+		sprite->damage_timer *= 6;*/
 
 	Play_GameSFX(sprite->prototype->sounds[SOUND_DAMAGE], 100, (int)sprite->x, (int)sprite->y,
 					sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);

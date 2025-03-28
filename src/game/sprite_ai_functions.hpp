@@ -107,6 +107,8 @@ void CannotBePushed(SpriteClass*s);
 void TransformIfTouchesFloor(SpriteClass*s);
 void TransformIfTouchesWall(SpriteClass*s);
 
+void WienerProcess(SpriteClass*s);
+
 /**
  * @brief 
  * AIs triggered on death
