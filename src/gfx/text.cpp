@@ -59,7 +59,7 @@ void Load_Fonts(PLang* lang) {
 	mLoadFont(lang, fontti4, "font big font shadow", "ScandicBig3.txt");
 }
 
-int CreditsText_Draw(const std::string& text, int font, int x, int y, u32 start, u32 end, u32 time){
+void CreditsText_Draw(const std::string& text, int font, int x, int y, u32 start, u32 end, u32 time){
 	int pros = 100;
 	if (time > start && time < end) {
 
@@ -77,8 +77,14 @@ int CreditsText_Draw(const std::string& text, int font, int x, int y, u32 start,
 		}
 
 	}
-	return 0;
 }
+
+void CreditsText_Draw_Centered(const std::string& text, int font, int y, u32 start, u32 end, u32 time){
+	std::pair<int, int> text_size = PDraw::font_get_text_size(font, text);
+	int x = 320 - text_size.first/2;
+	CreditsText_Draw(text, font, x, y, start, end, time);
+}
+
 
 int WavetextLap_Draw(const char *text, int fontti, int x, int y, float lap) {
 

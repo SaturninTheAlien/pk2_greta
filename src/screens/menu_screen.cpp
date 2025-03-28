@@ -236,7 +236,7 @@ int MenuScreen::Draw_Radio(int x, int y, int num, int sel) {
 }
 
 void MenuScreen::Draw_Menu_Main() {
-	int my = Episode==nullptr ? 223 : 240; //200
+	int my = Episode==nullptr ? 223 : 250; //200
 
 	Draw_BGSquare(160, 200, 640-180, 380, 224);
 	
@@ -1057,7 +1057,8 @@ void MenuScreen::Draw_Menu_Episodes() {
 
 void MenuScreen::Draw_Menu_Language() {
 
-	Draw_BGSquare(110, 130, 640-110, 450, 224);
+	Draw_BGSquare(80, 130, 640-80, 450, 224);
+	//Draw_BGSquare(110, 130, 640-110, 450, 224);
 
 	PDraw::font_write_line(fontti2,"choose a language",50,100);
 
@@ -1071,7 +1072,7 @@ void MenuScreen::Draw_Menu_Language() {
 
 		std::string lang_name = PString::removeSuffix(langlist[i], ".txt");
 
-		if(Draw_Menu_Text(lang_name.c_str(),150,my)) {
+		if(Draw_Menu_Text(lang_name.c_str(),110,my)) { //150
 
 			Settings.language = langlist[i];
 
