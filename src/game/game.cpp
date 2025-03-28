@@ -585,7 +585,7 @@ void GameClass::placeSprites() {
 		}
 
 		this->level.sectors[sector_id]->background->setPalette();
-		this->setCamera();
+		this->setCamera(Episode->legacy_camera_offset);
 	}
 
 	//set GFX
@@ -779,12 +779,18 @@ void GameClass::drawInfoText(){
 	}
 }
 
-void GameClass::setCamera(){
+void GameClass::setCamera(bool legacy_mode){
 
 	LevelSector* sector = this->playerSprite->level_sector;
 
-	this->camera_x = (int)this->playerSprite->x - screen_width/2;
-	this->camera_y = (int)this->playerSprite->y - screen_height/2;
+	if(legacy_mode){
+		this->camera_x = (int)this->playerSprite->x;
+		this->camera_y = (int)this->playerSprite->y;
+	}
+	else{
+		this->camera_x = (int)this->playerSprite->x - screen_width/2;
+		this->camera_y = (int)this->playerSprite->y - screen_height/2;
+	}
 	
 	if (this->camera_x < 0)
 		this->camera_x = 0;

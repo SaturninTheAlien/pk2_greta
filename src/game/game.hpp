@@ -105,7 +105,7 @@ class GameClass {
 	
 		sol::state * lua = nullptr;
 
-		void setCamera();
+		void setCamera(bool legacy_mode=false);
 		void updateCamera();
 
 		/*LevelSector* getLevelSector(u32){
