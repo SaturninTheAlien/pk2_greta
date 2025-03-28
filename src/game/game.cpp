@@ -336,7 +336,10 @@ void GameClass::update(int& debug_active_sprites){
 				u32 sector_id = 0;
 
 				this->selectStart(pos_x, pos_y, sector_id);
-				pos_x += 17;
+
+				if(Episode->legacy_start_offset){
+					pos_y -= playerSprite->prototype->height / 2;
+				}
 
 				this->teleportPlayer(pos_x, pos_y, this->level.sectors[sector_id]);
 				
@@ -575,9 +578,11 @@ void GameClass::placeSprites() {
 		u32 sector_id = 0;
 
 		this->selectStart(pos_x, pos_y, sector_id);
-		pos_x += 17;
-
 		this->playerSprite= this->level.sectors[sector_id]->sprites.addPlayer(player_prototype, pos_x, pos_y);
+
+		if(Episode->legacy_start_offset){
+			this->playerSprite->y -= player_prototype->height / 2;
+		}
 
 		this->level.sectors[sector_id]->background->setPalette();
 		this->setCamera();
@@ -652,7 +657,7 @@ void GameClass::selectStart(double& pos_x, double& pos_y, u32& sector) {
 
 
 	if(startSigns.size()>0){
-		pos_x = startSigns[selected_start].x * 32;
+		pos_x = startSigns[selected_start].x * 32 + 17;
 		pos_y = startSigns[selected_start].y * 32;
 		sector = startSigns[selected_start].sector;
 	}

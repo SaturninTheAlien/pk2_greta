@@ -72,6 +72,7 @@ class EpisodeClass {
 		bool transformation_offset = false;
 		bool visible_wind = false;
 		bool supermode_music = true;
+		bool legacy_start_offset = false;
 
 		ScoresTable scoresTable;
 
