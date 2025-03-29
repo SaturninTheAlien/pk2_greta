@@ -14,8 +14,7 @@ https://github.com/danilolc/pk2
 
 Hard fork by SaturninTheAlien (2023-present)
 
-"Pekka Kana 2 (Pekka the Rooster 2) is a 2D platformer game where you control a rooster, made in the spirit of classic platformers such as Super Mario, SuperTux, Jazz Jackrabbit, Super Frog and so on."
-http://kiwi.mbnet.fi/pistegamez/pk2/
+Pekka Kana 2 (Pekka the Rooster 2) is a 2D platformer game where you control a rooster, made in the spirit of classic platformers such as Super Mario, SuperTux, Jazz Jackrabbit, Super Frog and so on.
 
 This repository contains the source code and resource files for the game Pekka Kana 2 created by Janne Kivilahti in 2003.
 The source code was released by the original author on a forum
@@ -25,6 +24,17 @@ Since then a lot of things changed, including an initial SDL port by Samuli Tuom
 code redesign, bug fixes and new features by SaturninTheAlien (2023 - present)
 
 This game was tested on Windows, GNU/Linux, Mac OS (Apple Silicon).
+
+
+# ⚠️ Warning!
+- If you have **photosensitive epilepsy**, Pekka Kana 2 (including both vanilla and 3rd party content) may not be suitable for you.\
+The game may contain screen shaking, flashing lights, repetitive patterns, and motion effects that could trigger seizures.\
+Proceed at your own risk.
+
+- Pekka Kana 2 (including both vanilla and 3rd party content) contains content that some players may find disturbing, such as **fantasy violence** and other potentially sensitive elements. We are not responsible for any potential psychological distress caused by the game. 
+
+- Pekka Kana 2 was created for entertainment and artistic purposes only. It is not intended to offend anyone.
+
 
 # Binary distibution
 Compiled binaries for MS Windows available here (64-bit):\
