@@ -170,7 +170,12 @@ void PlayingScreen::Draw_InGame_Lower_Menu() {
 
 	if (Game->has_time) {
 		int vali = 0;
-		float shown_time = float(Game->timeout) / 60;
+
+		int timeout = Game->timeout;
+		if(timeout<0)timeout = 0;
+
+
+		float shown_time = float(timeout) / 60;
 		int min = int(shown_time/60);
 		int sek = int(shown_time)%60;
 
