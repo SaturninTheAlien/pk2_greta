@@ -343,7 +343,7 @@ void MenuScreen::Draw_Menu_Links(){
 		OpenBrowser(URL_PISTEGAMEZ);
 	}
 	my += 20;
-	if (Draw_Menu_Text("Documentation",180,my)){
+	if (Draw_Menu_Text("PK2 Fanpage",180,my)){
 		OpenBrowser(URL_MAKYUNI);
 	}
 

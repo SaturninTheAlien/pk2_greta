@@ -286,29 +286,29 @@ void LinksMenu::draw(){
 		--this->btnKeyDelay;
 	}
 
-	if(drawButton(x, y, PDraw::RECT(600, 124, 30, 31), "Links")){
+	if(drawButton(x, y, PDraw::RECT(597, 124, 30, 31), "Links")){
 		this->expanded = !this->expanded;
 	}
 
 	if(this->expanded){
 
 		y -= 47;
-		if(drawButton(x, y, PDraw::RECT(600, 157, 30, 31), "Documentation")){
+		if(drawButton(x, y, PDraw::RECT(597, 157, 30, 31), "PK2 Fanpage")){
 			OpenBrowser(URL_MAKYUNI);
 		}
 
 		y -= 47;
-		if(drawButton(x, y, PDraw::RECT(569, 157, 30, 31), "PisteGamez")){
+		if(drawButton(x, y, PDraw::RECT(566, 157, 30, 31), "PisteGamez")){
 			OpenBrowser(URL_PISTEGAMEZ);
 		}
 
 		y -= 47;
-		if(drawButton(x, y, PDraw::RECT(537, 157, 30, 31), "Proboards")){
+		if(drawButton(x, y, PDraw::RECT(535, 157, 30, 31), "Proboards")){
 			OpenBrowser(URL_PROBOARDS);
 		}
 
 		y -= 47;
-		if(drawButton(x, y, PDraw::RECT(505, 157, 30, 31), "GitHub")){
+		if(drawButton(x, y, PDraw::RECT(504, 157, 30, 31), "GitHub")){
 			OpenBrowser(URL_GITHUB);
 		}
 
