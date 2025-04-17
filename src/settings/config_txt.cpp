@@ -11,6 +11,22 @@
 #include "system.hpp"
 
 static const char default_config[] = 
+
+#ifdef __ANDROID__
+
+"\r\n-- Should the game panic if there's a missing asset?"
+"\r\n*panic_when_missing_assets:    false"
+
+#else
+
+"\r\n-- Should the game panic if there's a missing asset?"
+"\r\n-- It isn't adviced to disable it."
+"\r\n-- Some levels may be unplayable anyway."
+"\r\n-- The best way is to find all the missing assets and rezip the episode!"
+"\r\n*panic_when_missing_assets:    true"
+
+#endif
+
 "\r\n-- Audio Buffer Size"
 "\r\n-- low value = low audio latency; high value = less cpu usage"
 "\r\n-- Default is 1024"
@@ -77,7 +93,12 @@ void Config_txt::readFile(){
 	this->save_slots = conf.getBoolean("use_save_slots", true);
 	this->player = conf.getString("player", "Pekka");
 	this->silent_suicide = conf.getBoolean("silent_suicide", false);
+
+	#ifdef __ANDROID__
+	this->panic_when_missing_assets = conf.getBoolean("panic_when_missing_assets", false);
+	#else
 	this->panic_when_missing_assets = conf.getBoolean("panic_when_missing_assets", true);
+	#endif
 }
 
 
