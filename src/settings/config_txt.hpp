@@ -22,6 +22,7 @@ public:
     bool silent_suicide = false;
     std::string player = "pekka";
 	int audio_buffer_size = 1024;
+    bool panic_when_missing_assets = true;
 };
 
 extern Config_txt config_txt;

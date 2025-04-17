@@ -95,6 +95,11 @@ public:
 
     AI_Table(const AI_Table& src) = delete;
     AI_Table& operator=(const AI_Table& src) = delete;
+    
+
+    AI_Class missing_sprite_AI;
+    AI_Class missing_texture_AI;
+
 private:
     AI_Table();
     void Init_AI(int id,

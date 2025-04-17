@@ -239,6 +239,13 @@ public:
      */
     void    unloadAssets();
 
+    /**
+     * @brief 
+     * Missing sprite placeholder
+     */
+
+    void    initMissingPlaceholder();
+
     
     void     draw(int x, int y, int frame)const;
     bool    hasAI(int AI)const;

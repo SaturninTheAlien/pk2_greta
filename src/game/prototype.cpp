@@ -6,6 +6,9 @@
 #include "engine/PLog.hpp"
 #include "engine/PFilesystem.hpp"
 
+#include "settings/config_txt.hpp"
+#include "gfx/missing_texture.hpp"
+
 #include "exceptions.hpp"
 #include <sstream>
 
@@ -753,94 +756,96 @@ void PrototypeClass::loadPrototypeLegacy(PFile::Path path){
 
 void PrototypeClass::loadAssets(){
 
-	/**
-	 * @brief 
-	 * To fix the bug causing the sprite with attack_time=0 shooting non-stop
-	 */
-	/*if(this->attack1_time==0){
-		this->attack1_time = 1;
-	}
-	if(this->attack2_time==0){
-		this->attack2_time = 1;
-	}*/
-
 	if(this->mAssetsLoaded){
-		std::ostringstream os;
+		return;
+		/*std::ostringstream os;
 		os<<"Assets for sprite: \""<<this->filename<<"\" already loaded!";
-		throw PExcept::PException(os.str());
+		throw PExcept::PException(os.str());*/
 	}
 
 	this->mAssetsLoaded=true;
-
-	if(this->frames_number>0){
-		this->frames.resize(this->frames_number);
-		this->frames_mirror.resize(this->frames_number);
-	}
-	else{
-		throw std::runtime_error("The 0 value of frames_number is not allowed");
-	}
 
 	std::optional<PFile::Path> imagePath = PFilesystem::FindAsset(this->picture_filename,
 	PFilesystem::SPRITES_DIR);
 
 	if(!imagePath.has_value()){
-		throw PExcept::FileNotFoundException(this->picture_filename, PExcept::MISSING_SPRITE_TEXTURE);
+		if(config_txt.panic_when_missing_assets){
+			throw PExcept::FileNotFoundException(this->picture_filename, PExcept::MISSING_SPRITE_TEXTURE);
+		}
+		else{
+			PLog::Write(PLog::ERR, "PK2 Sprites", "Texture \"%s\" not found!", this->picture_filename.c_str());		
+			this->frames_number = 1;
+			this->picture_frame_x = 0;
+			this->picture_frame_y = 0;
+			this->frames.push_back(new_missing_texture_placeholder(173, 0, this->picture_frame_width, this->picture_frame_height));
+			this->frames_mirror.push_back(new_missing_texture_placeholder(0, 173, this->picture_frame_width, this->picture_frame_height));
+			this->AI_f.push_back(SpriteAI::AI_Table::INSTANCE.missing_texture_AI);
+		}
 	}
-
-	int texture = PDraw::image_load(*imagePath, false);
-	if (texture == -1) {
-		std::ostringstream os;
-		os<<"Unable to load sprite texture: \""<<this->picture_filename<<"\"";
-		throw PExcept::PException(os.str());
-	}
-
-	//Change sprite colors
-	if (this->color != COLOR_NORMAL){ 
-
-		int w, h;
-		u8 color;
-		PDraw::image_getsize(texture,w,h);
-
-		u8 *buffer = NULL;
-		u32 width;
-		PDraw::drawimage_start(texture, buffer, width);
-
-		for (int x = 0; x < w; x++)
-			for (int y = 0; y < h; y++)
-				if ((color = buffer[x+y*width]) != 255) {
-					color %= 32;
-					color += this->color;
-					buffer[x+y*width] = color;
-				}
-
-		PDraw::drawimage_end(texture);
-	}
-
-	int frame_x = picture_frame_x;
-	int frame_y = picture_frame_y;
-
-	int texture_width = 0;
-	int texture_height = 0;
-
-	PDraw::image_getsize(texture, texture_width, texture_height);
-
-	//Get each frame
-	for (int frame_i = 0; frame_i < frames_number; frame_i++) {
-
-		if (frame_x + picture_frame_width > texture_width) {
-			frame_y += this->picture_frame_height + 3;
-			frame_x = picture_frame_x;
+	else{
+		if(this->frames_number>0){
+			this->frames.resize(this->frames_number);
+			this->frames_mirror.resize(this->frames_number);
+		}
+		else{
+			throw std::runtime_error("The 0 value of frames_number is not allowed");
 		}
 
-		this->frames[frame_i] = PDraw::image_cut(texture,frame_x,frame_y,picture_frame_width,picture_frame_height); //frames
-		this->frames_mirror[frame_i] = PDraw::image_cut(texture,frame_x,frame_y,picture_frame_width,picture_frame_height); //flipped frames
-		PDraw::image_fliphori(this->frames_mirror[frame_i]);
+		int texture = PDraw::image_load(*imagePath, false);
+		if (texture == -1) {
+			std::ostringstream os;
+			os<<"Unable to load sprite texture: \""<<this->picture_filename<<"\"";
+			throw PExcept::PException(os.str());
+		}
 
-		frame_x += this->picture_frame_width + 3;
-	
+		//Change sprite colors
+		if (this->color != COLOR_NORMAL){ 
+
+			int w, h;
+			u8 color;
+			PDraw::image_getsize(texture,w,h);
+
+			u8 *buffer = NULL;
+			u32 width;
+			PDraw::drawimage_start(texture, buffer, width);
+
+			for (int x = 0; x < w; x++)
+				for (int y = 0; y < h; y++)
+					if ((color = buffer[x+y*width]) != 255) {
+						color %= 32;
+						color += this->color;
+						buffer[x+y*width] = color;
+					}
+
+			PDraw::drawimage_end(texture);
+		}
+
+		int frame_x = picture_frame_x;
+		int frame_y = picture_frame_y;
+
+		int texture_width = 0;
+		int texture_height = 0;
+
+		PDraw::image_getsize(texture, texture_width, texture_height);
+
+		//Get each frame
+		for (int frame_i = 0; frame_i < frames_number; frame_i++) {
+
+			if (frame_x + picture_frame_width > texture_width) {
+				frame_y += this->picture_frame_height + 3;
+				frame_x = picture_frame_x;
+			}
+
+			this->frames[frame_i] = PDraw::image_cut(texture,frame_x,frame_y,picture_frame_width,picture_frame_height); //frames
+			this->frames_mirror[frame_i] = PDraw::image_cut(texture,frame_x,frame_y,picture_frame_width,picture_frame_height); //flipped frames
+			PDraw::image_fliphori(this->frames_mirror[frame_i]);
+
+			frame_x += this->picture_frame_width + 3;
+		
+		}
+
+		PDraw::image_delete(texture);
 	}
-
-	PDraw::image_delete(texture);
 
 	for (int i = 0; i < SPRITE_SOUNDS_NUMBER; i++) {
 
@@ -901,6 +906,30 @@ void PrototypeClass::unloadAssets(){
 
 	this->mAssetsLoaded=false;
 }
+
+void PrototypeClass::initMissingPlaceholder(){
+	this->mAssetsLoaded = true;
+
+	this->type = TYPE_FOREGROUND;
+	this->energy = 1;
+	this->indestructible = true;
+
+	this->weight = 0;
+
+	this->frames_number = 1;
+	this->picture_frame_x = 0;
+	this->picture_frame_y = 0;
+	this->picture_frame_width = 32;
+	this->picture_frame_height = 32;
+
+	this->width = 32;
+	this->height = 32;	
+
+	this->frames.push_back(new_missing_texture_placeholder(78, 0, this->picture_frame_width, this->picture_frame_height));
+	this->frames_mirror.push_back(new_missing_texture_placeholder(0, 78, this->picture_frame_width, this->picture_frame_height));
+	this->AI_f.push_back(SpriteAI::AI_Table::INSTANCE.missing_sprite_AI);
+}
+
 
 void PrototypeClass::draw(int x, int y, int frame)const{
 	PDraw::image_clip(this->frames[frame], x, y);

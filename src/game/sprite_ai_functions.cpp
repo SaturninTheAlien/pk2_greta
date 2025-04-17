@@ -1391,4 +1391,27 @@ void DisplayInfoIfTouchesPlayer(SpriteClass* sprite){
 }
 
 
+void DisplayMissingSpriteWarning(SpriteClass* sprite){
+	if (player_invisible!=nullptr &&
+		(player_invisible->x - sprite->x < 10
+		&& player_invisible->x - sprite->x > -10) &&
+		(player_invisible->y - sprite->y < sprite->prototype->height
+		&& player_invisible->y - sprite->y > -sprite->prototype->height)){
+	
+		Game->showInfo(std::string("Missing sprite!\n") + sprite->prototype->filename + ".spr/.spr2");
+	}
+}
+
+void DisplayMissingTextureWarning(SpriteClass* sprite){
+	if (player_invisible!=nullptr &&
+		(player_invisible->x - sprite->x < 10
+		&& player_invisible->x - sprite->x > -10) &&
+		(player_invisible->y - sprite->y < sprite->prototype->height
+		&& player_invisible->y - sprite->y > -sprite->prototype->height)){
+	
+		Game->showInfo(std::string("Missing texture!\n") + sprite->prototype->picture_filename);
+	}
+}
+
+
 }

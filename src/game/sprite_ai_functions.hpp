@@ -172,4 +172,7 @@ void ProjectileAimAtPlayer(SpriteClass*sprite, SpriteClass*shooter);
 void DisplayInfo(SpriteClass* sprite);
 void DisplayInfoIfTouchesPlayer(SpriteClass*sprite);
 
+void DisplayMissingSpriteWarning(SpriteClass* sprite);
+void DisplayMissingTextureWarning(SpriteClass* sprite);
+
 }

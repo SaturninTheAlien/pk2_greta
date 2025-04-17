@@ -111,6 +111,22 @@ void AI_Table::Init_AI_Projectile(int id, void (*func)(SpriteClass*, SpriteClass
 
 AI_Table::AI_Table(){
 
+    this->missing_sprite_AI.id = -1;
+    this->missing_sprite_AI.trigger = AI_TRIGGER_ANYWAY;
+    this->missing_sprite_AI.apply_to_backgrounds = true;
+    this->missing_sprite_AI.apply_to_bonuses = true;
+    this->missing_sprite_AI.apply_to_creatures = true;
+    this->missing_sprite_AI.apply_to_player = true;
+    this->missing_sprite_AI.func = AI_Functions::DisplayMissingSpriteWarning;
+
+    this->missing_texture_AI.id = -2;
+    this->missing_texture_AI.trigger = AI_TRIGGER_ANYWAY;
+    this->missing_texture_AI.apply_to_backgrounds = true;
+    this->missing_texture_AI.apply_to_bonuses = true;
+    this->missing_texture_AI.apply_to_creatures = true;
+    this->missing_texture_AI.apply_to_player = true;
+    this->missing_texture_AI.func = AI_Functions::DisplayMissingTextureWarning;
+
     /**
      * @brief
      * AIs triggered on each tick

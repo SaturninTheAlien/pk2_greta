@@ -161,8 +161,6 @@ void set_rgb(float r, float g, float b){
 
 int image_new(int w, int h){
     int index = findfreeimage();
-    if (index == -1) return -1;
-
     imageList[index] = SDL_CreateRGBSurface(0, w, h, 8, 0, 0, 0, 0);
     SDL_SetSurfacePalette(imageList[index], game_palette);
     //SDL_SetColorKey(imageList[index], SDL_TRUE, 255);

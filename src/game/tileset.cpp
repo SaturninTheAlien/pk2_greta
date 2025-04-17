@@ -8,6 +8,10 @@
 #include "engine/PDraw.hpp"
 #include "engine/PFile.hpp"
 #include "engine/PFilesystem.hpp"
+#include "engine/PLog.hpp"
+
+#include "settings/config_txt.hpp"
+#include "gfx/missing_texture.hpp"
 
 #include "system.hpp"
 #include "exceptions.hpp"
@@ -23,21 +27,28 @@ void Tileset::clear(){
 void Tileset::loadImage(const std::string& name){
 	std::optional<PFile::Path> path = PFilesystem::FindAsset(name, PFilesystem::TILES_DIR);
 	if(!path.has_value()){
-		throw PExcept::FileNotFoundException(name, PExcept::MISSING_TILESET);
+		if(config_txt.panic_when_missing_assets){
+			throw PExcept::FileNotFoundException(name, PExcept::MISSING_TILESET);
+		}
+		else{
+			PLog::Write(PLog::ERR, "PK2", "Tileset \"%s\" not found!", name.c_str());
+			this->tiles = new_missing_texture_placeholder(174, 0, 320, 480);
+		}		
 	}
+	else{
+		PDraw::image_load(this->tiles, *path, true);
+		if(this->tiles==-1){
+			throw PExcept::PException("Unable to load tileset image!");
+		}
 
-	PDraw::image_load(this->tiles, *path, true);
-	if(this->tiles==-1){
-		throw PExcept::PException("Unable to load tileset image!");
-	}
+		int w=0, h=0;
+		PDraw::image_getsize(this->tiles, w, h);
 
-	int w=0, h=0;
-	PDraw::image_getsize(this->tiles, w, h);
-
-	if(w!=320 || (h!=480 && h!= 608)){
-		std::ostringstream os;
-		os<<"Incorrect tileset size: "<<w<<" x "<<h;
-		throw PExcept::PException(os.str());
+		if(w!=320 || (h!=480 && h!= 608)){
+			std::ostringstream os;
+			os<<"Incorrect tileset size: "<<w<<" x "<<h;
+			throw PExcept::PException(os.str());
+		}
 	}
 
 

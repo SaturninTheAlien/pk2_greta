@@ -77,6 +77,7 @@ void Config_txt::readFile(){
 	this->save_slots = conf.getBoolean("use_save_slots", true);
 	this->player = conf.getString("player", "Pekka");
 	this->silent_suicide = conf.getBoolean("silent_suicide", false);
+	this->panic_when_missing_assets = conf.getBoolean("panic_when_missing_assets", true);
 }
 
 

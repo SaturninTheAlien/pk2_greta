@@ -11,6 +11,8 @@
 #include "exceptions.hpp"
 #include "system.hpp"
 
+#include "settings/config_txt.hpp"
+
 void PrototypesHandler::clear(){
 	this->unloadSpriteAssets();
     for(PrototypeClass*&prot:mPrototypes){
@@ -49,17 +51,27 @@ PrototypeClass* PrototypesHandler::loadPrototype(const std::string& filename_cAs
 		path = PFilesystem::FindAsset(filename, PFilesystem::SPRITES_DIR);
 	}
 	else if(extension==".spr2"){
-		path = PFilesystem::FindAsset(filename, PFilesystem::SPRITES_DIR);
+		path = PFilesystem::FindAsset(filename, PFilesystem::SPRITES_DIR, ".spr");
 	}
 	else if(extension==".spr"){
 		path = PFilesystem::FindAsset(filename + "2", PFilesystem::SPRITES_DIR, ".spr");
 	}
 	else{
-		path = PFilesystem::FindAsset(filename + ".spr2", PFilesystem::SPRITES_DIR);
+		path = PFilesystem::FindAsset(filename + ".spr2", PFilesystem::SPRITES_DIR, ".spr");
 	}
 
 	if(!path.has_value()){
-		throw PExcept::FileNotFoundException(filename_cAsE, PExcept::MISSING_SPRITE_PROTOTYPE);
+		if(config_txt.panic_when_missing_assets){
+			throw PExcept::FileNotFoundException(filename_cAsE, PExcept::MISSING_SPRITE_PROTOTYPE);
+		}
+		else{
+			PLog::Write(PLog::ERR, "PK2 Sprites", "Sprite \"%s/.spr2\" not found!", filename_cAsE.c_str());
+
+			PrototypeClass* placeholder = new PrototypeClass();
+			placeholder->initMissingPlaceholder();
+			placeholder->filename = filename_stem;
+			return placeholder;
+		}		
 	}
 
 	extension = PString::lowercase(std::filesystem::path(path->str()).extension().string());
