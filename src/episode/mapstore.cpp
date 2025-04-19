@@ -63,6 +63,10 @@ static void sortEpisodes(){
 					return true;
 				}
 			}
+			else if(b.name.compare(0, 14, "rooster island")==0){
+				return false;
+			}
+
 			return a.name.compare(b.name)==-1;
 		});
 	}
