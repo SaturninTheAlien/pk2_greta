@@ -23,7 +23,7 @@ private:
     int counting_phase = 0;
     int counting_delay = 0;
 
-    float apples_xoffset = 0.f;
+    //float apples_xoffset = 0.f;
     u32 apples_counted = 0;
     u32 apples_not_counted = 0;
 

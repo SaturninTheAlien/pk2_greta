@@ -28,7 +28,7 @@
 #include "engine/PFilesystem.hpp"
 
 #include <stdexcept>
-
+#include <sstream>
 #include <cstring>
 
 enum {
@@ -161,7 +161,7 @@ int ScoreScreen::Draw_ScoreCount() {
 	}
 	/* --------- */
 
-	int my = 60;
+	int my = 72;
 
 	ShadowedText_Draw(tekstit->Get_Text(PK_txt.score_screen_title), 100, my);
 	my += 30;
@@ -172,7 +172,47 @@ int ScoreScreen::Draw_ScoreCount() {
 	
 	//sprintf(luku, "%i", total_score);
 	ShadowedText_Draw(std::to_string(total_score), 400, my);
-	my += 70;
+
+	my += 42;
+
+	// Draw apples
+	PDraw::set_mask(0, 0, 640, 480);
+	if (Game->apples_count > 0) {
+
+		if(Game->apples_count < 7){
+			for (u32 i = 0; i < Game->apples_count; i++) {
+
+				if(i<apples_counted){
+					if (apples_counted >= Game->apples_count)
+						PDraw::image_cutclip(global_gfx_texture2, 100 + i * 32 + rand()%2, my + rand()%2, 61, 379, 87, 406);
+					else
+						PDraw::image_cutclip(global_gfx_texture2, 100 + i * 32, my, 61, 379, 87, 406);
+				}
+				else{
+					PDraw::image_cutcliptransparent(global_gfx_texture2, 61, 379, 26, 26, 100 + i * 32, my, 20, 0);
+				}
+			}
+		}
+		else{
+
+			std::ostringstream tmp;
+			tmp<<apples_counted << "/"<<Game->apples_count;
+
+			if (apples_counted >= Game->apples_count){
+				PDraw::image_cutclip(global_gfx_texture2, 100 + rand()%2, my + rand()%2, 61, 379, 87, 406);
+				ShadowedText_Draw(tmp.str(), 150 + rand()%2, my + 2 + rand()%2);
+			}
+			else{
+				PDraw::image_cutclip(global_gfx_texture2, 100, my, 61, 379, 87, 406);
+				ShadowedText_Draw(tmp.str(), 150, my + 2);
+			}
+		}
+	}
+	PDraw::reset_mask();
+
+	my += 48;
+
+	//my += 90;
 
 	ShadowedText_Draw(tekstit->Get_Text(PK_txt.score_screen_bonus_score), 100, my);
 	
@@ -196,7 +236,7 @@ int ScoreScreen::Draw_ScoreCount() {
 	
 	//sprintf(luku, "%i", gifts_score);
 	ShadowedText_Draw(std::to_string(gifts_score), 400, my);
-	my += 40;
+	my += 30;
 
 	x = 110;
 	for (int i = 0; i < MAX_GIFTS; i++) {
@@ -207,34 +247,9 @@ int ScoreScreen::Draw_ScoreCount() {
 		}
 
 	}
-	my += 20;
+	my += 10;
 
-	// Draw apples
-	PDraw::set_mask(0, 0, 640, 480);
-	if (Game->apples_count > 0) {
-
-		uint i = 0;
-
-		for (; i < apples_counted; i++) {
-
-			if (apples_counted >= Game->apples_count)
-				PDraw::image_cutclip(global_gfx_texture2, apples_xoffset + i * 32 + rand()%2, my + rand()%2, 61, 379, 87, 406);
-			else
-				PDraw::image_cutclip(global_gfx_texture2, apples_xoffset + i * 32, my, 61, 379, 87, 406);
-
-		}
-		for (; i < Game->apples_count; i++)
-			PDraw::image_cutcliptransparent(global_gfx_texture2, 61, 379, 26, 26, apples_xoffset + i * 32, my, 20, 0);
-		
-	}
-	PDraw::reset_mask();
-
-	if (apples_counted >= 13 && apples_not_counted != 0)
-		apples_xoffset -= 32.0 / 10;
-
-	my += 40;
-
-	if (counting_phase == COUNT_ENDED) {
+	if (counting_phase == COUNT_ENDED && !test_level) {
 		
 		ShadowedText_Draw(tekstit->Get_Text(PK_txt.score_screen_total_score), 100, my);
 		
@@ -267,7 +282,7 @@ int ScoreScreen::Draw_ScoreCount() {
 			my += 25;
 
 		}
-	}
+	}	
 
 	int _text_id = test_level?PK_txt.end_the_end:PK_txt.score_screen_continue;
 	if (Draw_Menu_Text(tekstit->Get_Text(_text_id),15,430)) {
@@ -316,7 +331,7 @@ void ScoreScreen::Init() {
 
 	apples_counted = 0;
 	apples_not_counted = Game->apples_got;
-	apples_xoffset = 100;
+	//apples_xoffset = 100;
 
 	total_score = 0;
 	counting_phase = COUNT_NOTHING;
@@ -380,8 +395,20 @@ void ScoreScreen::Loop() {
 	degree = 1 + degree % 360;
 
 	if (counting_delay == 0) {
-	
-		if (bonus_score < Game->score) {
+
+		if (apples_not_counted > 0) {
+
+			counting_phase = COUNT_APPLES;
+			counting_delay = 10;
+
+			apples_counted++;
+			apples_not_counted--;
+			Play_MenuSFX(Episode->sfx.apple_sound, 70);
+
+			if (apples_not_counted == 0)
+				counting_delay = 20;
+		
+		} else if (bonus_score < Game->score) {
 
 			counting_phase = COUNT_BONUS;
 			counting_delay = 0;
@@ -426,18 +453,6 @@ void ScoreScreen::Loop() {
 			Gifts_Remove(0); 
 			Play_MenuSFX(Episode->sfx.jump_sound, 100);
 
-		} else if (apples_not_counted > 0) {
-
-			counting_phase = COUNT_APPLES;
-			counting_delay = 10;
-
-			apples_counted++;
-			apples_not_counted--;
-			Play_MenuSFX(Episode->sfx.apple_sound, 70);
-
-			if (apples_not_counted == 0)
-				counting_delay = 20;
-		
 		} else {
 			
 			counting_phase = COUNT_ENDED;
@@ -463,8 +478,8 @@ void ScoreScreen::Loop() {
 
 			apples_counted += apples_not_counted;
 			apples_not_counted = 0;
-			if (Game->apples_got > 13)
-				apples_xoffset = 100.0 - (Game->apples_got - 13) * 32;
+			/*if (Game->apples_got > 13)
+				apples_xoffset = 100.0 - (Game->apples_got - 13) * 32;*/
 
 			bonus_score = Game->score;
 

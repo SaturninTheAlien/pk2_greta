@@ -612,6 +612,14 @@ void GameClass::placeSprites() {
 				if(prototype->big_apple){
 					this->apples_count++;
 				}
+				
+				/**
+				 * @brief 
+				 * Count big apples in boxes
+				 */
+				if(prototype->bonus != nullptr && prototype->bonus->big_apple && prototype->bonus_always){
+					this->apples_count += prototype->bonuses_number;
+				}
 
 				/**
 				 * @brief 
