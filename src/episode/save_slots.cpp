@@ -25,7 +25,9 @@ void to_json(nlohmann::json& j,const PK2SaveLevelEntry& entry){
     j["s"] = entry.status;
 	if(entry.level_id >=0 ){
 		j["i"] = entry.level_id;
-	}	
+	}
+
+	j["p"] = entry.best_score;
 }
 
 void from_json(const nlohmann::json& j, PK2SaveLevelEntry& entry){
@@ -37,6 +39,10 @@ void from_json(const nlohmann::json& j, PK2SaveLevelEntry& entry){
 	}
 	else{
 		entry.level_id = -1;
+	}
+
+	if(j.contains("p")){
+		j["p"].get_to(entry.best_score);
 	}
 }
 
@@ -372,7 +378,7 @@ void LoadSlot(EpisodeClass* e, int slot_index){
 
 	
 	e->completed = slot.completed;
-	e->player_score = slot.score;
+
 	e->next_level = slot.next_level;
 	e->player_name = slot.player;
 
@@ -382,11 +388,14 @@ void LoadSlot(EpisodeClass* e, int slot_index){
         for(const PK2SaveLevelEntry& saveEntry: slot.levels){
             if(saveEntry.level_name==levelEntry.fileName){
                 e->updateLevelStatus(level_id, saveEntry.status);
+				//e->player_score += saveEntry.best_score;
+				e->updateLevelBestScore(level_id, saveEntry.best_score);
                 break;
             }
 			//For older saves
 			else if( level_id == saveEntry.level_id ){
 				e->updateLevelStatus(level_id, saveEntry.status);
+				// best scores for levels weren't saved
                 break;
 			}
         }
@@ -409,7 +418,7 @@ void SaveSlot(EpisodeClass* e, int slot_index) {
 
 	slot.episode = e->entry;	
 	slot.completed = e->completed;
-	slot.score = e->player_score;
+	slot.score = e->getPlayerScore();
 	slot.next_level = e->next_level;
 	slot.player = e->player_name;
 
@@ -418,6 +427,7 @@ void SaveSlot(EpisodeClass* e, int slot_index) {
         PK2SaveLevelEntry saveEntry;
         saveEntry.level_name = levelEntry.fileName;
         saveEntry.status = e->getLevelStatus(level_id);
+		saveEntry.best_score = e->getLevelBestScore(level_id);
         ++level_id;
 
         slot.levels.emplace_back(saveEntry);

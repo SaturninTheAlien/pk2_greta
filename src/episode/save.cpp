@@ -54,6 +54,7 @@ void LoadModern(EpisodeClass* episode){
         for(const PK2SaveLevelEntry& saveEntry: saveEntries){
             if(saveEntry.level_name==levelEntry.fileName){
                 episode->updateLevelStatus(level_id, saveEntry.status);
+                episode->updateLevelBestScore(level_id, saveEntry.best_score);
                 break;
             }
         }
@@ -76,6 +77,8 @@ void SaveModern(const EpisodeClass* episode){
         PK2SaveLevelEntry saveEntry;
         saveEntry.level_name = levelEntry.fileName;
         saveEntry.status = episode->getLevelStatus(level_id);
+        saveEntry.best_score = episode->getLevelBestScore(level_id);
+
         ++level_id;
 
         saveEntries.emplace_back(saveEntry);

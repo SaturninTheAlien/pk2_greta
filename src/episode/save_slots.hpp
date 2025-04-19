@@ -28,6 +28,7 @@ public:
 	 * It's only for backwards compatibility with old saves.
 	*/
 	int level_id = -1; 
+	int best_score = 0;
 };
 
 void to_json(nlohmann::json& j,const PK2SaveLevelEntry& entry);

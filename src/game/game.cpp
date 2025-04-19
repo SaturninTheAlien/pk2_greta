@@ -394,7 +394,9 @@ void GameClass::update(int& debug_active_sprites){
 					Player_Sprite->super_mode_timer = 1;
 				}
 				else{
-					this->startSupermodeMusic();
+					if(Episode->supermode_music){
+						this->startSupermodeMusic();
+					}
 					Player_Sprite->super_mode_timer = 3000;
 				}
 				key_delay = 30;

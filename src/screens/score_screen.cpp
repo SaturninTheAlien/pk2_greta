@@ -239,7 +239,7 @@ int ScoreScreen::Draw_ScoreCount() {
 		ShadowedText_Draw(tekstit->Get_Text(PK_txt.score_screen_total_score), 100, my);
 		
 		//sprintf(luku, "%i", Episode->player_score);
-		ShadowedText_Draw(std::to_string(Episode->player_score), 400, my);
+		ShadowedText_Draw(std::to_string(Episode->getPlayerScore()), 400, my);
 		my += 25;
 
 		//if (apples_counted >= Game->apples_count && apples_counted > 0) {
@@ -314,18 +314,6 @@ void ScoreScreen::Init() {
 
 	Game->score += Game->score_increment;
 
-	// Lasketaan pelaajan kokonaispisteet etuk�teen
-	u32 temp_score = 0;
-	temp_score += Game->score;
-	temp_score += Game->timeout / 12; //(Game->timeout / 60) * 5;
-	temp_score += Game->playerSprite->energy * 300;
-	for (int i = 0; i < MAX_GIFTS; i++)
-		if (Gifts_Get(i) != nullptr)
-			temp_score += Gifts_Get(i)->score + 500;
-
-	if (!Game->repeating)
-		Episode->player_score += temp_score;
-
 	apples_counted = 0;
 	apples_not_counted = Game->apples_got;
 	apples_xoffset = 100;
@@ -339,8 +327,27 @@ void ScoreScreen::Init() {
 	gifts_score = 0;
 
 	if(!test_level){
-		/* Check if broken level score and time record */
-		int episode_result = EpisodeScore_Compare(Episode->player_score);
+		
+		//Temp level score to comare with the scores table.
+		int temp_score = 0;
+		temp_score += Game->score;
+		temp_score += Game->timeout / 12; //(Game->timeout / 60) * 5;
+		temp_score += Game->playerSprite->energy * 300;
+		for (int i = 0; i < MAX_GIFTS; i++)
+			if (Gifts_Get(i) != nullptr)
+				temp_score += Gifts_Get(i)->score + 500;
+
+		/*if (!Game->repeating)
+			Episode->player_score += temp_score;*/
+
+		int episode_result = 0;
+		int previous_best_score_for_player = Episode->getLevelBestScore(Game->getLevelID());
+		if(temp_score > previous_best_score_for_player){
+			Episode->updateLevelBestScore(Game->getLevelID(), temp_score);
+
+			episode_result = EpisodeScore_Compare(Episode->getPlayerScore());
+		}
+		
 		int level_result = 
 			LevelScore_Compare(Game->getLevelID(), temp_score, Game->apples_got, Game->level.map_time * TIME_FPS - Game->timeout);
 		

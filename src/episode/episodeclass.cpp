@@ -432,6 +432,27 @@ void EpisodeClass::updateLevelStatus(int level_id, u8 status){
 	}
 }
 
+int EpisodeClass::getLevelBestScore(int level_id)const{
+	if(level_id >= 0 && level_id < (int)this->levels_list_v.size()){
+		return this->levels_list_v[level_id].best_score;
+	}
+	else{
+		return 0;
+	}
+}
+
+void EpisodeClass::updateLevelBestScore(int level_id, int best_score){
+	if(level_id >= 0 && level_id < (int)this->levels_list_v.size()){
+		this->levels_list_v[level_id].best_score = best_score;
+
+		//Count player score for an episode
+		this->player_score = 0;
+		for(const LevelEntry& entry: this->levels_list_v){
+			this->player_score += entry.best_score;
+		}		
+	}
+}
+
 std::string EpisodeClass::getLevelFilename(int level_id,bool executeProxies)const{
 	if(level_id >= 0 && level_id < (int)this->levels_list_v.size()){
 		return this->levels_list_v[level_id].getLevelFilename(executeProxies);

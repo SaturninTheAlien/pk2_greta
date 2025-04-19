@@ -38,6 +38,8 @@ public:
 	u32 number = 0;
 	u8 status = 0;
 
+	int best_score = 0;
+
 	std::optional<std::vector<ProxyLevelEntry>> proxies;
 
 	void loadLevelHeader(PFile::Path levelFile);
@@ -58,7 +60,12 @@ class EpisodeClass {
 		PZip::PZip source_zip;
 
 		std::string player_name;
-		int player_score = 0;
+
+		int getPlayerScore()const{
+			return this->player_score;
+		}
+
+		
 
 		u32 next_level = 1;
 		//u32 level_count = 0;
@@ -97,7 +104,11 @@ class EpisodeClass {
 		}
 
 		u8 getLevelStatus(int level_id)const;
+		int getLevelBestScore(int level_id)const;
+
+
 		void updateLevelStatus(int level_id, u8 status);
+		void updateLevelBestScore(int level_id, int best_score);
 
 		std::string getLevelFilename(int level_id, bool executeProxies=false)const;
 		int findLevelbyFilename(const std::string& levelFilename)const;
@@ -116,6 +127,8 @@ class EpisodeClass {
 
 		bool completed = false;
 	private:
+		int player_score = 0;
+
 		void loadInfo();
 		void loadLevels();
 		u32 highestLevelNumber = 0;

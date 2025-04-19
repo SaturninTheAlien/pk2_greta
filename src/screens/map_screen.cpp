@@ -77,7 +77,7 @@ void MapScreen::Draw() {
 
 	int ysize = ShadowedText_Draw(tekstit->Get_Text(PK_txt.map_total_score), 100, 92);
 	
-	ShadowedText_Draw(std::to_string(Episode->player_score), 100 + ysize + 15, 92);
+	ShadowedText_Draw(std::to_string(Episode->getPlayerScore()), 100 + ysize + 15, 92);
 
 	if (Episode->scoresTable.episodeTopScore > 0) {
 
