@@ -11,11 +11,14 @@
 #include "system.hpp"
 
 static const char default_config[] = 
-
+"\r\n---------------"
 #ifdef __ANDROID__
 
 "\r\n-- Should the game panic if there's a missing asset?"
 "\r\n*panic_when_missing_assets:    false"
+"\r\n"
+"\r\n"
+"\r\n"
 
 #else
 
@@ -24,6 +27,9 @@ static const char default_config[] =
 "\r\n-- Some levels may be unplayable anyway."
 "\r\n-- The best way is to find all the missing assets and rezip the episode!"
 "\r\n*panic_when_missing_assets:    true"
+"\r\n"
+"\r\n"
+"\r\n"
 
 #endif
 
@@ -31,7 +37,6 @@ static const char default_config[] =
 "\r\n-- low value = low audio latency; high value = less cpu usage"
 "\r\n-- Default is 1024"
 "\r\n-- Prefer a power of 2: 512 1024 2048 4096 default"
-"\r\n---------------"
 "\r\n*audio_buffer_size:    default"
 "\r\n"
 "\r\n-- To determine how the links menu should look like"
