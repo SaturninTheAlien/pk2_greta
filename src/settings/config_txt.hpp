@@ -16,17 +16,17 @@ class Config_txt{
 public:
 
     void readFile();
-
     int links_menu = LINKS_MENU_MAIN;
-    bool save_slots = true;
     bool silent_suicide = false;
     std::string player = "pekka";
 	int audio_buffer_size = 1024;
 
 #ifdef __ANDROID__
     bool panic_when_missing_assets = false;
+    bool save_slots = false;
 #else
     bool panic_when_missing_assets = true;
+    bool save_slots = true;
 #endif
 };
 

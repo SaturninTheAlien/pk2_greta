@@ -20,10 +20,16 @@ static const char default_config[] =
 "\r\n"
 "\r\n"
 
+"\r\n-- To use legacy saving system with \"slots\""
+"\r\n*use_save_slots:    false"
+"\r\n"
+"\r\n"
+"\r\n"
+
 #else
 
 "\r\n-- Should the game panic if there's a missing asset?"
-"\r\n-- It isn't adviced to disable it."
+"\r\n-- It is not advised to disable it."
 "\r\n-- Some levels may be unplayable anyway."
 "\r\n-- The best way is to find all the missing assets and rezip the episode!"
 "\r\n*panic_when_missing_assets:    true"
@@ -31,7 +37,27 @@ static const char default_config[] =
 "\r\n"
 "\r\n"
 
+"\r\n-- To use legacy saving system with \"slots\""
+"\r\n*use_save_slots:    true"
+"\r\n"
+"\r\n"
+"\r\n"
+
 #endif
+
+"\r\n-- Player name"
+"\r\n-- Used to save the game progress if \"save slots\" are disabled."
+"\r\n*player:	pekka"
+"\r\n"
+"\r\n"
+"\r\n"
+
+"\r\n-- To determine how the links menu should look like"
+"\r\n-- Available options are: main_menu, bottom, none"
+"\r\n*links_menu:    main_menu"
+"\r\n"
+"\r\n"
+"\r\n"
 
 "\r\n-- Audio Buffer Size"
 "\r\n-- low value = low audio latency; high value = less cpu usage"
@@ -39,28 +65,15 @@ static const char default_config[] =
 "\r\n-- Prefer a power of 2: 512 1024 2048 4096 default"
 "\r\n*audio_buffer_size:    default"
 "\r\n"
-"\r\n-- To determine how the links menu should look like"
-"\r\n-- Available options are: main_menu, bottom, none"
-"\r\n*links_menu:    main_menu"
 "\r\n"
 "\r\n"
-"\r\n"
-"\r\n-- To use legacy saving system with \"slots\""
-"\r\n*use_save_slots:    yes"
-"\r\n"
-"\r\n"
-"\r\n"
-"\r\n-- Current player"
-"\r\n-- Used to save the game progress if \"save slots\" are disabled."
-"\r\n*player:	pekka"
-"\r\n"
-"\r\n"
+
 "\r\n -- Silent suicide"
 "\r\n -- If set to \"yes\" the player has no destruction effect"
 "\r\n -- after committing suicide by pressing delete key"
 "\r\n -- Some players requested it for \"psychological reasons\"."
 "\r\n -- disabled by default"
-"\r\n*silent_suicide:  no"
+"\r\n*silent_suicide:  false"
 "\r\n";
 
 void Config_txt::readFile(){
@@ -95,14 +108,15 @@ void Config_txt::readFile(){
 	}
 	
 	this->audio_buffer_size = conf.getInteger("audio_buffer_size", 1024);
-	this->save_slots = conf.getBoolean("use_save_slots", true);
 	this->player = conf.getString("player", "Pekka");
 	this->silent_suicide = conf.getBoolean("silent_suicide", false);
 
 	#ifdef __ANDROID__
 	this->panic_when_missing_assets = conf.getBoolean("panic_when_missing_assets", false);
+	this->save_slots = conf.getBoolean("use_save_slots", false);
 	#else
 	this->panic_when_missing_assets = conf.getBoolean("panic_when_missing_assets", true);
+	this->save_slots = conf.getBoolean("use_save_slots", true);
 	#endif
 }
 
