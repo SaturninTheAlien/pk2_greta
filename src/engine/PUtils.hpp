@@ -9,6 +9,5 @@
 namespace PUtils {
 
 void GetLanguage(char* lang);
-int Alphabetical_Compare(const char *a, const char *b);
 
 }

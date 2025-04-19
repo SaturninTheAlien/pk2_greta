@@ -21,31 +21,6 @@
 
 namespace PUtils {
 
-int Alphabetical_Compare(const char *a, const char *b) {
-	
-	int a_size = strlen(a);
-	int b_size = strlen(b);
-	
-	int min_size = a_size < b_size? a_size : b_size;
-
-	for (int i = 0; i < min_size; i++) {
-		char ac = a[i] | ' '; //lower case
-		char bc = b[i] | ' ';
-		if (ac > bc) 
-			return 2;
-		if (ac < bc)
-			return 1;
-	}
-
-	if (a_size > b_size)
-		return 1;
-
-	if (a_size < b_size)
-		return 2;
-
-	return 0;
-}
-
 void GetLanguage(char* lang) {
 
 	#if (SDL_COMPILEDVERSION < 2014)

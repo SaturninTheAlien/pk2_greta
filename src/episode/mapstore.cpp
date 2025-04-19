@@ -46,6 +46,30 @@ void from_json(const nlohmann::json& j, episode_entry& entry){
 
 std::vector<episode_entry> episodes;
 
+static void sortEpisodes(){
+	if (episodes.size() > 1){
+		std::stable_sort(episodes.begin(), episodes.end(),
+		[](const episode_entry& a, const episode_entry& b) {
+			/**
+			 * @brief 
+			 * Position "Rooster islands" at the top of the list"
+			 */
+			if(a.name.compare(0, 14, "rooster island")==0){
+
+				if(b.name.compare(0, 14, "rooster island")==0){
+					return a.name.compare(b.name)==-1;
+				}
+				else{
+					return true;
+				}
+			}
+			return a.name.compare(b.name)==-1;
+		});
+	}
+}
+
+
+
 void Search_Episodes() {
 	episodes.clear();
 
@@ -81,15 +105,10 @@ void Search_Episodes() {
 			PLog::Write(PLog::ERR, "PK2", e.what());
 		}
 	}
-	#endif
-
-	if (episodes.size() > 1)
-		std::stable_sort(episodes.begin(), episodes.end(),
-		[](const episode_entry& a, const episode_entry& b) {
-			return PUtils::Alphabetical_Compare(a.name.c_str(), b.name.c_str()) == 1;
-		});
-	
+	#endif	
 	PLog::Write(PLog::DEBUG, "PK2", "Found %i episodes", (int)episodes.size());
+
+	sortEpisodes();
 }
 
 #ifdef __ANDROID__
@@ -142,6 +161,9 @@ void Android_InstallZipEpisode(){
 				e.zipfile = fs::path(*res).filename().string();
 				episodes.push_back(e);
 			}
+
+
+			sortEpisodes();
 		}
 		catch(const std::exception& e){
 			PLog::Write(PLog::ERR, "PK2", e.what());
