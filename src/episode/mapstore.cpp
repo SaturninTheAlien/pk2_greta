@@ -11,7 +11,7 @@
 #include "engine/PLog.hpp"
 #include "engine/PZip.hpp"
 #include "engine/PFilesystem.hpp"
-
+#include "engine/PString.hpp"
 
 #include <cstring>
 #include <algorithm>
@@ -50,24 +50,28 @@ static void sortEpisodes(){
 	if (episodes.size() > 1){
 		std::stable_sort(episodes.begin(), episodes.end(),
 		[](const episode_entry& a, const episode_entry& b) {
+
+			std::string name1 = PString::lowercase(a.name);
+			std::string name2 = PString::lowercase(b.name);
+
 			/**
 			 * @brief 
 			 * Position "Rooster islands" at the top of the list"
 			 */
-			if(a.name.compare(0, 14, "rooster island")==0){
+			if(name1.compare(0, 14, "rooster island")==0){
 
-				if(b.name.compare(0, 14, "rooster island")==0){
-					return a.name.compare(b.name)==-1;
+				if(name2.compare(0, 14, "rooster island")==0){
+					return name1 < name2;
 				}
 				else{
 					return true;
 				}
 			}
-			else if(b.name.compare(0, 14, "rooster island")==0){
+			else if(name2.compare(0, 14, "rooster island")==0){
 				return false;
 			}
 
-			return a.name.compare(b.name)==-1;
+			return name1 < name2;
 		});
 	}
 }
