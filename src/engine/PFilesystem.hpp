@@ -47,6 +47,8 @@ PFile::Path GetDataFileW(const std::string& filename);
 
 std::string GetEpisodeDirectory();
 
+std::string GetScreenshotName();
+
 void SetEpisode(const std::string& episodeName, PZip::PZip* zip_file=nullptr);
 //bool FindAsset_s(std::string& name, const std::string& default_dir, const std::string& alt_extension);
 

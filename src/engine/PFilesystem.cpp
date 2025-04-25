@@ -103,6 +103,7 @@ bool SetDataPath(const std::string& name){
     CreateDirectory( (mDataPath / "scores").string());
     CreateDirectory( (mDataPath / "mapstore").string());
     CreateDirectory( (mDataPath / "saves").string());
+    CreateDirectory( (mDataPath / "screenshots").string());
 
     //TODO
     //return false if the directory is not writeable
@@ -510,6 +511,20 @@ std::vector<std::string> ScanOriginalAssetsDirectory(const std::string& name, co
 	
 	return result;
 #endif
+}
+
+
+std::string GetScreenshotName(){
+
+    fs::path sp = mDataPath /"screenshots";
+    int i = 0;
+    fs::path res;
+    do{
+        res = sp / (std::string("pk2_screenshot_")+std::to_string(i)+".png");
+        ++i;
+    }while (fs::exists(res));
+
+    return res.string();
 }
 
 }

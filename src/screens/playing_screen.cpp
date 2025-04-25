@@ -433,39 +433,42 @@ void PlayingScreen::Loop(){
 
 	if (!skip_frame) {
 
-		if (!skip_frame) {
-			if(key_delay==0 && !Game->game_over&&!Game->level_clear){
-				if (PInput::Keydown(PInput::ESCAPE) || PInput::Keydown(PInput::JOY_START) ||
-				TouchScreenControls.menu || TouchScreenControls.touch) {
-					if(test_level)
-						Fade_Quit();
-					else {
-						next_screen = SCREEN_MENU;
-						degree_temp = degree;
-					}
-					key_delay = 20;
-				}
-
-				if (PInput::Keydown(PInput::I)) {
-
-					if(dev_mode){
-						draw_debug_info = !draw_debug_info;
-					}
-					else{
-						show_fps = !show_fps;
-					}					
-					key_delay = 20;
-				}
-
-				if(PInput::Keydown(PInput::F1)){
-					Settings.draw_gui = !Settings.draw_gui;
-					key_delay = 20;
-				}
-			}
-		}
-
 		this->Draw();
 
+		if(key_delay==0 && !Game->game_over&&!Game->level_clear){
+			if (PInput::Keydown(PInput::ESCAPE) || PInput::Keydown(PInput::JOY_START) ||
+			TouchScreenControls.menu || TouchScreenControls.touch) {
+				if(test_level)
+					Fade_Quit();
+				else {
+					next_screen = SCREEN_MENU;
+					degree_temp = degree;
+				}
+				key_delay = 20;
+			}
+
+			if (PInput::Keydown(PInput::I)) {
+
+				if(dev_mode){
+					draw_debug_info = !draw_debug_info;
+				}
+				else{
+					show_fps = !show_fps;
+				}					
+				key_delay = 20;
+			}
+
+			if(PInput::Keydown(PInput::F1)){
+				Settings.draw_gui = !Settings.draw_gui;
+				key_delay = 20;
+			}
+			else if(PInput::Keydown(PInput::F2)){
+				std::string name = PFilesystem::GetScreenshotName();
+				PLog::Write(PLog::INFO, "PK2", "Taken %s", name.c_str());
+				PDraw::take_screenshot(name);
+				key_delay = 20;
+			}
+		}
 	} else {
 
 		Piste::ignore_frame();

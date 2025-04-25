@@ -91,4 +91,6 @@ void  update();
 int   init(int width, int height);
 int   terminate();
 
+void  take_screenshot(const std::string& name);
+
 }

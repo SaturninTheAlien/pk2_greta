@@ -60,12 +60,6 @@ static int mCurrentpaletteIndex = -1;
 static std::vector<Palette*> paletteList;
 
 int Palette::updateEffect(){
-
-    //return SDL_SetPaletteColors(game_palette, this->colors, 0, 256);
-
-    /*if (IS_UNITY(this->r) || IS_UNITY(this->g) || IS_UNITY(this->b))
-        return SDL_SetPaletteColors(game_palette, this->colors, 0, 256);*/
-
     SDL_Color buff_colors[256];
 
     for (int i = 0; i < 256; i++) {
@@ -84,6 +78,7 @@ int Palette::updateEffect(){
         buff_colors[i].r = r;
         buff_colors[i].g = g;
         buff_colors[i].b = b;
+        buff_colors[i].a = 255;
     }
 
     return SDL_SetPaletteColors(game_palette, buff_colors, 0, 256);
@@ -1011,6 +1006,13 @@ void update() {
 
     SDL_FillRect(frameBuffer8, NULL, 0);
 
+}
+
+
+void  take_screenshot(const std::string& name){
+    SDL_LockSurface(frameBuffer8);
+    IMG_SavePNG(frameBuffer8, name.c_str());
+    SDL_UnlockSurface(frameBuffer8);
 }
 
 
