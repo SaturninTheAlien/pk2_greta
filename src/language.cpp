@@ -50,11 +50,14 @@ const char* GetDefaultLanguageName() {
 	else if(strcmp(loc, "it") == 0)
 		return "italiano.txt";
 	
+	else if(strcmp(loc, "fr") == 0)
+		return "francais.txt";
+
+	else if(strcmp(loc, "nl") == 0)
+		return "nederlands.txt";
+
+
 	/*;
-	//"francais.txt"
-	if(strcmp(loc, "fr") == 0)
-		return "francais2.txt";
-	
 	if(strcmp(loc, "gl") == 0)
 		return "galego.txt";
 	
@@ -72,9 +75,6 @@ const char* GetDefaultLanguageName() {
 	
 	if(strcmp(loc, "mk") == 0)
 		return "macedonian.txt";
-	
-	if(strcmp(loc, "nl") == 0)
-		return "nederlands.txt";
 	
 	//"slovak.txt"
 	if(strcmp(loc, "sk") == 0)
@@ -116,17 +116,10 @@ void Load_Language(const std::string& language) {
 
 	// Setup
 	PK_txt.setup_options			= tekstit->searchLocalizedText("setup options");
-	PK_txt.setup_videomodes			= tekstit->searchLocalizedText("setup video modes");
-	PK_txt.setup_music_and_sounds	= tekstit->searchLocalizedText("setup music & sounds");
-	PK_txt.setup_music				= tekstit->searchLocalizedText("setup music");
-	PK_txt.setup_sounds				= tekstit->searchLocalizedText("setup sounds");
-	PK_txt.setup_language			= tekstit->searchLocalizedText("setup language");
 	PK_txt.setup_play				= tekstit->searchLocalizedText("setup play");
-	PK_txt.setup_exit				= tekstit->searchLocalizedText("setup exit");
 
 	// Intro
 	PK_txt.intro_presents			= tekstit->searchLocalizedText("intro presents");
-	//PK_txt.intro_a_game_by			= tekstit->searchLocalizedText("intro a game by");
 	PK_txt.intro_original			= tekstit->searchLocalizedText("intro original character design");
 	PK_txt.intro_tested_by			= tekstit->searchLocalizedText("intro tested by");
 	PK_txt.intro_thanks_to			= tekstit->searchLocalizedText("intro thanks to");
@@ -223,7 +216,6 @@ void Load_Language(const std::string& language) {
 	PK_txt.playermenu_type_name		= tekstit->searchLocalizedText("player screen type your name");
 	PK_txt.playermenu_continue		= tekstit->searchLocalizedText("player screen continue");
 	PK_txt.playermenu_clear			= tekstit->searchLocalizedText("player screen clear");
-	//PK_txt.player_default_name		= tekstit->searchLocalizedText("player default name");
 
 	PK_txt.episodes_choose_episode	= tekstit->searchLocalizedText("episode menu choose episode");
 	PK_txt.episodes_no_maps			= tekstit->searchLocalizedText("episode menu no maps");

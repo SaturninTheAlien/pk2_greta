@@ -21,14 +21,8 @@ public:
 	}
 
 	int setup_options = -1,
-		setup_videomodes = -1,
-		setup_music_and_sounds = -1,
-		setup_music = -1,
-		setup_sounds = -1,
-		setup_language = -1,
 		setup_play = -1,
-		setup_exit = -1,
-
+		
 		intro_presents = -1,
 		intro_game_created_by = -1,
 		intro_game_improved_by = -1,

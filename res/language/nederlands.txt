@@ -1,0 +1,175 @@
+Intro
+------------------------------------------------------------------------------------
+*intro presents:                  2003 presenteert
+*intro game created by:           een spel van
+*intro game improved by:          verbeterd door
+*intro original character design: hoofdpersonage van
+*intro tested by:                 getest door
+*intro thanks to:                 met dank aan
+*intro community:                 en de hele gemeenschap
+*intro translation:               vertaald door
+*intro translator:                rolinka van der garde
+
+Main Menu
+------------------------------------------------------------------------------------
+*main menu continue:    hervat
+*main menu new game:    start nieuw spel
+*main menu save game:   sla spel op
+*main menu load game:   laad spel
+*setup play:            speel
+*main menu links:       links
+*main menu map:         kaart
+*main menu exit game:   sluit
+
+*setup options:         opties
+*main menu controls:    besturing
+*main menu graphics:    graphics
+*main menu sounds:      audio
+
+*back to main menu:     hoofdmenu
+*back to settings menu: optiesmenu
+
+Game Controls
+------------------------------------------------------------------------------------
+*controls menu title:          besturing
+*controls menu move left:      ga links
+*controls menu move right:     ga rechts
+*controls menu jump:           spring
+*controls menu duck:           buk je
+*controls menu walk slow:      vertraag
+*controls menu doodle attack:  kukel
+*controls menu egg attack:     leg ei
+*controls menu use item:       gebruik kado
+
+*controls menu edit:           configureer
+*controls menu default:        zet terug
+*controls menu use keyboard:   gebruik toetsenbord
+*controls menu use controller: gebruik controller
+*controls menu vibration on:   trilling: aan
+*controls menu vibration off:  trilling: uit
+
+Graphics
+------------------------------------------------------------------------------------
+*graphics menu title:                     graphics
+*graphics menu menus are not transparent: teksten: normaal
+*graphics menu menus are transparent:     teksten: doorzichtig
+*graphics menu gui on:                    hud: ingeschakeld
+*graphics menu gui off:                   hud: uitgeschakeld
+*graphics menu game speed normal:         snelheid: normaal
+*graphics menu game speed double:         snelheid: dubbel
+*graphics menu touchscreen off:           aanraakscherm: uit
+*graphics menu touchscreen on:            aanraakscherm: aan
+
+*main menu more:                          meer
+*main menu back:                          terug
+*graphics menu fullscreen on:             volledig scherm: aan
+*graphics menu fullscreen off:            volledig scherm: uit
+*graphics menu game speed:                snelheid
+*graphics menu texture filtering:         filter
+
+Sounds
+------------------------------------------------------------------------------------
+*sounds menu title:        audio
+*sounds menu sfx volume:   @geluidsvolume
+*sounds menu music volume: @muziekvolume
+*sounds menu less:         lager
+*sounds menu more:         hoger
+
+Start New Game
+------------------------------------------------------------------------------------
+*player screen type your name: typ je naam
+*player screen continue:       ga door
+*player screen clear:          wis
+
+*episode menu choose episode:  kies een episode
+*episode menu no maps:         waar zijn de nivos?!
+
+Save & Load Game
+------------------------------------------------------------------------------------
+*save menu title:             sla spel op
+*save menu info:              klik op het slot waar je het spel wilt opslaan
+*load menu title:             laad spel
+*load menu info:              klik op het opgeslagen spel dat je wilt laden
+
+*save menu episode:
+*save menu level:             nivo 
+*save menu empty slot:        leeg
+*save menu episode completed: gehaald
+
+Map
+------------------------------------------------------------------------------------
+*map screen total score: score:
+*map screen next level:  volgende nivo:
+*episode best player:    @@episodekampioen:
+*episode hiscore:        @@score:
+*level best player:      beste haan:
+*level hiscore:          score:
+*level fastest player:   snelste haan:
+*level best time:        tijd:
+
+Game
+------------------------------------------------------------------------------------
+*energy:            energie:
+*score:             punten:
+*attack 1:          kukeleku:
+*attack 2:          ei:
+*invisibility:      spookmodus:
+*supermode:         stermodus:
+*items:             @kados:
+*game time:         tijd:
+*keys:              sleutels:
+
+*loading:           @@wacht even...
+*game paused:       @@koffiepauze...
+*level clear:       nivo gehaald!
+*knocked out:       je bent de pijp uit!
+*time out:          de tijd is om!
+*try again:         probeer opnieuw!
+
+*new doodle attack: laat je kukeleku horen!
+*new egg attack:    roerei voor iedereen!
+*new item:          hier is een kado voor je!
+*locks open:        alle sloten zijn open!
+
+Scoring
+------------------------------------------------------------------------------------
+*score screen title:               nivo gehaald!
+*score screen level score:         eindscore
+*score screen bonus score:         nivopunten
+*score screen time score:          tijdbonus
+*score screen energy score:        energiebonus
+*score screen item score:          kadosbonus
+*score screen total score:         totaalscore
+
+*score screen new level hiscore:   je hebt het nivorecord gebroken!
+*score screen new level best time: je bent de snelste haan!
+*score screen new episode hiscore: je bent de episodekampioen!
+*score screen continue:            kaart
+
+The End
+------------------------------------------------------------------------------------
+*end congratulations: gefeliciteerd!
+*end chickens saved:  je hebt de kippen gered!
+*end the end:         einde
+
+Info Signs
+------------------------------------------------------------------------------------
+*info01: gebruik de megafoon tegen vijanden!
+*info02: bombardeer je vijanden met eieren!
+*info03: zoek de uitgang!
+*info04: verzamel alle sleutels om nieuwe gebieden te ontgrendelen.
+*info05: activeer de knop door erop te springen.
+*info06: de groene knop verplaatst alle groene pijlen.
+*info07: de blauwe knop verplaatst alle blauwe pijlen.
+*info08: de oranje knop schakelt het vuur uit.
+*info09: je kunt kados op elk moment gebruiken.
+*info10: veren herstellen energie.
+*info11: teletransporters zijn onvoorspelbaar! verdwaal niet!
+*info12: knockouts en bonussen leveren je punten op.
+*info13: zoek altijd naar verborgen bonussen!
+*info14: een sleutel kan een slot openen door hem simpelweg aan te raken.
+*info15: kijk uit! er kunnen vallen zijn!
+*info16: schiet op! de tijd dringt!
+*info17: pas op voor gehypnotiseerde dieren!
+*info18: pas op voor harde wind!
+*info19: je kippen zijn in gevaar!

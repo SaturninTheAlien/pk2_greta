@@ -1,13 +1,8 @@
 Setup 
 ------------------------------------------------------------------------------------
 *setup options:				Settings
-*setup video modes:			Video modes
-*setup music & sounds:			Music and sound effects
-*setup music:				Music
-*setup sounds:				Sound effects
 *setup language:			Choose language
 *setup play:				Play
-*setup exit:				Exit
 
 Intro
 ------------------------------------------------------------------------------------

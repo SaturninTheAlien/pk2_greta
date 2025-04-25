@@ -1,0 +1,175 @@
+Intro
+------------------------------------------------------------------------------------
+*intro presents:                  2003 présente
+*intro game created by:           un jeu par
+*intro game improved by:          amélioré par
+*intro original character design: personnage créé par
+*intro tested by:                 testé par
+*intro thanks to:                 merci å
+*intro community:                 et toute la communauté
+*intro translation:               traduit par
+*intro translator:                rolande jardinier
+
+Main Menu
+------------------------------------------------------------------------------------
+*main menu continue:    continuer
+*main menu new game:    nouvelle partie
+*main menu save game:   sauver partie
+*main menu load game:   charger partie
+*setup play:            jouer
+*main menu links:       liens
+*main menu map:         carte
+*main menu exit game:   sortir
+
+*setup options:         options
+*main menu controls:    controles
+*main menu graphics:    graphisme
+*main menu sounds:      audio
+
+*back to main menu:     menu principal
+*back to settings menu: menu d'options
+
+Game Controls
+------------------------------------------------------------------------------------
+*controls menu title:          controles
+*controls menu move left:      aller a gauche
+*controls menu move right:     aller a droite
+*controls menu jump:           sauter
+*controls menu duck:           se pencher
+*controls menu walk slow:      ralentir
+*controls menu doodle attack:  coriquer
+*controls menu egg attack:     pondre en oeuf
+*controls menu use item:       ouvrir en cadeau
+
+*controls menu edit:           modifier
+*controls menu default:        restaurer
+*controls menu use keyboard:   utiliser le clavier
+*controls menu use controller: utiliser le controleur
+*controls menu vibration on:   vibration active
+*controls menu vibration off:  vibration inactive
+
+Graphics
+------------------------------------------------------------------------------------
+*graphics menu title:                     graphisme
+*graphics menu menus are not transparent: textes normaux
+*graphics menu menus are transparent:     textes transparents
+*graphics menu gui on:                    ath visible
+*graphics menu gui off:                   ath invisible
+*graphics menu game speed normal:         vitesse normale
+*graphics menu game speed double:         vitesse double
+*graphics menu touchscreen off:           ecran tactile inactif
+*graphics menu touchscreen on:            ecran tactile actif
+
+*main menu more:                          plus
+*main menu back:                          retour
+*graphics menu fullscreen on:             plein ecran actif
+*graphics menu fullscreen off:            plein ecran inactif
+*graphics menu game speed:                vitesse
+*graphics menu texture filtering:         filtrage
+
+Sounds
+------------------------------------------------------------------------------------
+*sounds menu title:        audio
+*sounds menu sfx volume:   volume des sons
+*sounds menu music volume: volume de la musique
+*sounds menu less:         moins
+*sounds menu more:         plus
+
+Start New Game
+------------------------------------------------------------------------------------
+*player screen type your name: tape ton nom
+*player screen continue:       avancer
+*player screen clear:          effacer
+
+*episode menu choose episode:  choisis un episode
+*episode menu no maps:         ou sont les niveaux?!
+
+Save & Load Game
+------------------------------------------------------------------------------------
+*save menu title:             sauver partie
+*save menu info:              clique sur la position oú tu souhaites sauver
+*load menu title:             charger partie
+*load menu info:              clique sur la sauvegarde que tu souhaites charger
+
+*save menu episode:
+*save menu level:             niveau 
+*save menu empty slot:        vide
+*save menu episode completed: réussi
+
+Map
+------------------------------------------------------------------------------------
+*map screen total score: score:
+*map screen next level:  prochain niveau:
+*episode best player:    @@champion en titre:
+*episode hiscore:        @@score:
+*level best player:      meilleur coq:
+*level hiscore:          score:
+*level fastest player:   le plus rapide:
+*level best time:        temps:
+
+Game
+------------------------------------------------------------------------------------
+*energy:            énergie:
+*score:             points:
+*attack 1:          coricot:
+*attack 2:          oeuf:
+*invisibility:      mode ombre:
+*supermode:         mode éclat:
+*items:             @cadeaux:
+*game time:         temps:
+*keys:              clés:
+
+*loading:           @@chargement...
+*game paused:       @@pause...
+*level clear:       niveau reussi!
+*knocked out:       t'as casse ta pipe!
+*time out:          le temps s'est ecoule!
+*try again:         essaye encore!
+
+*new doodle attack: fais entendre tes coricots!
+*new egg attack:    oeufs frais du jour!
+*new item:          un petit cadeau pour toi!
+*locks open:        toutes les serrures sont ouvertes!
+
+Scoring
+------------------------------------------------------------------------------------
+*score screen title:               niveau reussi!
+*score screen level score:         score final
+*score screen bonus score:         points du niveau
+*score screen time score:          bonus du temps
+*score screen energy score:        @@...d'energie
+*score screen item score:          @...des cadeaux
+*score screen total score:         score total
+
+*score screen new level hiscore:   t'as battu le record du niveau!
+*score screen new level best time: t'es le coq le plus rapide!
+*score screen new episode hiscore: t'es le champion de l'episode!
+*score screen continue:            carte
+
+The End
+------------------------------------------------------------------------------------
+*end congratulations: felicitations!
+*end chickens saved:  t'as sauvé les poules!
+*end the end:         fin
+
+Info Signs
+------------------------------------------------------------------------------------
+*info01: utilise le mégaphone contre les ennemis!
+*info02: bombarde les ennemis avec tes oeufs!
+*info03: trouve la sortie!
+*info04: les serrures s'ouvriront en récupérant toutes les clés.
+*info05: saute sur les boutons pour les activer.
+*info06: le bouton vert déplace les fléches vertes.
+*info07: le bouton bleu déplace les fléches bleues.
+*info08: le bouton orange éteint le feu.
+*info09: tu peux ouvrir les cadeaux quand tu le souhaites.
+*info10: les plumes renvoient de l'énergie.
+*info11: les téléporteurs sont imprévisibles! ne te perds pas!
+*info12: les knockouts et les bonus te rapportent des points.
+*info13: cherche toujours les bonus cachés!
+*info14: une serrure s'ouvre si une clé la touche.
+*info15: attention aux piéges! hein...
+*info16: dépéche-toi! le temps presse!
+*info17: attention aux animaux hypnotisés!
+*info18: attention au vent fort!
+*info19: les poules sont en danger!
