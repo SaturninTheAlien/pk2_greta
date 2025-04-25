@@ -303,6 +303,33 @@ void PlayingScreen::Draw_InGame_UI(){
 	Game->drawInfoText();
 }
 
+void PlayingScreen::drawDevStuff(){
+	if (this->draw_debug_info)
+		Draw_InGame_DebugInfo();
+	else {
+		if (dev_mode)
+			Draw_InGame_DevKeys();
+		if (test_level)
+			PDraw::font_write_line(fontti1, "testing level", 0, screen_height - 20);
+		if (show_fps) {
+			
+			int fps = Piste::get_fps();
+			int txt_size;
+
+			if (fps >= 100)
+				txt_size = PDraw::font_write_line(fontti1, "fps:", 570, 48);
+			else
+				txt_size = PDraw::font_write_line(fontti1, "fps: ", 570, 48);
+			
+			PDraw::font_write_line(fontti1, std::to_string(fps), 570 + txt_size, 48);
+		
+		}
+		if (speedrun_mode) {
+			PDraw::font_write_line(fontti1, std::to_string(Game->frame_count), 570, 38);
+		}
+	}
+}
+
 void PlayingScreen::Draw() {
 	SpriteClass* Player_Sprite = Game->playerSprite;
 	LevelSector* sector = Player_Sprite->level_sector;
@@ -336,32 +363,6 @@ void PlayingScreen::Draw() {
 		Draw_InGame_UI();
 	}
 	
-
-	if (draw_debug_info)
-		Draw_InGame_DebugInfo();
-	else {
-		if (dev_mode)
-			Draw_InGame_DevKeys();
-		if (test_level)
-			PDraw::font_write_line(fontti1, "testing level", 0, screen_height - 20);
-		if (show_fps) {
-			
-			int fps = Piste::get_fps();
-			int txt_size;
-
-			if (fps >= 100)
-				txt_size = PDraw::font_write_line(fontti1, "fps:", 570, 48);
-			else
-				txt_size = PDraw::font_write_line(fontti1, "fps: ", 570, 48);
-			
-			PDraw::font_write_line(fontti1, std::to_string(fps), 570 + txt_size, 48);
-		
-		}
-		if (speedrun_mode) {
-			PDraw::font_write_line(fontti1, std::to_string(Game->frame_count), 570, 38);
-		}
-	}
-
 	if (Game->paused) {
 		const std::string& txt = tekstit->Get_Text(PK_txt.game_paused);
 		std::pair<int, int> p = PDraw::font_get_text_size(fontti2, txt);
@@ -469,6 +470,8 @@ void PlayingScreen::Loop(){
 				key_delay = 20;
 			}
 		}
+
+		this->drawDevStuff();
 	} else {
 
 		Piste::ignore_frame();

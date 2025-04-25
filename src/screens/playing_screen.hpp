@@ -16,6 +16,8 @@ public:
     void Loop();
     void Draw();
 private:
+    void drawDevStuff();
+
     void Draw_InGame_DebugInfo();
     void Draw_InGame_DevKeys();
     void Draw_InGame_Gifts();
