@@ -79,16 +79,13 @@ static const char default_config[] =
 void Config_txt::readFile(){
     PLang conf = PLang();
 	PFile::Path path = PFilesystem::GetDataFileW("config.txt");
-	
-	bool ok = conf.Read_File(path);
-	if (!ok) {
-		
+
+	if(!path.exists() || !conf.Read_File(path)){
 		PFile::RW rw = path.GetRW2("w");
 		rw.write(default_config, sizeof(default_config) - 1);
 		rw.close();
 		return;
 	}
-
 
 	int idx = conf.Search_Id("links_menu");
 	if(idx!=-1){

@@ -396,6 +396,10 @@ void PlayingScreen::Draw() {
 		Wavetext_Draw(txt.c_str(),fontti2,screen_width/2-p.first/2,screen_height/2 );
 	}
 
+	if(Settings.draw_gui){
+		this->drawDevStuff();
+	}
+
 	/**
 	 * @brief 
 	 * For debugging touchscreen controls
@@ -470,8 +474,6 @@ void PlayingScreen::Loop(){
 				key_delay = 20;
 			}
 		}
-
-		this->drawDevStuff();
 	} else {
 
 		Piste::ignore_frame();
