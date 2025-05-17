@@ -179,7 +179,7 @@ int ScoreScreen::Draw_ScoreCount() {
 	PDraw::set_mask(0, 0, 640, 480);
 	if (Game->apples_count > 0) {
 
-		if(Game->apples_count < 7){
+		if(Game->apples_count < 11){
 			for (u32 i = 0; i < Game->apples_count; i++) {
 
 				if(i<apples_counted){
@@ -284,7 +284,7 @@ int ScoreScreen::Draw_ScoreCount() {
 		}
 	}	
 
-	int _text_id = test_level?PK_txt.end_the_end:PK_txt.score_screen_continue;
+	int _text_id = test_level?PK_txt.mainmenu_exit:PK_txt.score_screen_continue;
 	if (Draw_Menu_Text(tekstit->Get_Text(_text_id),15,430)) {
 		going_to_map = true;
 		PSound::set_musicvolume(0);
