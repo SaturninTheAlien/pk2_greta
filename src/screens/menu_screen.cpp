@@ -662,7 +662,8 @@ void MenuScreen::Draw_Menu_Graphics() {
 
 	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.gfx_title),50,90);
 
-	if(moreOptions){
+	if(moreOptions){  // settings: graphics: 2nd page
+		bool wasShowingFPS = Settings.show_fps;
 		int  oldfps = Settings.fps;
 
 #ifndef __ANDROID__
@@ -681,6 +682,21 @@ void MenuScreen::Draw_Menu_Graphics() {
 		}
 #endif
 
+		my += 40;
+
+
+		if (Settings.show_fps){
+			if (drawMenuTextS("fps is visible",180,my)){
+				Settings.show_fps = false;
+			}
+		} else{
+			if (drawMenuTextS("fps is not visible",180,my)){
+				Settings.show_fps = true;
+			}
+		}
+		if (PK2gui::Draw_BoolBox(100, my, Settings.show_fps, true, mousePressed)) {
+			Settings.show_fps = !Settings.show_fps;
+		}
 		my += 40;
 
 		//TODO - Fix touch position when screen fit
@@ -748,6 +764,10 @@ void MenuScreen::Draw_Menu_Graphics() {
 			PRender::set_fullscreen(Settings.isFullScreen);
 		}
 #endif
+		if(wasShowingFPS != Settings.show_fps) {
+			save_settings = true;
+			show_fps = Settings.show_fps;
+		}
 
 		if (Settings.fps != oldfps) {
 			int ret = -1;
@@ -776,7 +796,7 @@ void MenuScreen::Draw_Menu_Graphics() {
 		}
 
 	}
-	else {
+	else {               // settings: graphics: 1st page
 		this->my = 150;
 
 		this->drawBoolBoxGroup(Settings.transparent_text,

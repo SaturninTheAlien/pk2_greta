@@ -37,6 +37,7 @@ void PK2SETTINGS::setDefault(){
 #endif
 
 	this->fps = SETTINGS_60FPS;//SETTINGS_VSYNC;
+	this->show_fps = false;
 	this->isFullScreen = true;
 	this->double_speed = false;
 	this->shader_type = SETTINGS_MODE_LINEAR;	
@@ -56,6 +57,7 @@ void from_json(const nlohmann::json& j, PK2SETTINGS& s){
 	j.at("gui").get_to(s.draw_gui);
 	j.at("touchscreen").get_to(s.touchscreen_mode);
 	j.at("fps").get_to(s.fps);
+	j.at("show_fps").get_to(s.show_fps);
 	j.at("fullscreen").get_to(s.isFullScreen);
 	j.at("double_speed").get_to(s.double_speed);
 
@@ -74,6 +76,7 @@ void from_json(const nlohmann::json& j, PK2SETTINGS& s){
 void to_json(nlohmann::json& j, const PK2SETTINGS& s){
 	j["language"] = s.language;
 	j["gui"] = s.draw_gui;
+	j["show_fps"] = s.show_fps;
 
 	j["touchscreen"] = s.touchscreen_mode;
 	j["fps"] = s.fps;
