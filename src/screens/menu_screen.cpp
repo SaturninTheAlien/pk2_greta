@@ -564,8 +564,9 @@ void MenuScreen::Draw_Menu_Graphics() {
 
 	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.gfx_title),50,90);
 
-	if(moreOptions){
+	if(moreOptions){  // settings: graphics: 2nd page
 		bool wasFullScreen = Settings.isFullScreen;
+		bool wasShowingFPS = Settings.show_fps;
 		int  oldfps = Settings.fps;
 
 		if (Settings.isFullScreen){
@@ -579,6 +580,21 @@ void MenuScreen::Draw_Menu_Graphics() {
 		}
 		if (PK2gui::Draw_BoolBox(100, my, Settings.isFullScreen, true)) {
 			Settings.isFullScreen = !Settings.isFullScreen;
+		}
+		my += 40;
+
+
+		if (PK2gui::Draw_BoolBox(100, my, Settings.show_fps, true)) {
+			Settings.show_fps = !Settings.show_fps;	
+		}
+		if (Settings.show_fps){
+			if (Draw_Menu_Text("fps is visible",180,my)){
+				Settings.show_fps = false;
+			}
+		} else{
+			if (Draw_Menu_Text("fps is not visible",180,my)){
+				Settings.show_fps = true;
+			}
 		}
 		my += 40;
 
@@ -645,6 +661,10 @@ void MenuScreen::Draw_Menu_Graphics() {
 			save_settings = true;
 			PRender::set_fullscreen(Settings.isFullScreen);
 		}
+		if(wasShowingFPS != Settings.show_fps) { // 
+			save_settings = true;
+			show_fps = Settings.show_fps;
+		}
 
 		if (Settings.fps != oldfps) {
 			int ret = -1;
@@ -673,7 +693,7 @@ void MenuScreen::Draw_Menu_Graphics() {
 		}
 
 	}
-	else {
+	else {               // settings: graphics: 1st page
 		this->my = 150;
 
 		this->drawBoolBoxGroup(Settings.transparent_text,
