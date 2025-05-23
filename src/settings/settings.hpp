@@ -61,7 +61,7 @@ public:
 	bool  draw_gui = false;
 	bool  touchscreen_mode = false;
 	
-	int   fps;
+	int   fps;  // desired fps target (default 60)
 	bool  isFullScreen = true;
 	bool  double_speed = false;
 	u8    shader_type;
@@ -78,6 +78,7 @@ public:
 
 	// GUI
 	//bool gui;
+	bool show_fps;
 
 	friend void from_json(const nlohmann::json& j, PK2SETTINGS& settings);
 	friend void to_json(nlohmann::json& j, const PK2SETTINGS& settings); 
