@@ -101,6 +101,9 @@ public:
 		gfx_fullscreen_on = -1,
 		gfx_fullscreen_off = -1,
 
+		gfx_showfps_on = -1,
+		gfx_showfps_off = -1,
+
 		gfx_game_speed = -1,
 		gfx_texture_filtering  = -1,
 
