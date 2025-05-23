@@ -193,6 +193,9 @@ void Load_Language(const std::string& language) {
 	PK_txt.gfx_fullscreen_on  	    = tekstit->searchLocalizedText("graphics menu fullscreen on");
 	PK_txt.gfx_fullscreen_off       = tekstit->searchLocalizedText("graphics menu fullscreen off");
 
+	PK_txt.gfx_showfps_on  	    	= tekstit->searchLocalizedText("graphics menu showfps on");
+	PK_txt.gfx_showfps_off       	= tekstit->searchLocalizedText("graphics menu showfps off");
+
 	PK_txt.gfx_touchscreen_on       = tekstit->searchLocalizedText("graphics menu touchscreen on");
 	PK_txt.gfx_touchscreen_off      = tekstit->searchLocalizedText("graphics menu touchscreen off");
 
