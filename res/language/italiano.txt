@@ -64,6 +64,8 @@ Graphics
 *main menu back:                          indietro
 *graphics menu fullscreen on:             fullscreen attivo
 *graphics menu fullscreen off:            fullscreen inattivo
+*graphics menu showfps on:                fps visibile
+*graphics menu showfps off:               fps invisibile
 *graphics menu game speed:                velocitå
 *graphics menu texture filtering:         filtro
 

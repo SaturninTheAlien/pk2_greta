@@ -101,6 +101,9 @@ Graphics
 *graphics menu fullscreen on:		pełny ekran wł
 *graphics menu fullscreen off:		pełny ekran wył
 
+*graphics menu showfps on:              fps widoczne
+*graphics menu showfps off:             fps niewidoczne
+
 *graphics menu touchscreen on:		tryb ekranu dotykowego wł
 *graphics menu touchscreen off:		tryb ekranu dotykowego wył
 
