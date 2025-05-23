@@ -686,11 +686,11 @@ void MenuScreen::Draw_Menu_Graphics() {
 
 
 		if (Settings.show_fps){
-			if (drawMenuTextS("fps is visible",180,my)){
+			if (drawMenuText(PK_txt.gfx_showfps_on,180,my)){
 				Settings.show_fps = false;
 			}
 		} else{
-			if (drawMenuTextS("fps is not visible",180,my)){
+			if (drawMenuText(PK_txt.gfx_showfps_off,180,my)){
 				Settings.show_fps = true;
 			}
 		}
