@@ -112,6 +112,9 @@ Graphics
 *graphics menu fullscreen on:           fullscreen on
 *graphics menu fullscreen off:          fullscreen off
 
+*graphics menu showfps on:              fps is visible
+*graphics menu showfps off:             fps is not visible
+
 *graphics menu touchscreen on:          touchscreen mode on
 *graphics menu touchscreen off:         touchscreen mode off
 

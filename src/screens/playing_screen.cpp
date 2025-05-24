@@ -415,6 +415,8 @@ void PlayingScreen::Init(){
 	
 	PDraw::set_offset(screen_width, screen_height);
 
+	show_fps = Settings.show_fps;  // in game menu setting currently overrides --fps commandline argument 
+
 	if (!Game->isStarted()) {
 
 		Game->start();
