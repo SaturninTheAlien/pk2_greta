@@ -31,6 +31,8 @@ std::string unwindowsPath(const std::string& path);
 
 
 bool endsWith(const std::string& str, const std::string& suffix);
+bool startsWith(const std::string& str, const std::string& prefix);
+
 std::string removeSuffix(const std::string& str, const std::string& suffix);
 
 

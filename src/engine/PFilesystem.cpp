@@ -52,7 +52,6 @@ static PZip::PZip* mEpisodeZip;
 static bool mAssetsPathSet = false;
 static bool mDataPathSet = false;
 
-
 void CreateDirectory(const std::string& path_in){
     fs::path p(path_in);
 
@@ -68,29 +67,31 @@ void CreateDirectory(const std::string& path_in){
 
 
 
-bool SetAssetsPath(const std::string& name){
+void SetAssetsPath(const std::string& name){
+
+    mAssetsPathSet = true;
     fs::path p = name;
 
     fs::path p1 = p / "gfx" / "pk2stuff.bmp";
 
     if(fs::exists(p1)){
+        mAssetsPath = p;   
+    } else {
 
-        mAssetsPath = p;
-        mAssetsPathSet = true;
-        return true;
+        fs::path p2 = p / "res" / "gfx" / "pk2stuff.bmp";
+        if(fs::exists(p2)){
+            mAssetsPath = p / "res";
+        }
+        else{
+            std::ostringstream os;
+            os<<"Incorrect assets path: \""<<name<<"\"";
+
+            throw PFile::PFileException(os.str());
+        }
     }
-
-    fs::path p2 = p / "res" / "gfx" / "pk2stuff.bmp";
-    if(fs::exists(p2)){
-        mAssetsPath = p / "res";
-        mAssetsPathSet = true;
-        return true;
-    }
-
-    return false;
 }
 
-bool SetDataPath(const std::string& name){
+void SetDataPath(const std::string& name){
     mDataPath = name;
     mDataPathSet = true;
 
@@ -106,19 +107,12 @@ bool SetDataPath(const std::string& name){
     CreateDirectory( (mDataPath / "screenshots").string());
 
     //TODO
-    //return false if the directory is not writeable
+    //throw exception if the directory is not writeable
 
-    return true;
 }
 
-void SetDefaultAssetsPath() {
-	if(mAssetsPathSet)return;
-
-#ifdef __ANDROID__
-    mAssetsPath = "";
-    mAssetsPathSet = true;
-#else
-	char* c_path = SDL_GetBasePath();
+fs::path getBasePath(){
+    char* c_path = SDL_GetBasePath();
 	if(c_path==nullptr){
 
         std::ostringstream os;
@@ -129,60 +123,113 @@ void SetDefaultAssetsPath() {
         throw PFile::PFileException(os.str());
 	}
 
-    bool success = false;
+    fs::path result = c_path;
+    SDL_free(c_path);
 
-	#ifndef _WIN32
-    fs::path executable_dir = fs::path(c_path).parent_path();
-    if(executable_dir.filename().string() == "bin"){
-        success = SetAssetsPath( (executable_dir.parent_path() / "res").string());
-    }
-    else{
-        success = SetAssetsPath(executable_dir.string());
-    }
-
-	#else
-	success = SetAssetsPath(c_path);
-	#endif
-
-	SDL_free(c_path);
-
-    if(!success){
-        throw PFile::PFileException("Cannot set the default assets path!");
-    }
-
-#endif
+    return result;
 }
 
-void SetDefaultDataPath(){
-    if(mDataPathSet)return;
-
-    bool success = false;
-
-
+void SetDefaultPaths(){
+    
 #ifdef __ANDROID__
-    success = SetDataPath(SDL_AndroidGetInternalStoragePath());
+ /**
+  * Android
+  */
+    if(!mAssetsPathSet){
+        mAssetsPath = "";
+        mAssetsPathSet = true;
+    }
+
+    if(!mDataPathSet){
+        SetDataPath(SDL_AndroidGetInternalStoragePath());
+    }
+
 #else
+
+    bool portable = true;
+
+#ifdef _WIN32
+    /**
+     * Windows
+     */
+
+    if(!mAssetsPathSet){
+        SetAssetsPath(getBasePath().string());
+    }
+
     #ifdef PK2_PORTABLE
-    success = SetDataPath((mAssetsPath / "data").string());
+    portable = true;
     #else
-        char* data_path_p = SDL_GetPrefPath("Piste Gamez", "Pekka Kana 2");
-        if(data_path_p==nullptr){
-            std::ostringstream os;
-            os<<"SDL_GetPrefPath failed: "<<SDL_GetError();
-            throw PFile::PFileException(os.str());
+    portable = false;
+    #endif
+
+#else
+    /**
+     * Linux and other
+     */
+    if(!mAssetsPathSet){
+
+        fs::path executable_dir = getBasePath().parent_path();
+
+        /**
+         * The game has been installed in a fixed directory
+         */
+
+        // Installed in  /usr/games/pekka-kana-2
+
+        if(PString::startsWith(executable_dir.string(), "/usr/games") || 
+        PString::startsWith(executable_dir.string(), "/usr/bin")){
+            portable = false;
+            SetAssetsPath("/usr/share/games/pekka-kana-2");
         }
 
-        success = SetDataPath(data_path_p);
-        SDL_free(data_path_p);
-    #endif
+        // Installed in  /usr/local/bin/pekka-kana-2
+        else if(PString::startsWith(executable_dir.string(), "/usr/local")){
+
+            portable = false;
+            SetAssetsPath("/usr/local/share/games/pekka-kana-2");
+        }
+
+        // Installed in  /opt/piste-gamez/pekka-kana-2
+        else if(PString::startsWith(executable_dir.string(), "/opt/piste-gamez/pekka-kana-2")){
+            portable = false;
+            SetAssetsPath( (executable_dir.parent_path() / "res").string());
+        }
+
+        /**
+         * The game is being run locally
+         */
+        else if(executable_dir.filename().string() == "bin"){
+            SetAssetsPath( (executable_dir.parent_path() / "res").string());
+        }
+        else{
+            SetAssetsPath(executable_dir.string());
+        }
+    }
 #endif
 
-    if(!success){
-        throw PFile::PFileException("Cannot set the default data path!");
+    //Linux and Windows but not Android
+    if(!mDataPathSet){
+
+        if(portable){
+            SetDataPath((mAssetsPath / "data").string());
+        }
+        else{
+            char* data_path_p = SDL_GetPrefPath("piste-gamez", "pekka-kana-2");
+            if(data_path_p==nullptr){
+                std::ostringstream os;
+                os<<"SDL_GetPrefPath failed: "<<SDL_GetError();
+                throw PFile::PFileException(os.str());
+            }
+
+            SetDataPath(data_path_p);
+            SDL_free(data_path_p);
+        }
     }
 
-    return;
+#endif
 }
+
 
 std::string GetAssetsPath(){
     return mAssetsPath.string();

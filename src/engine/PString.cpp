@@ -47,6 +47,16 @@ std::string unwindowsPath(const std::string& path){
 }
 
 
+
+bool startsWith(const std::string& str, const std::string& prefix){
+
+    std::size_t n = prefix.size();
+    if(str.size() < n)return false;
+
+    return str.substr(0, n)==prefix;
+}
+
+
 bool endsWith(const std::string& str, const std::string& suffix){
     std::size_t n = suffix.size();
     if(str.size() < n) return false;

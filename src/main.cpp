@@ -102,9 +102,7 @@ static void log_data() {
 }
 
 void pk2_init(){
-	//set_paths();
-	PFilesystem::SetDefaultAssetsPath();
-	PFilesystem::SetDefaultDataPath();
+	PFilesystem::SetDefaultPaths();
 	PLog::Init(PLog::ALL, true, true);
 }
 
@@ -253,10 +251,15 @@ int main(int argc, char **argv) {
 		}
 		break;
 		case 2:{
-			if(!PFilesystem::SetAssetsPath(arg)){
-				printf("Cannot set the assets path \"%s\"!", arg.c_str());
+
+			try{
+				PFilesystem::SetAssetsPath(arg);
+			}
+			catch(const std::exception& e){
+				printf("%s\n", e.what());
 				return 1;
 			}
+
 			state = 0;
 		}
 		break;
@@ -276,11 +279,13 @@ int main(int argc, char **argv) {
 		}
 		break;
 		case 6:{
-			if(!PFilesystem::SetDataPath(arg)){
-				printf("Cannot set the data path \"%s\"!", arg.c_str());
+			try{
+				PFilesystem::SetDataPath(arg);
+			}
+			catch(const std::exception& e){
+				printf("%s\n", e.what());
 				return 1;
 			}
-
 			state=0;
 		}
 		break;

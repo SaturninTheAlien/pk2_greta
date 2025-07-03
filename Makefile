@@ -5,6 +5,11 @@
 # "make" - Creates Pekka Kana 2 binary
 # "make clean" - Removes all objects, executables and dependencies
 
+
+INSTALL_BIN_DIR = /usr/local/games/
+INSTALL_RES_DIR = /usr/local/share/games/pekka-kana-2/
+
+
 # Compiler:
 CXX = c++
 
@@ -48,6 +53,7 @@ COMPILE_COMMAND = $(CXX) $(CXXFLAGS)
 SRC_DIR = src/
 BIN_DIR = bin/
 BUILD_DIR = build/
+RES_DIR = res/
 
 # Source files:
 PK2_SRC  = *.cpp */*.cpp */*/*.cpp
@@ -87,6 +93,13 @@ $(BUILD_DIR)%.o: $(SRC_DIR)%.cpp
 	@$(COMPILE_COMMAND) -I$(SRC_DIR) -o $@ -c $<
 	@$(COMPILE_COMMAND) -MM -MT $@ -I$(SRC_DIR) $< > $(BUILD_DIR)$*.d
 ###########################
+
+install: all
+	install -d $(INSTALL_BIN_DIR)
+	install -m 755 $(PK2_BIN) $(INSTALL_BIN_DIR)pekka-kana-2
+
+	install -d $(INSTALL_RES_DIR)
+	rsync -a --exclude='data' --chmod=F644,D755 $(RES_DIR)/ $(INSTALL_RES_DIR)/
 
 
 

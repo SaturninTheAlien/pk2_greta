@@ -34,11 +34,10 @@ extern const std::string LIFE_DIR;
 
 void CreateDirectory(const std::string& path);
 
-bool SetAssetsPath(const std::string& name);
-bool SetDataPath(const std::string& name);
+void SetAssetsPath(const std::string& name);
+void SetDataPath(const std::string& name);
 
-void SetDefaultAssetsPath();
-void SetDefaultDataPath();
+void SetDefaultPaths();
 
 std::string GetAssetsPath();
 std::string GetDataPath();
