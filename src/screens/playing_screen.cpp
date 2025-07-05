@@ -355,7 +355,14 @@ void PlayingScreen::Draw() {
 
 	if(Settings.draw_gui){
 		Draw_InGame_Lower_Menu();
-	}	
+	}
+	
+	else if (Gifts_Count() > 0){
+		Game->item_pannel_x = 10;
+	}
+	else{
+		Game->item_pannel_x = -215;
+	}
 
 	Fadetext_Draw();
 
