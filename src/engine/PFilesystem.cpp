@@ -111,6 +111,18 @@ void SetDataPath(const std::string& name){
 
 }
 
+void SetPrefDataPath(){
+    char* data_path_p = SDL_GetPrefPath("piste-gamez", "pekka-kana-2");
+    if(data_path_p==nullptr){
+        std::ostringstream os;
+        os<<"SDL_GetPrefPath failed: "<<SDL_GetError();
+        throw PFile::PFileException(os.str());
+    }
+
+    SetDataPath(data_path_p);
+    SDL_free(data_path_p);
+}
+
 fs::path getBasePath(){
     char* c_path = SDL_GetBasePath();
 	if(c_path==nullptr){
@@ -215,15 +227,7 @@ void SetDefaultPaths(){
             SetDataPath((mAssetsPath / "data").string());
         }
         else{
-            char* data_path_p = SDL_GetPrefPath("piste-gamez", "pekka-kana-2");
-            if(data_path_p==nullptr){
-                std::ostringstream os;
-                os<<"SDL_GetPrefPath failed: "<<SDL_GetError();
-                throw PFile::PFileException(os.str());
-            }
-
-            SetDataPath(data_path_p);
-            SDL_free(data_path_p);
+            SetPrefDataPath();
         }
     }
 

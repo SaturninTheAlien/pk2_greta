@@ -198,6 +198,7 @@ int main(int argc, char **argv) {
 
 				"--data-path -> set a custom data path (saves, mapstore, etc)\n"
 				"(e.g ./pekka-kana-2 --data-path \"path/my_saves\")\n"
+				"USE \"./pekka-kana-2 --data-path PREF_PATH\" if you want to use the .local/share dir\n"
 
 				"--convert -> convert an old sprite to the new .spr2 format\n"
 				"(e.g ./pekka-kana-2 --convert \"path/old.spr\")\n"
@@ -239,7 +240,7 @@ int main(int argc, char **argv) {
 				updating_sprites = true;
 			}
 			else {
-				printf("Invalid arg\n");
+				printf("Invalid arg \"%s\"\n", arg.c_str());
 				return 1;
 			}
 		}
@@ -251,7 +252,7 @@ int main(int argc, char **argv) {
 		}
 		break;
 		case 2:{
-
+			
 			try{
 				PFilesystem::SetAssetsPath(arg);
 			}
@@ -280,7 +281,12 @@ int main(int argc, char **argv) {
 		break;
 		case 6:{
 			try{
-				PFilesystem::SetDataPath(arg);
+				if(arg=="PREF_PATH"){
+					PFilesystem::SetPrefDataPath();
+				}
+				else{
+					PFilesystem::SetDataPath(arg);
+				}
 			}
 			catch(const std::exception& e){
 				printf("%s\n", e.what());

@@ -36,6 +36,7 @@ void CreateDirectory(const std::string& path);
 
 void SetAssetsPath(const std::string& name);
 void SetDataPath(const std::string& name);
+void SetPrefDataPath();
 
 void SetDefaultPaths();
 
