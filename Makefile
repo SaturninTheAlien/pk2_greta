@@ -1,13 +1,21 @@
 # Pekka Kana 2 by Janne Kivilahti from Piste Gamez (2003-2007)
+# and the Piste Gamez community.
+#
 # https://pistegamez.net/game_pk2.html
 #
 # Makefile command:
-# "make" - Creates Pekka Kana 2 binary
-# "make clean" - Removes all objects, executables and dependencies
+# "make" - creates Pekka Kana 2 binary
+# "make clean" - removes all objects, executables and dependencies
 
+# "sudo make install" - installs PK2 into Linux/Unix FHS
+# "sudo make uninstall" - removes PK2 from Linux/Unix FHS
 
 INSTALL_BIN_DIR = /usr/local/games/
 INSTALL_RES_DIR = /usr/local/share/games/pekka-kana-2/
+
+
+INSTALL_APP_SHORTCUT_DIR = /usr/local/share/applications/
+INSTALL_APP_ICON_DIR = /usr/local/share/icons/hicolor/64x64/apps/
 
 
 # Compiler:
@@ -94,14 +102,25 @@ $(BUILD_DIR)%.o: $(SRC_DIR)%.cpp
 	@$(COMPILE_COMMAND) -MM -MT $@ -I$(SRC_DIR) $< > $(BUILD_DIR)$*.d
 ###########################
 
-install: all
+install:
 	install -d $(INSTALL_BIN_DIR)
 	install -m 755 $(PK2_BIN) $(INSTALL_BIN_DIR)pekka-kana-2
 
 	install -d $(INSTALL_RES_DIR)
-	rsync -a --exclude='data' --chmod=F644,D755 $(RES_DIR)/ $(INSTALL_RES_DIR)/
+	rsync -a --exclude='data' --chmod=F644,D755 $(RES_DIR) $(INSTALL_RES_DIR)
+
+	install -d $(INSTALL_APP_ICON_DIR)
+	install -m 644  misc/icon_64x64.png $(INSTALL_APP_ICON_DIR)pekka-kana-2.png
+
+	install -d $(INSTALL_APP_SHORTCUT_DIR)
+	install -m 644  misc/linux/pk2_local.desktop $(INSTALL_APP_SHORTCUT_DIR)pekka-kana-2.desktop
 
 
+uninstall:
+	rm $(INSTALL_BIN_DIR)pekka-kana-2
+	rm -r $(INSTALL_RES_DIR)
+	rm $(INSTALL_APP_ICON_DIR)pekka-kana-2.png
+	rm $(INSTALL_APP_SHORTCUT_DIR)pekka-kana-2.desktop
 
 clean:
 	@rm -rf $(BIN_DIR)
@@ -110,4 +129,4 @@ clean:
 test:
 	@echo $(CXXFLAGS)
 
-.PHONY: pk2 clean all test
+.PHONY: pk2 clean all test install uninstall
