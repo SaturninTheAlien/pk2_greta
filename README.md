@@ -37,10 +37,10 @@ Proceed at your own risk.
 
 
 # Binary distibution
-Compiled binaries for MS Windows available here (64-bit):\
-https://1drv.ms/f/s!AhAm7DASof3FkH4uGUgf4msXCxHk
 
-They were compiled using MS Visual Studio Community 2022 on MS Windows 10,
+See the <a href="https://github.com/SaturninTheAlien/pk2_greta/releases">Releases</a> tab!
+
+MS Windows binaries were compiled using MS Visual Studio Community 2022 on MS Windows 11,
 so if there is any missing DLL file you perhaps need to install the latest Microsoft Visual C++ Redistributable:\
 https://aka.ms/vs/17/release/vc_redist.x64.exe
 
