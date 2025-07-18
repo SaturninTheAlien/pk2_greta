@@ -132,7 +132,7 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 		/**********************************************************************/
 		/* Examine if block is the exit                                       */
 		/**********************************************************************/
-		if (block.id == BLOCK_EXIT && sprite->energy>0) {
+		if (block.id == BLOCK_EXIT && (sprite->energy>0 || config_txt.deadLevelFinish)) {
 
 			switch (Game->level.game_mode)
 			{

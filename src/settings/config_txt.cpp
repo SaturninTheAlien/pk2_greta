@@ -45,6 +45,14 @@ static const char default_config[] =
 
 #endif
 
+"\r\n-- To be able to complete the game as a killed player."
+"\r\n-- It was a legacy bug and was removed in 1.5.0"
+"\r\n-- But some speedrunners requested it to reimplement"
+"\r\n*dead_level_finish:	 false"
+"\r\n"
+"\r\n"
+"\r\n"
+
 "\r\n-- Player name"
 "\r\n-- Used to save the game progress if \"save slots\" are disabled."
 "\r\n*player:	pekka"
@@ -107,6 +115,7 @@ void Config_txt::readFile(){
 	this->audio_buffer_size = conf.getInteger("audio_buffer_size", 1024);
 	this->player = conf.getString("player", "Pekka");
 	this->silent_suicide = conf.getBoolean("silent_suicide", false);
+	this->deadLevelFinish = conf.getBoolean("dead_level_finish", false);
 
 	#ifdef __ANDROID__
 	this->panic_when_missing_assets = conf.getBoolean("panic_when_missing_assets", false);
