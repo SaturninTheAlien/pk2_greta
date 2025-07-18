@@ -50,8 +50,10 @@ void Attack_2_if_Player_in_Front(SpriteClass*s);
 void Attack_1_if_Player_Below(SpriteClass*s);
 void Attack_1_If_Player_Above(SpriteClass*s);
 void Attack_2_If_Player_Above(SpriteClass*s);
+
 void Transform_If_Player_Above(SpriteClass*s);
 void Transform_If_Player_Below(SpriteClass*s);
+void Transform_If_Player_in_Front(SpriteClass* s);
 
 void Attack_1_if_Player_Nearby(SpriteClass*s);
 void Attack_2_if_Player_Nearby(SpriteClass*s);

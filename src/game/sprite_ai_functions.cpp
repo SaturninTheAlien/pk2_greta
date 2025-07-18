@@ -630,6 +630,24 @@ void Transform_If_Player_Below(SpriteClass*s){
 		}
 	}
 }
+
+void Transform_If_Player_in_Front(SpriteClass* s){
+
+	if(player!=nullptr){
+		double detection = s->prototype->player_detection.x;
+		
+		if ((player->x - s->x < detection && player->x - s->x > -detection) &&
+			(player->y - s->y < s->prototype->height && player->y - s->y > -s->prototype->height)){
+
+			if(s->prototype->charge_time==0){
+				s->transform();
+			}
+			else{
+				Self_Transformation(s);
+			}
+		}
+	}	
+}
 ///////
 
 

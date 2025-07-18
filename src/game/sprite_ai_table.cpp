@@ -200,6 +200,9 @@ AI_Table::AI_Table(){
     true, false, false, false, true); //TO DO Redesign
     Init_AI(AI_TRANSFORM_IF_PLAYER_ABOVE, AI_TRIGGER_ALIVE, AI_Functions::Transform_If_Player_Above,
     true, false, false, false, true); //TO DO Redesign
+
+    Init_AI(AI_TRANSFORM_IF_PLAYER_IN_FRONT, AI_TRIGGER_ALIVE, AI_Functions::Transform_If_Player_in_Front,
+    true, false, false, false, true);
     
     Init_AI(AI_JUMP_IF_PLAYER_ABOVE, AI_TRIGGER_ALIVE, AI_Functions::Jump_If_Player_Above,
     true, false, false, false, true); //TO DO Redesign
