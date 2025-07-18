@@ -305,7 +305,7 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 					sprite->can_move_up = false;
 
 					if (sprite_upper < block.bottom) {
-						if (block.id == BLOCK_LIFT_VERT && sprite->crouched && sprite->damage_taken_type>DAMAGE_SELF_DESTRUCTION) {
+						if (block.id == BLOCK_LIFT_VERT && sprite->crouched && !sprite->can_move_down && sprite->damage_taken_type>DAMAGE_SELF_DESTRUCTION) {
 							sprite->damage_taken = 2;
 							sprite->damage_taken_type = DAMAGE_IMPACT;
 						}
