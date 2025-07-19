@@ -4,6 +4,7 @@
 //#########################
 #include "game/game.hpp"
 
+#include "game/physics.hpp"
 #include "game/gifts.hpp"
 #include "system.hpp"
 #include "gfx/text.hpp"
@@ -250,11 +251,22 @@ void GameClass::update(int& debug_active_sprites){
 				this->exit_timer = 2;
 
 		if (this->exit_timer == 2) {
-			
-			Fade_out(FADE_NORMAL);
-			if (this->game_over)
-				PSound::set_musicvolume(0);
-		
+			if(this->game_over){
+
+				if(this->lastCheckpoint!=nullptr && (!this->has_time || this->timeout > 0)){
+					PlayerRespawnOnCheckpoint(Player_Sprite, this->lastCheckpoint);
+					this->game_over = false;
+					this->exit_timer = 0;
+					key_delay = 20;
+				}
+				else{
+					Fade_out(FADE_NORMAL);
+					PSound::set_musicvolume(0);
+				}
+			}
+			else{
+				Fade_out(FADE_NORMAL);
+			}
 		}
 	}
 

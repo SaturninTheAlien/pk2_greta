@@ -70,17 +70,22 @@ void SpriteClass::SetAnimation(int anim_i, bool reset){
 }
 int SpriteClass::Animoi(){
 
-	switch (prototype->first_ai()) {
-		case AI_ROOSTER:           Animation_Rooster();  break;
-		case AI_LITTLE_CHICKEN: Animation_Rooster();  break;
-		case AI_BONUS:          Animation_Bonus(); break;
-		case AI_EGG:            Animation_Egg();   break;
-		case AI_EGG2:           Animation_Egg();   break;
-		case AI_PROJECTILE:          Animation_Projectile(); break;
-		case AI_JUMPER:         Animation_Rooster();  break;
-		case AI_BASIC:          Animation_Basic(); break;
-		case AI_TELEPORT:       Animation_Basic(); break;
-		default:                break;
+	if(this->prototype->type==TYPE_CHECKPOINT){
+		Animation_Checkpoint();
+	}
+	else{
+		switch (prototype->first_ai()) {
+			case AI_ROOSTER:           Animation_Rooster();  break;
+			case AI_LITTLE_CHICKEN: Animation_Rooster();  break;
+			case AI_BONUS:          Animation_Bonus(); break;
+			case AI_EGG:            Animation_Egg();   break;
+			case AI_EGG2:           Animation_Egg();   break;
+			case AI_PROJECTILE:          Animation_Projectile(); break;
+			case AI_JUMPER:         Animation_Rooster();  break;
+			case AI_BASIC:          Animation_Basic(); break;
+			case AI_TELEPORT:       Animation_Basic(); break;
+			default: break;
+		}
 	}
 
 	const SpriteAnimation& anim = prototype->animations[animation_index];
@@ -300,6 +305,81 @@ void SpriteClass::Animation_Basic(){
 		SetAnimation(uusi_animaatio,alusta);
 
 }
+
+void SpriteClass::Animation_Checkpoint(){
+	int uusi_animaatio = -1;
+	bool alusta = false;
+
+	if (energy < 1 && !can_move_down)
+	{
+		uusi_animaatio = ANIMATION_DEATH;
+		alusta = true;
+	}
+	else
+	{
+
+		if (a > -0.2 && a < 0.2 && b == 0 && jump_timer <= 0)
+		{
+			uusi_animaatio = ANIMATION_IDLE;
+			alusta = true;
+		}
+
+		if ((a < -0.2 || a > 0.2) && jump_timer <= 0)
+		{
+			uusi_animaatio = ANIMATION_WALKING;
+			alusta = false;
+		}
+
+		if (b < 0)//-0.3
+		{
+			uusi_animaatio = ANIMATION_JUMP_UP;
+			alusta = false;
+		}
+
+		if ((jump_timer > prototype->max_jump || b > 1.5) && can_move_down)
+		{
+			uusi_animaatio = ANIMATION_JUMP_DOWN;
+			alusta = false;
+		}
+
+		if (crouched)
+		{
+			uusi_animaatio = ANIMATION_SQUAT;
+			alusta = true;
+		}
+
+		
+
+		if (attack2_timer > 0)
+		{
+			uusi_animaatio = ANIMATION_ATTACK2;
+			alusta = true;
+		}
+
+		else if (attack1_timer > 0)
+		{
+			uusi_animaatio = ANIMATION_ATTACK1;
+			alusta = true;
+		}
+
+		else if (damage_timer > 0)
+		{
+			uusi_animaatio = ANIMATION_DAMAGE;
+			alusta = false;
+		}
+
+		else if(this->target_sprite!=nullptr && this->prototype->max_speed==0){
+
+			uusi_animaatio = ANIMATION_WALKING;
+			alusta = true;
+		}
+
+	}
+
+	if (uusi_animaatio != -1)
+		SetAnimation(uusi_animaatio,alusta);
+}
+
 void SpriteClass::Animation_Rooster(){
 
 	int uusi_animaatio = -1;

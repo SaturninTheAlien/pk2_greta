@@ -42,6 +42,7 @@ public:
     bool    edge_on_the_right   = false;           // is there a pit on the right side of the sprite?
     int     energy          = 0;               // the sprite energy
     SpriteClass *parent_sprite   = nullptr;         // the sprite's parent
+    SpriteClass *target_sprite   = nullptr;         // the sprite's target
     double  weight           = 0;               // sprite weight
     double  weight_button      = 0;               // sprite weight + weight above him (why it doesn't work?)
     bool    crouched         = false;           // if the sprite is crouched
@@ -146,4 +147,5 @@ private:
     void Animation_Bonus();
     void Animation_Egg();
     void Animation_Projectile();
+    void Animation_Checkpoint();
 };

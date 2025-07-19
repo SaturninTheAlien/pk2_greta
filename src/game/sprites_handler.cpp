@@ -168,13 +168,27 @@ int SpritesHandler::onTickUpdate(int camera_x, int camera_y){
 
 	for (SpriteClass* sprite : Sprites_List) {
 		if (sprite->active && !sprite->removed) {
-			if (sprite->prototype->type <= TYPE_TELEPORT && sprite->prototype->type != TYPE_BONUS) {
 
+			switch (sprite->prototype->type)
+			{
+			case TYPE_NOTHING:
+			case TYPE_GAME_CHARACTER:
+			case TYPE_PROJECTILE:
+			case TYPE_TELEPORT:
+			case TYPE_CHECKPOINT:
+				
 				if(sprite->respawn_timer==0 || sprite->prototype->destruction_effect>=100){
 					UpdateSprite(sprite);
 					active_sprites++;
 				}
+				break;
+			
+			default:
+				break;
 			}
+
+			/*if (sprite->prototype->type <= TYPE_TELEPORT && sprite->prototype->type != TYPE_BONUS) {
+			}*/
 		}
 	}
 

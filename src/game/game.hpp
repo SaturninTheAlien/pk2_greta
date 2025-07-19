@@ -43,8 +43,8 @@ class GameClass {
 		u32 button2 = 0;
 		u32 button3 = 0;
 
-		u32 score = 0;
-		u32 score_increment = 0;
+		int score = 0;
+		int score_increment = 0;
 
 		u32 apples_count = 0;
 		u32 apples_got = 0;
@@ -101,7 +101,8 @@ class GameClass {
 		bool event2 = false;
 
 		PrototypesHandler spritePrototypes;
-		SpriteClass* playerSprite;
+		SpriteClass* playerSprite = nullptr;
+		SpriteClass* lastCheckpoint = nullptr;
 	
 		sol::state * lua = nullptr;
 

@@ -129,7 +129,9 @@ void ExposeSpriteClass(sol::state& lua){
         "canMoveUp", sol::readonly(&SpriteClass::can_move_up),
         "canMoveDown", sol::readonly(&SpriteClass::can_move_down),
 
-        "levelSector", sol::readonly(&SpriteClass::level_sector)
+        "levelSector", sol::readonly(&SpriteClass::level_sector),
+        "parent", sol::readonly(&SpriteClass::parent_sprite),
+        "target", &SpriteClass::target_sprite
         
         );
 }
