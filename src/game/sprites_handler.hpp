@@ -5,6 +5,7 @@
 #include <list>
 
 class LevelSector;
+class PrototypesHandler;
 
 class SpritesHandler{
 public:
@@ -71,7 +72,18 @@ public:
     void drawBGsprites(int camera_x, int camera_y, bool gamePaused, int& debug_drawn_sprite);
     void drawFGsprites(int camera_x, int camera_y, bool gamePaused, int& debug_drawn_sprite);
 
+
+    nlohmann::json toJson()const;
+    void fromJSON(const nlohmann::json& j, PrototypesHandler& handler);
+
+
 private:
+    SpriteClass* getSpriteById(std::size_t id);
+
+
+    void spriteToJson(nlohmann::json& j, const SpriteClass&s)const;
+    void jsonToSprite(const nlohmann::json&j, SpriteClass&s, PrototypesHandler&handler)const;
+
     SpriteClass * mCreateSprite(PrototypeClass* prototype, int player_c, double x, double y, SpriteClass*parent_sprite=nullptr);
 
     void mAddBG(SpriteClass* sprite) {

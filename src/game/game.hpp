@@ -36,7 +36,7 @@ class GameClass {
 		bool has_time = false;
 		u64  frame_count = 0; //flames elapsed
 
-		int palikka_animaatio = 0;
+		int tiles_animation_counter = 0;
 
 		int button_vibration = 0;
 		u32 button1 = 0;
@@ -67,7 +67,7 @@ class GameClass {
 		int info_timer = 0;
 		std::string info_text;
 
-		int item_pannel_x = -215;
+		int item_panel_x = -215;
 
 		GameClass(int idx);
 		GameClass(std::string level_file);
@@ -121,6 +121,12 @@ class GameClass {
 		int getLevelID()const{
 			return this->level_id;
 		}
+
+
+		nlohmann::json saveCheckpoint()const;
+		void loadCheckpoint(const nlohmann::json& j);
+
+
 	private:
 		PrototypeClass* initialPlayerPrototype = nullptr;
 		int level_id = -1;

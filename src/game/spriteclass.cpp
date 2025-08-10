@@ -19,6 +19,8 @@
 #include <algorithm>
 #include <sstream>
 
+std::size_t SpriteClass::ID_COUNTER=0;
+
 
 /* -------- SpriteClass  ------------------------------------------------------------------ */
 
@@ -28,6 +30,10 @@ SpriteClass::SpriteClass(PrototypeClass *prototype, int player_c,
  double y,
  LevelSector*sector,
  SpriteClass*parent){
+	this->id = ID_COUNTER;
+	++ID_COUNTER;
+
+
 	if (prototype) {
 
 		this->prototype         = prototype;

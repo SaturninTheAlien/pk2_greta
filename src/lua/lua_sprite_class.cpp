@@ -55,6 +55,8 @@ void ExposeSpriteClass(sol::state& lua){
         "SpriteClass",
         sol::no_constructor,
 
+        "id", &SpriteClass::id,
+
         /**
          * @brief 
          * Functions

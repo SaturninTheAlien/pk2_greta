@@ -156,7 +156,7 @@ void PlayingScreen::Draw_InGame_Gifts() {
 	int x,y;
 
 	y = screen_height-35;//36
-	x = Game->item_pannel_x + 35;//40
+	x = Game->item_panel_x + 35;//40
 
 	for (int i=0;i<MAX_GIFTS;i++)
 		if (Gifts_Get(i) != nullptr){
@@ -215,16 +215,16 @@ void PlayingScreen::Draw_InGame_Lower_Menu() {
 	/////////////////
 	// Draw Gifts
 	/////////////////
-	if (Gifts_Count() > 0 && Game->item_pannel_x < 10)
-	Game->item_pannel_x++;
+	if (Gifts_Count() > 0 && Game->item_panel_x < 10)
+	Game->item_panel_x++;
 
-	if (Gifts_Count() == 0 && Game->item_pannel_x > -215)
-		Game->item_pannel_x--;
+	if (Gifts_Count() == 0 && Game->item_panel_x > -215)
+		Game->item_panel_x--;
 
-	if (Game->item_pannel_x > -215)
-		PDraw::image_cutclip(Game->gfxTexture,Game->item_pannel_x,screen_height-60,
+	if (Game->item_panel_x > -215)
+		PDraw::image_cutclip(Game->gfxTexture,Game->item_panel_x,screen_height-60,
 								1,216,211,266);
-	if (Game->item_pannel_x > 5)
+	if (Game->item_panel_x > 5)
 		PDraw::font_write_line(fontti1,tekstit->Get_Text(PK_txt.game_items),15,screen_height-65);
 
 	Draw_InGame_Gifts();
@@ -358,10 +358,10 @@ void PlayingScreen::Draw() {
 	}
 	
 	else if (Gifts_Count() > 0){
-		Game->item_pannel_x = 10;
+		Game->item_panel_x = 10;
 	}
 	else{
-		Game->item_pannel_x = -215;
+		Game->item_panel_x = -215;
 	}
 
 	Fadetext_Draw();
