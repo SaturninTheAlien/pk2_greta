@@ -121,13 +121,17 @@ class GameClass {
 		int getLevelID()const{
 			return this->level_id;
 		}
-
-
-		nlohmann::json saveCheckpoint()const;
-		void loadCheckpoint(const nlohmann::json& j);
-
+		
+		void saveCheckpoint()const;
+		void loadCheckpoint();
 
 	private:
+		void exposePlayerToAIs();
+
+		nlohmann::json toJson()const;
+		void fromJson(const nlohmann::json& j);
+
+
 		PrototypeClass* initialPlayerPrototype = nullptr;
 		int level_id = -1;
 		bool started = false;

@@ -545,13 +545,16 @@ nlohmann::json SpritesHandler::toJson()const{
 	return nlohmann::json(vec);
 }
 
-void SpritesHandler::fromJSON(const nlohmann::json& j, PrototypesHandler& handler){
+void SpritesHandler::fromJSON(const nlohmann::json& j, PrototypesHandler& handler, LevelSector*sector){
 	this->clearAll();
 	
 
 	for(const nlohmann::json& j2: j){
 		SpriteClass* sprite = new SpriteClass();
 		this->jsonToSprite(j2, *sprite, handler);
+		sprite->level_sector = sector;
+		sprite->removed = false;
+		this->Sprites_List.push_back(sprite);
 	}
 
 	for(SpriteClass* sprite: this->Sprites_List){
@@ -566,7 +569,22 @@ void SpritesHandler::fromJSON(const nlohmann::json& j, PrototypesHandler& handle
 		if(sprite->isPlayer()){
 			this->Player_Sprite = sprite;
 		}
+
+		switch (sprite->prototype->type)
+		{
+		case TYPE_BACKGROUND:
+			this->bgSprites_List.push_back(sprite);
+			break;
+
+		case TYPE_FOREGROUND:
+			this->fgSprites_List.push_back(sprite);
+		
+		default:
+			break;
+		}
 	}
+
+	this->sortBg();
 }
 
 void SpritesHandler::spriteToJson(nlohmann::json&j, const SpriteClass&s)const{

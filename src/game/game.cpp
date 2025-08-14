@@ -27,10 +27,16 @@
 #include "engine/PInput.hpp"
 #include "engine/PFilesystem.hpp"
 
+
 #include "lua/pk2_lua.hpp"
 #include "lua/lua_game_events.hpp"
 
 #include <cstring>
+#include <filesystem>
+#include <fstream>
+
+
+namespace fs = std::filesystem;
 
 GameClass *Game = nullptr;
 
@@ -84,8 +90,7 @@ GameClass::~GameClass()
 	}
 }
 
-void GameClass::update(int &debug_active_sprites)
-{
+void GameClass::exposePlayerToAIs(){
 	if (this->playerSprite != nullptr && this->playerSprite->energy > 0)
 	{
 		AI_Functions::player_invisible = this->playerSprite;
@@ -104,8 +109,12 @@ void GameClass::update(int &debug_active_sprites)
 		AI_Functions::player = nullptr;
 		AI_Functions::player_invisible = nullptr;
 	}
+}
 
-	LevelSector *sector = this->playerSprite->level_sector;
+void GameClass::update(int &debug_active_sprites)
+{
+	this->exposePlayerToAIs();
+	//LevelSector *sector = this->playerSprite->level_sector;
 
 	if (!this->level_clear && (!this->has_time || this->timeout > 0))
 	{
@@ -214,7 +223,7 @@ void GameClass::update(int &debug_active_sprites)
 
 		if (!this->level_clear && (!this->has_time || this->timeout > 0))
 		{
-			debug_active_sprites = sector->sprites.onTickUpdate(this->camera_x, this->camera_y);
+			debug_active_sprites = this->playerSprite->level_sector->sprites.onTickUpdate(this->camera_x, this->camera_y);
 			this->frame_count++;
 		}
 
@@ -251,9 +260,9 @@ void GameClass::update(int &debug_active_sprites)
 		}
 	}
 
-	SpriteClass *Player_Sprite = this->playerSprite;
+	//SpriteClass *Player_Sprite = this->playerSprite;
 
-	if (Player_Sprite->energy < 1)
+	if (this->playerSprite->energy < 1)
 	{
 		this->game_over = true;
 	}
@@ -284,6 +293,7 @@ void GameClass::update(int &debug_active_sprites)
 					this->game_over = false;
 					this->exit_timer = 0;
 					key_delay = 20;
+					this->loadCheckpoint();
 				}
 				else
 				{
@@ -304,7 +314,7 @@ void GameClass::update(int &debug_active_sprites)
 		{
 			if (PInput::Keydown(Input->open_gift) || TouchScreenControls.gift)
 			{
-				Gifts_Use(sector->sprites);
+				Gifts_Use(this->playerSprite->level_sector->sprites);
 				key_delay = 10;
 			}
 
@@ -318,14 +328,14 @@ void GameClass::update(int &debug_active_sprites)
 			{
 				if (!config_txt.silent_suicide)
 				{
-					Player_Sprite->damage_taken = Player_Sprite->energy;
-					Player_Sprite->damage_taken_type = DAMAGE_SELF_DESTRUCTION;
-					Player_Sprite->self_destruction = true;
+					this->playerSprite->damage_taken = this->playerSprite->energy;
+					this->playerSprite->damage_taken_type = DAMAGE_SELF_DESTRUCTION;
+					this->playerSprite->self_destruction = true;
 				}
 				else
 				{
-					Player_Sprite->energy = 0;
-					Player_Sprite->removed = true;
+					this->playerSprite->energy = 0;
+					this->playerSprite->removed = true;
 				}
 			}
 
@@ -389,8 +399,8 @@ void GameClass::update(int &debug_active_sprites)
 			if (PInput::Keydown(PInput::R))
 			{
 
-				Player_Sprite->energy = 10;
-				Player_Sprite->removed = false;
+				this->playerSprite->energy = 10;
+				this->playerSprite->removed = false;
 				this->game_over = false;
 
 				double pos_x = 0;
@@ -420,30 +430,30 @@ void GameClass::update(int &debug_active_sprites)
 				if (this->initialPlayerPrototype != nullptr)
 				{
 
-					PrototypeClass *ammo1 = Player_Sprite->ammo1;
-					PrototypeClass *ammo2 = Player_Sprite->ammo2;
+					PrototypeClass *ammo1 = this->playerSprite->ammo1;
+					PrototypeClass *ammo2 = this->playerSprite->ammo2;
 
-					Player_Sprite->energy = 10;
-					Player_Sprite->transformTo(this->initialPlayerPrototype);
-					Effect_Stars(Player_Sprite->x, Player_Sprite->y, COLOR_VIOLET);
+					this->playerSprite->energy = 10;
+					this->playerSprite->transformTo(this->initialPlayerPrototype);
+					Effect_Stars(this->playerSprite->x, this->playerSprite->y, COLOR_VIOLET);
 
-					if (Player_Sprite->ammo1 == nullptr)
+					if (this->playerSprite->ammo1 == nullptr)
 					{
-						Player_Sprite->ammo1 = ammo1;
+						this->playerSprite->ammo1 = ammo1;
 					}
 
-					if (Player_Sprite->ammo2 == nullptr)
+					if (this->playerSprite->ammo2 == nullptr)
 					{
-						Player_Sprite->ammo2 = ammo2;
+						this->playerSprite->ammo2 = ammo2;
 					}
 				}
 			}
 		}
 		if (PInput::Keydown(PInput::U))
-			Player_Sprite->b = -10;
+			this->playerSprite->b = -10;
 		if (PInput::Keydown(PInput::E))
 		{
-			Player_Sprite->energy = 10;
+			this->playerSprite->energy = 10;
 			this->game_over = false;
 		}
 		if (key_delay == 0)
@@ -451,22 +461,22 @@ void GameClass::update(int &debug_active_sprites)
 
 			if (PInput::Keydown(PInput::V))
 			{
-				if (Player_Sprite->invisible_timer > 1)
+				if (this->playerSprite->invisible_timer > 1)
 				{
-					Player_Sprite->invisible_timer = 1;
+					this->playerSprite->invisible_timer = 1;
 				}
 				else
 				{
-					Player_Sprite->invisible_timer = 3000;
+					this->playerSprite->invisible_timer = 3000;
 				}
 				key_delay = 30;
 			}
 
 			if (PInput::Keydown(PInput::S))
 			{
-				if (Player_Sprite->super_mode_timer > 1)
+				if (this->playerSprite->super_mode_timer > 1)
 				{
-					Player_Sprite->super_mode_timer = 1;
+					this->playerSprite->super_mode_timer = 1;
 				}
 				else
 				{
@@ -474,7 +484,7 @@ void GameClass::update(int &debug_active_sprites)
 					{
 						this->startSupermodeMusic();
 					}
-					Player_Sprite->super_mode_timer = 3000;
+					this->playerSprite->super_mode_timer = 3000;
 				}
 				key_delay = 30;
 			}
@@ -1016,7 +1026,49 @@ void GameClass::updateCamera()
 		this->camera_y = int(sector->getHeight() - screen_height / 32) * 32;
 }
 
-nlohmann::json GameClass::saveCheckpoint() const
+
+void GameClass::saveCheckpoint()const{
+
+	PLog::Write(PLog::INFO, "PK2", "Saving checkpoint...");
+
+	fs::path dataPath = PFilesystem::GetDataPath();
+	fs::path p1 = dataPath / "checkpoint.map";
+
+	this->level.saveVersion15(PFile::Path(p1.string()));
+
+	fs::path p2 = dataPath / "checkpoint.dat";
+
+	PFile::RW file = PFile::Path(p2.string()).GetRW2("w");
+	file.writeCBOR(this->toJson());
+	file.close();
+	
+	PLog::Write(PLog::DEBUG, "PK2", "Checkpoint saved!");
+}
+
+
+void GameClass::loadCheckpoint(){
+
+	PLog::Write(PLog::INFO, "PK2", "Loading checkpoint...");
+
+	fs::path dataPath = PFilesystem::GetDataPath();
+	fs::path p1 = dataPath / "checkpoint.map";
+	fs::path p2 = dataPath / "checkpoint.dat";
+
+	/*this->level.clear();
+	this->level.load(PFile::Path(p1.string()), false);*/
+
+	this->lastCheckpoint = nullptr;
+
+	PFile::RW file = PFile::Path(p2.string()).GetRW2("r");
+
+	this->fromJson(file.readCBOR());
+	file.close();
+
+	PLog::Write(PLog::DEBUG, "PK2", "Checkpoint loaded!");
+}
+
+
+nlohmann::json GameClass::toJson() const
 {
 	nlohmann::json j;
 	j["game_over"] = this->game_over;
@@ -1059,11 +1111,16 @@ nlohmann::json GameClass::saveCheckpoint() const
 		sprites.emplace_back(sector->sprites.toJson());
 	}
 
+	j["sprites"] = sprites;
+
 	return j;
 }
 
-void GameClass::loadCheckpoint(const nlohmann::json &j)
+void GameClass::fromJson(const nlohmann::json &j)
 {
+
+	std::cout<<"C1"<<std::endl;
+
 	// Restore basic game state
 	j.at("game_over").get_to(this->game_over);
 	j.at("level_clear").get_to(this->level_clear);
@@ -1098,20 +1155,23 @@ void GameClass::loadCheckpoint(const nlohmann::json &j)
 	j.at("change_skulls").get_to(this->change_skulls);
 	j.at("event1").get_to(this->event1);
 	j.at("event2").get_to(this->event2);
-
 	// Restore sprites for each sector
 	const auto &sprites_json = j.at("sprites");
 	for (size_t i = 0; i < sprites_json.size() && i < this->level.sectors.size(); ++i)
 	{
-		SpritesHandler& sprites = this->level.sectors[i]->sprites;
+		LevelSector* sector =  this->level.sectors.at(i);
+		SpritesHandler& sprites = sector->sprites;
 
-		sprites.fromJSON(sprites_json[i], this->spritePrototypes);
+		
+
+		sprites.fromJSON(sprites_json[i], this->spritePrototypes, sector);
 		if(sprites.Player_Sprite!=nullptr){
 			this->playerSprite = sprites.Player_Sprite;
-		}	
+		}
 	}
 
 	// Update camera and GFX texture
 	this->setCamera();
 	this->gfxTexture = this->playerSprite->level_sector->gfxTexture;
+	this->exposePlayerToAIs();
 }

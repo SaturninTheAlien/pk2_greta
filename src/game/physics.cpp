@@ -1553,12 +1553,7 @@ void UpdateSprite(SpriteClass* sprite){
 			Game->lastCheckpoint = sprite;
 			sprite->attack1_timer = sprite->prototype->attack1_time;
 
-			// for (SpriteClass* sprite2 : sector->sprites.Sprites_List) {
-
-			// 	if(sprite2!=sprite && sprite->prototype->type==TYPE_CHECKPOINT){
-			// 		sprite2->target_sprite = nullptr;
-			// 	}
-			// }
+			Game->saveCheckpoint();
 		}
 	}
 	sprite->initial_update = false;
@@ -1949,52 +1944,55 @@ void UpdateBackgroundSprite(SpriteClass* sprite, double &yl){
 	}
 }
 
-void PlayerRespawnOnCheckpoint(SpriteClass* player, SpriteClass* checkPoint){
-	player->energy = player->prototype->energy;
 
-	if(player->energy<=0){
-		player->energy = 10;
-	}
 
-	player->removed = false;
-	double x = checkPoint->x;
-	double y = checkPoint->y;
-	std::optional<Point2D>& offset = checkPoint->prototype->ammo1_offset;
 
-	if(offset.has_value()){
+// void PlayerRespawnOnCheckpoint(SpriteClass* player, SpriteClass* checkPoint){
+// 	player->energy = player->prototype->energy;
 
-		double off_x = -checkPoint -> prototype->width/2 + offset->x;
-		double off_y = -checkPoint -> prototype->height/2 + offset->y;
+// 	if(player->energy<=0){
+// 		player->energy = 10;
+// 	}
 
-		if(checkPoint->flip_x){
-			off_x = -off_x;
-		}
-		if(checkPoint->flip_y){
-			off_y = -off_y;
-		}
+// 	player->removed = false;
+// 	double x = checkPoint->x;
+// 	double y = checkPoint->y;
+// 	std::optional<Point2D>& offset = checkPoint->prototype->ammo1_offset;
 
-		x += off_x;
-		y += off_y;
-	}
+// 	if(offset.has_value()){
 
-	Game->teleportPlayer(checkPoint->x, checkPoint->y, checkPoint->level_sector);
+// 		double off_x = -checkPoint -> prototype->width/2 + offset->x;
+// 		double off_y = -checkPoint -> prototype->height/2 + offset->y;
 
-	checkPoint->attack2_timer = checkPoint->prototype->attack2_time;
+// 		if(checkPoint->flip_x){
+// 			off_x = -off_x;
+// 		}
+// 		if(checkPoint->flip_y){
+// 			off_y = -off_y;
+// 		}
 
-	checkPoint->target_sprite = player;
+// 		x += off_x;
+// 		y += off_y;
+// 	}
 
-	/**
-	 * Score penalty for respawning on checkpoint
-	 */
+// 	Game->teleportPlayer(checkPoint->x, checkPoint->y, checkPoint->level_sector);
 
-	int score = checkPoint->prototype->score;
-	if (score != 0){
-		if(score>0){
-			score = -score;
-		}
-		Fadetext_New(fontti2,std::to_string(score),(int)checkPoint->x-8,(int)checkPoint->y-8,80);
-		Game->score += score;
+// 	checkPoint->attack2_timer = checkPoint->prototype->attack2_time;
+
+// 	checkPoint->target_sprite = player;
+
+// 	/**
+// 	 * Score penalty for respawning on checkpoint
+// 	 */
+
+// 	int score = checkPoint->prototype->score;
+// 	if (score != 0){
+// 		if(score>0){
+// 			score = -score;
+// 		}
+// 		Fadetext_New(fontti2,std::to_string(score),(int)checkPoint->x-8,(int)checkPoint->y-8,80);
+// 		Game->score += score;
 
 		
-	}
-}
+// 	}
+// }

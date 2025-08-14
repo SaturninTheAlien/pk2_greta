@@ -41,7 +41,7 @@ void PlayingScreen::Draw_InGame_DebugInfo() {
 	PDraw::set_offset(640, 480);
 
 	vali = PDraw::font_write_line(fontti1,"sprites: ",10,fy);
-	PDraw::font_write_line(fontti1,std::to_string(Game->spritePrototypes.size()),10+vali,fy);
+	PDraw::font_write_line(fontti1,std::to_string(Game->playerSprite->level_sector->sprites.size()),10+vali,fy);
 	fy += 10;
 
 	vali = PDraw::font_write_line(fontti1,"active sprites: ",10,fy);
@@ -77,21 +77,20 @@ void PlayingScreen::Draw_InGame_DebugInfo() {
 		PDraw::font_write_line(fontti1,entry.levelName,0,240+i*10);
 		++i;
 	}
-
-
-	SpriteClass* Player_Sprite = Game->playerSprite;
 	
-	PDraw::font_write_line(fontti1, std::to_string(Player_Sprite->x), 10, 410);
-	PDraw::font_write_line(fontti1, std::to_string(Player_Sprite->y), 10, 420);
-	PDraw::font_write_line(fontti1, std::to_string(Player_Sprite->b), 10, 430);
-	PDraw::font_write_line(fontti1, std::to_string(Player_Sprite->a), 10, 440);
+	PDraw::font_write_line(fontti1, std::to_string(Game->playerSprite->x), 10, 410);
+	PDraw::font_write_line(fontti1, std::to_string(Game->playerSprite->y), 10, 420);
+	PDraw::font_write_line(fontti1, std::to_string(Game->playerSprite->b), 10, 430);
+	PDraw::font_write_line(fontti1, std::to_string(Game->playerSprite->a), 10, 440);
+	PDraw::font_write_line(fontti1, Game->playerSprite->level_sector->name, 10, 450);
+
 	PDraw::font_write_line(fontti1, Game->level_file, 10, 460);
-	PDraw::font_write_line(fontti1, std::to_string(Player_Sprite->jump_timer), 270, 460);
+	PDraw::font_write_line(fontti1, std::to_string(Game->playerSprite->jump_timer), 270, 460);
 
 	PDraw::font_write_line(fontti1, PFilesystem::GetAssetsPath(), 10, 470);
 
-	PDraw::font_write_line(fontti1, std::to_string(Player_Sprite->super_mode_timer), 610, 470);
-	PDraw::font_write_line(fontti1, std::to_string(Player_Sprite->invisible_timer), 610, 460);
+	PDraw::font_write_line(fontti1, std::to_string(Game->playerSprite->super_mode_timer), 610, 470);
+	PDraw::font_write_line(fontti1, std::to_string(Game->playerSprite->invisible_timer), 610, 460);
 	PDraw::font_write_line(fontti1, std::to_string(Game->button1), 610, 450);
 	PDraw::font_write_line(fontti1, std::to_string(Game->button2), 610, 440);
 	PDraw::font_write_line(fontti1, std::to_string(Game->button3), 610, 430);
@@ -239,24 +238,24 @@ void PlayingScreen::Draw_InGame_UI(){
 	/////////////////
 	vali = PDraw::font_write_line(fontti1,tekstit->Get_Text(PK_txt.game_energy),60,my);
 
-	SpriteClass* Player_Sprite = Game->playerSprite;
-	ShadowedText_Draw(std::to_string(Player_Sprite->energy), 60 + vali, my);
+	//SpriteClass* Game->playerSprite = Game->playerSprite;
+	ShadowedText_Draw(std::to_string(Game->playerSprite->energy), 60 + vali, my);
 
 	/////////////////
 	// Draw Invisible
 	/////////////////
-	if(Player_Sprite->super_mode_timer > 0){
+	if(Game->playerSprite->super_mode_timer > 0){
 		vali = PDraw::font_write_line(fontti1, tekstit->Get_Text(PK_txt.game_supermode),60,my+27);
-		//sprintf(luku, "%i", Player_Sprite->invisible_timer/60);
-		std::string super_mode_timer_s = std::to_string(Player_Sprite->super_mode_timer/60);
+		//sprintf(luku, "%i", Game->playerSprite->invisible_timer/60);
+		std::string super_mode_timer_s = std::to_string(Game->playerSprite->super_mode_timer/60);
 		PDraw::font_write_line(fontti2,super_mode_timer_s,60+vali+1,my+27+1);
 		PDraw::font_write_line(fontti2,super_mode_timer_s,60+vali,my+27);
 	}
 
-	else if(Player_Sprite->invisible_timer > 0){
+	else if(Game->playerSprite->invisible_timer > 0){
 		vali = PDraw::font_write_line(fontti1,tekstit->Get_Text(PK_txt.game_invisible),60,my+27);
-		//sprintf(luku, "%i", Player_Sprite->invisible_timer/60);
-		std::string invisible_timer_s = std::to_string(Player_Sprite->invisible_timer/60);
+		//sprintf(luku, "%i", Game->playerSprite->invisible_timer/60);
+		std::string invisible_timer_s = std::to_string(Game->playerSprite->invisible_timer/60);
 		PDraw::font_write_line(fontti2,invisible_timer_s,60+vali+1,my+27+1);
 		PDraw::font_write_line(fontti2,invisible_timer_s,60+vali,my+27);
 	}
@@ -287,14 +286,14 @@ void PlayingScreen::Draw_InGame_UI(){
 	/////////////////
 	// Draw Ammunition
 	/////////////////
-	if (Player_Sprite->ammo2 != nullptr){
+	if (Game->playerSprite->ammo2 != nullptr){
 		PDraw::font_write_line(fontti1,tekstit->Get_Text(PK_txt.game_attack1), screen_width-170,my);
-		Player_Sprite->ammo2->draw(screen_width-170,my+10,0);
+		Game->playerSprite->ammo2->draw(screen_width-170,my+10,0);
 	}
 
-	if (Player_Sprite->ammo1 != nullptr){
+	if (Game->playerSprite->ammo1 != nullptr){
 		PDraw::font_write_line(fontti1,tekstit->Get_Text(PK_txt.game_attack2), screen_width-90,my+15);
-		Player_Sprite->ammo1->draw(screen_width-90,my+25,0);
+		Game->playerSprite->ammo1->draw(screen_width-90,my+25,0);
 	}
 
 	/////////////////
@@ -331,8 +330,7 @@ void PlayingScreen::drawDevStuff(){
 }
 
 void PlayingScreen::Draw() {
-	SpriteClass* Player_Sprite = Game->playerSprite;
-	LevelSector* sector = Player_Sprite->level_sector;
+	LevelSector* sector = Game->playerSprite->level_sector;
 
 
 	debug_drawn_sprites = 0;
@@ -383,7 +381,7 @@ void PlayingScreen::Draw() {
 
 	} else if (Game->game_over) {
 
-		if (Player_Sprite->energy < 1) {
+		if (Game->playerSprite->energy < 1) {
 			const std::string& txt = tekstit->Get_Text(PK_txt.game_ko);
 			std::pair<int, int> p = PDraw::font_get_text_size(fontti2, txt);
 

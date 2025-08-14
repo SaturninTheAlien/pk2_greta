@@ -5,7 +5,6 @@
 #include <list>
 
 class LevelSector;
-class PrototypesHandler;
 
 class SpritesHandler{
 public:
@@ -74,9 +73,12 @@ public:
 
 
     nlohmann::json toJson()const;
-    void fromJSON(const nlohmann::json& j, PrototypesHandler& handler);
+    void fromJSON(const nlohmann::json& j, PrototypesHandler& handler, LevelSector*sector);
 
 
+    std::size_t size()const{
+        return this->Sprites_List.size();
+    }
 private:
     SpriteClass* getSpriteById(std::size_t id);
 

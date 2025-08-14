@@ -255,6 +255,7 @@ void LevelClass::loadVersion13(PFile::Path path, bool headerOnly){
 
 	sector->background->scrolling = scrolling;
 	sector->weather = weather;
+	sector->name = "legacy sector";
 
 	// sprite prototypes
 
@@ -395,13 +396,13 @@ void LevelClass::loadVersion15(PFile::Path path, bool headerOnly){
 		jsonReadInt(j, "fire_color_1", sector->fire_color_1);
 		jsonReadInt(j, "fire_color_2", sector->fire_color_2);
 
-		std::string custom_gfx_texture = "";
-		jsonReadString(j, "gfx", custom_gfx_texture);
-		if(custom_gfx_texture!=""){
-			sector->gfxTexture = this->mLoadGfxTexture(custom_gfx_texture);
+		jsonReadString(j, "gfx", sector->gfxTextureName);
+		if(sector->gfxTextureName!=""){
+			sector->gfxTexture = this->mLoadGfxTexture(sector->gfxTextureName);
 		}
 
 		jsonReadInt(j, "rain_color", sector->rain_color);
+		jsonReadString(j, "name", sector->name);
 
 
 		// Background tiles
@@ -469,7 +470,8 @@ void LevelClass::saveVersion15(PFile::Path path)const{
 		j["fire_color_1"] = sector->fire_color_1;
 		j["fire_color_2"] = sector->fire_color_2;
 
-		j["gfx"] = sector->gfxTexture;
+		j["name"] = sector->name;
+		j["gfx"] = sector->gfxTextureName;
 		j["rain_color"] = sector->rain_color;
 
 		file.writeCBOR(j);
