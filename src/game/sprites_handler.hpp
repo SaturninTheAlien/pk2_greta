@@ -79,9 +79,9 @@ public:
     std::size_t size()const{
         return this->Sprites_List.size();
     }
-private:
     SpriteClass* getSpriteById(std::size_t id);
 
+private:
 
     void spriteToJson(nlohmann::json& j, const SpriteClass&s)const;
     void jsonToSprite(const nlohmann::json&j, SpriteClass&s, PrototypesHandler&handler)const;

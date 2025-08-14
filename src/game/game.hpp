@@ -9,6 +9,7 @@
 
 #include "sprites_handler.hpp"
 #include "levelclass.hpp"
+#include "gifts.hpp"
 
 const int TIME_FPS = 100; //(dec)conds * TIME_FPS = FRAMES
 const int INFO_TIME = 700;
@@ -69,6 +70,19 @@ class GameClass {
 
 		int item_panel_x = -215;
 
+
+		bool change_skulls=false;
+		bool event1 = false;
+		bool event2 = false;
+
+		PrototypesHandler spritePrototypes;
+		SpriteClass* playerSprite = nullptr;
+		SpriteClass* lastCheckpoint = nullptr;
+	
+		sol::state * lua = nullptr;
+		GiftsHandler gifts;
+
+
 		GameClass(int idx);
 		GameClass(std::string level_file);
 		~GameClass();
@@ -96,15 +110,7 @@ class GameClass {
 
 		void openLocks();
 
-		bool change_skulls=false;
-		bool event1 = false;
-		bool event2 = false;
-
-		PrototypesHandler spritePrototypes;
-		SpriteClass* playerSprite = nullptr;
-		SpriteClass* lastCheckpoint = nullptr;
-	
-		sol::state * lua = nullptr;
+		
 
 		void setCamera(bool legacy_mode=false);
 		void updateCamera();

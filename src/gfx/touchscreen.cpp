@@ -358,7 +358,7 @@ void PK2TouchScreenControls::update() {
 
 			this->gui_doodle.active = Player_Sprite->ammo2 != nullptr;
 			this->gui_egg.active =  Player_Sprite->ammo1 != nullptr;
-			this->gui_gift.active = Gifts_Count() > 0;
+			this->gui_gift.active =  Game->gifts.count() > 0;
 
 			this->gui_up.active = Player_Sprite->player_c < 3;
 			this->gui_down.active = (Player_Sprite->player_c == 1 || (this->gui_up.active && Player_Sprite->weight==0));

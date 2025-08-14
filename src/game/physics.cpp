@@ -633,7 +633,7 @@ void BonusSpriteCollected(SpriteClass* sprite, SpriteClass* collector){
 
 
 		if (sprite->prototype->bonus != nullptr)
-			if (Gifts_Add(sprite->prototype->bonus))
+			if (Game->gifts.add(sprite->prototype->bonus))
 				Game->showInfo(tekstit->Get_Text(PK_txt.game_newitem));
 
 		if (sprite->prototype->transformation != nullptr){

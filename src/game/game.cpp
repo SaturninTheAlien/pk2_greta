@@ -31,6 +31,7 @@
 #include "lua/pk2_lua.hpp"
 #include "lua/lua_game_events.hpp"
 
+#include <optional>
 #include <cstring>
 #include <filesystem>
 #include <fstream>
@@ -314,7 +315,7 @@ void GameClass::update(int &debug_active_sprites)
 		{
 			if (PInput::Keydown(Input->open_gift) || TouchScreenControls.gift)
 			{
-				Gifts_Use(this->playerSprite->level_sector->sprites);
+				this->gifts.use(this->playerSprite->level_sector->sprites);
 				key_delay = 10;
 			}
 
@@ -341,7 +342,7 @@ void GameClass::update(int &debug_active_sprites)
 
 			if (PInput::Keydown(PInput::TAB) || PInput::Keydown(PInput::JOY_GUIDE) || TouchScreenControls.tab)
 			{
-				Gifts_ChangeOrder();
+				this->gifts.changeOrder();
 				key_delay = 10;
 			}
 		}
@@ -516,8 +517,6 @@ void GameClass::start()
 		PK2lua::DestroyGameLuaVM(this->lua);
 		this->lua = nullptr;
 	}
-
-	Gifts_Clean();	 // Reset gifts
 	Fadetext_Init(); // Reset fade text
 	TouchScreenControls.reset();
 
@@ -1032,17 +1031,21 @@ void GameClass::saveCheckpoint()const{
 	PLog::Write(PLog::INFO, "PK2", "Saving checkpoint...");
 
 	fs::path dataPath = PFilesystem::GetDataPath();
-	fs::path p1 = dataPath / "checkpoint.map";
+	fs::path p1 = dataPath / "checkpoint_level.map";
+	fs::path p2 = dataPath / "checkpoint_game.dat";
+	fs::path p3 = dataPath / "checkpoint_score.dat";
 
 	this->level.saveVersion15(PFile::Path(p1.string()));
 
-	fs::path p2 = dataPath / "checkpoint.dat";
-
-	PFile::RW file = PFile::Path(p2.string()).GetRW2("w");
-	file.writeCBOR(this->toJson());
-	file.close();
+	PFile::RW file2 = PFile::Path(p2.string()).GetRW2("w");
+	file2.writeCBOR(this->toJson());
+	file2.close();
 	
 	PLog::Write(PLog::DEBUG, "PK2", "Checkpoint saved!");
+
+	PFile::RW file3 = PFile::Path(p3.string()).GetRW2("w");
+	file3.write(this->score);
+	file3.close();
 }
 
 
@@ -1051,8 +1054,10 @@ void GameClass::loadCheckpoint(){
 	PLog::Write(PLog::INFO, "PK2", "Loading checkpoint...");
 
 	fs::path dataPath = PFilesystem::GetDataPath();
-	fs::path p1 = dataPath / "checkpoint.map";
-	fs::path p2 = dataPath / "checkpoint.dat";
+	fs::path p1 = dataPath / "checkpoint_level.map";
+	fs::path p2 = dataPath / "checkpoint_game.dat";
+	//fs::path p3 = dataPath / "checkpoint_score.dat";
+
 
 	/*this->level.clear();
 	this->level.load(PFile::Path(p1.string()), false);*/
@@ -1105,6 +1110,13 @@ nlohmann::json GameClass::toJson() const
 	j["event1"] = this->event1;
 	j["event2"] = this->event2;
 
+	if(this->lastCheckpoint==nullptr){
+		j["last_cp_id"] = nullptr;
+	}
+	else{
+		j["last_cp_id"] = this->lastCheckpoint->id;
+	}
+
 	std::vector<nlohmann::json> sprites;
 	for (const LevelSector *sector : this->level.sectors)
 	{
@@ -1112,6 +1124,7 @@ nlohmann::json GameClass::toJson() const
 	}
 
 	j["sprites"] = sprites;
+	j["gifts"] = this->gifts.toJson();
 
 	return j;
 }
@@ -1157,19 +1170,32 @@ void GameClass::fromJson(const nlohmann::json &j)
 	j.at("event2").get_to(this->event2);
 	// Restore sprites for each sector
 	const auto &sprites_json = j.at("sprites");
+
+	std::optional<std::size_t> lastCheckpointId;
+	if(!j.at("last_cp_id").is_null()){
+		lastCheckpointId = j.at("last_cp_id").get<std::size_t>();
+	}
+
+	this->lastCheckpoint = nullptr;
+
 	for (size_t i = 0; i < sprites_json.size() && i < this->level.sectors.size(); ++i)
 	{
 		LevelSector* sector =  this->level.sectors.at(i);
 		SpritesHandler& sprites = sector->sprites;
-
-		
-
 		sprites.fromJSON(sprites_json[i], this->spritePrototypes, sector);
 		if(sprites.Player_Sprite!=nullptr){
 			this->playerSprite = sprites.Player_Sprite;
 		}
-	}
 
+		if(lastCheckpointId.has_value()){
+			SpriteClass * s = sprites.getSpriteById(*lastCheckpointId);
+			if(s!=nullptr){
+				this->lastCheckpoint = s;
+			}
+		}
+	}
+	this->gifts.fromJson(j.at("gifts"), this->spritePrototypes);
+	
 	// Update camera and GFX texture
 	this->setCamera();
 	this->gfxTexture = this->playerSprite->level_sector->gfxTexture;

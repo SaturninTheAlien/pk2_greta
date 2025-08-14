@@ -150,7 +150,7 @@ void PlayingScreen::Draw_InGame_DevKeys() {
 
 
 
-void PlayingScreen::Draw_InGame_Gifts() {
+/*void PlayingScreen::Draw_InGame_Gifts() {
 
 	int x,y;
 
@@ -162,7 +162,7 @@ void PlayingScreen::Draw_InGame_Gifts() {
 			Gifts_Draw(i, x, y);
 			x += 38;
 		}
-}
+}*/
 
 void PlayingScreen::Draw_InGame_Lower_Menu() {
 	int x, y;
@@ -214,10 +214,11 @@ void PlayingScreen::Draw_InGame_Lower_Menu() {
 	/////////////////
 	// Draw Gifts
 	/////////////////
-	if (Gifts_Count() > 0 && Game->item_panel_x < 10)
+
+	if (Game->gifts.count() > 0 && Game->item_panel_x < 10)
 	Game->item_panel_x++;
 
-	if (Gifts_Count() == 0 && Game->item_panel_x > -215)
+	if (Game->gifts.count() == 0 && Game->item_panel_x > -215)
 		Game->item_panel_x--;
 
 	if (Game->item_panel_x > -215)
@@ -226,7 +227,7 @@ void PlayingScreen::Draw_InGame_Lower_Menu() {
 	if (Game->item_panel_x > 5)
 		PDraw::font_write_line(fontti1,tekstit->Get_Text(PK_txt.game_items),15,screen_height-65);
 
-	Draw_InGame_Gifts();
+	Game->gifts.draw(Game->item_panel_x + 35, screen_height-35);
 }
 
 void PlayingScreen::Draw_InGame_UI(){
@@ -355,7 +356,7 @@ void PlayingScreen::Draw() {
 		Draw_InGame_Lower_Menu();
 	}
 	
-	else if (Gifts_Count() > 0){
+	else if (Game->gifts.count() > 0){
 		Game->item_panel_x = 10;
 	}
 	else{
