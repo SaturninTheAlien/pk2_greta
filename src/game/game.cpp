@@ -35,6 +35,7 @@
 #include <cstring>
 #include <filesystem>
 #include <fstream>
+#include <iostream>
 
 
 namespace fs = std::filesystem;
@@ -508,7 +509,6 @@ void GameClass::startSupermodeMusic()
 
 void GameClass::start()
 {
-
 	if (this->started)
 		return;
 
@@ -517,13 +517,52 @@ void GameClass::start()
 		PK2lua::DestroyGameLuaVM(this->lua);
 		this->lua = nullptr;
 	}
+
 	Fadetext_Init(); // Reset fade text
-	TouchScreenControls.reset();
+	TouchScreenControls.reset();	
+	
+	std::optional<PFile::Path> levelPath = PFilesystem::FindEpisodeAsset(level_file, "");
+	if (!levelPath.has_value())
+	{
+		throw PExcept::PException("Cannot find the level file: \"" + level_file + "\"!");
+	}
+	level.load(*levelPath, false);
 
-	if (this->Open_Map() == 1)
-		throw PExcept::PException("Can't load level");
+	/**
+	 * @brief
+	 * Load lua
+	 */
+	if (this->level.lua_script != "")
+	{
+		this->lua = PK2lua::CreateGameLuaVM(this->level.lua_script);
+	}
+	else
+	{
+		PLog::Write(PLog::INFO, "PK2lua", "No Lua scripting in this level");
+	}
 
+	this->timeout = level.map_time * TIME_FPS;
+
+	if (timeout > 0)
+		this->has_time = true;
+	else
+		this->has_time = false;
+
+	this->level.button1_time = SWITCH_INITIAL_VALUE;
+	this->level.button2_time = SWITCH_INITIAL_VALUE;
+	this->level.button3_time = SWITCH_INITIAL_VALUE;
 	this->moveBlocks();
+
+	this->placeSprites();
+
+	Particles_Clear();
+
+	LevelSector *sector = this->playerSprite->level_sector;
+
+	BG_Particles::Init(sector->weather, sector->rain_color);
+	sector->startMusic();
+
+	//this->moveBlocks();
 
 	PSound::set_musicvolume(Settings.music_max_volume);
 
@@ -573,59 +612,6 @@ void GameClass::finish()
 	}
 
 	PSound::set_musicvolume_now(Settings.music_max_volume);
-}
-
-int GameClass::Open_Map()
-{
-
-	std::optional<PFile::Path> levelPath = PFilesystem::FindEpisodeAsset(level_file, "");
-	if (!levelPath.has_value())
-	{
-		throw PExcept::PException("Cannot find the level file: \"" + level_file + "\"!");
-	}
-	level.load(*levelPath, false);
-
-	/**
-	 * @brief
-	 * Load lua
-	 */
-	if (this->level.lua_script != "")
-	{
-		this->lua = PK2lua::CreateGameLuaVM(this->level.lua_script);
-	}
-	else
-	{
-		PLog::Write(PLog::INFO, "PK2lua", "No Lua scripting in this level");
-	}
-
-	timeout = level.map_time * TIME_FPS;
-
-	if (timeout > 0)
-		has_time = true;
-	else
-		has_time = false;
-
-	// if (!Episode->use_button_timer) {
-	level.button1_time = SWITCH_INITIAL_VALUE;
-	level.button2_time = SWITCH_INITIAL_VALUE;
-	level.button3_time = SWITCH_INITIAL_VALUE;
-	//}
-
-	this->placeSprites();
-	this->level.calculateBlockTypes();
-	for (LevelSector *sector : this->level.sectors)
-	{
-		sector->calculateEdges();
-	}
-
-	Particles_Clear();
-
-	LevelSector *sector = this->playerSprite->level_sector;
-
-	BG_Particles::Init(sector->weather, sector->rain_color);
-	sector->startMusic();
-
-	return 0;
 }
 
 void GameClass::placeSprites()
@@ -1059,8 +1045,8 @@ void GameClass::loadCheckpoint(){
 	//fs::path p3 = dataPath / "checkpoint_score.dat";
 
 
-	/*this->level.clear();
-	this->level.load(PFile::Path(p1.string()), false);*/
+	this->level.clearSectors();
+	this->level.load(PFile::Path(p1.string()), false);
 
 	this->lastCheckpoint = nullptr;
 
@@ -1131,9 +1117,6 @@ nlohmann::json GameClass::toJson() const
 
 void GameClass::fromJson(const nlohmann::json &j)
 {
-
-	std::cout<<"C1"<<std::endl;
-
 	// Restore basic game state
 	j.at("game_over").get_to(this->game_over);
 	j.at("level_clear").get_to(this->level_clear);

@@ -91,6 +91,7 @@ class LevelClass {
     }
 
     void clear();
+    void clearSectors();
 
     void load(PFile::Path path, bool headerOnly);
 

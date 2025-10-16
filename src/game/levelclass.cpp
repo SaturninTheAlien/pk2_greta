@@ -40,8 +40,7 @@ LevelClass::LevelClass(){
 
 }
 
-
-void LevelClass::clear(){
+void LevelClass::clearSectors(){
 	for(LevelSector*& sector:this->sectors){
 		if(sector!=nullptr){
 			delete sector;
@@ -49,6 +48,11 @@ void LevelClass::clear(){
 		}
 	}
 	this->sectors.clear();
+}
+
+void LevelClass::clear(){
+
+	this->clearSectors();	
 
 	for(Tileset*& tileset:this->mTilesets){
 		if(tileset!=nullptr){
@@ -122,6 +126,14 @@ void LevelClass::load(PFile::Path path, bool headerOnly) {
 		PLog::Write(PLog::ERR,"PK2",e.what());
 		throw PExcept::FileNotFoundException(path.c_str(), PExcept::MISSING_LEVEL);
 	}
+
+	for(LevelSector*sector: this->sectors){
+		sector->calculateColors();
+		sector->calculateEdges();
+	}
+
+	//TODO - redesign it!
+	this->calculateBlockTypes();
 }
 
 
@@ -491,11 +503,6 @@ void LevelClass::saveVersion15(PFile::Path path)const{
 
 
 void LevelClass::calculateBlockTypes(){
-
-	for(LevelSector*sector: this->sectors){
-		sector->calculateColors();
-	}
-
 	PK2BLOCK block;
 
 	for (int i=0;i<150;i++){

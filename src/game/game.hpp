@@ -92,9 +92,7 @@ class GameClass {
 		void start();
 		void finish();
 
-		void moveBlocks(){
-			this->level.moveBlocks(this->button1, this->button2, this->button3);
-		}
+		
 
 
 		void showInfo(const std::string& text);
@@ -132,6 +130,11 @@ class GameClass {
 		void loadCheckpoint();
 
 	private:
+
+		void moveBlocks(){
+			this->level.moveBlocks(this->button1, this->button2, this->button3);
+		}
+
 		void exposePlayerToAIs();
 
 		nlohmann::json toJson()const;
@@ -141,8 +144,6 @@ class GameClass {
 		PrototypeClass* initialPlayerPrototype = nullptr;
 		int level_id = -1;
 		bool started = false;
-		int Open_Map();
-
 };
 
 extern GameClass* Game;
