@@ -45,7 +45,8 @@ void ExposeMiscAPI(sol::table& PK2_API){
     PK2_API["getSector"] = GetSector;
 
 
-    PK2_API["saveCheckpoint"] = [](){Game->saveCheckpoint();};
+    PK2_API["saveGameState"] = [](){Game->saveGameState();};
+    PK2_API["loadGameState"] = [](){Game->loadGameState();};
 }
 
 

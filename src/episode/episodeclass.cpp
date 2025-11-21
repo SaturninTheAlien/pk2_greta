@@ -367,6 +367,7 @@ void EpisodeClass::load() {
 			this->supermode_music = config.getBoolean("supermode_music", true);
 			this->legacy_start_offset = config.getBoolean("legacy_start_offset", false);
 			this->legacy_camera_offset = config.getBoolean("legacy_camera_offset", false);
+			this->checkpointPenalty = config.getInteger("checkpoint_penalty", 150);
 		}
 		else{
 			PLog::Write(PLog::ERR, "PK2", "Cannot open episode config file.");

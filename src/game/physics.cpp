@@ -452,6 +452,9 @@ void SpriteOnDeath(SpriteClass* sprite){
 		}
 	}
 
+	/**
+	 * killed enemies counter
+	 * */
 	if(sprite->original
 	&& sprite->prototype->type == TYPE_GAME_CHARACTER
 	&& !sprite->prototype->indestructible //to ignore indestructible
@@ -465,7 +468,8 @@ void SpriteOnDeath(SpriteClass* sprite){
 	}
 
 	if(Game->lastCheckpoint==sprite){
-		Game->lastCheckpoint=nullptr;
+		Game->showInfo("Your checkpoint was destroyed!");
+		Game->lastCheckpoint = nullptr;
 	}
 }
 
@@ -1546,14 +1550,18 @@ void UpdateSprite(SpriteClass* sprite){
 				sprite->y/*top*/ <= Player_Sprite->y + Player_Sprite->prototype->height/2 &&
 				sprite->y/*bottom*/ >= Player_Sprite->y - Player_Sprite->prototype->height/2 + sprite2_yla){
 
-			Game->showInfo("A new checkpoint!");
 
-			sprite->target_sprite = Player_Sprite;
+			if(Game->score > Episode->checkpointPenalty){
+				sprite->target_sprite = Player_Sprite;
+				Game->lastCheckpoint = sprite;
+				sprite->attack1_timer = sprite->prototype->attack1_time;
 
-			Game->lastCheckpoint = sprite;
-			sprite->attack1_timer = sprite->prototype->attack1_time;
-
-			Game->saveCheckpoint();
+				Game->saveGameState();
+				Game->showInfo("A new checkpoint!");
+			}
+			else{
+				Game->showInfo("Too low score!");
+			}			
 		}
 	}
 	sprite->initial_update = false;

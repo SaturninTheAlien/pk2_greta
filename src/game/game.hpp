@@ -126,10 +126,10 @@ class GameClass {
 			return this->level_id;
 		}
 		
-		void saveCheckpoint()const;
-		void loadCheckpoint();
-
+		void saveGameState()const;
+		void loadGameState();
 	private:
+		bool hasEnoughPointsToRespawn();
 
 		void moveBlocks(){
 			this->level.moveBlocks(this->button1, this->button2, this->button3);

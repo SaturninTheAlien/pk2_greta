@@ -38,6 +38,8 @@
 #include <iostream>
 
 
+static const char * CHECKPOINT_DIR_NAME = "checkpoint";
+
 namespace fs = std::filesystem;
 
 GameClass *Game = nullptr;
@@ -289,13 +291,15 @@ void GameClass::update(int &debug_active_sprites)
 			if (this->game_over)
 			{
 
-				if (this->lastCheckpoint != nullptr && (!this->has_time || this->timeout > 0))
+				if (this->lastCheckpoint != nullptr && this->hasEnoughPointsToRespawn())
 				{
-					// PlayerRespawnOnCheckpoint(Player_Sprite, this->lastCheckpoint);
 					this->game_over = false;
 					this->exit_timer = 0;
 					key_delay = 20;
-					this->loadCheckpoint();
+
+					int t_score = this->score;
+					this->loadGameState();
+					if(this->score > t_score)this->score = t_score;
 				}
 				else
 				{
@@ -1012,14 +1016,14 @@ void GameClass::updateCamera()
 }
 
 
-void GameClass::saveCheckpoint()const{
+void GameClass::saveGameState()const{
 
 	PLog::Write(PLog::INFO, "PK2", "Saving checkpoint...");
 
 	fs::path dataPath = PFilesystem::GetDataPath();
-	fs::path p1 = dataPath / "checkpoint_level.map";
-	fs::path p2 = dataPath / "checkpoint_game.dat";
-	fs::path p3 = dataPath / "checkpoint_score.dat";
+	fs::path p1 = dataPath / CHECKPOINT_DIR_NAME / "level.map";
+	fs::path p2 = dataPath / CHECKPOINT_DIR_NAME / "game.dat";
+	fs::path p3 = dataPath / CHECKPOINT_DIR_NAME / "score.dat";
 
 	this->level.saveVersion15(PFile::Path(p1.string()));
 
@@ -1034,27 +1038,50 @@ void GameClass::saveCheckpoint()const{
 	file3.close();
 }
 
+bool GameClass::hasEnoughPointsToRespawn(){
 
-void GameClass::loadCheckpoint(){
+	if(Episode->checkpointPenalty<=0)return true;
+
+	fs::path dataPath = PFilesystem::GetDataPath();
+	fs::path p3 = dataPath / CHECKPOINT_DIR_NAME / "score.dat";
+
+	PFile::RW in = PFile::Path(p3.string()).GetRW2("r");
+	in.read(this->score);
+	in.close();
+
+	if(this->score < Episode->checkpointPenalty){
+		return false;
+	}
+	this->score -= Episode->checkpointPenalty;
+	PFile::RW out = PFile::Path(p3.string()).GetRW2("w");
+	out.write(this->score);
+	out.close();
+
+	return true;
+}
+
+
+void GameClass::loadGameState(){
 
 	PLog::Write(PLog::INFO, "PK2", "Loading checkpoint...");
 
 	fs::path dataPath = PFilesystem::GetDataPath();
-	fs::path p1 = dataPath / "checkpoint_level.map";
-	fs::path p2 = dataPath / "checkpoint_game.dat";
-	//fs::path p3 = dataPath / "checkpoint_score.dat";
+	fs::path p1 = dataPath / CHECKPOINT_DIR_NAME / "level.map";
+	fs::path p2 = dataPath / CHECKPOINT_DIR_NAME / "game.dat";
+	fs::path p3 = dataPath / CHECKPOINT_DIR_NAME / "score.dat";
 
 
 	this->level.clearSectors();
 	this->level.load(PFile::Path(p1.string()), false);
-
 	this->lastCheckpoint = nullptr;
+	
 
 	PFile::RW file = PFile::Path(p2.string()).GetRW2("r");
 
 	this->fromJson(file.readCBOR());
 	file.close();
 
+	this->info_timer = 0;
 	PLog::Write(PLog::DEBUG, "PK2", "Checkpoint loaded!");
 }
 
