@@ -464,8 +464,8 @@ void LevelClass::saveVersion15(PFile::Path path)const{
 	for(LevelSector* sector:this->sectors){
 		nlohmann::json j;
 
-		j["width"] = PK2MAP_MAP_WIDTH;
-		j["height"]= PK2MAP_MAP_HEIGHT;		
+		j["width"] = sector->getWidth();
+		j["height"]= sector->getHeight();		
 
 		j["tileset"] = sector->tileset1->name;
 		if(sector->tileset2!=nullptr){
