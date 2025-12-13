@@ -1722,7 +1722,8 @@ void UpdateBonusSprite(SpriteClass* sprite){
 						BonusSpriteCollected(sprite, sprite2);
 					}
 
-					else if (sprite2->prototype->type != TYPE_BONUS){
+					//Character sprite pushing a bonus
+					else if (sprite2->prototype->type != TYPE_BONUS && (!sprite2->prototype->ambient || sprite2->player_c!=0) ){
 						sprite->a += sprite2->a*(rand()%4);
 					}
 
