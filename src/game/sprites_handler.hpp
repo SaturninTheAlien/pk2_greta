@@ -81,6 +81,7 @@ public:
     }
     SpriteClass* getSpriteById(std::size_t id);
 
+    SpriteClass* findNearestTarget(const SpriteClass* agent)const;
 private:
 
     void spriteToJson(nlohmann::json& j, const SpriteClass&s)const;

@@ -532,6 +532,38 @@ SpriteClass* SpritesHandler::getSpriteById(std::size_t id){
 	return nullptr;
 }
 
+
+SpriteClass* SpritesHandler::findNearestTarget(const SpriteClass* agent)const{
+	if(agent==nullptr) return nullptr;
+		
+	SpriteClass * result = nullptr;
+	double result_d2 = std::numeric_limits<double>::infinity();
+
+	for(SpriteClass* sprite: this->Sprites_List){
+
+		if(sprite->active &&
+		sprite!=agent &&
+		sprite->energy > 0 &&
+		!sprite->prototype->ambient &&
+		(sprite->enemy != agent->enemy || sprite->prototype->hostile_to_everyone || agent->prototype->hostile_to_everyone) &&
+		agent->canDamageOnCollision(sprite)){
+
+			double dx = sprite->x - agent->x;
+			double dy = sprite->y - agent->y;
+
+			double d2 = dx*dx + dy*dy;
+			
+			if(d2 < result_d2){
+				result = sprite;
+				result_d2 = d2;
+			}			
+		}
+	}
+	
+	return result;
+}
+
+
 nlohmann::json SpritesHandler::toJson()const{
 	std::vector<nlohmann::json> vec;
 	for(SpriteClass *sprite: this->Sprites_List){

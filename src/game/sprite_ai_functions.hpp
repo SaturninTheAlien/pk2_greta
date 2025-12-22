@@ -97,7 +97,6 @@ void UncontrollablePlayer2(SpriteClass* s);
 
 
 void MaxSpeedPlayer(SpriteClass*s);
-void MaxSpeedSwimming(SpriteClass*s);
 void MaxSpeedOnSuper(SpriteClass*s);
 void NpcCollectBonuses(SpriteClass*s);
 
@@ -109,7 +108,10 @@ void CannotBePushed(SpriteClass*s);
 void TransformIfTouchesFloor(SpriteClass*s);
 void TransformIfTouchesWall(SpriteClass*s);
 
-void WienerProcess(SpriteClass*s);
+
+void Follow_Enemy_X(SpriteClass*s);
+void Follow_Enemy_Y(SpriteClass*s);
+void Follow_Enemy_Diagonally(SpriteClass*s);
 
 /**
  * @brief 
