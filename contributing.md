@@ -1,12 +1,9 @@
 # Contributing to Pekka Kana 2
 
-## This file is obsolete! If you want to contribute, join our Discord server and discuss it first.
-
 ![pekka](res/gfx/manual/chick.png?raw=true)
 Thank you for your interest in contributing to Pekka Kana 2.
 All contributions are welcome, whether they are code, bug fixes,
 documentation, tooling, or other improvements.
-
 
 ## Licensing of contributions
 
@@ -24,6 +21,11 @@ documentation, tooling, or other improvements.
   Contributors should not include version numbers (`vx.xxx`) in commit messages or pull
   requests. The version is assigned when changes are merged into `main`.
 
+- By submitting a Pull Request, you confirm that your changes are stable,
+  complete, and ready to be merged into the main branch.
+  Please do not submit Work-In-Progress (WIP) Pull Requests.
+  Pull Requests are not a discussion forum — if you want to discuss ideas
+  or unfinished work, please use Issues or Discord instead.
 
 ### Game content guidelines
 
