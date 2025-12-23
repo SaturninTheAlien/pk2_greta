@@ -31,12 +31,6 @@ SpriteClass* AddSprite2(PrototypeClass* prototype, double x, double y){
     return Game->playerSprite->level_sector->sprites.addLuaSprite(prototype, x, y);
 }
 
-
-SpriteClass* FindNearestTarget(SpriteClass* agent){
-    if(agent==nullptr)return nullptr;
-    return agent->level_sector->sprites.findNearestTarget(agent);
-}
-
 void ForEachCreature(sol::object o){
 
     if(o.is<std::function<void(SpriteClass* s)>>()){
@@ -115,8 +109,6 @@ void ExposeSpriteListAPI(sol::table& PK2_API){
      */
     PK2_API["forEachCreature"] = ForEachCreature;    
     PK2_API["forEachSprite"] = ForEachSprite;
-
-    PK2_API["findNearestTarget"] = FindNearestTarget;
 }
 
 }

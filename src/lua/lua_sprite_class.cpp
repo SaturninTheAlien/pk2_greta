@@ -50,6 +50,11 @@ void SpriteMakeSound(SpriteClass*sprite, int soundIndex){
     }
 }
 
+SpriteClass* SpriteFindNearestTarget(SpriteClass* agent){
+    if(agent==nullptr)return nullptr;
+    return agent->level_sector->sprites.findNearestTarget(agent);
+}
+
 void ExposeSpriteClass(sol::state& lua){
     lua.new_usertype<SpriteClass>(
         "SpriteClass",
@@ -69,7 +74,7 @@ void ExposeSpriteClass(sol::state& lua){
         "flyToWaypointX", &SpriteClass::flyToWaypointX,
         "flyToWaypointY", &SpriteClass::flyToWaypointY,
         "flyToWaypointXY", &SpriteClass::flyToWaypointXY,
-
+        "findNearestTarget", &SpriteFindNearestTarget,
         "makeSound", &SpriteMakeSound,
 
         /**
