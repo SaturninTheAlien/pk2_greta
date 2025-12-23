@@ -81,6 +81,7 @@ class EpisodeClass {
 		bool supermode_music = true;
 		bool legacy_start_offset = false;
 		bool legacy_camera_offset = false;
+		bool legacy_obstacle_phasing = false;
 		int checkpointPenalty = 150;
 
 		ScoresTable scoresTable;

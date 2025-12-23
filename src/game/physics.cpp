@@ -1080,8 +1080,14 @@ void UpdateSprite(SpriteClass* sprite){
 							spritepalikka.left_side = BLOCK_BACKGROUND;
 					}
 
-					if (sprite2->a > 0)
+					if(Episode->legacy_obstacle_phasing){
+						if(sprite2->a > 0){
+							spritepalikka.id = BLOCK_LIFT_HORI;
+						}
+					}
+					else if (sprite2->a != 0){
 						spritepalikka.id = BLOCK_LIFT_HORI;
+					}						
 
 					if (sprite2->b > 0)
 						spritepalikka.id = BLOCK_LIFT_VERT;
