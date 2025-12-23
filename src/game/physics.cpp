@@ -27,6 +27,9 @@
 #include "engine/PInput.hpp"
 #include "engine/PSound.hpp"
 
+
+#include "lua/lua_game_events.hpp"
+
 #include <cstring>
 
 static double sprite_left;
@@ -139,6 +142,11 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 			case GAME_MODE_STANDARD:
 				if(sprite == Game->playerSprite){
 					Game->finish();
+				}
+				break;
+			case GAME_MODE_LUA_EXIT:
+				if(sprite == Game->playerSprite){
+					PK2lua::TriggerEventListeners(PK2lua::LUA_EVENT_EXIT_TOUCHED);
 				}
 				break;
 			case GAME_MODE_CHICK:

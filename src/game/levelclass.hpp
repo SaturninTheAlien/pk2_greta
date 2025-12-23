@@ -23,7 +23,8 @@ typedef struct {
 enum{
     GAME_MODE_STANDARD = 0,
     GAME_MODE_KILL_ALL, //1
-    GAME_MODE_CHICK //2
+    GAME_MODE_CHICK, //2
+    GAME_MODE_LUA_EXIT, //3    
 };
 
 class LevelClass {
