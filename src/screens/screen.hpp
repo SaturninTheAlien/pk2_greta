@@ -25,17 +25,13 @@ enum SCREEN_TYPE {
 class Screen{
 public:
 	bool keys_move = false;
-
-	static unsigned int chosen_menu_id;
-	static unsigned int selected_menu_id;
-	
 	static int next_screen;
 	virtual ~Screen(){}
 	virtual void Init()=0;
 	virtual void Loop()=0;
 	static bool closing_game;
 protected:
-	static bool Draw_Menu_Text(int id, int x, int y);
-	static bool Draw_Menu_Text(const std::string& text, int x, int y);
-	static void Fade_Quit();	
+	bool drawMenuText(int id, int x, int y);
+	virtual bool drawMenuTextS(const std::string& text, int x, int y);
+	static void fadeQuit();	
 };

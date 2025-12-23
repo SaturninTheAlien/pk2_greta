@@ -450,7 +450,7 @@ void PlayingScreen::Loop(){
 			if (PInput::Keydown(PInput::ESCAPE) || PInput::Keydown(PInput::JOY_START) ||
 			TouchScreenControls.menu || TouchScreenControls.touch) {
 				if(test_level)
-					Fade_Quit();
+					fadeQuit();
 				else {
 					next_screen = SCREEN_MENU;
 					degree_temp = degree;

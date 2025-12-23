@@ -32,7 +32,16 @@ public:
     void Init();
     void Loop();
     void Draw();
+protected:
+    unsigned int chosen_menu_id = 0;
+    unsigned int menus_count = 0;
+    bool drawMenuTextS(const std::string& text, int x, int y);
+
 private:
+
+    void drawMenuTextControls(const std::string& text, unsigned int key, int x, int y);
+
+
     class MenuRect{
     public:
         int left = 0;
@@ -43,7 +52,7 @@ private:
 
     MenuRect bg_square;
     int menu_nyt = MENU_MAIN;
-    int menu_lue_kontrollit = 0;
+    unsigned int selected_control_key = 0;
  
     PK2gui::TextInput playerNameEdit;
 

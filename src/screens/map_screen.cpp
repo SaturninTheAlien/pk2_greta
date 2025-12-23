@@ -102,7 +102,7 @@ void MapScreen::Draw() {
 	}
 	
 	if (!going_to_game) {
-		if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.mainmenu_return),100,430))
+		if (drawMenuText(PK_txt.mainmenu_return,100,430))
 			next_screen = SCREEN_MENU;
 	} else {
 		WavetextSlow_Draw(tekstit->Get_Text(PK_txt.mainmenu_return).c_str(), fontti2, 100, 430);

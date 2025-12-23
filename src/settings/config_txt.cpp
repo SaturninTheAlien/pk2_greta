@@ -47,8 +47,9 @@ static const char default_config[] =
 
 "\r\n-- To be able to complete the game as a killed player."
 "\r\n-- It was a legacy bug and was removed in 1.5.0"
-"\r\n-- But some speedrunners requested it to reimplement"
-"\r\n*dead_level_finish:	 false"
+"\r\n-- But some players requested it to be reimplemented."
+"\r\n-- And so many players requested it that it's enabled by default now."
+"\r\n*dead_level_finish:	 true"
 "\r\n"
 "\r\n"
 "\r\n"

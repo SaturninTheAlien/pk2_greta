@@ -113,14 +113,64 @@ void MenuScreen::Draw_BGSquare(int left, int top, int right, int bottom, u8 pvar
 	PDraw::screen_fill(right-1,top,right,bottom,138);
 }
 
+
+bool MenuScreen::drawMenuTextS(const std::string& text, int x, int y){
+	const int TEXT_H = 20; 
+
+	int length = text.size() * 15;
+
+	bool mouse_on = PInput::mouse_x > x && PInput::mouse_x < x + length 
+		&& PInput::mouse_y > y && PInput::mouse_y < y + TEXT_H
+		&& !mouse_hidden;
+
+	if ( mouse_on || (chosen_menu_id == menus_count) ) {
+
+		chosen_menu_id = menus_count;
+		Wavetext_Draw(text.c_str(), fontti3, x, y);//
+
+		int c = Clicked();
+		if ( (c == 1 && mouse_on) || (c > 1) ) {
+
+			Play_MenuSFX(sfx_global.menu_sound, 100);
+			key_delay = 20;
+			menus_count++;
+			
+			return true;
+
+		}
+	} else {
+	
+		WavetextSlow_Draw(text.c_str(), fontti2, x, y);
+	
+	}
+
+	menus_count++;
+	return false;
+
+}
+
+void MenuScreen::drawMenuTextControls(const std::string& text, unsigned int key, int x, int y){
+	if(this->selected_control_key==0){
+		if(this->drawMenuTextS(text, x, y)){
+			this->selected_control_key = key;
+		}
+	}
+	else if(this->selected_control_key==key){
+		PDraw::font_write_line(fontti3, text, x, y);
+	}
+	else{
+		PDraw::font_write_line(fontti2, text, x, y);
+	}
+}
+
 void MenuScreen::drawBoolBoxGroup(bool& value, bool&changed, const std::string& text_true, const std::string& text_false){
 	if (value){
-		if (Draw_Menu_Text(text_true,180,my)) {
+		if (drawMenuTextS(text_true,180,my)) {
 			value = false;
 			changed = true;
 		}
 	} else{
-		if (Draw_Menu_Text(text_false,180,my)) {
+		if (drawMenuTextS(text_false,180,my)) {
 			value = true;
 			changed = true;
 		}
@@ -147,28 +197,28 @@ int MenuScreen::Draw_BackNext(int x, int y) {
 		&& PInput::mouse_y > y && PInput::mouse_y < y + 31
 		&& !mouse_hidden;
 
-	if (mouse_on1 || chosen_menu_id == selected_menu_id) {
+	if (mouse_on1 || chosen_menu_id == menus_count) {
 		PDraw::image_cutclip(global_gfx_texture,x+randx,y+randy,566,124,566+31,124+31);
-		chosen_menu_id = selected_menu_id;
+		chosen_menu_id = menus_count;
 	} else
 		PDraw::image_cutclip(global_gfx_texture,x,y,566,124,566+31,124+31);
 
-	if (mouse_on2 || chosen_menu_id == selected_menu_id+1) {
+	if (mouse_on2 || chosen_menu_id == menus_count+1) {
 		PDraw::image_cutclip(global_gfx_texture,x+val+randx,y+randy,535,124,535+31,124+31);
-		chosen_menu_id = selected_menu_id+1;
+		chosen_menu_id = menus_count+1;
 	} else
 		PDraw::image_cutclip(global_gfx_texture,x+val,y,535,124,535+31,124+31);
 
 	int ret = 0;
 
 	int c = Clicked();
-	if ((c == 1 && mouse_on1) || (c > 1 && chosen_menu_id == selected_menu_id)) {
+	if ((c == 1 && mouse_on1) || (c > 1 && chosen_menu_id == menus_count)) {
 	
 		Play_MenuSFX(sfx_global.menu_sound, 100);
 		key_delay = 7;
 		ret = 1;
 	
-	} else if ((c == 1 && mouse_on2) || (c > 1 && chosen_menu_id == selected_menu_id + 1)) {
+	} else if ((c == 1 && mouse_on2) || (c > 1 && chosen_menu_id == menus_count + 1)) {
 	
 		Play_MenuSFX(sfx_global.menu_sound, 100);
 		key_delay = 7;
@@ -176,7 +226,7 @@ int MenuScreen::Draw_BackNext(int x, int y) {
 	
 	}
 
-	selected_menu_id += 2;
+	menus_count += 2;
 
 	return ret;
 }
@@ -205,15 +255,15 @@ int MenuScreen::Draw_Radio(int x, int y, int num, int sel) {
 		bool mouse_on = mouse_on_y && PInput::mouse_x > xn && PInput::mouse_x < xn + 31;
 
 		if (mouse_on) {
-			chosen_menu_id = selected_menu_id + i;
+			chosen_menu_id = menus_count + i;
 		}
 
-		if (chosen_menu_id == selected_menu_id + i) {
+		if (chosen_menu_id == menus_count + i) {
 			xn += randx;
 			yn += randy;
 		}
 
-		if ((c == 1 && mouse_on) || (c > 1 && chosen_menu_id == selected_menu_id + i)) {
+		if ((c == 1 && mouse_on) || (c > 1 && chosen_menu_id == menus_count + i)) {
 
 			Play_MenuSFX(sfx_global.menu_sound, 100);
 			key_delay = 10;
@@ -230,7 +280,7 @@ int MenuScreen::Draw_Radio(int x, int y, int num, int sel) {
 
 	}
 
-	selected_menu_id += num;
+	menus_count += num;
 	return ret;
 
 }
@@ -241,7 +291,7 @@ void MenuScreen::Draw_Menu_Main() {
 	Draw_BGSquare(160, 200, 640-180, 380, 224);
 	
 	if (Episode){
-		if (Draw_Menu_Text(PK_txt.mainmenu_continue,180,my)){
+		if (drawMenuText(PK_txt.mainmenu_continue,180,my)){
 			if (Game)
 				next_screen = SCREEN_GAME;
 			else
@@ -252,7 +302,7 @@ void MenuScreen::Draw_Menu_Main() {
 	}
 
 	if(config_txt.save_slots){
-		if (Draw_Menu_Text(PK_txt.mainmenu_new_game,180,my)){
+		if (drawMenuText(PK_txt.mainmenu_new_game,180,my)){
 			this->playerNameEdit.setText(config_txt.player);
 			this->playerNameEdit.startInput();
 
@@ -262,38 +312,38 @@ void MenuScreen::Draw_Menu_Main() {
 		my += 20;
 
 		if (Episode){
-			if (Draw_Menu_Text(PK_txt.mainmenu_save_game,180,my)){
+			if (drawMenuText(PK_txt.mainmenu_save_game,180,my)){
 				menu_nyt = MENU_SAVE;
 			}
 			my += 20;
 		}
 
-		if (Draw_Menu_Text(PK_txt.mainmenu_load_game,180,my)){
+		if (drawMenuText(PK_txt.mainmenu_load_game,180,my)){
 			menu_nyt = MENU_LOAD;
 		}
 		my += 20;	
 	}
 	else{
-		if (Draw_Menu_Text(PK_txt.setup_play,180,my)){
+		if (drawMenuText(PK_txt.setup_play,180,my)){
 			menu_nyt = MENU_EPISODES;
 		}
 		my += 20;
 	}
 
-	if(Draw_Menu_Text(PK_txt.setup_options,180,my)){
+	if(drawMenuText(PK_txt.setup_options,180,my)){
 		menu_nyt = MENU_SETTINGS;
 	}
 	my += 20;
 	
 	if(config_txt.links_menu == LINKS_MENU_MAIN){
-		if(Draw_Menu_Text(PK_txt.mainmenu_links,180,my)){
+		if(drawMenuText(PK_txt.mainmenu_links,180,my)){
 			menu_nyt = MENU_LINKS;
 		}
 		my += 20;
 	}
 
 	if (Settings.touchscreen_mode && Game) {
-		if (Draw_Menu_Text(PK_txt.mainmenu_map,180,my)) {
+		if (drawMenuText(PK_txt.mainmenu_map,180,my)) {
 			next_screen = SCREEN_MAP;
 
 			delete Game;
@@ -305,7 +355,7 @@ void MenuScreen::Draw_Menu_Main() {
 
 		#ifdef __ANDROID__
 
-		if (Draw_Menu_Text("Install zip",180,my)){
+		if (drawMenuText("Install zip",180,my)){
 			Android_InstallZipEpisode();
 		}
 		my += 20;
@@ -313,8 +363,8 @@ void MenuScreen::Draw_Menu_Main() {
 		#endif
 
 
-		if (Draw_Menu_Text(PK_txt.mainmenu_exit,180,my)){
-			Fade_Quit();
+		if (drawMenuText(PK_txt.mainmenu_exit,180,my)){
+			fadeQuit();
 		}
 		my += 40;
 	}
@@ -327,27 +377,27 @@ void MenuScreen::Draw_Menu_Links(){
 		my = 200;
 	}
 
-	if (Draw_Menu_Text("Discord",180,my)){
+	if (drawMenuTextS("Discord",180,my)){
 		OpenBrowser(URL_DISCORD);
 	}
 	my += 20;
-	if (Draw_Menu_Text("GitHub",180,my)){
+	if (drawMenuTextS("GitHub",180,my)){
 		OpenBrowser(URL_GITHUB);
 	}
 	my += 20;
-	if (Draw_Menu_Text("ProBoards",180,my)){
+	if (drawMenuTextS("ProBoards",180,my)){
 		OpenBrowser(URL_PROBOARDS);
 	}
 	my += 20;
-	if (Draw_Menu_Text("PisteGamez.net",180,my)){
+	if (drawMenuTextS("PisteGamez.net",180,my)){
 		OpenBrowser(URL_PISTEGAMEZ);
 	}
 	my += 20;
-	if (Draw_Menu_Text("PK2 Fanpage",180,my)){
+	if (drawMenuTextS("PK2 Fanpage",180,my)){
 		OpenBrowser(URL_MAKYUNI);
 	}
 
-	if (Draw_Menu_Text(PK_txt.mainmenu_return,180,400)){
+	if (drawMenuText(PK_txt.mainmenu_return,180,400)){
 		menu_nyt = MENU_MAIN;
 	}
 }
@@ -361,27 +411,27 @@ void MenuScreen::Draw_Menu_Settings(){
 		my = 200;
 	}
 
-	if (Draw_Menu_Text("language",180,my)){
+	if (drawMenuTextS("language",180,my)){
 		menu_nyt = MENU_LANGUAGE;
 	}
 	my += 20;
 
-	if (Draw_Menu_Text(PK_txt.mainmenu_controls,180,my)){
+	if (drawMenuText(PK_txt.mainmenu_controls,180,my)){
 		menu_nyt = MENU_CONTROLS;
 	}
 	my += 20;
 
-	if (Draw_Menu_Text(PK_txt.mainmenu_graphics,180,my)){
+	if (drawMenuText(PK_txt.mainmenu_graphics,180,my)){
 		menu_nyt = MENU_GRAPHICS;
 	}
 	my += 20;
 
-	if (Draw_Menu_Text(PK_txt.mainmenu_sounds,180,my)){
+	if (drawMenuText(PK_txt.mainmenu_sounds,180,my)){
 		menu_nyt = MENU_SOUNDS;
 	}
 	my += 20;
 
-	if (Draw_Menu_Text(PK_txt.mainmenu_return,180,400)){
+	if (drawMenuText(PK_txt.mainmenu_return,180,400)){
 		menu_nyt = MENU_MAIN;
 	}
 }
@@ -396,18 +446,18 @@ void MenuScreen::Draw_Menu_Name() {
 	tx_start, ty_start)){
 		menu_nyt = MENU_EPISODES;
 	}
-	selected_menu_id+=1;
+	menus_count+=1;
 
-	if (Draw_Menu_Text(PK_txt.playermenu_continue,tx_start,ty_start + 50)) {
+	if (drawMenuText(PK_txt.playermenu_continue,tx_start,ty_start + 50)) {
 		this->playerNameEdit.endInput();		
 		menu_nyt = MENU_EPISODES;
 	}
 
-	if (Draw_Menu_Text(PK_txt.playermenu_clear,tx_start + 180,ty_start + 50)) {
+	if (drawMenuText(PK_txt.playermenu_clear,tx_start + 180,ty_start + 50)) {
 		this->playerNameEdit.clear();
 	}
 
-	if (Draw_Menu_Text(PK_txt.mainmenu_back,tx_start,ty_start + 100)) {
+	if (drawMenuText(PK_txt.mainmenu_back,tx_start,ty_start + 100)) {
 		this->playerNameEdit.endInput();
 		menu_nyt = MENU_MAIN;
 	}
@@ -454,7 +504,7 @@ void MenuScreen::Draw_Menu_Load() {
 		std::string number = os.str();
 		
 
-		if (Draw_Menu_Text(number.c_str(),100,150+my)) {
+		if (drawMenuTextS(number,100,150+my)) {
 			if (!PK2save::saveSlots[i].empty) {
 				if (Game) {
 					delete Game;
@@ -491,7 +541,7 @@ void MenuScreen::Draw_Menu_Load() {
 
 	my += 20;
 
-	if (Draw_Menu_Text(PK_txt.mainmenu_return,180,400))
+	if (drawMenuText(PK_txt.mainmenu_return,180,400))
 		menu_nyt = MENU_MAIN;
 
 }
@@ -520,7 +570,7 @@ void MenuScreen::Draw_Menu_Save() {
 
 		std::string number = os.str();
 
-		if (Draw_Menu_Text(number.c_str(),100,150+my) && Episode!=nullptr){
+		if (drawMenuTextS(number,100,150+my) && Episode!=nullptr){
 			PK2save::SaveSlot(Episode, i);
 		}
 			
@@ -545,7 +595,7 @@ void MenuScreen::Draw_Menu_Save() {
 
 	my += 20;
 
-	if (Draw_Menu_Text(PK_txt.mainmenu_return,180,400))
+	if (drawMenuText(PK_txt.mainmenu_return,180,400))
 		menu_nyt = MENU_MAIN;
 
 }
@@ -569,11 +619,11 @@ void MenuScreen::Draw_Menu_Graphics() {
 		int  oldfps = Settings.fps;
 
 		if (Settings.isFullScreen){
-			if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.gfx_fullscreen_on),180,my)){
+			if (drawMenuText(PK_txt.gfx_fullscreen_on,180,my)){
 				Settings.isFullScreen = false;
 			}
 		} else{
-			if (Draw_Menu_Text(tekstit->Get_Text(PK_txt.gfx_fullscreen_off),180,my)){
+			if (drawMenuText(PK_txt.gfx_fullscreen_off,180,my)){
 				Settings.isFullScreen = true;
 			}
 		}
@@ -667,7 +717,7 @@ void MenuScreen::Draw_Menu_Graphics() {
 			}	
 		}
 
-		if (Draw_Menu_Text(PK_txt.mainmenu_back,100,360)) {
+		if (drawMenuText(PK_txt.mainmenu_back,100,360)) {
 			moreOptions = false;
 			chosen_menu_id = 0; //Set menu cursor to 0
 		}
@@ -697,14 +747,14 @@ void MenuScreen::Draw_Menu_Graphics() {
 			tekstit->Get_Text(PK_txt.gfx_touchscreen_off));
 
 		//if (!Settings.touchscreen_mode)
-			if (Draw_Menu_Text(PK_txt.mainmenu_more,100,360)){
+			if (drawMenuText(PK_txt.mainmenu_more,100,360)){
 				moreOptions = true;
 				chosen_menu_id = 0; //Set menu cursor to 0
 			}
 
 	}
 
-	if (Draw_Menu_Text(PK_txt.settingsmenu_return,180,400)){
+	if (drawMenuText(PK_txt.settingsmenu_return,180,400)){
 		menu_nyt = MENU_SETTINGS;
 		moreOptions = false;
 	}
@@ -733,13 +783,13 @@ void MenuScreen::Draw_Menu_Sounds() {
 	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.sound_sfx_volume),180,200+my);
 	my += 20;
 
-	if (Draw_Menu_Text(PK_txt.sound_less,180,200+my)) {
+	if (drawMenuText(PK_txt.sound_less,180,200+my)) {
 		key_delay = kdelay;
 		if (Settings.sfx_max_volume > 0)
 			Settings.sfx_max_volume -= 5;
 	}
 
-	if (Draw_Menu_Text(PK_txt.sound_more,180+8*15,200+my)) {
+	if (drawMenuText(PK_txt.sound_more,180+8*15,200+my)) {
 		key_delay = kdelay;
 		if (Settings.sfx_max_volume < 100)
 			Settings.sfx_max_volume += 5;
@@ -753,13 +803,13 @@ void MenuScreen::Draw_Menu_Sounds() {
 	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.sound_music_volume),180,200+my);
 	my += 20;
 
-	if (Draw_Menu_Text(PK_txt.sound_less,180,200+my)) {
+	if (drawMenuText(PK_txt.sound_less,180,200+my)) {
 		key_delay = kdelay;
 		if (Settings.music_max_volume > 0)
 			Settings.music_max_volume -= 5;
 	}
 
-	if (Draw_Menu_Text(PK_txt.sound_more,180+8*15,200+my)) {
+	if (drawMenuText(PK_txt.sound_more,180+8*15,200+my)) {
 		key_delay = kdelay;
 		if (Settings.music_max_volume < 100)
 			Settings.music_max_volume += 5;
@@ -767,7 +817,7 @@ void MenuScreen::Draw_Menu_Sounds() {
 	
 	my += 20;
 
-	if (Draw_Menu_Text(PK_txt.settingsmenu_return,180,400))
+	if (drawMenuText(PK_txt.settingsmenu_return,180,400))
 		menu_nyt = MENU_SETTINGS;
 	
 	
@@ -807,19 +857,19 @@ void MenuScreen::Draw_Menu_Controls() {
 
 	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.controls_title),50,90);
 
-	if (menu_lue_kontrollit > 0){
-		PDraw::screen_fill(299,my-16+menu_lue_kontrollit*20,584,4+my+menu_lue_kontrollit*20,0);
-		PDraw::screen_fill(295,my-20+menu_lue_kontrollit*20,580,my+menu_lue_kontrollit*20,50);
+	if (selected_control_key > 0){
+		PDraw::screen_fill(99,my-16+selected_control_key*20,584,4+my+selected_control_key*20,0);
+		PDraw::screen_fill(95,my-20+selected_control_key*20,580,my+selected_control_key*20,50);
 	}
 
-	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.controls_moveleft),100,my);my+=20;
-	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.controls_moveright),100,my);my+=20;
-	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.controls_jump),100,my);my+=20;
-	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.controls_duck),100,my);my+=20;
-	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.controls_walkslow),100,my);my+=20;
-	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.controls_doodleattack),100,my);my+=20;
-	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.controls_eggattack),100,my);my+=20;
-	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.controls_useitem),100,my);my+=20;
+	this->drawMenuTextControls(tekstit->Get_Text(PK_txt.controls_moveleft),1, 100,my);my+=20;
+	this->drawMenuTextControls(tekstit->Get_Text(PK_txt.controls_moveright),2, 100,my);my+=20;
+	this->drawMenuTextControls(tekstit->Get_Text(PK_txt.controls_jump),3, 100,my);my+=20;
+	this->drawMenuTextControls(tekstit->Get_Text(PK_txt.controls_duck),4, 100,my);my+=20;
+	this->drawMenuTextControls(tekstit->Get_Text(PK_txt.controls_walkslow), 5, 100,my);my+=20;
+	this->drawMenuTextControls(tekstit->Get_Text(PK_txt.controls_doodleattack), 6, 100,my);my+=20;
+	this->drawMenuTextControls(tekstit->Get_Text(PK_txt.controls_eggattack),7, 100,my);my+=20;
+	this->drawMenuTextControls(tekstit->Get_Text(PK_txt.controls_useitem),8, 100,my);my+=20;
 
 	my = 130;
 	PDraw::font_write_line(fontti2,PInput::KeyName(Input->left),380,my);my+=20;
@@ -831,27 +881,15 @@ void MenuScreen::Draw_Menu_Controls() {
 	PDraw::font_write_line(fontti2,PInput::KeyName(Input->attack1),380,my);my+=20;
 	PDraw::font_write_line(fontti2,PInput::KeyName(Input->open_gift),380,my);my+=20;
 
-	/*
-	if (PInput::mouse_x > 310 && PInput::mouse_x < 580 && PInput::mouse_y > 130 && PInput::mouse_y < my-20){
-		menu_lue_kontrollit = (PInput::mouse_y - 120) / 20;
-
-		if (menu_lue_kontrollit < 0 || menu_lue_kontrollit > 8)
-			menu_lue_kontrollit = 0;
-		else
-			key_delay = 25;
-
-
-	}*/
-
-	if (menu_lue_kontrollit == 0){
-		if (Draw_Menu_Text(PK_txt.controls_edit,100,my)) {
-			menu_lue_kontrollit = 1;
+	/*if (selected_control_key == 0){
+		if (drawMenuText(PK_txt.controls_edit,100,my)) {
+			selected_control_key = 1;
 			chosen_menu_id = 0; //Set menu cursor to 0
 		}
-	}
+	}*/
 	my += 20;
 
-	if (Draw_Menu_Text(PK_txt.controls_get_default,100,my)) {
+	if (drawMenuText(PK_txt.controls_get_default,100,my)) {
 
 		if (Input == &Settings.keyboard) {
 			Input->left      = PInput::LEFT;
@@ -874,8 +912,7 @@ void MenuScreen::Draw_Menu_Controls() {
 			Input->open_gift = PInput::JOY_LEFTSHOULDER;
 		}
 
-		menu_lue_kontrollit = 0;
-		chosen_menu_id = 0;
+		selected_control_key = 0;
 		save_settings = true;
 	}
 
@@ -884,13 +921,13 @@ void MenuScreen::Draw_Menu_Controls() {
 	if(Settings.using_controller == SET_TRUE){
 
 		if (Settings.vibration > 0){
-			if (Draw_Menu_Text(PK_txt.controls_vibration_on,100,my)){
+			if (drawMenuText(PK_txt.controls_vibration_on,100,my)){
 				Settings.vibration = 0;
 				PInput::SetVibration(Settings.vibration);
 				save_settings = true;
 			}
 		} else {
-			if (Draw_Menu_Text(PK_txt.controls_vibration_off,100,my)){
+			if (drawMenuText(PK_txt.controls_vibration_off,100,my)){
 				Settings.vibration = 0xFFFF/2;
 				PInput::SetVibration(Settings.vibration);
 				save_settings = true;
@@ -899,10 +936,10 @@ void MenuScreen::Draw_Menu_Controls() {
 	}
 	my += 20;
 
-	if (menu_lue_kontrollit == 0){
+	if (selected_control_key == 0){
 		if (Input == &Settings.keyboard) {
 
-			if (Draw_Menu_Text(PK_txt.controls_use_controller ,100,my)) {
+			if (drawMenuText(PK_txt.controls_use_controller ,100,my)) {
 				Settings.using_controller = SET_TRUE;
 				Input = &Settings.joystick;
 				chosen_menu_id = 0; //Set menu cursor to 0
@@ -911,7 +948,7 @@ void MenuScreen::Draw_Menu_Controls() {
 
 		} else {
 
-			if (Draw_Menu_Text(PK_txt.controls_use_keyboard,100,my)) {
+			if (drawMenuText(PK_txt.controls_use_keyboard,100,my)) {
 				Settings.using_controller = SET_FALSE;
 				Input = &Settings.keyboard;
 				chosen_menu_id = 0; //Set menu cursor to 0
@@ -926,33 +963,29 @@ void MenuScreen::Draw_Menu_Controls() {
 	
 	if(my < 400)my=400;
 
-	if (Draw_Menu_Text(PK_txt.settingsmenu_return,180,my)){
+	if (drawMenuText(PK_txt.settingsmenu_return,180,my)){
 		menu_nyt = MENU_SETTINGS;
-		menu_lue_kontrollit = 0;
+		selected_control_key = 0;
 		chosen_menu_id = 0;
 	}
 
 	u8 k = 0;
 
-	if (key_delay == 0 && menu_lue_kontrollit > 0){
+	if (key_delay == 0 && selected_control_key > 0){
 		
 		if (Input == &Settings.keyboard)
 			k = PInput::GetKeyKeyboard();
 		else
 			k = PInput::GetKeyController();
 
-		if (k == PInput::ESCAPE || k == PInput::RETURN || k == PInput::JOY_START || k == PInput::JOY_GUIDE
-		/*|| PInput::Keydown(PInput::ESCAPE) || PInput::Keydown(PInput::RETURN) || PInput::Keydown(PInput::JOY_START)*/) {
-		
-			menu_lue_kontrollit = 0;
+		if(k == PInput::ESCAPE){
+			selected_control_key = 0;
 			chosen_menu_id = 0;
 			key_delay = 20;
 			save_settings = true;
-		
 		} else {
-
 			if (k != 0) {
-				switch(menu_lue_kontrollit){
+				switch(selected_control_key){
 					case 1 : Input->left      = k; break;
 					case 2 : Input->right     = k; break;
 					case 3 : Input->jump      = k; break;
@@ -965,15 +998,11 @@ void MenuScreen::Draw_Menu_Controls() {
 				}
 
 				key_delay = 20;
-				menu_lue_kontrollit++;
-			}
 
-			if (menu_lue_kontrollit > 8) {
-				menu_lue_kontrollit = 0;
-				chosen_menu_id = 0;
+				selected_control_key = 0;
+				++chosen_menu_id;
 				save_settings = true;
 			}
-
 		}
 	}
 
@@ -1021,7 +1050,7 @@ void MenuScreen::Draw_Menu_Episodes() {
 		if (episodes[i].is_zip)
 			PDraw::font_write_line(fontti1, episodes[i].zipfile, 450, 95+my);
 
-		if (Draw_Menu_Text( episodes[i].name.c_str(), 110, 90+my)) {
+		if (drawMenuTextS( episodes[i].name, 110, 90+my)) {
 			if (Game) {
 				delete Game;
 				Game = nullptr;
@@ -1046,7 +1075,7 @@ void MenuScreen::Draw_Menu_Episodes() {
 	}
 
 	/* sivu / kaikki */
-	if (Draw_Menu_Text(PK_txt.mainmenu_return,180,400)){
+	if (drawMenuText(PK_txt.mainmenu_return,180,400)){
 		menu_nyt = MENU_MAIN;
 		my += 20;
 	}
@@ -1072,7 +1101,7 @@ void MenuScreen::Draw_Menu_Language() {
 
 		std::string lang_name = PString::removeSuffix(langlist[i], ".txt");
 
-		if(Draw_Menu_Text(lang_name.c_str(),110,my)) { //150
+		if(drawMenuTextS(lang_name,110,my)) { //150
 
 			Settings.language = langlist[i];
 
@@ -1105,7 +1134,7 @@ void MenuScreen::Draw_Menu_Language() {
 
 	}
 
-	if (Draw_Menu_Text(PK_txt.settingsmenu_return,180,400))
+	if (drawMenuText(PK_txt.settingsmenu_return,180,400))
 		menu_nyt = MENU_SETTINGS;
 
 }
@@ -1114,7 +1143,7 @@ void MenuScreen::Draw() {
 
 	PDraw::image_clip(bg_screen);
 
-	selected_menu_id = 1;
+	menus_count = 1;
 
 	switch (menu_nyt) {
 		case MENU_MAIN     : Draw_Menu_Main();     break;
@@ -1190,7 +1219,7 @@ void MenuScreen::Init() {
 
 void MenuScreen::Loop() {
 	
-	if (key_delay == 0 && menu_lue_kontrollit == 0) {
+	if (key_delay == 0 && selected_control_key == 0) {
 
 		if (PInput::Keydown(PInput::UP) || 
 		    (PInput::Keydown(PInput::LEFT) && !this->playerNameEdit.isEditing()) ||
@@ -1200,7 +1229,7 @@ void MenuScreen::Loop() {
 			mouse_hidden = true;
 
 			if (chosen_menu_id < 1)
-				chosen_menu_id = selected_menu_id-1;
+				chosen_menu_id = menus_count-1;
 
 			key_delay = 9;
 		}
@@ -1212,7 +1241,7 @@ void MenuScreen::Loop() {
 			chosen_menu_id++;
 			mouse_hidden = true;
 
-			if (chosen_menu_id > selected_menu_id-1)
+			if (chosen_menu_id > menus_count-1)
 				chosen_menu_id = 1;
 
 			key_delay = 9;
@@ -1222,19 +1251,16 @@ void MenuScreen::Loop() {
 
 		if (!wasPressed && PInput::Keydown(PInput::ESCAPE) && menu_nyt == MENU_MAIN) {
 			mouse_hidden = true;
-			if(chosen_menu_id == selected_menu_id-1)
-				Fade_Quit();
+			if(chosen_menu_id == menus_count-1)
+				fadeQuit();
 			else
-				chosen_menu_id = selected_menu_id-1;
+				chosen_menu_id = menus_count-1;
 		}
 
 		wasPressed = PInput::Keydown(PInput::ESCAPE);
 
 	}
 
-	if (menu_lue_kontrollit > 0) {
-		chosen_menu_id = 0;
-	}
 
 	int menu_ennen = menu_nyt;
 

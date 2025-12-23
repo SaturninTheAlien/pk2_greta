@@ -287,7 +287,7 @@ int ScoreScreen::Draw_ScoreCount() {
 	}	
 
 	int _text_id = test_level?PK_txt.mainmenu_exit:PK_txt.score_screen_continue;
-	if (Draw_Menu_Text(tekstit->Get_Text(_text_id),15,430)) {
+	if (drawMenuText(_text_id,15,430)) {
 		going_to_map = true;
 		PSound::set_musicvolume(0);
 		Fade_out(FADE_SLOW);
