@@ -228,9 +228,12 @@ void clear_channels() {
 
 int resume_music() {
 
-	if (music == NULL) {
-
-		PLog::Write(PLog::WARN, "PSound", "No music loaded");
+	if (music == nullptr) {
+		static bool warned = false;
+		if (!warned) {
+			PLog::Write(PLog::WARN, "PSound", "No music loaded");
+			warned = true;
+		}
 		return -1;
 	
 	}
