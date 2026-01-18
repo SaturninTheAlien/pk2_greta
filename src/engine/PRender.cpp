@@ -3,6 +3,7 @@
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
 #include "engine/PRender.hpp"
+#include <string>
 #include <stdexcept>
 
 #include "engine/PDraw.hpp"
@@ -186,13 +187,28 @@ bool is_vsync() {
 	
 }
 
-int init(int width, int height, const char* name, const char* icon) {
+void init(int width, int height, const char* name, const char* icon) {
 
 	window_name = name;
 	Uint32 window_flags = SDL_WINDOW_SHOWN;
 
 	PLog::Write(PLog::DEBUG, "PRender", "Initializing graphics");
-	PLog::Write(PLog::DEBUG, "PRender", "Video driver: %s", SDL_GetCurrentVideoDriver());
+
+
+	const char* drv = SDL_GetCurrentVideoDriver();
+	if(drv!=nullptr){
+		std::string videoDriverName = drv;
+		PLog::Write(PLog::INFO, "PRender", "Video driver: %s", videoDriverName.c_str());
+		if(videoDriverName=="offscreen"){
+			PLog::Write(PLog::FATAL, "PRender", "PK2 cannot be run offscreen!");
+			throw std::runtime_error("PK2 cannot be run offscreen!");
+		}
+	}
+	else{
+		PLog::Write(PLog::WARN, "PRender", "Unknown video driver!");
+	}
+	
+
 
     #ifdef __ANDROID__
 
@@ -204,7 +220,7 @@ int init(int width, int height, const char* name, const char* icon) {
 	if (!window) {
 
 		PLog::Write(PLog::FATAL, "PRender", "Couldn't create window!");
-		return -2;
+		throw std::runtime_error("Cannot create SDL window!");
 
 	}
 
@@ -214,8 +230,7 @@ int init(int width, int height, const char* name, const char* icon) {
 	if (!window) {
 
 		PLog::Write(PLog::FATAL, "PRender", "Couldn't create window!");
-		return -2;
-
+		throw std::runtime_error("Cannot create SDL window!");
 	}
 
 	SDL_Surface* window_icon = IMG_Load(icon);
@@ -229,19 +244,10 @@ int init(int width, int height, const char* name, const char* icon) {
 	#endif
 
 	renderer = new PSdl(width, height, window);
-	if (!renderer) {
-
-		PLog::Write(PLog::FATAL, "PRender", "Couldn't create renderer!");
-		SDL_DestroyWindow(window);
-		return -3;
-
-	}
+	/**/
 
 	renderer->set_vsync(vsync_set);
 	adjust_screen();
-
-	return 0;
-
 }
 
 void terminate() {

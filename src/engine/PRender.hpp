@@ -77,7 +77,7 @@ void get_window_position(int* x, int* y);
 int  set_vsync(bool set);
 bool is_vsync();
 
-int  init(int width, int height, const char* name, const char* icon);
+void init(int width, int height, const char* name, const char* icon);
 void terminate();
 void update(void* _buffer8);
 

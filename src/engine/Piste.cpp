@@ -8,6 +8,7 @@
 
 #include <SDL.h>
 #include <functional>
+#include <stdexcept>
 
 #define UPDATE_FPS 30 //Update FPS each 30 frames
 
@@ -124,10 +125,8 @@ void init(int width, int height, const char* name, const char* icon, int audio_b
                 SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC | SDL_INIT_GAMECONTROLLER /*| SDL_INIT_SENSOR*/;
 	
 	if (SDL_Init(flags) < 0) {
-
 		PLog::Write(PLog::FATAL, "Piste", "Unable to init SDL: %s", SDL_GetError());
-		return;
-		
+		throw std::runtime_error(std::string("Unable to init SDL: ") +SDL_GetError());
 	}
 
 	sdl_show_version();
