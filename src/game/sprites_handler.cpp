@@ -28,7 +28,7 @@ void SpritesHandler::clearAll(){
 	Player_Sprite = nullptr;
 }
 
-int Get_BG_Parallax_Score(SpriteClass* s){
+static int Get_BG_Parallax_Score(SpriteClass* s){
 
 	PrototypeClass*prototype = s->prototype;
 	for(const int& ai:prototype->AI_v){
@@ -45,34 +45,14 @@ int Get_BG_Parallax_Score(SpriteClass* s){
 	return parallax==0 ? INT_MAX - 1 : parallax;
 }
 
-bool Compare_bgSprites(SpriteClass* s1, SpriteClass* s2) {
+static bool Compare_bgSprites(SpriteClass* s1, SpriteClass* s2) {
 	return Get_BG_Parallax_Score(s1) < Get_BG_Parallax_Score(s2);
 }
 
-int Get_FG_Parallax_Score(SpriteClass* s){
-
-	PrototypeClass*prototype = s->prototype;
-	for(const int& ai:prototype->AI_v){
-		if(ai==AI_BACKGROUND_BRING_TO_FRONT){
-			return INT_MIN;
-		}
-		else if(ai==AI_BACKGROUND_SEND_TO_BACK){
-			return INT_MAX;
-		}
-	}
-
-	int parallax = prototype->parallax_type;
-
-	return parallax==0 ? INT_MAX - 1 : parallax;
-}
-
-bool Compare_fgSprites(SpriteClass* s1, SpriteClass * s2){
-	return Get_FG_Parallax_Score(s2) < Get_FG_Parallax_Score(s1);
-}
 
 void SpritesHandler::sortBg(){
     this->bgSprites_List.sort(Compare_bgSprites);
-	this->fgSprites_List.sort(Compare_fgSprites);
+	this->fgSprites_List.sort(Compare_bgSprites);
 }
 
 
