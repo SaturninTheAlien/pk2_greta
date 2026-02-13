@@ -1341,18 +1341,12 @@ void UpdateSprite(SpriteClass* sprite){
 	}
 
 	if (sprite->player_c == 1 || sprite->energy < 1) {
-		double kitka = 1.04;
-
-		if (sector->weather == WEATHER_RAIN || sector->weather == WEATHER_RAIN_LEAVES)
-			kitka = 1.03; // Slippery ground in the rain
-
-		if (sector->weather == WEATHER_SNOW)
-			kitka = 1.01; // And even more on snow
-
-		if (!sprite->can_move_down)
-			sprite->a /= kitka;
-		else
+		if (!sprite->can_move_down){
+			sprite->a /= sector->slipperiness_factor;
+		}			
+		else{
 			sprite->a /= 1.03;//1.02//1.05
+		}			
 
 		sprite->b /= 1.25;
 	}

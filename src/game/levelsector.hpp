@@ -104,6 +104,8 @@ public:
 
 
     int weather = WEATHER_NORMAL;                // map climate
+    double slipperiness_factor = 1.03;
+
 
     /**
      * @brief 

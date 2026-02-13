@@ -206,6 +206,23 @@ void LevelClass::readTiles(PFile::RW& file,
 	}
 }
 
+
+static double getDefaultSlipperinessFactor(int weather){
+	switch (weather)
+	{
+	case WEATHER_RAIN:
+	case WEATHER_RAIN_LEAVES:
+		return 1.03;
+
+	case WEATHER_SNOW:
+		return 1.01;
+	
+	default:
+		break;
+	}
+	return 1.04;
+}
+
 void LevelClass::loadVersion13(PFile::Path path, bool headerOnly){
 	PFile::RW file = path.GetRW2("r");
 	file.read(version,      sizeof(version));
@@ -267,6 +284,7 @@ void LevelClass::loadVersion13(PFile::Path path, bool headerOnly){
 
 	sector->background->scrolling = scrolling;
 	sector->weather = weather;
+	sector->slipperiness_factor = getDefaultSlipperinessFactor(weather);
 	sector->name = "legacy sector";
 
 	// sprite prototypes
@@ -407,6 +425,13 @@ void LevelClass::loadVersion15(PFile::Path path, bool headerOnly){
 		jsonReadInt(j, "splash_color", sector->splash_color);
 		jsonReadInt(j, "fire_color_1", sector->fire_color_1);
 		jsonReadInt(j, "fire_color_2", sector->fire_color_2);
+
+		if(j.contains("slipperiness")){
+			sector->slipperiness_factor = j["slipperiness"].get<double>();
+		}
+		else{
+			sector->slipperiness_factor = getDefaultSlipperinessFactor(sector->weather);
+		}
 
 		jsonReadString(j, "gfx", sector->gfxTextureName);
 		if(sector->gfxTextureName!=""){
