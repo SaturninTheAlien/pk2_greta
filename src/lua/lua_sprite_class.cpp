@@ -138,7 +138,8 @@ void ExposeSpriteClass(sol::state& lua){
 
         "levelSector", sol::readonly(&SpriteClass::level_sector),
         "parent", sol::readonly(&SpriteClass::parent_sprite),
-        "target", &SpriteClass::target_sprite
+        "target", &SpriteClass::target_sprite,
+        "canCollectBonuses", &SpriteClass::can_collect_bonuses
         
         );
 }
