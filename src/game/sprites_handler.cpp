@@ -191,6 +191,8 @@ SpriteClass* SpritesHandler::mCreateSprite(PrototypeClass* prototype, int player
 	SpriteClass* sprite = new SpriteClass(prototype, player_c, x, y, this->mLevelSector, parent_sprite);
 	this->Sprites_List.push_back(sprite);
 
+	sprite->updatePhysicsFlags();
+
 	for(const SpriteAI::AI_Class& ai: sprite->prototype->AI_f){
 		if(ai.trigger==AI_TRIGGER_SPAWN || ai.trigger==AI_TRIGGER_TRANSFORMATION){
 			ai.func(sprite);

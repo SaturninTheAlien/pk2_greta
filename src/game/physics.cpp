@@ -505,13 +505,8 @@ void PotionTransformation(SpriteClass* sprite, PrototypeClass* intended_prototyp
 			sprite->y -= sprite->prototype->height/2;
 		}
 
-		sprite->swimming = false;
-		sprite->max_speed_available = false;
-		sprite->can_collect_bonuses = sprite->isPlayer();
 
-		if(sprite->isPlayer()){
-			sprite->player_c=1;
-		}
+		sprite->updatePhysicsFlags();
 
 		if(sprite==Game->playerSprite){
 			int infotext = Episode->infos.Search_Id("pekka transformed");

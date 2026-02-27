@@ -489,20 +489,10 @@ bool SpriteClass::transformTo(PrototypeClass * transformation){
 
 		this->current_command = 0;
 
-		this->swimming = false;
-		this->max_speed_available = false;
-		this->can_collect_bonuses = this->isPlayer();
+		this->updatePhysicsFlags();
 
 		this->seen_player_x = -1;
 		this->seen_player_y = -1;
-		
-		/**
-		 * @brief 
-		 * Set the default player type
-		 */
-		if(this->isPlayer()){
-			this->player_c = 1;
-		}
 
 		for(const SpriteAI::AI_Class& ai: this->prototype->AI_f){
 			if(ai.trigger == AI_TRIGGER_TRANSFORMATION){
@@ -527,6 +517,35 @@ bool SpriteClass::transformTo(PrototypeClass * transformation){
 	}
 
 	return false;
+}
+
+
+void SpriteClass::updatePhysicsFlags(){
+	this->swimming = false;
+	this->max_speed_available = false;
+	this->can_collect_bonuses = this->isPlayer();
+
+
+	if(this->prototype->can_push_bonuses.has_value()){
+		this->can_push_bonuses = this->prototype->can_push_bonuses.value();
+	}
+	else if(this->prototype->type==TYPE_BONUS){
+		this->can_push_bonuses = false;
+	}
+	else if(this->prototype->ambient){
+		this->can_push_bonuses = this->isPlayer() || this->prototype->weight > 0;
+	}
+	else{
+		this->can_push_bonuses = true;
+	}
+
+	/**
+	 * @brief 
+	 * Set the default player type
+	 */
+	if(this->isPlayer()){
+		this->player_c = 1;
+	}
 }
 
 void SpriteClass::die(){

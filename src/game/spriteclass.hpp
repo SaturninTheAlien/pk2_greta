@@ -107,6 +107,12 @@ public:
      */
     bool    can_collect_bonuses = false;
     /**
+     * @brief
+     * if the sprite can push bonuses
+     */
+    bool    can_push_bonuses = false;
+
+    /**
      * @brief 
      * if the sprite is original, placed directly in the levels editor
      */
@@ -139,6 +145,7 @@ public:
     }
 
     bool transformTo(PrototypeClass* transformation);
+    void updatePhysicsFlags();
 
     void die();
 
