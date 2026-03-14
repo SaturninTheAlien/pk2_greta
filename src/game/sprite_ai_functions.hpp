@@ -55,8 +55,15 @@ void Transform_If_Player_Above(SpriteClass*s);
 void Transform_If_Player_Below(SpriteClass*s);
 void Transform_If_Player_in_Front(SpriteClass* s);
 
+
 void Attack_1_if_Player_Nearby(SpriteClass*s);
 void Attack_2_if_Player_Nearby(SpriteClass*s);
+
+void Transform_if_Player_Nearby(SpriteClass*s);
+void Die_if_Player_Nearby(SpriteClass*s);
+void Transform_if_Player_Away(SpriteClass*s);
+void Die_if_Player_Away(SpriteClass*s);
+
 
 void Jump_If_Player_Above(SpriteClass*s);
 void Jump_If_Player_in_Front(SpriteClass*s);

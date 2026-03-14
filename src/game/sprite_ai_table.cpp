@@ -336,6 +336,20 @@ AI_Table::AI_Table(){
 
     Init_AI(AI_TRANSFORM_IF_DEAD, AI_TRIGGER_DEATH, [](SpriteClass*s){s->transform();});
 
+
+    Init_AI(AI_FOLLOW_PLAYER_DIAGONALLY, AI_TRIGGER_ALIVE, AI_Functions::Follow_Player_Diagonally,  true, false, false, true, true);
+
+
+    Init_AI(AI_ATTACK_1_IF_PLAYER_NEARBY, AI_TRIGGER_ALIVE, AI_Functions::Attack_1_if_Player_Nearby, true, false, false, false, true);
+    Init_AI(AI_ATTACK_2_IF_PLAYER_NEARBY, AI_TRIGGER_ALIVE, AI_Functions::Attack_2_if_Player_Nearby, true, false, false, false, true);
+
+    Init_AI(AI_TRANSFORM_IF_PLAYER_NEARBY, AI_TRIGGER_ALIVE, AI_Functions::Transform_if_Player_Nearby, true, false, true, true, true);
+    Init_AI(AI_DIE_IF_PLAYER_NEARBY, AI_TRIGGER_ALIVE, AI_Functions::Die_if_Player_Nearby,  true, false, true, true, true);
+
+    Init_AI(AI_TRANSFORM_IF_PLAYER_AWAY, AI_TRIGGER_ALIVE, AI_Functions::Transform_if_Player_Away, true, false, true, true, true);
+    Init_AI(AI_DIE_IF_PLAYER_AWAY, AI_TRIGGER_ALIVE, AI_Functions::Die_if_Player_Away,  true, false, true, true, true);
+
+
     /**
      * @brief 
      * AIs triggered on damage
@@ -359,10 +373,6 @@ AI_Table::AI_Table(){
     Init_AI(AI_TRANSFORM_IF_DAMAGED, AI_TRIGGER_DAMAGE, [](SpriteClass*s){s->transform();}, true, true, true, true);
 
     Init_AI(AI_INFINITE_ENERGY, AI_TRIGGER_DAMAGE, AI_Functions::InfiniteEnergy);
-
-    Init_AI(AI_FOLLOW_PLAYER_DIAGONALLY, AI_TRIGGER_ALIVE, AI_Functions::Follow_Player_Diagonally);
-    Init_AI(AI_ATTACK_1_IF_PLAYER_NEARBY, AI_TRIGGER_ALIVE, AI_Functions::Attack_1_if_Player_Nearby);
-    Init_AI(AI_ATTACK_2_IF_PLAYER_NEARBY, AI_TRIGGER_ALIVE, AI_Functions::Attack_2_if_Player_Nearby);
 
     /**
      * @brief 

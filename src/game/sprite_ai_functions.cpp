@@ -680,8 +680,7 @@ void Jump_If_Player_in_Front(SpriteClass*s){
 	}
 }
 
-
-void Attack_1_if_Player_Nearby(SpriteClass*s){
+static bool IsPlayerNearby(SpriteClass*s){
 	if(player!=nullptr){
 		double k = s->prototype->player_detection.x;
 		double l = s->prototype->player_detection.y;
@@ -693,29 +692,51 @@ void Attack_1_if_Player_Nearby(SpriteClass*s){
 		x = x*x;
 		y = y*y;
 
-		if(x*l + y*k < k*l){
-			s->attack1_timer = s->prototype->attack1_time;
-		}
+		return x*l + y*k < k*l;
+	}
+
+	return false;
+}
+
+
+void Attack_1_if_Player_Nearby(SpriteClass*s){
+	if(IsPlayerNearby(s)){
+		s->attack1_timer = s->prototype->attack1_time;
 	}
 }
 
 void Attack_2_if_Player_Nearby(SpriteClass*s){
-	if(player!=nullptr){
-		double k = s->prototype->player_detection.x;
-		double l = s->prototype->player_detection.y;
-		double x = s->x - player->x;
-		double y = s->y - player->y;
-
-		k = k*k;
-		l = l*l;
-		x = x*x;
-		y = y*y;
-
-		if(x*l + y*k < k*l){
-			s->attack2_timer = s->prototype->attack1_time;
-		}
+	if(IsPlayerNearby(s)){
+		s->attack2_timer = s->prototype->attack2_time;
 	}
 }
+
+
+void Transform_if_Player_Nearby(SpriteClass*s){
+	if(IsPlayerNearby(s)){
+		s->transform();
+	}
+}
+
+void Die_if_Player_Nearby(SpriteClass*s){
+	if(IsPlayerNearby(s)){
+		s->die();
+	}
+}
+
+void Transform_if_Player_Away(SpriteClass*s){
+	if(!IsPlayerNearby(s)){
+		s->transform();
+	}
+}
+
+void Die_if_Player_Away(SpriteClass*s){
+	if(!IsPlayerNearby(s)){
+		s->die();
+	}
+}
+
+
 
 void Damaged_by_Water(SpriteClass*s){
 	if (s->in_water && s->damage_taken_type > DAMAGE_SELF_DESTRUCTION){
