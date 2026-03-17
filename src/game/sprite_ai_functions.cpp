@@ -1314,10 +1314,21 @@ void StartUp(SpriteClass*s){
 }
 
 void StartLeft(SpriteClass*s){
-	s->a = -s->prototype->max_speed / 3.5;
+
+	if(s->prototype->max_speed==0){
+		s->flip_x = true;
+	}
+	else{
+		s->a = -s->prototype->max_speed / 3.5;
+	}	
 }
 void StartRight(SpriteClass*s){
-	s->a = s->prototype->max_speed / 3.5;
+	if(s->prototype->max_speed==0){
+		s->flip_x = false;
+	}
+	else{
+		s->a = s->prototype->max_speed / 3.5;
+	}
 }
 
 void DieIfSkullBlocksChanged(SpriteClass*sprite){
