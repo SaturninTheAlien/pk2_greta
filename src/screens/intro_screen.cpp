@@ -164,6 +164,12 @@ void IntroScreen::Draw(){
 		end += 10;
 		
 		CreditsText_Draw("annukka korja",				fontti1, x, y, start, end, intro_counter);
+		y += LINE_SEPARATOR;
+		start += 10;
+		end += 10;
+		
+		CreditsText_Draw("Mipha",				fontti1, x, y, start, end, intro_counter);
+
 		y += SECTION_SEPARATOR;
 		start += 30;
 		end += 30;
