@@ -10,6 +10,8 @@
 
 #include "physics.hpp"
 #include "episode/episodeclass.hpp"
+#include "settings/settings.hpp"
+
 #include <limits.h>
 #include <sstream>
 #include "system.hpp"
@@ -471,7 +473,7 @@ void SpritesHandler::drawSprites(int camera_x, int camera_y, bool gamePaused, in
 				PDraw::image_cutclip(Game->gfxTexture,hit_x-camera_x-28+8, hit_y-camera_y-27+8,1+framex,83,1+57+framex,83+55);
 			}
 
-			bool blinking = dev_mode && sprite->isPlayer() && PInput::Keydown(PInput::Y);
+			bool blinking = dev_mode && sprite->isPlayer() && Settings.getInput().dev_fly.isPressed();
 			if(!blinking || degree % 2 == 0){
 				sprite->draw(camera_x, camera_y);
 			}

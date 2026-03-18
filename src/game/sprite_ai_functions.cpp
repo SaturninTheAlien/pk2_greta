@@ -976,7 +976,7 @@ void Climber2(SpriteClass*s){
 
 void Fall_When_Shaken(SpriteClass*s){
 
-	int tarina = Game->vibration + Game->button_vibration;
+	int tarina = Game->getVibration() + Game->button_vibration;
 
 	if (tarina > 0)
 	{
@@ -1211,7 +1211,6 @@ void EvilOne(SpriteClass*s){
 
 void Chick(SpriteClass*s){
 	Game->game_over = true;
-	key_delay = 50; //TODO - reduce
 }
 
 void Reborn(SpriteClass*s){

@@ -11,7 +11,7 @@
 #include "mapstore.hpp"
 #include "scores_table.hpp"
 
-#include "engine/platform.hpp"
+#include "engine/types.hpp"
 #include "engine/PFile.hpp"
 #include "engine/PLang.hpp"
 #include "engine/PZip.hpp"

@@ -142,14 +142,11 @@ void PK2TouchScreenControls::load() {
 
 bool PK2TouchScreenControls::readGui(const PK2TouchScreenButton& gui) {
 	gui.draw();
-	for (PInput::touch_t touch : PInput::touchlist) {
+	for (const Point2D& touch: PInput::InputSystem::instance().getTouches()) {
 
-		float touch_x = touch.pos_x * 1920;
-		float touch_y = touch.pos_y * 1080;
-
-		if(touch_x > gui.dst.x && touch_x < gui.dst.x + gui.dst.w)
-		if(touch_y > gui.dst.y && touch_y < gui.dst.y + gui.dst.h)
-		if(!pad_grab || pad_id != touch.id)
+		if(touch.x > gui.dst.x && touch.x < gui.dst.x + gui.dst.w)
+		if(touch.y > gui.dst.y && touch.y < gui.dst.y + gui.dst.h)
+		if(!pad_grab /*|| pad_id != touch.id*/)
 			return true;
 	}
 	return false;
@@ -206,16 +203,16 @@ int PK2TouchScreenControls::getPad() {
 	int button = 2;
 
 	if (!pad_grab) {
-		for (PInput::touch_t touch : PInput::touchlist) {
+		for (const Point2D& touch: PInput::InputSystem::instance().getTouches()) {
 			
-			float touch_x = touch.pos_x * 1920;
-			float touch_y = touch.pos_y * 1080;
+			/*float touch_x = touch.pos_x * 1920;
+			float touch_y = touch.pos_y * 1080;*/
 
-			if(touch_x > gui_padbg.dst.x && touch_x < gui_padbg.dst.x + gui_padbg.dst.w &&
-				touch_y > gui_padbg.dst.y && touch_y < gui_padbg.dst.y + gui_padbg.dst.h) {
+			if(touch.x > gui_padbg.dst.x && touch.x < gui_padbg.dst.x + gui_padbg.dst.w &&
+				touch.y > gui_padbg.dst.y && touch.y < gui_padbg.dst.y + gui_padbg.dst.h) {
 
 				pad_grab = true;
-				pad_id = touch.id;
+				//pad_id = touch.id;
 				break;
 
 			}
@@ -223,15 +220,12 @@ int PK2TouchScreenControls::getPad() {
 		}
 	
 	}
-	
+
 	if (pad_grab) {
 
-		PInput::touch_t* last_touch = nullptr;
-		for (PInput::touch_t& touch : PInput::touchlist) {
-
-			if(touch.id == pad_id)
-				last_touch = &touch;
-			
+		const Point2D* last_touch = nullptr;
+		for (const Point2D& touch: PInput::InputSystem::instance().getTouches()) {
+			last_touch = &touch;
 		}
 
 		if (!last_touch) {
@@ -242,7 +236,7 @@ int PK2TouchScreenControls::getPad() {
 
 		} else {
 
-			float touch = (last_touch->pos_x * 1920 - gui_padbg.dst.x) / gui_padbg.dst.w;
+			float touch = (last_touch->x - gui_padbg.dst.x) / gui_padbg.dst.w;
 			float hold_touch = this->holdPad(touch, &button);
 
 			gui_padbt.dst.x = gui_padbg.dst.x + hold_touch * gui_padbg.dst.w;
@@ -257,23 +251,6 @@ int PK2TouchScreenControls::getPad() {
 			
 			int x = gui_padbt.dst.x - PadBt_a;
 			gui_padbt.dst.y = PadBt_b - sqrt(PadBt_r*PadBt_r - x*x);
-
-			/*if (button == 0) {
-				ret = 100;
-			} else if (button == 1) {
-				ret = 20;
-			} else if (button == 2) {
-				ret = 0;
-			} else if (button == 3) {
-				ret = -20;
-			} else if (button == 4) {
-				ret = -100;
-			}*/
-
-			/*ret = gui_padbg.x + (gui_padbg.w - gui_padbt.w) / 2;
-			ret -= gui_padbt.x;
-			ret /= float(gui_padbg.w - gui_padbt.w) / 2;
-			ret *= 100;*/
 
 		}
 

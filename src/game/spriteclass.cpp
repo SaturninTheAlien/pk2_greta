@@ -12,7 +12,7 @@
 
 #include "engine/PDraw.hpp"
 #include "engine/PLog.hpp"
-#include "engine/platform.hpp"
+#include "engine/types.hpp"
 #include "exceptions.hpp"
 
 #include <cstring>

@@ -29,6 +29,9 @@
 #include <stdexcept>
 #include <SDL_system.h>
 
+
+#include "keyboard_navigation.hpp"
+
 void MenuScreen::Draw_BGSquare(int left, int top, int right, int bottom, u8 pvari){
 	
 	if (Episode)
@@ -119,8 +122,10 @@ bool MenuScreen::drawMenuTextS(const std::string& text, int x, int y){
 
 	int length = text.size() * 15;
 
-	bool mouse_on = PInput::mouse_x > x && PInput::mouse_x < x + length 
-		&& PInput::mouse_y > y && PInput::mouse_y < y + TEXT_H
+	const Point2D& mousePos = PInput::InputSystem::instance().getMousePos();
+
+	bool mouse_on = mousePos.x > x && mousePos.x < x + length 
+		&& mousePos.y > y && mousePos.y < y + TEXT_H
 		&& !mouse_hidden;
 
 	if ( mouse_on || (chosen_menu_id == menus_count) ) {
@@ -128,11 +133,9 @@ bool MenuScreen::drawMenuTextS(const std::string& text, int x, int y){
 		chosen_menu_id = menus_count;
 		Wavetext_Draw(text.c_str(), fontti3, x, y);//
 
-		int c = Clicked();
-		if ( (c == 1 && mouse_on) || (c > 1) ) {
+		if ( (this->mousePressed && mouse_on) || this->enterPressed ) {
 
 			Play_MenuSFX(sfx_global.menu_sound, 100);
-			key_delay = 20;
 			menus_count++;
 			
 			return true;
@@ -175,7 +178,7 @@ void MenuScreen::drawBoolBoxGroup(bool& value, bool&changed, const std::string& 
 			changed = true;
 		}
 	}
-	if (PK2gui::Draw_BoolBox(100, my, value, true)) {
+	if (PK2gui::Draw_BoolBox(100, my, value, true, mousePressed)) {
 		value = !value;
 		changed = true;
 	}
@@ -189,12 +192,15 @@ int MenuScreen::Draw_BackNext(int x, int y) {
 	int randx = rand()%3 - rand()%3;
 	int randy = rand()%3 - rand()%3;
 
-	bool mouse_on1 = PInput::mouse_x > x && PInput::mouse_x < x + 31
-		&& PInput::mouse_y > y && PInput::mouse_y < y + 31
+
+	const Point2D& mousePos = PInput::InputSystem::instance().getMousePos();
+
+	bool mouse_on1 = mousePos.x > x && mousePos.x < x + 31
+		&& mousePos.y > y && mousePos.y < y + 31
 		&& !mouse_hidden;
 
-	bool mouse_on2 = PInput::mouse_x > x+val && PInput::mouse_x < x+val + 31 
-		&& PInput::mouse_y > y && PInput::mouse_y < y + 31
+	bool mouse_on2 = mousePos.x > x+val && mousePos.x < x+val + 31 
+		&& mousePos.y > y && mousePos.y < y + 31
 		&& !mouse_hidden;
 
 	if (mouse_on1 || chosen_menu_id == menus_count) {
@@ -211,17 +217,14 @@ int MenuScreen::Draw_BackNext(int x, int y) {
 
 	int ret = 0;
 
-	int c = Clicked();
-	if ((c == 1 && mouse_on1) || (c > 1 && chosen_menu_id == menus_count)) {
+	if ((this->mousePressed && mouse_on1) || (this->enterPressed && chosen_menu_id == menus_count)) {
 	
 		Play_MenuSFX(sfx_global.menu_sound, 100);
-		key_delay = 7;
 		ret = 1;
 	
-	} else if ((c == 1 && mouse_on2) || (c > 1 && chosen_menu_id == menus_count + 1)) {
+	} else if ((this->mousePressed && mouse_on2) || (this->enterPressed && chosen_menu_id == menus_count + 1)) {
 	
 		Play_MenuSFX(sfx_global.menu_sound, 100);
-		key_delay = 7;
 		ret = 2;
 	
 	}
@@ -242,17 +245,18 @@ int MenuScreen::Draw_Radio(int x, int y, int num, int sel) {
 	int randx = rand()%3 - rand()%3;
 	int randy = rand()%3 - rand()%3;
 
-	bool mouse_on_y = PInput::mouse_y > y && PInput::mouse_y < y + 31 && !mouse_hidden;
+
+	const Point2D& mousePos = PInput::InputSystem::instance().getMousePos();
+
+	bool mouse_on_y = mousePos.y > y && mousePos.y < y + 31 && !mouse_hidden;
 
 	int ret = -1;
-	int c = Clicked();
-
 	for (int i = 0; i < num; i++) {
 
 		int xn = x + i * (val + 31);
 		int yn = y;
 
-		bool mouse_on = mouse_on_y && PInput::mouse_x > xn && PInput::mouse_x < xn + 31;
+		bool mouse_on = mouse_on_y && mousePos.x > xn && mousePos.x < xn + 31;
 
 		if (mouse_on) {
 			chosen_menu_id = menus_count + i;
@@ -263,10 +267,9 @@ int MenuScreen::Draw_Radio(int x, int y, int num, int sel) {
 			yn += randy;
 		}
 
-		if ((c == 1 && mouse_on) || (c > 1 && chosen_menu_id == menus_count + i)) {
+		if ((this->mousePressed && mouse_on) || (this->enterPressed && chosen_menu_id == menus_count + i)) {
 
 			Play_MenuSFX(sfx_global.menu_sound, 100);
-			key_delay = 10;
 			sel = i;
 			ret = i;
 
@@ -307,7 +310,6 @@ void MenuScreen::Draw_Menu_Main() {
 			this->playerNameEdit.startInput();
 
 			menu_nyt = MENU_NAME;
-			key_delay = 30;
 		}
 		my += 20;
 
@@ -443,7 +445,7 @@ void MenuScreen::Draw_Menu_Name() {
 	int ty_start = 254;
 	
 	if(this->playerNameEdit.draw(tekstit->Get_Text(PK_txt.playermenu_type_name),
-	tx_start, ty_start)){
+	tx_start, ty_start, mousePressed)){
 		menu_nyt = MENU_EPISODES;
 	}
 	menus_count+=1;
@@ -473,7 +475,6 @@ void MenuScreen::Draw_Menu_Load() {
 	Draw_BGSquare(40, 70, 640-40, 410, 67);
 
 	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.loadgame_title),50,90);
-	PDraw::font_write_line(fontti1,id_code,500,90);
 	PDraw::font_write_line(fontti1,tekstit->Get_Text(PK_txt.loadgame_info),50,110);
 	my = -20;
 
@@ -627,7 +628,7 @@ void MenuScreen::Draw_Menu_Graphics() {
 				Settings.isFullScreen = true;
 			}
 		}
-		if (PK2gui::Draw_BoolBox(100, my, Settings.isFullScreen, true)) {
+		if (PK2gui::Draw_BoolBox(100, my, Settings.isFullScreen, true, mousePressed)) {
 			Settings.isFullScreen = !Settings.isFullScreen;
 		}
 		my += 40;
@@ -769,8 +770,6 @@ void MenuScreen::Draw_Menu_Sounds() {
 	Draw_BGSquare(40, 70, 640-40, 410, 224);
 
 	int my = 0;
-	int kdelay = 5;
-
 	u8 sfx_volume = Settings.sfx_max_volume;
 	u8 mus_volume = Settings.music_max_volume;
 
@@ -784,13 +783,11 @@ void MenuScreen::Draw_Menu_Sounds() {
 	my += 20;
 
 	if (drawMenuText(PK_txt.sound_less,180,200+my)) {
-		key_delay = kdelay;
 		if (Settings.sfx_max_volume > 0)
 			Settings.sfx_max_volume -= 5;
 	}
 
 	if (drawMenuText(PK_txt.sound_more,180+8*15,200+my)) {
-		key_delay = kdelay;
 		if (Settings.sfx_max_volume < 100)
 			Settings.sfx_max_volume += 5;
 	}
@@ -804,13 +801,11 @@ void MenuScreen::Draw_Menu_Sounds() {
 	my += 20;
 
 	if (drawMenuText(PK_txt.sound_less,180,200+my)) {
-		key_delay = kdelay;
 		if (Settings.music_max_volume > 0)
 			Settings.music_max_volume -= 5;
 	}
 
 	if (drawMenuText(PK_txt.sound_more,180+8*15,200+my)) {
-		key_delay = kdelay;
 		if (Settings.music_max_volume < 100)
 			Settings.music_max_volume += 5;
 	}
@@ -872,44 +867,31 @@ void MenuScreen::Draw_Menu_Controls() {
 	this->drawMenuTextControls(tekstit->Get_Text(PK_txt.controls_useitem),8, 100,my);my+=20;
 
 	my = 130;
-	PDraw::font_write_line(fontti2,PInput::KeyName(Input->left),380,my);my+=20;
-	PDraw::font_write_line(fontti2,PInput::KeyName(Input->right),380,my);my+=20;
-	PDraw::font_write_line(fontti2,PInput::KeyName(Input->jump),380,my);my+=20;
-	PDraw::font_write_line(fontti2,PInput::KeyName(Input->down),380,my);my+=20;
-	PDraw::font_write_line(fontti2,PInput::KeyName(Input->walk_slow),380,my);my+=20;
-	PDraw::font_write_line(fontti2,PInput::KeyName(Input->attack2),380,my);my+=20;
-	PDraw::font_write_line(fontti2,PInput::KeyName(Input->attack1),380,my);my+=20;
-	PDraw::font_write_line(fontti2,PInput::KeyName(Input->open_gift),380,my);my+=20;
 
-	/*if (selected_control_key == 0){
-		if (drawMenuText(PK_txt.controls_edit,100,my)) {
-			selected_control_key = 1;
-			chosen_menu_id = 0; //Set menu cursor to 0
+	for(unsigned int i=1;i<=8;++i){
+
+		if(selected_control_key==i){
+			PDraw::font_write(fontti2, "Press Key", 380, my);
 		}
-	}*/
+		else{
+			PInput::Key* key = Settings.getKeyByMenuID(i);
+			if(key!=nullptr){
+				PDraw::font_write(fontti2, key->getName(), 380, my);
+			}
+		}
+
+		my+=20;
+	}
+
 	my += 20;
 
 	if (drawMenuText(PK_txt.controls_get_default,100,my)) {
 
-		if (Input == &Settings.keyboard) {
-			Input->left      = PInput::LEFT;
-			Input->right     = PInput::RIGHT;
-			Input->jump      = PInput::UP;
-			Input->down      = PInput::DOWN;
-			Input->walk_slow = PInput::LALT;
-			Input->attack1   = PInput::LCONTROL;
-			Input->attack2   = PInput::LSHIFT;
-			Input->open_gift = PInput::SPACE;
+		if(Settings.useJoystick){
+			Settings.joystickInput.setDefaultJoystick();
 		}
-		else {
-			Input->left      = PInput::JOY_LEFT;
-			Input->right     = PInput::JOY_RIGHT;
-			Input->jump      = PInput::JOY_UP;
-			Input->down      = PInput::JOY_DOWN;
-			Input->walk_slow = PInput::JOY_Y;
-			Input->attack1   = PInput::JOY_A;
-			Input->attack2   = PInput::JOY_B;
-			Input->open_gift = PInput::JOY_LEFTSHOULDER;
+		else{
+			Settings.keyboardInput.setDefault();
 		}
 
 		selected_control_key = 0;
@@ -918,18 +900,17 @@ void MenuScreen::Draw_Menu_Controls() {
 
 	my += 30;
 
-	if(Settings.using_controller == SET_TRUE){
+	if(Settings.useJoystick){
 
-		if (Settings.vibration > 0){
+		if (Settings.useControllerVibrations){
+
 			if (drawMenuText(PK_txt.controls_vibration_on,100,my)){
-				Settings.vibration = 0;
-				PInput::SetVibration(Settings.vibration);
+				Settings.useControllerVibrations = false;
 				save_settings = true;
 			}
 		} else {
 			if (drawMenuText(PK_txt.controls_vibration_off,100,my)){
-				Settings.vibration = 0xFFFF/2;
-				PInput::SetVibration(Settings.vibration);
+				Settings.useControllerVibrations = true;
 				save_settings = true;
 			}
 		}
@@ -937,24 +918,19 @@ void MenuScreen::Draw_Menu_Controls() {
 	my += 20;
 
 	if (selected_control_key == 0){
-		if (Input == &Settings.keyboard) {
 
-			if (drawMenuText(PK_txt.controls_use_controller ,100,my)) {
-				Settings.using_controller = SET_TRUE;
-				Input = &Settings.joystick;
-				chosen_menu_id = 0; //Set menu cursor to 0
+		if(Settings.useJoystick){
+
+			if (drawMenuText(PK_txt.controls_use_keyboard ,100,my)){
+				Settings.useJoystick = false;
+				chosen_menu_id = 0;
 				save_settings = true;
-			}
+			}			
+		}else if(drawMenuText(PK_txt.controls_use_controller, 100,my)){
 
-		} else {
-
-			if (drawMenuText(PK_txt.controls_use_keyboard,100,my)) {
-				Settings.using_controller = SET_FALSE;
-				Input = &Settings.keyboard;
-				chosen_menu_id = 0; //Set menu cursor to 0
-				save_settings = true;
-			}
-
+			Settings.useJoystick = true;
+			chosen_menu_id = 0;
+			save_settings = true;
 		}
 	}
 
@@ -969,46 +945,42 @@ void MenuScreen::Draw_Menu_Controls() {
 		chosen_menu_id = 0;
 	}
 
-	u8 k = 0;
-
-	if (key_delay == 0 && selected_control_key > 0){
-		
-		if (Input == &Settings.keyboard)
-			k = PInput::GetKeyKeyboard();
-		else
-			k = PInput::GetKeyController();
-
-		if(k == PInput::ESCAPE){
-			selected_control_key = 0;
-			chosen_menu_id = 0;
-			key_delay = 20;
-			save_settings = true;
-		} else {
-			if (k != 0) {
-				switch(selected_control_key){
-					case 1 : Input->left      = k; break;
-					case 2 : Input->right     = k; break;
-					case 3 : Input->jump      = k; break;
-					case 4 : Input->down      = k; break;
-					case 5 : Input->walk_slow = k; break;
-					case 6 : Input->attack2   = k; break;
-					case 7 : Input->attack1   = k; break;
-					case 8 : Input->open_gift = k; break;
-					default: Play_MenuSFX(sfx_global.moo_sound,100); break;
-				}
-
-				key_delay = 20;
-
-				selected_control_key = 0;
-				++chosen_menu_id;
-				save_settings = true;
-			}
-		}
-	}
-
 	if (save_settings)
 		Settings_Save();
 
+}
+
+
+void MenuScreen::onKeyPressed(const PInput::Key& k){
+	
+	if(selected_control_key > 0){
+
+		bool save_settings = false;
+		if(k==PInput::Key::ESCAPE){
+			selected_control_key = 0;
+			chosen_menu_id = 0;
+		} else {
+
+			PInput::Key* key = Settings.getKeyByMenuID(this->selected_control_key);
+			if(key==nullptr) {
+				Play_MenuSFX(sfx_global.moo_sound,100);
+			} else {
+				*key = k;
+			}
+
+			++chosen_menu_id;
+			save_settings = true;
+
+			selected_control_key = 0;
+		}
+
+		if (save_settings){
+			Settings_Save();
+		}			
+	} else {
+		PK2gui::KeyNav::injectKey(k);
+		Screen::onKeyPressed(k);
+	}
 }
 
 void MenuScreen::Draw_Menu_Episodes() {
@@ -1163,13 +1135,11 @@ void MenuScreen::Draw() {
 	if (!Episode){
 		PDraw::font_write_line(fontti1, PK2_VERSION_STR_MENU, 0, 470);
 		if(config_txt.links_menu==LINKS_MENU_BOTTOM){
-			this->bottomLinksMenu.draw();
+			this->bottomLinksMenu.draw(this->mousePressed);
 		}
 	}
-		
 
-	if (!mouse_hidden)
-		Draw_Cursor(PInput::mouse_x, PInput::mouse_y);
+	this->drawMouseCursor();
 }
 
 
@@ -1218,63 +1188,68 @@ void MenuScreen::Init() {
 }
 
 void MenuScreen::Loop() {
-	
-	if (key_delay == 0 && selected_control_key == 0) {
 
-		if (PInput::Keydown(PInput::UP) || 
-		    (PInput::Keydown(PInput::LEFT) && !this->playerNameEdit.isEditing()) ||
-		    PInput::Keydown(PInput::JOY_UP) ||
-			(PInput::Keydown(PInput::JOY_LEFT) && !this->playerNameEdit.isEditing())){
+	
+
+
+	PK2gui::KeyNav::Nav nav = PK2gui::KeyNav::readKeyNav();
+
+	if(!this->playerNameEdit.updateNavigation(nav)){
+
+		switch (nav)
+		{
+		case PK2gui::KeyNav::UP:
+		case PK2gui::KeyNav::LEFT:
 			chosen_menu_id--;
 			mouse_hidden = true;
 
 			if (chosen_menu_id < 1)
 				chosen_menu_id = menus_count-1;
-
-			key_delay = 9;
-		}
-
-		if (PInput::Keydown(PInput::DOWN)||
-		    (PInput::Keydown(PInput::RIGHT) && !this->playerNameEdit.isEditing())||
-			PInput::Keydown(PInput::JOY_DOWN)||
-			(PInput::Keydown(PInput::JOY_RIGHT) && !this->playerNameEdit.isEditing())){
+			
+			break;
+		
+		case PK2gui::KeyNav::DOWN:
+		case PK2gui::KeyNav::RIGHT:
 			chosen_menu_id++;
 			mouse_hidden = true;
 
 			if (chosen_menu_id > menus_count-1)
 				chosen_menu_id = 1;
 
-			key_delay = 9;
-		}
+			break;
 
-		static bool wasPressed = false;
-
-		if (!wasPressed && PInput::Keydown(PInput::ESCAPE) && menu_nyt == MENU_MAIN) {
+		case PK2gui::KeyNav::ESCAPE:{
 			mouse_hidden = true;
-			if(chosen_menu_id == menus_count-1)
-				fadeQuit();
-			else
-				chosen_menu_id = menus_count-1;
+
+			switch (menu_nyt)
+			{
+				case MENU_MAIN:{
+					if(chosen_menu_id == menus_count-1)
+						fadeQuit();
+					else
+						chosen_menu_id = menus_count-1;
+				}
+				break;
+			case MENU_CONTROLS:
+			case MENU_GRAPHICS:
+			case MENU_LANGUAGE:
+			case MENU_SOUNDS:
+				menu_nyt = MENU_SETTINGS;
+				break;
+
+			default:
+				menu_nyt = MENU_MAIN;
+				break;
+			}
 		}
-
-		wasPressed = PInput::Keydown(PInput::ESCAPE);
-
+		break;
+		
+		default:
+			break;
+		}
 	}
 
-
 	int menu_ennen = menu_nyt;
-
-	static int mx, my, mb;
-	int cx = PInput::mouse_x, 
-	    cy = PInput::mouse_y,
-		cb = PInput::MouseLeft() || PInput::MouseRight();
-
-	if (mx != cx || my != cy || mb != cb)
-		mouse_hidden = false;
-
-	mx = cx;
-	my = cy;
-	mb = cb;
 
 	Draw();
 
@@ -1285,5 +1260,4 @@ void MenuScreen::Loop() {
 
 	if (Settings.double_speed)
 		degree = 1 + degree % 360;
-
 }

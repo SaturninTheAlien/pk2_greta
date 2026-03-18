@@ -6,6 +6,7 @@
 
 #include <array>
 #include "engine/types.hpp"
+#include "engine/PInputKey.hpp"
 
 #include "sprites_handler.hpp"
 #include "levelclass.hpp"
@@ -50,7 +51,7 @@ class GameClass {
 		u32 apples_count = 0;
 		u32 apples_got = 0;
 
-		int vibration = 0;
+		
 
 		int camera_x = 0;
 		int camera_y = 0;
@@ -128,7 +129,17 @@ class GameClass {
 		
 		void saveGameState()const;
 		void loadGameState();
+
+		void vibrate(int vibration);
+		int getVibration()const{
+			return this->vibration;
+		}
+
+		void onKeyPressed(const PInput::Key& key);
 	private:
+
+
+		int vibration = 0;
 		bool hasEnoughPointsToRespawn();
 
 		void moveBlocks(){

@@ -35,6 +35,38 @@ PlayingScreen::~PlayingScreen(){
 	
 }
 
+void PlayingScreen::onKeyPressed(const PInput::Key& key){
+	Game->onKeyPressed(key);
+
+
+	const InputSettings& input = Settings.getInput();
+
+	//TODO - touchscreen
+
+	if (key == PInput::Key::ESCAPE || key == PInput::Key::JOY_START) {
+		if(test_level)
+			fadeQuit();
+		else if(!Game->game_over && !Game->level_clear) {
+			this->goingToTheMenu = true;
+		}
+	}
+	else if (key == PInput::Key(SDL_SCANCODE_I)) {
+		if(dev_mode){
+			draw_debug_info = !draw_debug_info;
+		}
+		else{
+			show_fps = !show_fps;
+		}					
+	}
+	else if(key == input.toggleHUD){
+		Settings.draw_gui = !Settings.draw_gui;
+	}
+
+	else if(key == input.screenshotKey){
+		this->takingScreenshot = true;
+	}
+}
+
 void PlayingScreen::Draw_InGame_DebugInfo() {
 	int vali, fy = 70;
 
@@ -108,7 +140,7 @@ void PlayingScreen::Draw_InGame_DevKeys() {
 
 	const char help[] = "h: help";
 
-	if (!PInput::Keydown(PInput::H)) {
+	if (!PInput::Key(SDL_SCANCODE_H).isPressed()) {
 		PDraw::font_write_line(fontti1, help, screen_width - strlen(help) * char_w, screen_height - 10);
 		return;
 	}
@@ -147,22 +179,6 @@ void PlayingScreen::Draw_InGame_DevKeys() {
 		PDraw::font_write_line(fontti1, txts[i], posx, posy + i*10);
 }
 
-
-
-
-/*void PlayingScreen::Draw_InGame_Gifts() {
-
-	int x,y;
-
-	y = screen_height-35;//36
-	x = Game->item_panel_x + 35;//40
-
-	for (int i=0;i<MAX_GIFTS;i++)
-		if (Gifts_Get(i) != nullptr){
-			Gifts_Draw(i, x, y);
-			x += 38;
-		}
-}*/
 
 void PlayingScreen::Draw_InGame_Lower_Menu() {
 	int x, y;
@@ -324,9 +340,6 @@ void PlayingScreen::drawDevStuff(){
 			PDraw::font_write_line(fontti1, std::to_string(fps), 570 + txt_size, 48);
 		
 		}
-		if (speedrun_mode) {
-			PDraw::font_write_line(fontti1, std::to_string(Game->frame_count), 570, 38);
-		}
 	}
 }
 
@@ -410,9 +423,9 @@ void PlayingScreen::Draw() {
 	 * @brief 
 	 * For debugging touchscreen controls
 	 */
-	/*if(dev_mode && Settings.touchscreen_mode){
-		Draw_Cursor(PInput::mouse_x, PInput::mouse_y);
-	}*/
+	if(dev_mode && Settings.touchscreen_mode){
+		this->drawMouseCursor();
+	}
 }
 
 void PlayingScreen::Init(){
@@ -446,39 +459,11 @@ void PlayingScreen::Loop(){
 
 		this->Draw();
 
-		if(key_delay==0 && !Game->game_over&&!Game->level_clear){
-			if (PInput::Keydown(PInput::ESCAPE) || PInput::Keydown(PInput::JOY_START) ||
-			TouchScreenControls.menu || TouchScreenControls.touch) {
-				if(test_level)
-					fadeQuit();
-				else {
-					next_screen = SCREEN_MENU;
-					degree_temp = degree;
-				}
-				key_delay = 20;
-			}
-
-			if (PInput::Keydown(PInput::I)) {
-
-				if(dev_mode){
-					draw_debug_info = !draw_debug_info;
-				}
-				else{
-					show_fps = !show_fps;
-				}					
-				key_delay = 20;
-			}
-
-			if(PInput::Keydown(PInput::F1)){
-				Settings.draw_gui = !Settings.draw_gui;
-				key_delay = 20;
-			}
-			else if(PInput::Keydown(PInput::F2)){
-				std::string name = PFilesystem::GetScreenshotName();
-				PLog::Write(PLog::INFO, "PK2", "Taken %s", name.c_str());
-				PDraw::take_screenshot(name);
-				key_delay = 20;
-			}
+		if(this->takingScreenshot){
+			this->takingScreenshot = false;
+			std::string name = PFilesystem::GetScreenshotName();
+			PLog::Write(PLog::INFO, "PK2", "Taken %s", name.c_str());
+			PDraw::take_screenshot(name);
 		}
 	} else {
 
@@ -500,12 +485,10 @@ void PlayingScreen::Loop(){
 			Game = nullptr;
 			next_screen = SCREEN_MAP;
 		}
-
 	}
-
-	// TODO - FIX
-	if (next_screen == SCREEN_MENU) {
-
+	
+	if (this->goingToTheMenu || TouchScreenControls.menu) {
+		this->goingToTheMenu = false;
 		int w, h;
 		PDraw::image_getsize(bg_screen, w, h);
 		if (w != screen_width) {
@@ -514,5 +497,8 @@ void PlayingScreen::Loop(){
 		}
 		PDraw::image_snapshot(bg_screen);
 
+
+		next_screen = SCREEN_MENU;
+		degree_temp = degree;
 	}
 }

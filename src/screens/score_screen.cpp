@@ -294,7 +294,7 @@ int ScoreScreen::Draw_ScoreCount() {
 	}
 
 	if(!Settings.touchscreen_mode || dev_mode){
-		Draw_Cursor(PInput::mouse_x, PInput::mouse_y);
+		this->drawMouseCursor();
 	}
 	
 	return 0;
@@ -463,14 +463,13 @@ void ScoreScreen::Loop() {
 	if (counting_delay > 0)
 		counting_delay--;
 
-	if (Clicked() || going_to_map){
+	if ( this->enterPressed || going_to_map){
 
 		if(counting_phase == COUNT_ENDED && !going_to_map) {
 
 			going_to_map = true;
 			Fade_out(FADE_SLOW);
 			PSound::set_musicvolume(0);
-			key_delay = 20;
 
 		} else {
 
@@ -489,9 +488,6 @@ void ScoreScreen::Loop() {
 			Game->playerSprite->energy = 0;
 
 			gifts_score = Game->gifts.totalScore();
-
-			key_delay = 20;
-
 		}
 
 	}

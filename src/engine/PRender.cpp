@@ -2,13 +2,13 @@
 //Pekka Kana 2
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
-#include "engine/PRender.hpp"
+#include "PRender.hpp"
 #include <string>
 #include <stdexcept>
 
-#include "engine/PDraw.hpp"
-#include "engine/PLog.hpp"
-#include "engine/types.hpp"
+#include "PDraw.hpp"
+#include "PLog.hpp"
+#include "types.hpp"
 
 #include "engine/render/PSdl.hpp"
 
@@ -29,6 +29,7 @@ static FRECT screen_dest = {0.f, 0.f, 1.f, 1.f};
 static const char* window_name;
 static SDL_Window* window = NULL;
 static bool vsync_set = false;
+static bool fullscreen_set = false;
 
 static Renderer* renderer;
 
@@ -103,28 +104,31 @@ void adjust_screen() {
 }
 
 void set_fullscreen(bool set) {
-
+	renderer->clear_screen();
 	#ifdef __ANDROID__
 		SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
 		return;
+
+	#else
+		fullscreen_set = set;
+		if(set)
+			SDL_SetWindowFullscreen(window, fullscreen_mode);
+		else {
+			int buf_w, buf_h;
+			PDraw::get_buffer_size(&buf_w, &buf_h);
+
+			SDL_SetWindowFullscreen(window, 0);
+			SDL_SetWindowSize(window, buf_w, buf_h);
+			SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+			//TODO - adjust dst_rect too and turn off filters
+		}
+
 	#endif
-
-	renderer->clear_screen();
-
-	if(set)
-		SDL_SetWindowFullscreen(window, fullscreen_mode);
-	else {
-		int buf_w, buf_h;
-		PDraw::get_buffer_size(&buf_w, &buf_h);
-
-		SDL_SetWindowFullscreen(window, 0);
-		SDL_SetWindowSize(window, buf_w, buf_h);
-		SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-		//TODO - adjust dst_rect too and turn off filters
-	}
-
 	adjust_screen();
+}
 
+bool is_fullscreen(){
+	return fullscreen_set;
 }
 
 int set_shader(int shader) {

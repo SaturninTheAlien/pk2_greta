@@ -10,7 +10,7 @@
 
 #include "PFilesystem.hpp"
 #include "PString.hpp"
-#include "engine/PLog.hpp"
+#include "PLog.hpp"
 
 #include <SDL.h>
 #include <algorithm>

@@ -287,21 +287,21 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 							Game->button1 = Game->level.button1_time;
 							Game->button_vibration = 64;
 							Play_GameSFX(Episode->sfx.switch_sound, 100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, false);
-							PInput::Vibrate(1000);
+							Settings.vibrateController(Game->button_vibration);
 						}
 
 						if (block.id == BLOCK_BUTTON2 && Game->button2 == 0) {
 							Game->button2 = Game->level.button2_time;
 							Game->button_vibration = 64;
 							Play_GameSFX(Episode->sfx.switch_sound, 100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, false);
-							PInput::Vibrate(1000);
+							Settings.vibrateController(Game->button_vibration);
 						}
 
 						if (block.id == BLOCK_BUTTON3 && Game->button3 == 0) {
 							Game->button3 = Game->level.button3_time;
 							Game->button_vibration = 64;
 							Play_GameSFX(Episode->sfx.switch_sound, 100, (int)sprite->x, (int)sprite->y, SOUND_SAMPLERATE, false);
-							PInput::Vibrate(1000);
+							Settings.vibrateController(Game->button_vibration);
 						}
 					}
 
@@ -734,44 +734,44 @@ void UpdateSprite(SpriteClass* sprite){
 
 	if (sprite->isPlayer() && sprite->energy > 0){
 
+		const InputSettings& input = Settings.getInput();
+
 		/* ATTACK 1 */
-		if ((PInput::Keydown(Input->attack1) || TouchScreenControls.egg) && sprite->charging_timer == 0 && sprite->ammo1 != nullptr)
+		if ((input.attack1.isPressed() || TouchScreenControls.egg) && sprite->charging_timer == 0 && sprite->ammo1 != nullptr)
 			sprite->attack1_timer = sprite->prototype->attack1_time;
 		/* ATTACK 2 */
-		else if ((PInput::Keydown(Input->attack2) || TouchScreenControls.doodle) && sprite->charging_timer == 0 && sprite->ammo2 != nullptr)
+		else if ((input.attack2.isPressed() || TouchScreenControls.doodle) && sprite->charging_timer == 0 && sprite->ammo2 != nullptr)
 				sprite->attack2_timer = sprite->prototype->attack2_time;
 		
 		if(sprite->player_c==1){
 
 			/* CROUCH */
 			sprite->crouched = false;
-			bool axis_couch = (Input == &Settings.joystick) && (PInput::GetAxis(1) > 0.5);
-			if ((PInput::Keydown(Input->down) || TouchScreenControls.down || axis_couch) && !sprite->can_move_down) {
+
+
+			bool axis_couch = Settings.getJoystickAxis(1) > 0.5;
+			if ((input.down.isPressed() || TouchScreenControls.down || axis_couch) && !sprite->can_move_down) {
 				sprite->crouched = true;
 				sprite_upper += sprite_height/1.5;
 			}
 
 			/* SLOW WALK */
-			if (PInput::Keydown(Input->walk_slow)
-			|| TouchScreenControls.pad_button == 1 || TouchScreenControls.pad_button == 3)
+			if ( input.walk_slow.isPressed() || TouchScreenControls.pad_button == 1 || TouchScreenControls.pad_button == 3)
 				add_speed = false;
 
 			/* NAVIGATING*/
 
-			int navigation = 0;
-
-			if (Input == &Settings.joystick)
-				navigation = PInput::GetAxis(0) * 100;
+			int navigation = Settings.getJoystickAxis(0) * 100;;
 
 			if (TouchScreenControls.pad_button == 0 || TouchScreenControls.pad_button == 1)
 				navigation = -100;
 			else if (TouchScreenControls.pad_button == 3 || TouchScreenControls.pad_button == 4)
 				navigation = 100;
 
-			if (PInput::Keydown(Input->right))
+			if (input.right.isPressed())
 				navigation = 100;
 			
-			if (PInput::Keydown(Input->left))
+			if (input.left.isPressed())
 				navigation = -100;
 
 			double a_lisays = 0.04;//0.08;
@@ -805,7 +805,7 @@ void UpdateSprite(SpriteClass* sprite){
 		if(sprite->player_c < 3){
 			/* JUMPING */
 			if (sprite->prototype->weight > 0 && !sprite->swimming) {
-				if (PInput::Keydown(Input->jump) || TouchScreenControls.up) {
+				if (input.up.isPressed() || TouchScreenControls.up) {
 					if (!sprite->crouched) {
 						if (sprite->jump_timer == 0)
 							Play_GameSFX(Episode->sfx.jump_sound, 100, (int)sprite->x, (int)sprite->y,
@@ -820,8 +820,8 @@ void UpdateSprite(SpriteClass* sprite){
 				}
 
 				/* dripping quietly down */
-				bool axis_up = (Input == &Settings.joystick) && (PInput::GetAxis(1) < -0.5);
-				if ((PInput::Keydown(Input->jump) || TouchScreenControls.up || axis_up) && sprite->jump_timer >= 150/*90+20*/ &&
+				bool axis_up = Settings.getJoystickAxis(1) < -0.5;
+				if ((input.up.isPressed() || TouchScreenControls.up || axis_up) && sprite->jump_timer >= 150/*90+20*/ &&
 					sprite->prototype->can_glide)
 					gliding = true;
 			}
@@ -832,10 +832,10 @@ void UpdateSprite(SpriteClass* sprite){
 				if (sprite->max_speed_available)
 					speed *= max_speed;
 
-				if (PInput::Keydown(Input->jump) || TouchScreenControls.up)
+				if (input.up.isPressed() || TouchScreenControls.up || Settings.getJoystickAxis(1) < -0.5)
 					sprite->b -= speed;
 
-				if (PInput::Keydown(Input->down) || TouchScreenControls.down)
+				if (input.down.isPressed() || TouchScreenControls.down || Settings.getJoystickAxis(1) > 0.5)
 					sprite->b += speed;
 
 				sprite->jump_timer = 0;
@@ -988,7 +988,7 @@ void UpdateSprite(SpriteClass* sprite){
 			for (int x = 0; x < palikat_x_lkm; x++) {
 				int p = x + y*palikat_x_lkm;
 				if ( p < 300 )
-					if (!(sprite == Player_Sprite && dev_mode && PInput::Keydown(PInput::Y))){
+					if (!(sprite == Player_Sprite && dev_mode && Settings.getInput().dev_ghostMode.isPressed())){
 						PK2BLOCK block = sector->getBlock(map_vasen+x-1,map_yla+y-1, Game->level.block_types);
 						//Block_Get(map_vasen+x-1,map_yla+y-1);
 						Check_MapBlock(sprite, block);
@@ -1095,7 +1095,7 @@ void UpdateSprite(SpriteClass* sprite){
 					if (sprite2->b > 0)
 						spritepalikka.id = BLOCK_LIFT_VERT;
 
-					if (!(sprite == Player_Sprite && dev_mode && PInput::Keydown(PInput::Y)))
+					if (!(sprite == Player_Sprite && dev_mode && Settings.getInput().dev_ghostMode.isPressed()))
 						Check_SpriteBlock(sprite, spritepalikka); //Colision sprite and sprite block
 				}
 			}
@@ -1144,8 +1144,9 @@ void UpdateSprite(SpriteClass* sprite){
 					sprite->energy = 0;
 					sprite->removed = true;
 
-					if (sprite->weight_button >= 1)
-						Game->vibration = 50;				
+					if (sprite->weight_button >= 1){
+						Game->vibrate(50);
+					}			
 				}
 
 				// If two sprites from different teams touch each other
@@ -1299,8 +1300,7 @@ void UpdateSprite(SpriteClass* sprite){
 					}
 
 					if (sprite->weight > 1) {
-						Game->vibration = 34 + int(sprite->weight * 20);
-						PInput::Vibrate(500);
+						Game->vibrate(34 + int(sprite->weight * 20));
 					}
 				}
 
@@ -1378,8 +1378,9 @@ void UpdateSprite(SpriteClass* sprite){
 		sprite->damage_taken_type = DAMAGE_SELF_DESTRUCTION;
 		sprite->removed = true;
 
-		if (sprite->weight_button >= 1)
-			Game->vibration = 50;
+		if (sprite->weight_button >= 1){
+			Game->vibrate(50);
+		}
 	}
 
 
@@ -1623,7 +1624,7 @@ void UpdateBonusSprite(SpriteClass* sprite){
 
 	// Hyppyyn liittyv�t seikat
 
-	if (Game->button_vibration + Game->vibration > 0 && sprite->jump_timer == 0)
+	if (Game->button_vibration + Game->getVibration() > 0 && sprite->jump_timer == 0)
 		sprite->jump_timer = sprite->prototype->max_jump / 2;
 
 	if (sprite->jump_timer > 0 && sprite->jump_timer < sprite->prototype->max_jump)

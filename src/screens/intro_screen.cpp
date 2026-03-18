@@ -259,7 +259,7 @@ void IntroScreen::Loop() {
 
 	if (!closing_intro) {
 
-		if (Clicked() || TouchScreenControls.touch || intro_counter >= 2930){
+		if (TouchScreenControls.touch || intro_counter >= 2930){
 			closing_intro = true;
 			Fade_out(FADE_SLOW);
 		}
@@ -270,5 +270,12 @@ void IntroScreen::Loop() {
 			next_screen = SCREEN_MENU;
 		}
 
+	}
+}
+
+void IntroScreen::onKeyPressed(const PInput::Key& key){
+	if(!closing_intro){
+		closing_intro = true;
+		Fade_out(FADE_SLOW);
 	}
 }

@@ -115,10 +115,154 @@ void GameClass::exposePlayerToAIs(){
 	}
 }
 
+
+void GameClass::onKeyPressed(const PInput::Key& key){
+
+	const InputSettings& input = Settings.getInput();
+
+	if(this->game_over || this->level_clear){
+		if (this->exit_timer > 4)
+			this->exit_timer = 4;
+
+	} else {
+		if(key==input.open_gift){
+			this->gifts.use(this->playerSprite->level_sector->sprites);		
+		}
+		else if(key==input.pauseGame){
+			this->paused = !this->paused;
+		}
+		else if(key==input.commitSuicide && !this->paused){
+			if (!config_txt.silent_suicide){
+				this->playerSprite->damage_taken = this->playerSprite->energy;
+				this->playerSprite->damage_taken_type = DAMAGE_SELF_DESTRUCTION;
+				this->playerSprite->self_destruction = true;
+			}else{
+				this->playerSprite->energy = 0;
+				this->playerSprite->removed = true;
+			}
+		}
+		else if(key==input.cycleGifts){
+			this->gifts.changeOrder();
+		}
+	}
+
+	if (dev_mode){
+
+		if(key==PInput::Key(SDL_SCANCODE_F)){
+			show_fps = !show_fps;
+		}
+		else if(key==PInput::Key(SDL_SCANCODE_Z)){
+			if (this->button1 < this->level.button1_time - 64)
+				this->button1 = this->level.button1_time;
+			if (this->button2 < this->level.button2_time - 64)
+				this->button2 = this->level.button2_time;
+			if (this->button3 < this->level.button3_time - 64)
+				this->button3 = this->level.button3_time;
+		}
+		else if(key==PInput::Key(SDL_SCANCODE_X)){
+			if (this->button1 > 64)
+				this->button1 = 64;
+			if (this->button2 > 64)
+				this->button2 = 64;
+			if (this->button3 > 64)
+				this->button3 = 64;
+		}
+		else if(key==PInput::Key(SDL_SCANCODE_T)){
+			Settings.double_speed = !Settings.double_speed;
+		}
+		else if(key==PInput::Key(SDL_SCANCODE_L)){
+			this->keys = 0;
+			this->openLocks();
+		}
+		else if(key==PInput::Key(SDL_SCANCODE_K)){
+			this->change_skulls = true;
+		}
+
+		else if(key==PInput::Key(SDL_SCANCODE_R)){
+			this->playerSprite->energy = 10;
+			this->playerSprite->removed = false;
+			this->game_over = false;
+
+			double pos_x = 0;
+			double pos_y = 0;
+
+			u32 sector_id = 0;
+
+			this->selectStart(pos_x, pos_y, sector_id);
+
+			if (Episode->legacy_start_offset)
+			{
+				pos_y -= playerSprite->prototype->height / 2;
+			}
+
+			this->teleportPlayer(pos_x, pos_y, this->level.sectors[sector_id]);
+		}
+
+		else if(key==PInput::Key(SDL_SCANCODE_END)){
+			this->finish();
+		}
+		else if(key==PInput::Key(SDL_SCANCODE_A)){
+			if (this->initialPlayerPrototype != nullptr){
+				PrototypeClass *ammo1 = this->playerSprite->ammo1;
+				PrototypeClass *ammo2 = this->playerSprite->ammo2;
+
+				this->playerSprite->energy = 10;
+				this->playerSprite->transformTo(this->initialPlayerPrototype);
+				Effect_Stars(this->playerSprite->x, this->playerSprite->y, COLOR_VIOLET);
+
+				if (this->playerSprite->ammo1 == nullptr)
+				{
+					this->playerSprite->ammo1 = ammo1;
+				}
+
+				if (this->playerSprite->ammo2 == nullptr)
+				{
+					this->playerSprite->ammo2 = ammo2;
+				}
+			}
+		}
+
+		else if(key==PInput::Key(SDL_SCANCODE_V)){
+			if (this->playerSprite->invisible_timer > 1){
+				this->playerSprite->invisible_timer = 1;
+			} else {
+				this->playerSprite->invisible_timer = 3000;
+			}
+		}
+
+		else if(key==PInput::Key(SDL_SCANCODE_S)){
+			if (this->playerSprite->super_mode_timer > 1){
+				this->playerSprite->super_mode_timer = 1;
+			} else {
+				if (Episode->supermode_music) {
+					this->startSupermodeMusic();
+				}
+				this->playerSprite->super_mode_timer = 3000;
+			}
+		}
+	}
+}
+
 void GameClass::update(int &debug_active_sprites)
 {
 	this->exposePlayerToAIs();
 	//LevelSector *sector = this->playerSprite->level_sector;
+
+	if(Settings.touchscreen_mode){
+
+		static bool useGiftWasPressed = false;
+		if(TouchScreenControls.gift && !useGiftWasPressed){
+			this->gifts.use(this->playerSprite->level_sector->sprites);				
+		}
+		useGiftWasPressed = TouchScreenControls.gift;
+
+
+		static bool cycleGiftsWasPressed = false;
+		if(TouchScreenControls.tab && !cycleGiftsWasPressed){
+			this->gifts.changeOrder();
+		}
+		cycleGiftsWasPressed = TouchScreenControls.tab;
+	}
 
 	if (!this->level_clear && (!this->has_time || this->timeout > 0))
 	{
@@ -137,8 +281,7 @@ void GameClass::update(int &debug_active_sprites)
 	{
 		this->change_skulls = false;
 
-		this->vibration = 90;
-		PInput::Vibrate(1000);
+		this->vibrate(90);
 
 		for (LevelSector *sector : this->level.sectors)
 		{
@@ -156,8 +299,7 @@ void GameClass::update(int &debug_active_sprites)
 	{
 		this->event1 = false;
 
-		this->vibration = 90;
-		PInput::Vibrate(1000);
+		this->vibrate(90);
 
 		for (LevelSector *sector : this->level.sectors)
 		{
@@ -271,229 +413,46 @@ void GameClass::update(int &debug_active_sprites)
 		this->game_over = true;
 	}
 
-	if (this->level_clear || this->game_over)
-	{
+	if (this->level_clear || this->game_over) {
 
-		if (this->exit_timer > 1)
+		if (this->exit_timer == 0){
+			this->exit_timer = 700; // 800;//2000;
+		}
+		else if (this->exit_timer > 1){
 			this->exit_timer--;
 
-		if (this->exit_timer == 0)
-			this->exit_timer = 700; // 800;//2000;
+			if(this->exit_timer==2) {
+				if (this->game_over) {
 
-		if (PInput::Keydown(Input->attack1) || PInput::Keydown(Input->attack2) ||
-			PInput::Keydown(Input->jump) || Clicked() ||
-			TouchScreenControls.any)
-			if (this->exit_timer > 2 && this->exit_timer < 500 /*600*/ /*1900*/ && key_delay == 0)
-				this->exit_timer = 2;
+					if (this->lastCheckpoint != nullptr && this->hasEnoughPointsToRespawn()) {
+						this->game_over = false;
+						this->exit_timer = 0;
 
-		if (this->exit_timer == 2)
-		{
-			if (this->game_over)
-			{
-
-				if (this->lastCheckpoint != nullptr && this->hasEnoughPointsToRespawn())
-				{
-					this->game_over = false;
-					this->exit_timer = 0;
-					key_delay = 20;
-
-					int t_score = this->score;
-					this->loadGameState();
-					if(this->score > t_score)this->score = t_score;
-				}
-				else
-				{
+						int t_score = this->score;
+						this->loadGameState();
+						if(this->score > t_score)this->score = t_score;
+					} else {
+						Fade_out(FADE_NORMAL);
+						PSound::set_musicvolume(0);
+					}
+				} else {
 					Fade_out(FADE_NORMAL);
-					PSound::set_musicvolume(0);
 				}
-			}
-			else
-			{
-				Fade_out(FADE_NORMAL);
 			}
 		}
 	}
 
-	if (key_delay == 0)
-	{
-		if (!this->game_over && !this->level_clear)
-		{
-			if (PInput::Keydown(Input->open_gift) || TouchScreenControls.gift)
-			{
-				this->gifts.use(this->playerSprite->level_sector->sprites);
-				key_delay = 10;
-			}
+	if(dev_mode){
 
-			if (PInput::Keydown(PInput::P))
-			{
-				this->paused = !this->paused;
-				key_delay = 20;
-			}
+		const InputSettings& input = Settings.getInput();
 
-			if (PInput::Keydown(PInput::DEL) && !this->paused)
-			{
-				if (!config_txt.silent_suicide)
-				{
-					this->playerSprite->damage_taken = this->playerSprite->energy;
-					this->playerSprite->damage_taken_type = DAMAGE_SELF_DESTRUCTION;
-					this->playerSprite->self_destruction = true;
-				}
-				else
-				{
-					this->playerSprite->energy = 0;
-					this->playerSprite->removed = true;
-				}
-			}
-
-			if (PInput::Keydown(PInput::TAB) || PInput::Keydown(PInput::JOY_GUIDE) || TouchScreenControls.tab)
-			{
-				this->gifts.changeOrder();
-				key_delay = 10;
-			}
-		}
-	}
-
-	if (dev_mode)
-	{ // Debug
-		if (key_delay == 0)
-		{
-			if (PInput::Keydown(PInput::F))
-			{
-				show_fps = !show_fps;
-				key_delay = 20;
-			}
-			if (PInput::Keydown(PInput::Z))
-			{
-				if (this->button1 < this->level.button1_time - 64)
-					this->button1 = this->level.button1_time;
-				if (this->button2 < this->level.button2_time - 64)
-					this->button2 = this->level.button2_time;
-				if (this->button3 < this->level.button3_time - 64)
-					this->button3 = this->level.button3_time;
-				key_delay = 20;
-			}
-			if (PInput::Keydown(PInput::X))
-			{
-				if (this->button1 > 64)
-					this->button1 = 64;
-				if (this->button2 > 64)
-					this->button2 = 64;
-				if (this->button3 > 64)
-					this->button3 = 64;
-				key_delay = 20;
-			}
-			if (PInput::Keydown(PInput::T))
-			{
-				Settings.double_speed = !Settings.double_speed;
-				key_delay = 20;
-			}
-			/*if (PInput::Keydown(PInput::G)) {
-				Settings.draw_transparent = !Settings.draw_transparent;
-				key_delay = 20;
-			}*/
-			if (PInput::Keydown(PInput::L))
-			{
-				this->keys = 0;
-				this->openLocks();
-				key_delay = 20;
-			}
-			if (PInput::Keydown(PInput::K))
-			{
-				this->change_skulls = true;
-				key_delay = 20;
-			}
-			if (PInput::Keydown(PInput::R))
-			{
-
-				this->playerSprite->energy = 10;
-				this->playerSprite->removed = false;
-				this->game_over = false;
-
-				double pos_x = 0;
-				double pos_y = 0;
-
-				u32 sector_id = 0;
-
-				this->selectStart(pos_x, pos_y, sector_id);
-
-				if (Episode->legacy_start_offset)
-				{
-					pos_y -= playerSprite->prototype->height / 2;
-				}
-
-				this->teleportPlayer(pos_x, pos_y, this->level.sectors[sector_id]);
-
-				key_delay = 20;
-			}
-			if (PInput::Keydown(PInput::END))
-			{
-				key_delay = 20;
-				this->finish();
-			}
-			if (PInput::Keydown(PInput::A))
-			{
-				key_delay = 20;
-				if (this->initialPlayerPrototype != nullptr)
-				{
-
-					PrototypeClass *ammo1 = this->playerSprite->ammo1;
-					PrototypeClass *ammo2 = this->playerSprite->ammo2;
-
-					this->playerSprite->energy = 10;
-					this->playerSprite->transformTo(this->initialPlayerPrototype);
-					Effect_Stars(this->playerSprite->x, this->playerSprite->y, COLOR_VIOLET);
-
-					if (this->playerSprite->ammo1 == nullptr)
-					{
-						this->playerSprite->ammo1 = ammo1;
-					}
-
-					if (this->playerSprite->ammo2 == nullptr)
-					{
-						this->playerSprite->ammo2 = ammo2;
-					}
-				}
-			}
-		}
-		if (PInput::Keydown(PInput::U))
+		if(input.dev_fly.isPressed()){
 			this->playerSprite->b = -10;
-		if (PInput::Keydown(PInput::E))
-		{
-			this->playerSprite->energy = 10;
-			this->game_over = false;
 		}
-		if (key_delay == 0)
-		{
 
-			if (PInput::Keydown(PInput::V))
-			{
-				if (this->playerSprite->invisible_timer > 1)
-				{
-					this->playerSprite->invisible_timer = 1;
-				}
-				else
-				{
-					this->playerSprite->invisible_timer = 3000;
-				}
-				key_delay = 30;
-			}
-
-			if (PInput::Keydown(PInput::S))
-			{
-				if (this->playerSprite->super_mode_timer > 1)
-				{
-					this->playerSprite->super_mode_timer = 1;
-				}
-				else
-				{
-					if (Episode->supermode_music)
-					{
-						this->startSupermodeMusic();
-					}
-					this->playerSprite->super_mode_timer = 3000;
-				}
-				key_delay = 30;
-			}
+		if(input.dev_heal.isPressed()){
+			this->playerSprite->energy = this->playerSprite->prototype->energy;
+			this->game_over = false;
 		}
 	}
 }
@@ -844,9 +803,7 @@ void GameClass::teleportPlayer(double x, double y, LevelSector *sector)
 
 void GameClass::openLocks()
 {
-	// Put in game
-	this->vibration = 90; // 60
-	PInput::Vibrate(1000);
+	this->vibrate(90);
 
 	showInfo(tekstit->Get_Text(PK_txt.game_locksopen));
 
@@ -949,6 +906,11 @@ void GameClass::setCamera(bool legacy_mode)
 	this->dcamera_b = 0;
 }
 
+void GameClass::vibrate(int vibration){
+	this->vibration = vibration;
+	Settings.vibrateController(vibration);
+}
+
 void GameClass::updateCamera()
 {
 	this->camera_x = (int)this->playerSprite->x - screen_width / 2;
@@ -956,10 +918,11 @@ void GameClass::updateCamera()
 
 	LevelSector *sector = playerSprite->level_sector;
 
-	if (dev_mode && PInput::MouseLeft() && !Settings.touchscreen_mode)
-	{
-		this->camera_x += PInput::mouse_x - screen_width / 2;
-		this->camera_y += PInput::mouse_y - screen_height / 2;
+	if (dev_mode && PInput::Key::MOUSE_LEFT.isPressed() && !Settings.touchscreen_mode){
+
+		const Point2D& mousePos = PInput::InputSystem::instance().getMousePos();
+		this->camera_x += mousePos.x - screen_width / 2;
+		this->camera_y += mousePos.y - screen_height / 2;
 	}
 
 	if (this->vibration > 0)

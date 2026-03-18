@@ -11,6 +11,8 @@ public:
     void Init();
     void Loop();
     void Draw();
+
+    void onKeyPressed(const PInput::Key& key)override;
 private:
     uint intro_counter = 0;
     bool closing_intro = false;

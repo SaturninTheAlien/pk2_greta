@@ -2,9 +2,9 @@
 //Pekka Kana 2
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
-#include "engine/PSound.hpp"
+#include "PSound.hpp"
 
-#include "engine/PLog.hpp"
+#include "PLog.hpp"
 
 #include <SDL_mixer.h>
 
