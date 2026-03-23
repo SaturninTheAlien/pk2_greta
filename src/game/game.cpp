@@ -291,8 +291,9 @@ void GameClass::update(int &debug_active_sprites)
 			if (this->game_over)
 			{
 
-				if (this->lastCheckpoint != nullptr && this->hasEnoughPointsToRespawn())
-				{
+				if (this->lastCheckpoint != nullptr && this->hasEnoughPointsToRespawn()) {
+					Fade_in(FADE_NORMAL);
+
 					this->game_over = false;
 					this->exit_timer = 0;
 					key_delay = 20;
@@ -300,6 +301,13 @@ void GameClass::update(int &debug_active_sprites)
 					int t_score = this->score;
 					this->loadGameState();
 					if(this->score > t_score)this->score = t_score;
+
+
+					SpriteClass*player = Game->playerSprite;
+					if(player->player_c==1){
+						player->a = 0;
+						player->b = 0;
+					}
 				}
 				else
 				{
