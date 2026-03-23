@@ -64,8 +64,14 @@ static void logic() {
 		if(event.type == SDL_QUIT){
 			running = false;
 		}
-		else if(event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED){
-			PRender::adjust_screen();
+		else if(event.type == SDL_WINDOWEVENT){
+
+			if(event.window.event == SDL_WINDOWEVENT_RESIZED){
+				PRender::adjust_screen();
+			}
+			else if(event.window.event == SDL_WINDOWEVENT_RESTORED){
+				PRender::set_pixelperfect();
+			}
 		}
 		else{
 			PInput::InputSystem::instance().handleEvent(event);

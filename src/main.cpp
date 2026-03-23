@@ -133,7 +133,7 @@ void pk2_main(bool _dev_mode, bool _show_fps, bool _test_level, const std::strin
 			throw std::runtime_error("\"icon[.bmp/.png]\" not found!");			
 		}
 
-		Piste::init(screen_width, screen_height, PK2_NAME_STR, iconPath->c_str(),
+		Piste::init(screen_width, screen_height, PK2_VERSION_STR_WINDOW, iconPath->c_str(),
 		config_txt.audio_buffer_size);
 
 		if(Settings.useJoystick && !PInput::InputSystem::instance().isJoystickAvailable()){

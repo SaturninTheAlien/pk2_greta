@@ -26,8 +26,7 @@ static float cover_width, cover_height;
 static bool screen_fill = false;
 static FRECT screen_dest = {0.f, 0.f, 1.f, 1.f};
 
-static const char* window_name;
-static SDL_Window* window = NULL;
+static SDL_Window* window = nullptr;
 static bool vsync_set = false;
 static bool fullscreen_set = false;
 
@@ -106,24 +105,33 @@ void adjust_screen() {
 void set_fullscreen(bool set) {
 	renderer->clear_screen();
 	#ifdef __ANDROID__
+	
 		SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
 		return;
 
 	#else
 		fullscreen_set = set;
-		if(set)
+		if(set){
 			SDL_SetWindowFullscreen(window, fullscreen_mode);
-		else {
+		} else {
 			int buf_w, buf_h;
 			PDraw::get_buffer_size(&buf_w, &buf_h);
-
-			SDL_SetWindowFullscreen(window, 0);
-			SDL_SetWindowSize(window, buf_w, buf_h);
+			SDL_SetWindowFullscreen(window, 0);		
 			SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-			//TODO - adjust dst_rect too and turn off filters
+
+			SDL_SetWindowMinimumSize(window, buf_w/2, buf_h/2);
+			SDL_SetWindowResizable(window, SDL_TRUE);
 		}
 
 	#endif
+	adjust_screen();
+}
+
+
+void set_pixelperfect(){
+	int buf_w, buf_h;
+	PDraw::get_buffer_size(&buf_w, &buf_h);
+	SDL_SetWindowSize(window, buf_w, buf_h);
 	adjust_screen();
 }
 
@@ -193,7 +201,6 @@ bool is_vsync() {
 
 void init(int width, int height, const char* name, const char* icon) {
 
-	window_name = name;
 	Uint32 window_flags = SDL_WINDOW_SHOWN;
 
 	PLog::Write(PLog::DEBUG, "PRender", "Initializing graphics");
