@@ -30,7 +30,7 @@ void Settings_Init() {
 
 
 	Settings.keyboardInput.setDefault();
-	Settings.keyboardInput.setDefaultJoystick();
+	Settings.joystickInput.setDefaultJoystick();
 
 #ifdef __ANDROID__
 	Settings.touchscreen_mode = true;
