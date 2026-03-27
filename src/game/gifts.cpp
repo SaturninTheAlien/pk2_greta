@@ -59,9 +59,9 @@ void GiftsHandler::remove(int i){
 	--this->giftsNumber;
 }
 
-void GiftsHandler::use(SpritesHandler& sh){
+void GiftsHandler::use(SpritesHandler& sh, SpriteClass*player){
 	if(this->giftsNumber > 0){
-		sh.addGiftSprite(gifts_list[0]);
+		sh.addGiftSprite(gifts_list[0], player);
 		this->remove(0);
 	}
 }

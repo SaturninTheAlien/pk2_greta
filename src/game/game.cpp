@@ -126,7 +126,7 @@ void GameClass::onKeyPressed(const PInput::Key& key){
 
 	} else {
 		if(key==input.open_gift){
-			this->gifts.use(this->playerSprite->level_sector->sprites);		
+			this->gifts.use(this->playerSprite->level_sector->sprites, this->playerSprite);		
 		}
 		else if(key==input.pauseGame){
 			this->paused = !this->paused;
@@ -252,7 +252,7 @@ void GameClass::update(int &debug_active_sprites)
 
 		static bool useGiftWasPressed = false;
 		if(TouchScreenControls.gift && !useGiftWasPressed){
-			this->gifts.use(this->playerSprite->level_sector->sprites);				
+			this->gifts.use(this->playerSprite->level_sector->sprites, this->playerSprite);				
 		}
 		useGiftWasPressed = TouchScreenControls.gift;
 
@@ -1159,14 +1159,17 @@ void GameClass::fromJson(const nlohmann::json &j)
 	}
 
 	this->lastCheckpoint = nullptr;
+	this->playerSprite = nullptr;
 
-	for (size_t i = 0; i < sprites_json.size() && i < this->level.sectors.size(); ++i)
-	{
+	for (size_t i = 0; i < sprites_json.size() && i < this->level.sectors.size(); ++i) {
+
 		LevelSector* sector =  this->level.sectors.at(i);
 		SpritesHandler& sprites = sector->sprites;
 		sprites.fromJSON(sprites_json[i], this->spritePrototypes, sector);
-		if(sprites.Player_Sprite!=nullptr){
-			this->playerSprite = sprites.Player_Sprite;
+
+		SpriteClass* player = sprites.findPlayer();
+		if(player!=nullptr){
+			this->playerSprite = player;
 		}
 
 		if(lastCheckpointId.has_value()){
@@ -1176,7 +1179,13 @@ void GameClass::fromJson(const nlohmann::json &j)
 			}
 		}
 	}
+
+	if(this->playerSprite==nullptr){
+		throw std::runtime_error("The player sprite wasn't found while loading saved game!");
+	}
+
 	this->gifts.fromJson(j.at("gifts"), this->spritePrototypes);
+
 	
 	// Update camera and GFX texture
 	this->setCamera();

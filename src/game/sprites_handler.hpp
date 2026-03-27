@@ -49,7 +49,7 @@ public:
      * @brief 
      * Spawn a sprite from player's gift
      */
-    void addGiftSprite(PrototypeClass* prototype);
+    void addGiftSprite(PrototypeClass* prototype, SpriteClass* player);
     /**
      * @brief 
      * Spawn a sprite from lua
@@ -64,7 +64,6 @@ public:
     std::list<SpriteClass*> bgSprites_List;
     std::list<SpriteClass*> fgSprites_List;
 
-    SpriteClass* Player_Sprite = nullptr;
     LevelSector* mLevelSector;
 
     void drawSprites(int camera_x, int camera_y, bool gamePaused, int& debug_drawn_sprites);
@@ -80,6 +79,7 @@ public:
         return this->Sprites_List.size();
     }
     SpriteClass* getSpriteById(std::size_t id);
+    SpriteClass * findPlayer();
 
     SpriteClass* findNearestTarget(const SpriteClass* agent)const;
 private:

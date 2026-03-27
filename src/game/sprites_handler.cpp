@@ -27,7 +27,6 @@ void SpritesHandler::clearAll(){
 	Sprites_List.clear();
 	bgSprites_List.clear();
 	fgSprites_List.clear();
-	Player_Sprite = nullptr;
 }
 
 static int Get_BG_Parallax_Score(SpriteClass* s){
@@ -216,8 +215,6 @@ SpriteClass* SpritesHandler::addPlayer(PrototypeClass*prototype, double x, doubl
 	sprite->initial_update = true;
 	sprite->original = true;
 
-	this->Player_Sprite = sprite;
-
 	AI_Functions::player_invisible = sprite;
 	if(sprite->invisible_timer==0){
 		AI_Functions::player = sprite;
@@ -259,20 +256,20 @@ void SpritesHandler::addDroppedBonusSprite(PrototypeClass*prototype, double x, d
 	sprite->a = 3 - rand()%7;
 }
 
-void SpritesHandler::addGiftSprite(PrototypeClass* prototype){
+void SpritesHandler::addGiftSprite(PrototypeClass* prototype, SpriteClass* player){
 	/**
 	 * @brief 
 	 * Fix spyrooster green bee bug.
 	 */
 	SpriteClass* parent = nullptr;
-	if(this->Player_Sprite->enemy){
-		parent = this->Player_Sprite;
+	if(player!=nullptr && player->enemy){
+		parent = player;
 	}
 	
 	SpriteClass* sprite  = this->mCreateSprite(prototype,
 		0,
-		Player_Sprite->x,
-		Player_Sprite->y, parent);
+		player->x,
+		player->y, parent);
 
 	sprite->y += sprite->prototype->height/2;
 }
@@ -344,7 +341,7 @@ void SpritesHandler::addProjectileSprite(PrototypeClass* prototype, SpriteClass*
 
 bool SpritesHandler::spriteDestructed(SpriteClass* sprite) { 
 
-	if (sprite == Player_Sprite) // Never remove the player
+	if (sprite->isPlayer()) // Never remove the player
 		return false;
 	
 	if (sprite->removed) {
@@ -582,10 +579,6 @@ void SpritesHandler::fromJSON(const nlohmann::json& j, PrototypesHandler& handle
 			sprite->target_sprite = this->getSpriteById(*sprite->target_sprite_id);
 		}
 
-		if(sprite->isPlayer()){
-			this->Player_Sprite = sprite;
-		}
-
 		switch (sprite->prototype->type)
 		{
 		case TYPE_BACKGROUND:
@@ -601,6 +594,15 @@ void SpritesHandler::fromJSON(const nlohmann::json& j, PrototypesHandler& handle
 	}
 
 	this->sortBg();
+}
+
+SpriteClass* SpritesHandler::findPlayer(){
+	for(SpriteClass* sprite: this->Sprites_List){
+		if(sprite->isPlayer()){
+			return sprite;
+		}
+	}
+	return nullptr;
 }
 
 void SpritesHandler::spriteToJson(nlohmann::json&j, const SpriteClass&s)const{

@@ -17,7 +17,7 @@ public:
     GiftsHandler();
 
     bool add(PrototypeClass* proto);
-    void use(SpritesHandler& spritesHandler);
+    void use(SpritesHandler& spritesHandler, SpriteClass* player);
     void clean();
     int count()const{
         return this->giftsNumber;
