@@ -25,6 +25,7 @@
 #include "playing_screen.hpp"
 #include "score_screen.hpp"
 #include "ending_screen.hpp"
+#include "screen_sudoku.hpp"
 
 ScreensHandler::ScreensHandler():
 	screens_map({
@@ -34,6 +35,7 @@ ScreensHandler::ScreensHandler():
 		{SCREEN_GAME, new PlayingScreen()},
 		{SCREEN_SCORING, new ScoreScreen()},
 		{SCREEN_END, new EndingScreen()},
+		{SCREEN_SUDOKU, new SudokuScreen()}
 	}){
 	
 	Fadetext_Init();

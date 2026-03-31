@@ -295,11 +295,15 @@ void MenuScreen::Draw_Menu_Main() {
 	
 	if (Episode){
 		if (drawMenuText(PK_txt.mainmenu_continue,180,my)){
-			if (Game)
-				next_screen = SCREEN_GAME;
-			else
+			if (Game){
+				if(Game->trollingActivated){
+					next_screen = SCREEN_SUDOKU;
+				} else {
+					next_screen = SCREEN_GAME;
+				}
+			} else {
 				next_screen = SCREEN_MAP;
-
+			}
 		}
 		my += 20;
 	}

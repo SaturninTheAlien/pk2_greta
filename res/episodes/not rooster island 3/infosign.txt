@@ -1,0 +1,4 @@
+*info01: Are you sure you are going the right way?
+*info02: For some reason there are no enemies here
+*info03: Trollololo!
+*info04: You do not need this turtle

@@ -1,0 +1,121 @@
+{
+  "ai" : [ 6,40, 7, 70, 16, 18, 171 ],
+  "always_active" : false,
+  "ammo1" : "",
+  "ammo2" : "",
+  "animations" : {
+    "attack1" : {
+      "intro" : 0,
+      "loop" : true,
+      "sequence" : [ 1, 2 ]
+    },
+    "attack2" : {
+      "intro" : 0,
+      "loop" : true,
+      "sequence" : [ 1, 2 ]
+    },
+    "damage" : {
+      "intro" : 0,
+      "loop" : true,
+      "sequence" : [ 1, 2, 3, 2 ]
+    },
+    "death" : {
+      "intro" : 0,
+      "loop" : false,
+      "sequence" : [ ]
+    },
+    "idle" : {
+      "intro" : 0,
+      "loop" : true,
+      "sequence" : [ 1, 2, 3, 2 ]
+    },
+    "jump_down" : {
+      "intro" : 0,
+      "loop" : true,
+      "sequence" : [ 1, 2, 3, 2 ]
+    },
+    "jump_up" : {
+      "intro" : 0,
+      "loop" : true,
+      "sequence" : [ 1, 2, 3, 2 ]
+    },
+    "squat" : {
+      "intro" : 0,
+      "loop" : true,
+      "sequence" : [ 1, 2, 3, 2 ]
+    },
+    "walking" : {
+      "intro" : 0,
+      "loop" : true,
+      "sequence" : [ 1, 2, 3, 2 ]
+    }
+  },
+  "attack1_time" : 60,
+  "attack2_time" : 60,
+  "blend_mode" : 0,
+  "bonus" : "wgrape.spr",
+  "bonus_always" : false,
+  "bonuses_number" : 3,
+  "can_glide" : false,
+  "can_open_locks" : false,
+  "can_swim" : true,
+  "charge_time" : 12,
+  "check_tiles" : false,
+  "color" : "normal",
+  "commands":[
+    "lua", "spiderBounce"
+  ],
+  "damage" : 1,
+  "damage_type" : 1,
+  "destruction_effect" : 20,
+  "effect" : 0,
+  "enemy" : true,
+  "energy" : 2,
+  "frame" : {
+    "height" : 38,
+    "pos_x" : 1,
+    "pos_y" : 1,
+    "width" : 38
+  },
+  "frame_rate" : 3,
+  "frames_number" : 3,
+  "immunity_type" : 0,
+  "indestructible" : false,
+  "info_id" : 0,
+  "is_wall" : false,
+  "is_wall_down" : true,
+  "is_wall_left" : true,
+  "is_wall_right" : true,
+  "is_wall_up" : true,
+  "max_jump" : 0,
+  "max_speed" : 4.0,
+  "name" : "spider (wall creeper)",
+  "parallax_type" : 0,
+  "picture" : "spr_spid.bmp",
+  "player_detection" : {
+    "x" : 200.0,
+    "y" : 350.0
+  },
+  "projectile_charge_time" : 0,
+  "random_sound_frequency" : true,
+  "score" : 10,
+  "size" : {
+    "height" : 26,
+    "width" : 26
+  },
+  "sound_frequency" : 22050,
+  "sounds" : {
+    "attack1" : "",
+    "attack2" : "",
+    "damage" : "damage.wav",
+    "destruction" : "ko1.wav",
+    "random" : "",
+    "special1" : "",
+    "special2" : ""
+  },
+  "transformation" : "",
+  "type" : 1,
+  "version" : "2.0",
+  "vibrates" : false,
+  "weight" : 0.0
+}

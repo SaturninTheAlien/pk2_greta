@@ -468,7 +468,32 @@ void PlayingScreen::Loop(){
 	} else {
 
 		Piste::ignore_frame();
+	}
 
+
+	if (this->goingToTheMenu || TouchScreenControls.menu) {
+		this->goingToTheMenu = false;
+		next_screen = SCREEN_MENU;
+	} else if (Game->trollingActivated) {
+		Game->trollingActivated = false;
+		next_screen = SCREEN_SUDOKU;
+	}
+
+
+	if(next_screen==SCREEN_MENU || next_screen==SCREEN_SUDOKU){
+		if(bg_screen==-1){
+			bg_screen = PDraw::image_new(screen_width, screen_height);
+		}
+		else{
+			int w, h;
+			PDraw::image_getsize(bg_screen, w, h);
+			if (w != screen_width) {
+				PDraw::image_delete(bg_screen);
+				bg_screen = PDraw::image_new(screen_width, screen_height);
+			}
+		}
+		PDraw::image_snapshot(bg_screen);
+		degree_temp = degree;
 	}
 	
 	if (Game->exit_timer == 1 && !Is_Fading()) {
@@ -487,18 +512,4 @@ void PlayingScreen::Loop(){
 		}
 	}
 	
-	if (this->goingToTheMenu || TouchScreenControls.menu) {
-		this->goingToTheMenu = false;
-		int w, h;
-		PDraw::image_getsize(bg_screen, w, h);
-		if (w != screen_width) {
-			PDraw::image_delete(bg_screen);
-			bg_screen = PDraw::image_new(screen_width, screen_height);
-		}
-		PDraw::image_snapshot(bg_screen);
-
-
-		next_screen = SCREEN_MENU;
-		degree_temp = degree;
-	}
 }

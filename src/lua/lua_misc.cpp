@@ -31,6 +31,15 @@ LevelSector * GetSectorByName(const std::string& name){
     return nullptr;
 }
 
+void startTrolling(){
+    Game->trollingActivated = true;
+}
+
+bool isTrolled(){
+    return Game->trolled;
+}
+
+
 void ExposeMiscAPI(sol::table& PK2_API){
 
     /**
@@ -61,6 +70,8 @@ void ExposeMiscAPI(sol::table& PK2_API){
 
     PK2_API["passLevel"] = [](){Game->finish();};
     PK2_API["gameOver"] = [](){Game->game_over=true;};
+    PK2_API["startTrolling"] = startTrolling;
+    PK2_API["isTrolled"] = isTrolled;
 }
 
 

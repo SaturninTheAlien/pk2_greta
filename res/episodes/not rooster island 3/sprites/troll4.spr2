@@ -1,0 +1,120 @@
+{
+    "ai": [
+        6,
+        11,
+        20
+    ],
+    "always_active": false,
+    "ammo1": "",
+    "ammo2": "",
+    "animations": {
+        "attack1": {
+            "loop": true,
+            "sequence": [
+                1, 2
+            ]
+        },
+        "attack2": {
+            "loop": false,
+            "sequence": []
+        },
+        "damage": {
+            "loop": false,
+            "sequence": []
+        },
+        "death": {
+            "loop": false,
+            "sequence": []
+        },
+        "idle": {
+            "loop": false,
+            "sequence": [
+                1
+            ]
+        },
+        "jump_down": {
+            "loop": false,
+            "sequence": []
+        },
+        "jump_up": {
+            "loop": false,
+            "sequence": []
+        },
+        "squat": {
+            "loop": false,
+            "sequence": []
+        },
+        "walking": {
+            "loop": true,
+            "sequence":
+            [
+                3, 4
+            ]
+        }
+    },
+    "attack1_time": 30,
+    "attack2_time": 60,
+    "bonus": "",
+    "bonus_always": false,
+    "bonuses_number": 0,
+    "can_glide": true,
+    "can_open_locks": false,
+    "can_swim": false,
+    "charge_time": 310,
+    "check_tiles": true,
+    "color": "normal",
+    "commands": [
+        "lua", "trolled",
+        "transform"
+    ],
+    "damage": 0,
+    "damage_type": 1,
+    "destruction_effect": 16,
+    "effect": 0,
+    "enemy": true,
+    "energy": 3,
+    "frame": {
+        "height": 185,
+        "pos_x": 1,
+        "pos_y": 1,
+        "width": 133
+    },
+    "frame_rate": 10,
+    "frames_number": 4,
+    "immunity_type": 0,
+    "indestructible": true,
+    "info_id": 0,
+    "is_transparent": false,
+    "is_wall": false,
+    "is_wall_down": true,
+    "is_wall_left": true,
+    "is_wall_right": true,
+    "is_wall_up": true,
+    "max_jump": 26,
+    "max_speed": 0,
+    "name": "bridge troll phase 4 (friendly)",
+    "parallax_type": 0,
+    "picture": "spr_troll.png",
+    "projectile_charge_time": 0,
+    "random_sound_frequency": true,
+    "score": 0,
+    "size": {
+        "height": 185,
+        "width": 130
+    },
+    "sound_frequency": 22050,
+    "sounds": {
+        "attack1": "",
+        "attack2": "",
+        "damage": "",
+        "destruction": "",
+        "random": "",
+        "special1": "",
+        "special2": ""
+    },
+    "transformation": "troll2.spr",
+    "type": 1,
+    "version": "2.0",
+    "vibrates": false,
+    "weight": 2.0
+}

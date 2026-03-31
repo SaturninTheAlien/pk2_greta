@@ -83,6 +83,8 @@ class GameClass {
 		sol::state * lua = nullptr;
 		GiftsHandler gifts;
 
+		bool trollingActivated = false;
+		bool trolled = false;
 
 		GameClass(int idx);
 		GameClass(std::string level_file);

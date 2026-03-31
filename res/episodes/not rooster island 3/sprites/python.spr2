@@ -1,0 +1,118 @@
+{
+  "ai" : [ 6, 18, 7, 90 ],
+  "always_active" : true,
+  "ammo1" : "",
+  "ammo2" : "",
+  "animations" : {
+    "attack1" : {
+      "intro" : 0,
+      "loop" : true,
+      "sequence" : [ 1, 2 ]
+    },
+    "attack2" : {
+      "intro" : 0,
+      "loop" : true,
+      "sequence" : [ 1, 2 ]
+    },
+    "damage" : {
+      "intro" : 0,
+      "loop" : false,
+      "sequence" : [ 1, 2, 1, 1 ]
+    },
+    "death" : {
+      "intro" : 0,
+      "loop" : false,
+      "sequence" : [ 1, 2]
+    },
+    "idle" : {
+      "intro" : 0,
+      "loop" : false,
+      "sequence" : [ 1, 2 ]
+    },
+    "jump_down" : {
+      "intro" : 0,
+      "loop" : true,
+      "sequence" : [ 1, 2]
+    },
+    "jump_up" : {
+      "intro" : 0,
+      "loop" : true,
+      "sequence" : [ 1, 2 ]
+    },
+    "squat" : {
+      "intro" : 0,
+      "loop" : false,
+      "sequence" : [ 1, 2 ]
+    },
+    "walking" : {
+      "intro" : 0,
+      "loop" : true,
+      "sequence" : [ 1, 2 ]
+    }
+  },
+  "attack1_time" : 60,
+  "attack2_time" : 60,
+  "blend_mode" : 0,
+  "bonus" : "",
+  "bonus_always" : false,
+  "bonuses_number" : 1,
+  "can_glide" : false,
+  "can_open_locks" : false,
+  "can_swim" : false,
+  "charge_time" : 20,
+  "check_tiles" : true,
+  "color" : "normal",
+  "damage" : 1,
+  "damage_type" : 1,
+  "destruction_effect" : 0,
+  "effect" : 0,
+  "enemy" : true,
+  "energy" : 3,
+  "frame" : {
+    "height" : 29,
+    "pos_x" : 1,
+    "pos_y" : 1,
+    "width" : 125
+  },
+  "frame_rate" : 10,
+  "frames_number" : 2,
+  "immunity_type" : 0,
+  "indestructible" : false,
+  "info_id" : 0,
+  "is_wall" : false,
+  "is_wall_down" : false,
+  "is_wall_left" : false,
+  "is_wall_right" : false,
+  "is_wall_up" : false,
+  "max_jump" : 15,
+  "max_speed" : 12,
+  "name" : "python (script.py)",
+  "parallax_type" : 0,
+  "picture" : "spr_python.png",
+  "player_detection" : {
+    "x" : 200.0,
+    "y" : 350.0
+  },
+  "projectile_charge_time" : 0,
+  "random_sound_frequency" : true,
+  "score" : 80,
+  "size" : {
+    "height" : 29,
+    "width" : 125
+  },
+  "sound_frequency" : 22050,
+  "sounds" : {
+    "attack1" : "",
+    "attack2" : "",
+    "damage" : "damage.wav",
+    "destruction" : "ko1.wav",
+    "random" : "",
+    "special1" : "",
+    "special2" : ""
+  },
+  "transformation" : "",
+  "type" : 1,
+  "version" : "2.0",
+  "vibrates" : false,
+  "weight" : 0.0
+}

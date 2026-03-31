@@ -5,6 +5,7 @@
 /res/episodes/*
 !/res/episodes/rooster island 1/
 !/res/episodes/rooster island 2/
+!/res/episodes/not rooster island 3/
 
 /res/data/
 /res/editor/settings.dat

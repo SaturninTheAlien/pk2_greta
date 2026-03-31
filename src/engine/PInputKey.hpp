@@ -65,6 +65,7 @@ public:
 
     static const Key JOY_START;
     static const Key JOY_STICK_LEFT;
+    static const Key JOY_STICK_RIGHT;
 
     static const Key JOY_GUIDE;
     
