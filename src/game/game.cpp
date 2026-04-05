@@ -967,17 +967,20 @@ void GameClass::updateCamera()
 	if (this->dcamera_y != this->camera_y)
 		this->dcamera_b = (this->camera_y - this->dcamera_y) / 15;
 
-	if (this->dcamera_a > 6)
-		this->dcamera_a = 6;
+	if(Episode->legacy_camera_offset){
+		if (this->dcamera_a > 6)
+			this->dcamera_a = 6;
 
-	if (this->dcamera_a < -6)
-		this->dcamera_a = -6;
+		if (this->dcamera_a < -6)
+			this->dcamera_a = -6;
 
-	if (this->dcamera_b > 6)
-		this->dcamera_b = 6;
+		if (this->dcamera_b > 6)
+			this->dcamera_b = 6;
 
-	if (this->dcamera_b < -6)
-		this->dcamera_b = -6;
+		if (this->dcamera_b < -6)
+			this->dcamera_b = -6;
+	}
+
 
 	this->dcamera_x += this->dcamera_a;
 	this->dcamera_y += this->dcamera_b;
