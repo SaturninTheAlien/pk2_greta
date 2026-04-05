@@ -246,7 +246,30 @@ void GameClass::onKeyPressed(const PInput::Key& key){
 void GameClass::update(int &debug_active_sprites)
 {
 	this->exposePlayerToAIs();
-	//LevelSector *sector = this->playerSprite->level_sector;
+
+	if(dev_mode){
+
+		const InputSettings& input = Settings.getInput();
+
+		if(input.dev_fly.isPressed()){
+			this->playerSprite->b = -10;
+		}
+
+		if(input.dev_heal.isPressed()){
+
+			PrototypeClass* playerProto = this->playerSprite->prototype;
+
+			int energy = playerProto->energy;
+			if(playerProto->hasAI(AI_TRANSFORM_WHEN_ENERGY_OVER_1) && playerProto->transformation!=nullptr){
+				energy = playerProto->transformation->energy;
+			}
+
+
+			this->playerSprite->energy = energy;
+			this->game_over = false;
+			this->exit_timer = 0;
+		}
+	}
 
 	if(Settings.touchscreen_mode){
 
@@ -451,19 +474,7 @@ void GameClass::update(int &debug_active_sprites)
 		}
 	}
 
-	if(dev_mode){
-
-		const InputSettings& input = Settings.getInput();
-
-		if(input.dev_fly.isPressed()){
-			this->playerSprite->b = -10;
-		}
-
-		if(input.dev_heal.isPressed()){
-			this->playerSprite->energy = this->playerSprite->prototype->energy;
-			this->game_over = false;
-		}
-	}
+	
 }
 
 void GameClass::startSupermodeMusic()
