@@ -43,8 +43,8 @@ void Screen::onKeyPressed(const PInput::Key& k){
 	if(k==PInput::Key::MOUSE_LEFT || k==PInput::Key::JOY_STICK_LEFT){
 		this->mousePressed = true;
 	}
-	else if(k==PInput::Key(SDL_SCANCODE_SPACE) ||
-		k==PInput::Key(SDL_SCANCODE_RETURN) ||
+	else if(k==PInput::Key::SPACE ||
+		k==PInput::Key::RETURN ||
 		k==PInput::Key::JOY_A ||
 		k==PInput::Key::JOY_START) {
 			this->enterPressed = true;

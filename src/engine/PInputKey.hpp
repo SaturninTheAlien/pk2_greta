@@ -44,6 +44,7 @@ public:
     static const Key RETURN;
     static const Key DELETE;
     static const Key BACKSPACE;
+    static const Key SPACE;
     
     static const Key LEFT;
     static const Key RIGHT;
