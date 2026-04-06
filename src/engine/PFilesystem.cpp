@@ -106,6 +106,8 @@ void SetDataPath(const std::string& name){
     CreateDirectory( (mDataPath / "saves").string());
     CreateDirectory( (mDataPath / "screenshots").string());
     CreateDirectory( (mDataPath / "checkpoint").string());
+    CreateDirectory( (mDataPath / "episodes").string());
+
 
     //TODO
     //throw exception if the directory is not writeable

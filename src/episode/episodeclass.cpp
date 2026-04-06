@@ -304,7 +304,12 @@ void EpisodeClass::load() {
 		PFilesystem::SetEpisode(entry.name, &this->source_zip);
 	}
 	else{
-		PFilesystem::SetEpisode(entry.name, nullptr);
+
+		if(entry.path.empty()){
+			PFilesystem::SetEpisode(entry.name, nullptr);
+		} else {
+			PFilesystem::SetEpisode(entry.path, nullptr);
+		}		
 	}
 
 	if(!test_level){
