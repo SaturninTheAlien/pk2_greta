@@ -32,6 +32,7 @@ const Key Key::JOY_RIGHT = Key(SDL_CONTROLLER_BUTTON_DPAD_RIGHT, INPUT_GAME_CONT
 const Key Key::JOY_START = Key(SDL_CONTROLLER_BUTTON_START, INPUT_GAME_CONTROLLER);
 
 const Key Key::JOY_STICK_LEFT = Key(SDL_CONTROLLER_BUTTON_LEFTSTICK, INPUT_GAME_CONTROLLER);
+const Key Key::JOY_STICK_RIGHT = Key(SDL_CONTROLLER_BUTTON_RIGHTSTICK, INPUT_GAME_CONTROLLER);
 
 const Key Key::JOY_GUIDE = Key(SDL_CONTROLLER_BUTTON_GUIDE, INPUT_GAME_CONTROLLER);
 
@@ -161,6 +162,23 @@ std::string Key::getName()const{
     }
 
     return "Unknown Input!";
+}
+
+std::optional<int> Key::getNumericValue()const{
+    if(this->type==INPUT_KEYBOARD){
+        if (this->code == SDL_SCANCODE_0 || this->code == SDL_SCANCODE_KP_0) return 0;
+        if (this->code == SDL_SCANCODE_1 || this->code == SDL_SCANCODE_KP_1) return 1;
+        if (this->code == SDL_SCANCODE_2 || this->code == SDL_SCANCODE_KP_2) return 2;
+        if (this->code == SDL_SCANCODE_3 || this->code == SDL_SCANCODE_KP_3) return 3;
+        if (this->code == SDL_SCANCODE_4 || this->code == SDL_SCANCODE_KP_4) return 4;
+        if (this->code == SDL_SCANCODE_5 || this->code == SDL_SCANCODE_KP_5) return 5;
+        if (this->code == SDL_SCANCODE_6 || this->code == SDL_SCANCODE_KP_6) return 6;
+        if (this->code == SDL_SCANCODE_7 || this->code == SDL_SCANCODE_KP_7) return 7;
+        if (this->code == SDL_SCANCODE_8 || this->code == SDL_SCANCODE_KP_8) return 8;
+        if (this->code == SDL_SCANCODE_9 || this->code == SDL_SCANCODE_KP_9) return 9;
+    }
+
+    return {};
 }
 
 void to_json(nlohmann::json& j, const Key& key){
