@@ -51,6 +51,7 @@ public:
     static const Key RIGHT;
     static const Key UP;
     static const Key DOWN;
+    static const Key LALT;
 
     static const Key MOUSE_LEFT;
     static const Key MOUSE_RIGHT;

@@ -663,9 +663,10 @@ void MenuScreen::Draw_Menu_Graphics() {
 	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.gfx_title),50,90);
 
 	if(moreOptions){
-		bool wasFullScreen = Settings.isFullScreen;
 		int  oldfps = Settings.fps;
 
+#ifndef __ANDROID__
+		bool wasFullScreen = Settings.isFullScreen;
 		if (Settings.isFullScreen){
 			if (drawMenuText(PK_txt.gfx_fullscreen_on,180,my)){
 				Settings.isFullScreen = false;
@@ -678,6 +679,8 @@ void MenuScreen::Draw_Menu_Graphics() {
 		if (PK2gui::Draw_BoolBox(100, my, Settings.isFullScreen, true, mousePressed)) {
 			Settings.isFullScreen = !Settings.isFullScreen;
 		}
+#endif
+
 		my += 40;
 
 		//TODO - Fix touch position when screen fit
@@ -739,10 +742,12 @@ void MenuScreen::Draw_Menu_Graphics() {
 			}
 		}
 		//Add more options here
+#ifndef __ANDROID__
 		if(wasFullScreen != Settings.isFullScreen) {// If fullscreen changes
 			save_settings = true;
 			PRender::set_fullscreen(Settings.isFullScreen);
 		}
+#endif
 
 		if (Settings.fps != oldfps) {
 			int ret = -1;
