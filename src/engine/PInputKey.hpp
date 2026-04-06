@@ -38,7 +38,7 @@ public:
     bool isPressed()const;
     bool accept(const SDL_Event& event)const;
     std::string getName()const; 
-    std::optional<int> Key::getNumericValue()const;
+    std::optional<int> getNumericValue()const;
 
 
     static const Key ESCAPE;
