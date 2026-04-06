@@ -404,7 +404,7 @@ void MenuScreen::Draw_Menu_Main() {
 
 		#ifdef __ANDROID__
 
-		if (drawMenuText("Install zip",180,my)){
+		if (drawMenuTextS("Install zip",180,my)){
 			Android_InstallZipEpisode();
 		}
 		my += 20;

@@ -9,8 +9,8 @@ class ScoreScreen: public Screen{
 public:
     ScoreScreen();
     ~ScoreScreen();
-    void Init();
-    void Loop();
+    void Init()override;
+    void Loop()override;
 
 private:
     int LevelScore_Compare(int level, int score, int apples, int time);
