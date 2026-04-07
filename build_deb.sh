@@ -47,8 +47,10 @@ install -m 755 bin/pekka-kana-2 \
 
 echo "== Bundle libs =="
 
-cp /usr/lib/x86_64-linux-gnu/libzip.so.* "$LIB_DIR/"
-cp /lib/x86_64-linux-gnu/libz.so.* "$LIB_DIR/"
+LIBARCH=$(dpkg-architecture -qDEB_HOST_MULTIARCH)
+
+cp -d /usr/lib/$LIBARCH/libzip.so.* "$LIB_DIR/"
+cp -d /usr/lib/$LIBARCH/libz.so.* "$LIB_DIR/"
 
 echo "== Assets =="
 rsync -a \
@@ -93,5 +95,8 @@ EOF
 
 echo "== Build deb =="
 dpkg-deb --build --root-owner-group "$PKGDIR"
+
+echo "== Cleaning == "
+make clean
 
 echo "== Done =="
