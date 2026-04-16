@@ -2,10 +2,12 @@
 // Pekka Kana 2
 // Copyright (c) 2003 Janne Kivilahti
 // #########################
-#include "game/game.hpp"
+#include "game.hpp"
 
-#include "game/physics.hpp"
-#include "game/gifts.hpp"
+#include "physics.hpp"
+#include "gifts.hpp"
+#include "spriteclass.hpp"
+
 #include "system.hpp"
 #include "gfx/text.hpp"
 #include "gfx/particles.hpp"
@@ -449,6 +451,9 @@ void GameClass::update(int &debug_active_sprites)
 
 					if (this->lastCheckpoint != nullptr && this->hasEnoughPointsToRespawn()) {
 
+						int checkpoint_x = this->lastCheckpoint->x;
+						int checkpoint_y = this->lastCheckpoint->y;
+
 						Fade_in(FADE_NORMAL);
 						this->game_over = false;
 						this->exit_timer = 0;
@@ -457,10 +462,13 @@ void GameClass::update(int &debug_active_sprites)
 						this->loadGameState();
 						if(this->score > t_score)this->score = t_score;
 
-						SpriteClass*player = Game->playerSprite;
+						SpriteClass*player = this->playerSprite;
 						if(player->player_c==1){
 							player->a = 0;
 							player->b = 0;
+
+							player->x = checkpoint_x;
+							player->y = checkpoint_y;
 						}
 
 					} else {
@@ -1087,8 +1095,8 @@ nlohmann::json GameClass::toJson() const
 	j["button1"] = this->button1;
 	j["button2"] = this->button2;
 	j["button3"] = this->button3;
-	j["score"] = this->score;
-	j["score_increment"] = this->score_increment;
+	j["score"] = this->score + this->score_increment;
+	//j["score_increment"] = this->score_increment;
 	j["apples_count"] = this->apples_count;
 	j["apples_got"] = this->apples_got;
 	j["vibration"] = this->vibration;
@@ -1144,7 +1152,10 @@ void GameClass::fromJson(const nlohmann::json &j)
 	j.at("button2").get_to(this->button2);
 	j.at("button3").get_to(this->button3);
 	j.at("score").get_to(this->score);
-	j.at("score_increment").get_to(this->score_increment);
+	//j.at("score_increment").get_to(this->score_increment);
+
+	this->score_increment = 0;
+
 	j.at("apples_count").get_to(this->apples_count);
 	j.at("apples_got").get_to(this->apples_got);
 	j.at("vibration").get_to(this->vibration);

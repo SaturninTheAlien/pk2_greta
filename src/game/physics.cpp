@@ -1555,7 +1555,7 @@ void UpdateSprite(SpriteClass* sprite){
 				sprite->y/*bottom*/ >= Player_Sprite->y - Player_Sprite->prototype->height/2 + sprite2_yla){
 
 
-			if(Game->score > Episode->checkpointPenalty){
+			if(Game->score >= Episode->checkpointPenalty){
 				sprite->target_sprite = Player_Sprite;
 				Game->lastCheckpoint = sprite;
 				sprite->attack1_timer = sprite->prototype->attack1_time;
