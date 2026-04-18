@@ -155,6 +155,7 @@ class GameClass {
 		PrototypeClass* initialPlayerPrototype = nullptr;
 		int level_id = -1;
 		bool started = false;
+		int giftCooldown = 0;
 };
 
 extern GameClass* Game;

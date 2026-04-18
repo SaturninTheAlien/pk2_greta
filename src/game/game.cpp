@@ -128,7 +128,11 @@ void GameClass::onKeyPressed(const PInput::Key& key){
 
 	} else {
 		if(key==input.open_gift){
-			this->gifts.use(this->playerSprite->level_sector->sprites, this->playerSprite);		
+
+			if(this->giftCooldown==0){
+				this->gifts.use(this->playerSprite->level_sector->sprites, this->playerSprite);	
+				this->giftCooldown = 9;
+			}	
 		}
 		else if(key==input.pauseGame){
 			this->paused = !this->paused;
@@ -273,6 +277,7 @@ void GameClass::update(int &debug_active_sprites)
 		}
 	}
 
+
 	if(Settings.touchscreen_mode){
 
 		static bool useGiftWasPressed = false;
@@ -354,6 +359,10 @@ void GameClass::update(int &debug_active_sprites)
 
 	if (!this->paused)
 	{
+
+		if(this->giftCooldown>0){
+			--this->giftCooldown;
+		}
 
 		/**
 		 * @brief
