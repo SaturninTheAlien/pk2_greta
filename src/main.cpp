@@ -37,8 +37,6 @@
 #include <algorithm>
 #include <SDL.h>
 
-#include "utils/file_converter.hpp"
-
 #include "episode/save_slots.hpp"
 
 
@@ -174,8 +172,6 @@ int main(int argc, char **argv) {
 	bool test_level = false;
 	bool dev_mode = false;
 	bool show_fps = false;
-	bool converting_sprite = false;
-	bool updating_sprites = false;
 
 	std::string filename_in;
 	std::string filename_out;
@@ -184,10 +180,19 @@ int main(int argc, char **argv) {
 	int state = 0;
 	for(int i=1;i<argc;++i){
 		std::string arg = argv[i];
+
+		std::string key = arg;
+		std::string value;
+		auto pos = arg.find('=');
+		if (pos != std::string::npos) {
+			key = arg.substr(0, pos);
+			value = arg.substr(pos + 1);
+		}
+
 		switch (state)
 		{
 		case 0:{
-			if(arg=="--help" || arg=="-h"){
+			if(key=="--help" || key=="-h"){
 				printf("Pekka Kana 2 (Pekka the Rooster 2) is a jump 'n run game made "
 				"in the spirit of classic platformers such as Super Mario, SuperTux, "
 				" Jazz Jackrabbit, Super Frog and so on.\n"
@@ -205,45 +210,66 @@ int main(int argc, char **argv) {
 				"--data-path -> set a custom data path (saves, mapstore, etc)\n"
 				"(e.g ./pekka-kana-2 --data-path \"path/my_saves\")\n"
 				"USE \"./pekka-kana-2 --data-path PREF_PATH\" if you want to use the .local/share dir\n"
-
-				"--convert -> convert an old sprite to the new .spr2 format\n"
-				"(e.g ./pekka-kana-2 --convert \"path/old.spr\")\n"
 				
 				);
 				return 0;
 			}
-			else if(arg=="--version" || arg=="-v"){
+			else if(key=="--version" || key=="-v"){
 				printf("%s\n", PK2_VERSION_STR);
 				return 0;
 			}
-			else if(arg=="--dev" || arg=="-d" || arg=="dev"){
+			else if(key=="--dev" || key=="-d" || key=="dev"){
 				dev_mode = true;
 				//Piste::set_debug(true);
 			}
-			else if(arg=="--test" || arg=="-t" || arg=="test"){
-				state = 1;				
+			else if(key=="--test" || key=="-t" || key=="test"){
+
+				if(value.empty()){
+					state = 1;
+				}
+				else{
+					test_path=value;
+					test_level=true;
+				}								
 			}
-			else if(arg=="--assets-path"){
-				state = 2;
-			}
-			else if(arg=="--data-path"){
-				state = 6;
+			else if(key=="--assets-path"){
+				if(value.empty()){
+					state = 2;
+				}
+				else{
+
+					try{
+						PFilesystem::SetAssetsPath(value);
+					}
+					catch(const std::exception& e){
+						printf("%s\n", e.what());
+						return 1;
+					}
+				}
 			}
 
-			else if(arg=="--fps"){
+			else if(key=="--data-path"){
+				if(value.empty()){
+					state = 6;
+				}
+				else {
+					try{
+						if(value=="PREF_PATH"){
+							PFilesystem::SetPrefDataPath();
+						}
+						else{
+							PFilesystem::SetDataPath(value);
+						}
+					}
+					catch(const std::exception& e){
+						printf("%s\n", e.what());
+						return 1;
+					}
+				}
+			}
+
+			else if(key=="--fps"){
 				show_fps= true;
-			}
-			else if	(arg=="--convert"){
-				filename_in = "";
-				filename_out = "";
-				state=3;
-				converting_sprite = true;
-			}
-			else if (arg=="--update-sprites"){
-				filename_in = ".";
-				filename_out = "";
-				state=5;
-				updating_sprites = true;
 			}
 			else {
 				printf("Invalid arg \"%s\"\n", arg.c_str());
@@ -308,15 +334,7 @@ int main(int argc, char **argv) {
 	}
 
 	pk2_init();
-
-	if(updating_sprites){
-		pk2_updateSprites(filename_in);
-	}
-	else if(converting_sprite){
-		pk2_convertToNewFormat(filename_in, filename_out);
-	}
-	else{
-		pk2_main(dev_mode, show_fps, test_level, test_path);
-	}
+    pk2_main(dev_mode, show_fps, test_level, test_path);
+	
 	return 0;
 }
