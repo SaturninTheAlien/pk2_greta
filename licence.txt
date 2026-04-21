@@ -2,19 +2,10 @@ This work is licensed under the Creative Commons Attribution-NonCommercial 4.0 I
 https://creativecommons.org/licenses/by-nc/4.0/deed.en
 
 
-Platform-specific permissions and restrictions:
-
-1. Distribution on Android and iOS platforms is permitted, provided that:
-   - the application contains no advertisements,
-   - no in-app purchases, subscriptions, or paid features are used,
-   - no third-party advertisement or tracking SDKs are included,
-   - the game is distributed free of charge.
-
-
 All copyrights remain with their respective authors.
 
 Copyright (c) 2003 Janne Kivilahti
-Copyright (c) SaturninTheAlien, Danilo Lemos and the Piste Gamez community
+Copyright (c) SaturninTheAlien, Danilo Lemos, and the Piste Gamez community
 
 
 You are free to:
@@ -22,7 +13,6 @@ Share — copy and redistribute the material in any medium or format
 Adapt — remix, transform, and build upon the material
 
 The licensor cannot revoke these freedoms as long as you follow the license terms.
-
 
 Under the following terms:
 
@@ -39,39 +29,80 @@ If these elements are not present due to technical or platform limitations
 (e.g. alternative engines or ports), attribution must be provided in a
 reasonable and visible manner appropriate for the platform.
 
+When distributing the game, you must not present yourself as the original
+author or imply endorsement. If accepting donations, it must be clear that
+they are not on behalf of the original authors unless explicitly authorized.
+
 NonCommercial — You may not use the game for commercial purposes.
 
-For clarity, the following uses are explicitly permitted and are not considered commercial use:
-- creation and distribution of PK2 episodes and other in-game content,
-- gameplay recordings, videos, reviews, and live transmissions.
+The following sections provide clarifications and additional permissions and do
+not limit the rights granted under the Creative Commons BY-NC 4.0 license.
+
+Commercial use (not permitted):
+
+The following are considered commercial use for the purposes of this license:
+
+* distributing the game for a fee,
+* adding in-app purchases, subscriptions, or paid features,
+* including advertisements or monetization mechanisms within the game,
+* using the game code or assets to train machine learning or AI models
+  intended for commercial use, or to create datasets for such purposes.
+
+This does not apply to ordinary use of AI-assisted development tools by end users
+or developers, where the game code or assets may be processed as part of normal
+development and are not deliberately collected or used for training datasets.
+
+
+Allowed uses (not considered commercial or explicitly permitted):
+
+* creation, distribution, and monetization of user-created PK2 episodes and other
+  user-created downloadable content, provided that the game itself is not bundled
+  as part of a paid product,
+* gameplay recordings, videos, reviews, and live streams, including monetized ones
+  (e.g. via ads, donations, or subscriptions).
 
 
 Additional permissions:
 
-1. Non-commercial redistribution of the game through free and open-source
-   software package repositories (including Homebrew and Linux distribution package managers
-   such as APT, DNF, Pacman, or Nix) is explicitly permitted, provided that:
-   - the game is distributed free of charge,
-   - no advertisements, sponsorships, or other forms of monetization are involved,
-   - proper attribution is preserved.
 
-2. Notwithstanding the NonCommercial clause, Janne Kivilahti and SaturninTheAlien 
-   are explicitly and independently permitted to distribute compiled versions
-   of the game on the Steam platform.
+Non-commercial redistribution of the game through free and open-source
+software distribution platforms (such as Flathub, Homebrew, Winget,
+or Linux distribution package managers such as APT, DNF, Pacman, or Nix)
+is permitted.
 
-   This permission applies only to the aforementioned parties and does not
-   extend to other distributors.
+For clarity, this includes distribution where:
+
+* the game is provided free of charge,
+* the game itself is not monetized (e.g. no in-app advertisements, in-app purchases, or paid access),
+* proper attribution is preserved.
+
+Exception:
+
+Notwithstanding the NonCommercial restriction, Janne Kivilahti,
+SaturninTheAlien, and Danilo Lemos are explicitly and independently permitted to distribute
+compiled versions of the game on commercial storefront platforms
+(e.g. Steam or Google Play).
+
+This permission applies only to the above individuals and does not
+extend to other parties.
+
 
 Dual licensing:
 
-The original authors may grant additional licenses or permissions
-on a case-by-case basis.
+The original authors (as listed above) may grant additional licenses or
+permissions on a case-by-case basis.
 
-If you intend to sell this game, generate revenue from it in any form
-(excluding your own episodes, gameplay recordings, or live transmissions
-which are explicitly permitted under this license),
-or distribute it in a manner that does not comply with the terms above,
+If you intend to:
+
+* sell the game,
+* generate revenue from it in any form (excluding explicitly permitted uses such as
+  user-created episodes, gameplay recordings, or live transmissions),
+* or distribute it in a manner that does not comply with the terms above,
+
 you must obtain prior permission from the original authors.
+
+
+Contact:
 
 For inquiries, please contact us via our Discord server:
 https://discord.gg/kqDJfYX
