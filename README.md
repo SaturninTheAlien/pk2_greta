@@ -6,7 +6,7 @@ Pekka Kana 2 (Pekka the Rooster 2) is a 2D platformer game where you control a r
 https://www.pistegamez.net/game_pk2.html
 
 
-This repository contains the official open-source source code and resource files
+This repository contains the official source code, build scripts, and assets
 for Pekka Kana 2, maintained by SaturninTheAlien with contributions
 from the Piste Gamez community.
 
@@ -58,7 +58,7 @@ Pekka Kana 2 can also be run on older Intel-based Macs
 using the Windows portable version together with Wine.
 This configuration is not officially tested or supported.
 
-## Binary distibution
+## Binary distribution
 
 See the <a href="https://github.com/SaturninTheAlien/pk2_greta/releases">Releases</a> tab!
 
@@ -114,13 +114,11 @@ make clean
 make all
 ```
 
-Parallel builds using `make -j` are supported.
-For example, on a system with 8 CPU cores,
-```sh
-make -j8 all
-```
-can be used to speed up the compilation process.
+Parallel builds are supported and can significantly speed up compilation:
 
+```sh
+make -j$(nproc) all
+```
 
 ### macOS on Apple Silicon
 Use [Homebrew](https://brew.sh/) to install SDL2 packages:
@@ -134,6 +132,52 @@ The game can be run in the same way as on Linux:
 ```sh
 ./bin/pekka-kana-2
 ```
+
+### Debian package
+
+To create a redistributable `.deb` package (which can be installed using APT), run:
+
+```sh
+docker build -t pk2-builder .
+docker run --rm -it -v $(pwd):/pk2 pk2-builder /pk2/build_deb.sh
+```
+
+### Windows
+
+If you only want to build and run the game, using Windows Subsystem for Linux (WSL)
+is recommended.
+
+Support for NMake is planned to simplify building on Windows in the future.
+
+Currently, compiling a native Windows executable (.exe) requires Microsoft Visual Studio and additional setup,
+so it may be more complex and tedious than on other platforms
+(e.g. creating a Visual Studio project and adding source files manually).
+
+You will need the following libraries:
+
+- SDL2
+- SDL2_image
+- SDL2_mixer
+- libzip
+- Lua 5.4
+
+The following tutorial may be helpful:
+https://lazyfoo.net/tutorials/SDL/01_hello_SDL/windows/msvc2019/index.php
+
+You may also need to define the following preprocessor macros:
+```
+_CRT_SECURE_NO_WARNINGS
+_USE_MATH_DEFINES
+```
+
+## Level editor
+
+The official level editor, sprite editor, and episode packer are available at:
+https://github.com/SaturninTheAlien/PekaEDS_Java
+
+These tools can be used to create custom levels (.map), sprite prototypes (.spr2),
+and full game episodes.
+
 
 ## User-made episodes
 

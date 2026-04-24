@@ -8,11 +8,13 @@ const Key Key::ESCAPE = Key(SDL_SCANCODE_ESCAPE, INPUT_KEYBOARD);
 const Key Key::RETURN = Key(SDL_SCANCODE_RETURN, INPUT_KEYBOARD);
 const Key Key::DELETE = Key(SDL_SCANCODE_DELETE, INPUT_KEYBOARD);
 const Key Key::BACKSPACE = Key(SDL_SCANCODE_BACKSPACE, INPUT_KEYBOARD);
+const Key Key::SPACE = Key(SDL_SCANCODE_SPACE, INPUT_KEYBOARD);
 
 const Key Key::LEFT = Key(SDL_SCANCODE_LEFT, INPUT_KEYBOARD);
 const Key Key::RIGHT = Key(SDL_SCANCODE_RIGHT, INPUT_KEYBOARD);
 const Key Key::UP = Key(SDL_SCANCODE_UP, INPUT_KEYBOARD);
 const Key Key::DOWN = Key(SDL_SCANCODE_DOWN, INPUT_KEYBOARD);
+const Key Key::LALT = Key(SDL_SCANCODE_LALT, INPUT_KEYBOARD);
 
 
 const Key Key::MOUSE_LEFT = Key(SDL_BUTTON_LEFT, INPUT_MOUSE_BUTTON);
@@ -161,6 +163,23 @@ std::string Key::getName()const{
     }
 
     return "Unknown Input!";
+}
+
+std::optional<int> Key::getNumericValue()const{
+    if(this->type==INPUT_KEYBOARD){
+        if (this->code == SDL_SCANCODE_0 || this->code == SDL_SCANCODE_KP_0) return 0;
+        if (this->code == SDL_SCANCODE_1 || this->code == SDL_SCANCODE_KP_1) return 1;
+        if (this->code == SDL_SCANCODE_2 || this->code == SDL_SCANCODE_KP_2) return 2;
+        if (this->code == SDL_SCANCODE_3 || this->code == SDL_SCANCODE_KP_3) return 3;
+        if (this->code == SDL_SCANCODE_4 || this->code == SDL_SCANCODE_KP_4) return 4;
+        if (this->code == SDL_SCANCODE_5 || this->code == SDL_SCANCODE_KP_5) return 5;
+        if (this->code == SDL_SCANCODE_6 || this->code == SDL_SCANCODE_KP_6) return 6;
+        if (this->code == SDL_SCANCODE_7 || this->code == SDL_SCANCODE_KP_7) return 7;
+        if (this->code == SDL_SCANCODE_8 || this->code == SDL_SCANCODE_KP_8) return 8;
+        if (this->code == SDL_SCANCODE_9 || this->code == SDL_SCANCODE_KP_9) return 9;
+    }
+
+    return {};
 }
 
 void to_json(nlohmann::json& j, const Key& key){

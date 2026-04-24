@@ -8,8 +8,8 @@
 
 class EndingScreen: public Screen{
 public:
-    void Init();
-    void Loop();
+    void Init()override;
+    void Loop()override;
 
     void onKeyPressed(const PInput::Key& key)override;
 private:

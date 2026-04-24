@@ -169,6 +169,8 @@ void ScoresTable::load(PFile::Path path){
             temp.fastest_player[i][19] = '\0';
 
             score.fastestPlayer = temp.fastest_player[i];
+
+            this->scores.emplace_back(score);
         }
 
         this->episodeTopScore = temp.episode_top_score;

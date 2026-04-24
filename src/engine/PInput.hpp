@@ -11,6 +11,19 @@
 
 namespace PInput{
 
+
+class Touch{
+public:
+    Touch(float x, float y, int id):
+    x(x), y(y), id(id){
+
+    }
+
+    float x = 0;
+    float y = 0;
+    int id = 0;
+};
+
 class InputSystem{
 public:
     static InputSystem& instance() {
@@ -65,11 +78,11 @@ public:
 
     bool mouseKeysEnabled = false;
 
-    const std::vector<Point2D>& getTouches()const{
+    const std::vector<Touch>& getTouches()const{
         return this->mTouchlist;
     }
 private:
-    std::vector<Point2D> mTouchlist;
+    std::vector<Touch> mTouchlist;
 
     InputSystem() = default;
 

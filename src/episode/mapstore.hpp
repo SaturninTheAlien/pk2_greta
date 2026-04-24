@@ -14,6 +14,7 @@ class episode_entry{
 public:
     std::string name;
     std::string zipfile;
+    std::string path;
     bool is_zip = false;
 };
 

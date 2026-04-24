@@ -343,18 +343,19 @@ void InputSystem::updateTouch(){
 			SDL_Finger* finger = SDL_GetTouchFinger(id, j);
 			if(finger!=nullptr) {
 
-				int tmpx = finger->x * bw - off_x;
-				int tmpy = finger->y * bh - off_y;
-				
-				
-				Point2D touch(tmpx, tmpy);
+				Touch touch(finger->x, finger->y, finger->id);
 				this->mTouchlist.emplace_back(touch);
 
+				int tmpx = finger->x * bw - off_x;
+				int tmpy = finger->y * bh - off_y;
 				if(!mouseSet){
 					mouseSet = true;
-					this->mousePos = touch;
+					this->mousePos.x = tmpx;
+					this->mousePos.y = tmpy;
 				}
 			}
+
+				
 		}
 
 	}

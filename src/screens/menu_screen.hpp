@@ -29,18 +29,19 @@ public:
 
     }
 
-    void Init();
-    void Loop();
+    void Init()override;
+    void Loop()override;
     void Draw();
 
     void onKeyPressed(const PInput::Key& key)override;
 protected:
     unsigned int chosen_menu_id = 0;
     unsigned int menus_count = 0;
-    bool drawMenuTextS(const std::string& text, int x, int y);
+    bool drawMenuTextS(const std::string& text, int x, int y)override;
+    bool drawMenuTextS2(const std::string& text, int x, int y);
 
 private:
-    int navKeyDelay = 0;
+    int menuKeyDelay = 0;
 
     void drawMenuTextControls(const std::string& text, unsigned int key, int x, int y);
 

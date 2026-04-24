@@ -12,6 +12,7 @@
 
 #include "engine/PLog.hpp"
 #include "engine/PFilesystem.hpp"
+#include "engine/PString.hpp"
 #include "exceptions.hpp"
 
 #include <cstring>
@@ -121,6 +122,18 @@ void ClearSlots() {
 }
 
 
+
+static std::string relaxEpisodeName(const std::string & original){
+	std::string s = PString::lowercase(PString::rtrim(original));
+	std::size_t size = s.size();
+	for(std::size_t i=0;i<size;++i){
+		if(s[i]=='-' || s[i] == '_'){
+			s[i] = ' ';
+		}
+	}
+	return s;
+}
+
 static episode_entry LegacyFindEpisode(const std::string& episodeName){
 
 	bool set = false;
@@ -138,9 +151,29 @@ static episode_entry LegacyFindEpisode(const std::string& episodeName){
 	}
 
 	//Not found
-	if(!set){		
+	if(!set){
 		res.name = episodeName;
 		res.is_zip = false;
+
+		/**
+		 * A patch to support old save files from 1.2.7
+		 * On some old version (e.g 1.2.7), the names of vanilla episodes used to be:
+		 * "rooster-island-1"
+		 * "rooster-island-2" 
+		 */
+
+		std::string nameRelaxed = relaxEpisodeName(episodeName);
+		for(const episode_entry& episode: episodes){
+			if(relaxEpisodeName(episode.name).compare(nameRelaxed) == 0){
+				if (set)
+					PLog::Write(PLog::WARN, "PK2", "Episode conflict on %s, choosing the first one", episodeName.c_str());
+				else {
+					res = episode;
+					set = true;
+				}
+			}		
+		}
+		
 	}
 	return res;
 }

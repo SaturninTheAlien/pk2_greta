@@ -152,6 +152,53 @@ bool MenuScreen::drawMenuTextS(const std::string& text, int x, int y){
 
 }
 
+bool MenuScreen::drawMenuTextS2(const std::string& text, int x, int y){
+	const int TEXT_H = 20; 
+
+	int length = text.size() * 15;
+
+	const Point2D& mousePos = PInput::InputSystem::instance().getMousePos();
+
+	bool mouse_on = mousePos.x > x && mousePos.x < x + length 
+		&& mousePos.y > y && mousePos.y < y + TEXT_H
+		&& !mouse_hidden;
+
+	if ( mouse_on || (chosen_menu_id == menus_count) ) {
+
+		chosen_menu_id = menus_count;
+		Wavetext_Draw(text.c_str(), fontti3, x, y);//
+
+		if ( (this->mousePressed && mouse_on) || this->enterPressed ) {
+
+			this->menuKeyDelay = 9;
+			Play_MenuSFX(sfx_global.menu_sound, 100);
+			menus_count++;
+			return true;
+		} else if (this->menuKeyDelay==0) {
+
+			if( (mouse_on && PInput::Key::MOUSE_LEFT.isPressed()) ||
+			PInput::Key::RETURN.isPressed() ||
+			PInput::Key::SPACE.isPressed() ||
+			PInput::Key::JOY_A.isPressed() ||
+			PInput::Key::JOY_START.isPressed() ){ 
+				this->menuKeyDelay = 9;
+				Play_MenuSFX(sfx_global.menu_sound, 100);
+				menus_count++;
+				return true;
+			}
+		}
+	} else {
+	
+		WavetextSlow_Draw(text.c_str(), fontti2, x, y);
+	
+	}
+
+	menus_count++;
+	return false;
+
+}
+
+
 void MenuScreen::drawMenuTextControls(const std::string& text, unsigned int key, int x, int y){
 	if(this->selected_control_key==0){
 		if(this->drawMenuTextS(text, x, y)){
@@ -361,7 +408,7 @@ void MenuScreen::Draw_Menu_Main() {
 
 		#ifdef __ANDROID__
 
-		if (drawMenuText("Install zip",180,my)){
+		if (drawMenuTextS("Install zip",180,my)){
 			Android_InstallZipEpisode();
 		}
 		my += 20;
@@ -620,9 +667,10 @@ void MenuScreen::Draw_Menu_Graphics() {
 	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.gfx_title),50,90);
 
 	if(moreOptions){
-		bool wasFullScreen = Settings.isFullScreen;
 		int  oldfps = Settings.fps;
 
+#ifndef __ANDROID__
+		bool wasFullScreen = Settings.isFullScreen;
 		if (Settings.isFullScreen){
 			if (drawMenuText(PK_txt.gfx_fullscreen_on,180,my)){
 				Settings.isFullScreen = false;
@@ -635,6 +683,8 @@ void MenuScreen::Draw_Menu_Graphics() {
 		if (PK2gui::Draw_BoolBox(100, my, Settings.isFullScreen, true, mousePressed)) {
 			Settings.isFullScreen = !Settings.isFullScreen;
 		}
+#endif
+
 		my += 40;
 
 		//TODO - Fix touch position when screen fit
@@ -696,10 +746,12 @@ void MenuScreen::Draw_Menu_Graphics() {
 			}
 		}
 		//Add more options here
+#ifndef __ANDROID__
 		if(wasFullScreen != Settings.isFullScreen) {// If fullscreen changes
 			save_settings = true;
 			PRender::set_fullscreen(Settings.isFullScreen);
 		}
+#endif
 
 		if (Settings.fps != oldfps) {
 			int ret = -1;
@@ -786,12 +838,15 @@ void MenuScreen::Draw_Menu_Sounds() {
 	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.sound_sfx_volume),180,200+my);
 	my += 20;
 
-	if (drawMenuText(PK_txt.sound_less,180,200+my)) {
+	const std::string& less = tekstit->Get_Text(PK_txt.sound_less);
+	const std::string& more = tekstit->Get_Text(PK_txt.sound_more);
+
+	if (drawMenuTextS2(less,180,200+my)) {
 		if (Settings.sfx_max_volume > 0)
 			Settings.sfx_max_volume -= 5;
 	}
 
-	if (drawMenuText(PK_txt.sound_more,180+8*15,200+my)) {
+	if (drawMenuTextS2(more,180+8*15,200+my)) {
 		if (Settings.sfx_max_volume < 100)
 			Settings.sfx_max_volume += 5;
 	}
@@ -804,14 +859,19 @@ void MenuScreen::Draw_Menu_Sounds() {
 	PDraw::font_write_line(fontti2,tekstit->Get_Text(PK_txt.sound_music_volume),180,200+my);
 	my += 20;
 
-	if (drawMenuText(PK_txt.sound_less,180,200+my)) {
+	if (drawMenuTextS2(less,180,200+my)) {
 		if (Settings.music_max_volume > 0)
 			Settings.music_max_volume -= 5;
 	}
 
-	if (drawMenuText(PK_txt.sound_more,180+8*15,200+my)) {
+	if (drawMenuTextS2(more,180+8*15,200+my)) {
 		if (Settings.music_max_volume < 100)
 			Settings.music_max_volume += 5;
+	}
+
+
+	if(this->menuKeyDelay > 0){
+		--this->menuKeyDelay;
 	}
 	
 	my += 20;

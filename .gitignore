@@ -1,11 +1,7 @@
 /bin/
 /build/
 /doc/
-
-/res/episodes/*
-!/res/episodes/rooster island 1/
-!/res/episodes/rooster island 2/
-!/res/episodes/not rooster island 3/
+/pkg/
 
 /res/data/
 /res/editor/settings.dat

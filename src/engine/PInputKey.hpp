@@ -38,17 +38,20 @@ public:
     bool isPressed()const;
     bool accept(const SDL_Event& event)const;
     std::string getName()const; 
+    std::optional<int> getNumericValue()const;
 
 
     static const Key ESCAPE;
     static const Key RETURN;
     static const Key DELETE;
     static const Key BACKSPACE;
+    static const Key SPACE;
     
     static const Key LEFT;
     static const Key RIGHT;
     static const Key UP;
     static const Key DOWN;
+    static const Key LALT;
 
     static const Key MOUSE_LEFT;
     static const Key MOUSE_RIGHT;
