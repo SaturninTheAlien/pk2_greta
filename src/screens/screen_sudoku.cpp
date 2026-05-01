@@ -110,6 +110,7 @@ void SudokuScreen::onKeyPressed(const PInput::Key& key){
             } else {
                 Fade_out(FADE_NORMAL);
                 next_screen = SCREEN_GAME;
+                Game->trollingActivated = false;
                 Game->playerSprite->level_sector->startMusic();
             }
         }
@@ -117,40 +118,7 @@ void SudokuScreen::onKeyPressed(const PInput::Key& key){
     else if (key == PInput::Key::ESCAPE || key == PInput::Key::JOY_START) {
 		if(test_level)
 			fadeQuit();
-		else {
-            next_screen = SCREEN_MENU;
-		}
 	}
-    else if (key == PInput::Key(SDL_SCANCODE_0) || key == PInput::Key(SDL_SCANCODE_KP_0)) {
-        this->setCellValue(0);
-    }
-    else if (key == PInput::Key(SDL_SCANCODE_1) || key == PInput::Key(SDL_SCANCODE_KP_1)) {
-        this->setCellValue(1);
-    }
-    else if (key == PInput::Key(SDL_SCANCODE_2) || key == PInput::Key(SDL_SCANCODE_KP_2)) {
-        this->setCellValue(2);
-    }
-    else if (key == PInput::Key(SDL_SCANCODE_3) || key == PInput::Key(SDL_SCANCODE_KP_3)) {
-        this->setCellValue(3);
-    }
-    else if (key == PInput::Key(SDL_SCANCODE_4) || key == PInput::Key(SDL_SCANCODE_KP_4)) {
-        this->setCellValue(4);
-    }
-    else if (key == PInput::Key(SDL_SCANCODE_5) || key == PInput::Key(SDL_SCANCODE_KP_5)) {
-        this->setCellValue(5);
-    }
-    else if (key == PInput::Key(SDL_SCANCODE_6) || key == PInput::Key(SDL_SCANCODE_KP_6)) {
-        this->setCellValue(6);
-    }
-    else if (key == PInput::Key(SDL_SCANCODE_7) || key == PInput::Key(SDL_SCANCODE_KP_7)) {
-        this->setCellValue(7);
-    }
-    else if (key == PInput::Key(SDL_SCANCODE_8) || key == PInput::Key(SDL_SCANCODE_KP_8)) {
-        this->setCellValue(8);
-    }
-    else if (key == PInput::Key(SDL_SCANCODE_9) || key == PInput::Key(SDL_SCANCODE_KP_9)) {
-        this->setCellValue(9);
-    }
     else if (key == PInput::Key::JOY_X || key == PInput::Key::JOY_STICK_LEFT || key == PInput::Key(SDL_SCANCODE_KP_PLUS)) {
         this->cycleCellValue(1);        
     }
@@ -161,9 +129,14 @@ void SudokuScreen::onKeyPressed(const PInput::Key& key){
         this->finish();
     }
     else {
-
-        PK2gui::KeyNav::injectKey(key);
-        Screen::onKeyPressed(key);
+        std::optional<int> number = key.getNumericValue();
+        if(number.has_value()){
+            this->setCellValue(number.value());
+        }
+        else {
+            PK2gui::KeyNav::injectKey(key);
+            Screen::onKeyPressed(key);
+        }
     }
 }
 

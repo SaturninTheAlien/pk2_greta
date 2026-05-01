@@ -475,7 +475,6 @@ void PlayingScreen::Loop(){
 		this->goingToTheMenu = false;
 		next_screen = SCREEN_MENU;
 	} else if (Game->trollingActivated) {
-		Game->trollingActivated = false;
 		next_screen = SCREEN_SUDOKU;
 	}
 

@@ -40,7 +40,7 @@ function forestlib2.rodentNest(tree)
         if not releasingRodents then
             local player = pk2.getPlayerIfAccessible()
 
-            if player~=nil and math.abs(player.x - nest.x) <= 20 and  math.abs(player.x - nest.x) <= 320 then
+            if player~=nil and math.abs(player.x - nest.x) <= 20 and  math.abs(player.y - nest.y) <= 320 then
                 nest.energy = nest.energy - 1
                 nest.attack1Timer = 50
             end
