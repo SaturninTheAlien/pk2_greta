@@ -1,4 +1,5 @@
-# Pekka Kana 2 "Greta engine"
+# Pekka Kana 2
+**Official maintenance repository** (formerly known as the "Greta engine" fork)
 
 ![pekka](res/gfx/manual/pekka.png?raw=true)
 

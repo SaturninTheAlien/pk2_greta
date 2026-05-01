@@ -1,0 +1,87 @@
+name: Bug Report
+description: File a report for crash or unexpected behavior in Pekka Kana 2.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: input
+    id: pk2-version
+    attributes:
+      label: Pekka Kana 2 Version
+      description: The version of Pekka Kana 2, shown at the bottom-left corner on the menu screen and on the window title.
+      placeholder: ex. 1.5.2
+    validations:
+      required: true
+  - type: input
+    id: system-info
+    attributes:
+      label: System Information
+      description: |
+        OS, CPU architecture, and GPU/graphics driver if relevant.
+        You can also leave this empty if not relevant.
+      placeholder: ex. Windows 11 64-bit
+    validations:
+      required: false
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+      placeholder: Describe the behavior you expected in detail.
+    validations:
+      required: false
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual Behavior
+      description: Instead, what actually happened?
+      placeholder: Describe the actual behavior in detail.
+    validations:
+      required: true
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps To Reproduce Actual Behavior
+      description: A clear and concise description of how the actual behavior was achieved, since starting up the game.
+      placeholder: |
+        Describe the steps leading to the actual behavior, preferably with a numerated list.
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: additional-info
+    attributes:
+      label: Additional Information
+      description: Include any additional information regarding the bug.
+      placeholder: You can also leave this empty.
+    validations:
+      required: false
+  - type: checkboxes
+    id: guidelines
+    attributes:
+      label: Guidelines For Reporting Issues
+      description: "Before submitting this issue, make sure you have done the following:"
+      options:
+        - label: I have verified this isn't an issue that's already been reported.
+          required: true
+        - label: If I make a mistake while submitting this report, I agree to use the "Edit" feature to correct it, instead of closing this issue and opening a new one.
+          required: true
+        - label: I have verified this isn't a [discussion](https://github.com/SaturninTheAlien/pk2_greta/discussions), or an issue a feature request.
+          required: true
+        - label: |
+            I have verified this issue is not caused by missing or incomplete assets in a third-party episode (e.g. missing sprites, textures, or files).
+
+            Gameplay or behavior issues (e.g. enemies acting incorrectly, or behaving differently compared to older versions) can be reported even if they occur in a third-party episode.
+
+            If reporting such an issue, please include a link to download the episode in the **Additional Information** section.
+
+            Missing asset errors in third-party episodes (e.g. "Sprite hedgehog_xyz.spr/.spr2 not found") should not be reported (please contact the episode creator instead).
+          required: true
+
+        - label: In this report, I have only included details about **one** (1) bug.
+          required: false

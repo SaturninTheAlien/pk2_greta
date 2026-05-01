@@ -37,4 +37,6 @@ launcher/*.o
 /mingw/x86_64/build/
 /mingw/x86_64/PK2/
 
+/steam/
+
 start.sh
