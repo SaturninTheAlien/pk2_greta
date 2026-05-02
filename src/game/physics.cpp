@@ -202,6 +202,7 @@ void Check_MapBlock(SpriteClass* sprite, PK2BLOCK block) {
 			sector->calculateEdges();
 
 			sprite->removed = true;
+			sprite->energy = 0;
 
 			if (!sprite->prototype->indestructible) {
 				Game->keys--;
