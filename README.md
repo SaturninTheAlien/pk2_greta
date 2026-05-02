@@ -183,7 +183,7 @@ and full game episodes.
 ## User-made episodes
 
 Community-created episodes are available here:
-https://sites.google.com/view/pekka-kana-fanpage/pk2-makyunis-mapstore
+https://sites.google.com/view/pekka-kana-fanpage/pekka-kana-2/makyunis-mapstore
 
 To install an episode, download the ZIP file and place it in the `data/mapstore`
 directory.
