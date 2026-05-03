@@ -67,6 +67,12 @@ MS Windows binaries were compiled using MS Visual Studio Community 2022 on MS Wi
 so if there is any missing DLL file you perhaps need to install the latest Microsoft Visual C++ Redistributable:\
 https://aka.ms/vs/17/release/vc_redist.x64.exe
 
+### Steam
+Coming soon!
+
+### Flatpak
+Official Flatpak distribution is available on Flathub:
+https://flathub.org/en/apps/net.pistegamez.PekkaKana2
 
 ## Compiling
 
