@@ -531,156 +531,167 @@ void BonusSpriteCollected(SpriteClass* sprite, SpriteClass* collector){
 			return;
 		}
 	}
-	if (sprite->prototype->score != 0) {
-		if(sprite->prototype->big_apple){
-			Game->apples_got++;
+
+	{	
+		int bonusScore = sprite->prototype->score;
+		int bonusDamage = sprite->prototype->damage;
+
+		if(config_txt.hardcore_mode && sprite->prototype->damage < 0){
+			bonusScore -= 500 * sprite->prototype->damage;
 		}
 
-		Game->score_increment += sprite->prototype->score;
-		
-		if (!sprite->HasAI(AI_BONUS_CLOCK)) {
-			int font = sprite->prototype->score >= 50? fontti2 : fontti1;
-			Fadetext_New(font, std::to_string(sprite->prototype->score), (int)sprite->x-8,(int)sprite->y-8,100);
+		if (bonusScore > 0) {
+			Game->score_increment += bonusScore;
+			
+			if (!sprite->HasAI(AI_BONUS_CLOCK)) {
+				int font = bonusScore >= 50? fontti2 : fontti1;
+
+				std::string score_str = std::to_string(bonusScore);
+				Fadetext_New(font, std::to_string(bonusScore), (int)sprite->x-8,(int)sprite->y-8,100);
+			}
 		}
 
+		if(!config_txt.hardcore_mode || bonusDamage > 0 || !collector->isPlayer()){
+			collector->energy -= sprite->prototype->damage;
+		}
 	}
 
-	if (!sprite->prototype->indestructible)
+
+	if(sprite->prototype->big_apple){
+		Game->apples_got++;
+	}
+
+	bool showed_info = false;
+	int destruction_effect = sprite->prototype->destruction_effect;
+
+	if (destruction_effect >= FX_DESTRUCT_ANIMATED){
+		destruction_effect -= FX_DESTRUCT_ANIMATED;
+	}
+	else
 	{
-		bool showed_info = false;
-
-		collector->energy -= sprite->prototype->damage;
-		int destruction_effect = sprite->prototype->destruction_effect;
-
-		if (destruction_effect >= FX_DESTRUCT_ANIMATED){
-			destruction_effect -= FX_DESTRUCT_ANIMATED;
-		}
-		else
+		if (sprite->prototype->can_open_locks)
 		{
-			if (sprite->prototype->can_open_locks)
-			{
-				Game->keys--;
+			Game->keys--;
 
-				if (Game->keys < 1)
-					Game->openLocks();
-			}
-
-			sprite->removed = true;
+			if (Game->keys < 1)
+				Game->openLocks();
 		}
 
-
-		for(const int& ai: sprite->prototype->AI_v){
-			switch (ai)
-			{
-			case AI_REBORN:{
-					sprite->respawn_timer = sprite->prototype->charge_time;
-					sprite->energy = sprite->prototype->energy;
-					sprite->removed = false;
-					sprite->x = sprite->orig_x;
-					sprite->y = sprite->orig_y;
-			}
-			break;
-			case AI_BONUS_INVISIBILITY:{
-				collector->invisible_timer = sprite->prototype->charge_time;
-			}
-			break;
-			case AI_BONUS_SUPERMODE:{
-				collector->super_mode_timer = sprite->prototype->charge_time;
-				if(collector == Game->playerSprite && Episode->supermode_music){
-					Game->startSupermodeMusic();
-				}
-				//PSound::play_overlay_music();
-				   // the problem is this will most likely overwrite the current music, fixlater
-			}
-			break;
-			case AI_BONUS_CLOCK:{
-				int increase_time = sprite->prototype->charge_time * TIME_FPS;
-				Game->timeout += increase_time;
-
-				float shown_time = float(increase_time) / 60;
-				int minutes = int(shown_time / 60);
-				int seconds = int(shown_time) % 60;
-
-				std::ostringstream os;
-				os<<minutes<<":";
-				if(seconds<10){
-					os<<"0";
-				}
-				os<<seconds;
-				
-				Fadetext_New(fontti1,os.str(),(int)sprite->x-15,(int)sprite->y-8,100);
-			}
-			break;
-			case AI_INFO_IF_BONUS_COLLECTED:{
-				showed_info = true;
-				AI_Functions::DisplayInfo(sprite);
-			}
-			break;
-
-			case AI_EMIT_EVENT1_IF_BONUS_COLLECTED:{
-				Game->event1 = true;
-			}
-			break;
-
-			case AI_EMIT_EVENT2_IF_BONUS_COLLECTED:{
-				Game->event2 = true;
-			}
-			break;
-
-			case AI_CHANGE_SKULLS_IF_BONUS_COLLECTED:{
-				Game->change_skulls = true;
-			}
-			break;
-
-
-			default:
-				break;
-			}
-		}
-
-
-
-		if (sprite->prototype->bonus != nullptr)
-			if (Game->gifts.add(sprite->prototype->bonus))
-				Game->showInfo(tekstit->Get_Text(PK_txt.game_newitem));
-
-		if (sprite->prototype->transformation != nullptr){
-			PotionTransformation(collector, sprite->prototype->transformation);
-		}
-
-		if (sprite->prototype->ammo2 != nullptr && collector->ammo2 != sprite->prototype->ammo2){
-			collector->ammo2 = sprite->prototype->ammo2;
-
-			if(!showed_info && collector == Game->playerSprite){
-				showed_info = true;
-
-				int infotext = Episode->infos.Search_Id("new doodle attack");
-				if (infotext != -1)
-					Game->showInfo(Episode->infos.Get_Text(infotext));
-				else
-					Game->showInfo(tekstit->Get_Text(PK_txt.game_newdoodle));
-			}
-		}
-
-		if (sprite->prototype->ammo1 != nullptr && collector->ammo1 != sprite->prototype->ammo1){
-			collector->ammo1 = sprite->prototype->ammo1;
-
-			if(!showed_info && collector == Game->playerSprite){
-				showed_info = true;
-
-				int infotext = Episode->infos.Search_Id("new egg attack");
-				if (infotext != -1)
-					Game->showInfo(Episode->infos.Get_Text(infotext));
-				else
-					Game->showInfo(tekstit->Get_Text(PK_txt.game_newegg));
-			}
-		}
-
-		Play_GameSFX(sprite->prototype->sounds[SOUND_DESTRUCTION],100, (int)sprite->x, (int)sprite->y,
-						sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
-
-		Effect_By_ID(destruction_effect, (u32)sprite->x, (u32)sprite->y);
+		sprite->removed = true;
 	}
+
+
+	for(const int& ai: sprite->prototype->AI_v){
+		switch (ai)
+		{
+		case AI_REBORN:{
+				sprite->respawn_timer = sprite->prototype->charge_time;
+				sprite->energy = sprite->prototype->energy;
+				sprite->removed = false;
+				sprite->x = sprite->orig_x;
+				sprite->y = sprite->orig_y;
+		}
+		break;
+		case AI_BONUS_INVISIBILITY:{
+			collector->invisible_timer = sprite->prototype->charge_time;
+		}
+		break;
+		case AI_BONUS_SUPERMODE:{
+			collector->super_mode_timer = sprite->prototype->charge_time;
+			if(collector == Game->playerSprite && Episode->supermode_music){
+				Game->startSupermodeMusic();
+			}
+			//PSound::play_overlay_music();
+				// the problem is this will most likely overwrite the current music, fixlater
+		}
+		break;
+		case AI_BONUS_CLOCK:{
+			int increase_time = sprite->prototype->charge_time * TIME_FPS;
+			Game->timeout += increase_time;
+
+			float shown_time = float(increase_time) / 60;
+			int minutes = int(shown_time / 60);
+			int seconds = int(shown_time) % 60;
+
+			std::ostringstream os;
+			os<<minutes<<":";
+			if(seconds<10){
+				os<<"0";
+			}
+			os<<seconds;
+			
+			Fadetext_New(fontti1,os.str(),(int)sprite->x-15,(int)sprite->y-8,100);
+		}
+		break;
+		case AI_INFO_IF_BONUS_COLLECTED:{
+			showed_info = true;
+			AI_Functions::DisplayInfo(sprite);
+		}
+		break;
+
+		case AI_EMIT_EVENT1_IF_BONUS_COLLECTED:{
+			Game->event1 = true;
+		}
+		break;
+
+		case AI_EMIT_EVENT2_IF_BONUS_COLLECTED:{
+			Game->event2 = true;
+		}
+		break;
+
+		case AI_CHANGE_SKULLS_IF_BONUS_COLLECTED:{
+			Game->change_skulls = true;
+		}
+		break;
+
+
+		default:
+			break;
+		}
+	}
+
+
+
+	if (sprite->prototype->bonus != nullptr)
+		if (Game->gifts.add(sprite->prototype->bonus))
+			Game->showInfo(tekstit->Get_Text(PK_txt.game_newitem));
+
+	if (sprite->prototype->transformation != nullptr){
+		PotionTransformation(collector, sprite->prototype->transformation);
+	}
+
+	if (sprite->prototype->ammo2 != nullptr && collector->ammo2 != sprite->prototype->ammo2){
+		collector->ammo2 = sprite->prototype->ammo2;
+
+		if(!showed_info && collector == Game->playerSprite){
+			showed_info = true;
+
+			int infotext = Episode->infos.Search_Id("new doodle attack");
+			if (infotext != -1)
+				Game->showInfo(Episode->infos.Get_Text(infotext));
+			else
+				Game->showInfo(tekstit->Get_Text(PK_txt.game_newdoodle));
+		}
+	}
+
+	if (sprite->prototype->ammo1 != nullptr && collector->ammo1 != sprite->prototype->ammo1){
+		collector->ammo1 = sprite->prototype->ammo1;
+
+		if(!showed_info && collector == Game->playerSprite){
+			showed_info = true;
+
+			int infotext = Episode->infos.Search_Id("new egg attack");
+			if (infotext != -1)
+				Game->showInfo(Episode->infos.Get_Text(infotext));
+			else
+				Game->showInfo(tekstit->Get_Text(PK_txt.game_newegg));
+		}
+	}
+
+	Play_GameSFX(sprite->prototype->sounds[SOUND_DESTRUCTION],100, (int)sprite->x, (int)sprite->y,
+					sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
+
+	Effect_By_ID(destruction_effect, (u32)sprite->x, (u32)sprite->y);
 }
 
 void UpdateSprite(SpriteClass* sprite){
@@ -1555,8 +1566,10 @@ void UpdateSprite(SpriteClass* sprite){
 				sprite->y/*top*/ <= Player_Sprite->y + Player_Sprite->prototype->height/2 &&
 				sprite->y/*bottom*/ >= Player_Sprite->y - Player_Sprite->prototype->height/2 + sprite2_yla){
 
-
-			if(Game->score >= Episode->checkpointPenalty){
+			if(config_txt.hardcore_mode){
+				Game->showInfo("Checkpoints are disabled on hardcore mode!");
+			}
+			else if(Game->score >= Episode->checkpointPenalty){
 				sprite->target_sprite = Player_Sprite;
 				Game->lastCheckpoint = sprite;
 				sprite->attack1_timer = sprite->prototype->attack1_time;

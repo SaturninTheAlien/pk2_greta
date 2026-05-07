@@ -11,6 +11,7 @@
 #include "sfx.hpp"
 #include "engine/PSound.hpp"
 #include "language.hpp"
+#include "settings/config_txt.hpp"
 
 namespace AI_Functions{
 
@@ -802,6 +803,8 @@ void Follow_Commands(SpriteClass* s) {
 void Transform_When_Energy_Under_2(SpriteClass* s){
 
 	PrototypeClass* transformation = s->prototype->transformation;
+
+	if(s->isPlayer() && config_txt.hardcore_mode) return;
 
 	if (transformation!=nullptr&& !s->removed && s->energy < 2 && transformation != s->prototype) {
 		if(s->energy == 1 || !s->HasAI(AI_ROOSTER)){

@@ -261,7 +261,7 @@ void GameClass::update(int &debug_active_sprites)
 			this->playerSprite->b = -10;
 		}
 
-		if(input.dev_heal.isPressed()){
+		if(input.dev_heal.isPressed() && !config_txt.hardcore_mode){
 
 			PrototypeClass* playerProto = this->playerSprite->prototype;
 
@@ -458,8 +458,35 @@ void GameClass::update(int &debug_active_sprites)
 			if(this->exit_timer==2) {
 				if (this->game_over) {
 
-					if (this->lastCheckpoint != nullptr && this->hasEnoughPointsToRespawn()) {
+					if (this->lastCheckpoint != nullptr && this->score >= Episode->checkpointPenalty && !config_txt.hardcore_mode) {
 
+						fs::path dataPath = PFilesystem::GetDataPath();
+						fs::path p3 = dataPath / CHECKPOINT_DIR_NAME / "score.dat";
+
+						/**
+						 * All the points collected after activating the checkpoint are cancelled.
+						 * To prevent points farming by dying
+						 */
+
+						PFile::RW in = PFile::Path(p3.string()).GetRW2("r");
+						in.read(this->score);
+						in.close();
+						this->score -= Episode->checkpointPenalty;
+
+						/**
+						 * To prevent negative scores
+						 */
+						if(this->score < 0){
+							this->score = 0;
+						}
+
+						PFile::RW out = PFile::Path(p3.string()).GetRW2("w");
+						out.write(this->score);
+						out.close();
+
+						/**
+						 * For centering the player's position
+						 */
 						int checkpoint_x = this->lastCheckpoint->x;
 						int checkpoint_y = this->lastCheckpoint->y;
 
@@ -472,7 +499,7 @@ void GameClass::update(int &debug_active_sprites)
 						if(this->score > t_score)this->score = t_score;
 
 						SpriteClass*player = this->playerSprite;
-						if(player->player_c==1){
+						if(player->player_c==1){						
 							player->a = 0;
 							player->b = 0;
 
@@ -1040,29 +1067,6 @@ void GameClass::saveGameState()const{
 	file3.write(this->score);
 	file3.close();
 }
-
-bool GameClass::hasEnoughPointsToRespawn(){
-
-	if(Episode->checkpointPenalty<=0)return true;
-
-	fs::path dataPath = PFilesystem::GetDataPath();
-	fs::path p3 = dataPath / CHECKPOINT_DIR_NAME / "score.dat";
-
-	PFile::RW in = PFile::Path(p3.string()).GetRW2("r");
-	in.read(this->score);
-	in.close();
-
-	if(this->score < Episode->checkpointPenalty){
-		return false;
-	}
-	this->score -= Episode->checkpointPenalty;
-	PFile::RW out = PFile::Path(p3.string()).GetRW2("w");
-	out.write(this->score);
-	out.close();
-
-	return true;
-}
-
 
 void GameClass::loadGameState(){
 

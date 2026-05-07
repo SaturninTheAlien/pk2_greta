@@ -61,6 +61,15 @@ static const char default_config[] =
 "\r\n"
 "\r\n"
 
+"\r\n-- Hardcore mode"
+"\r\n-- While enabled, you only have 1 HP and cannot respawn at checkpoints"
+"\r\n-- For very advanced players / no-hit challenges"
+"\r\n-- Some 3rd-party episodes may be unbeatable"
+"\r\n*hardcore_mode:	false"
+"\r\n"
+"\r\n"
+"\r\n"
+
 "\r\n-- To determine how the links menu should look like"
 "\r\n-- Available options are: main_menu, bottom, none"
 "\r\n*links_menu:    main_menu"
@@ -117,6 +126,8 @@ void Config_txt::readFile(){
 	this->player = conf.getString("player", "Pekka");
 	this->silent_suicide = conf.getBoolean("silent_suicide", false);
 	this->deadLevelFinish = conf.getBoolean("dead_level_finish", false);
+
+	this->hardcore_mode = conf.getBoolean("hardcore_mode", false);
 
 	#ifdef __ANDROID__
 	this->panic_when_missing_assets = conf.getBoolean("panic_when_missing_assets", false);

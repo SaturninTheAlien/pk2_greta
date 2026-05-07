@@ -137,10 +137,7 @@ class GameClass {
 
 		void onKeyPressed(const PInput::Key& key);
 	private:
-
-
 		int vibration = 0;
-		bool hasEnoughPointsToRespawn();
 
 		void moveBlocks(){
 			this->level.moveBlocks(this->button1, this->button2, this->button3);

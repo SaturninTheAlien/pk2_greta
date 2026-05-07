@@ -26,6 +26,7 @@
 #include "sfx.hpp"
 #include "system.hpp"
 #include "settings/settings.hpp"
+#include "settings/config_txt.hpp"
 
 PlayingScreen::PlayingScreen(){
 
@@ -253,10 +254,14 @@ void PlayingScreen::Draw_InGame_UI(){
 	/////////////////
 	// Draw Energy
 	/////////////////
-	vali = PDraw::font_write_line(fontti1,tekstit->Get_Text(PK_txt.game_energy),60,my);
-
-	//SpriteClass* Game->playerSprite = Game->playerSprite;
-	ShadowedText_Draw(std::to_string(Game->playerSprite->energy), 60 + vali, my);
+	if(config_txt.hardcore_mode){
+		PDraw::font_write_line(fontti1, "hardcore mode", 45, my);
+	}
+	else{
+		vali = PDraw::font_write_line(fontti1,tekstit->Get_Text(PK_txt.game_energy),60,my);
+		//SpriteClass* Game->playerSprite = Game->playerSprite;
+		ShadowedText_Draw(std::to_string(Game->playerSprite->energy), 60 + vali, my);
+	}
 
 	/////////////////
 	// Draw Invisible
