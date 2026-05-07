@@ -63,8 +63,8 @@ static const char default_config[] =
 
 "\r\n-- Hardcore mode"
 "\r\n-- While enabled, you only have 1 HP and cannot respawn at checkpoints"
-"\r\n-- For very advanced players / no-hit challenges"
-"\r\n-- Some 3rd-party episodes may be unbeatable"
+"\r\n-- Only for masochists and no-hit challenges"
+"\r\n-- Some episodes may be unbeatable"
 "\r\n*hardcore_mode:	false"
 "\r\n"
 "\r\n"
@@ -87,7 +87,7 @@ static const char default_config[] =
 "\r\n"
 
 "\r\n -- Silent suicide"
-"\r\n -- If set to \"yes\" the player has no destruction effect"
+"\r\n -- If set to \"true\" the player has no destruction effect"
 "\r\n -- after committing suicide by pressing delete key"
 "\r\n -- Some players requested it for \"psychological reasons\"."
 "\r\n -- disabled by default"
