@@ -1455,6 +1455,7 @@ void UpdateSprite(SpriteClass* sprite){
 
 	if(sprite->self_destruction && sprite->prototype->legacy_projectile){
 
+		bool shouldCallDeathFunc = false;
 		if(sprite->ammo1!=nullptr){
 			Play_GameSFX(sprite->prototype->sounds[SOUND_ATTACK1],100, (int)sprite->x, (int)sprite->y,
 						  sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
@@ -1466,7 +1467,7 @@ void UpdateSprite(SpriteClass* sprite){
 			 */
 
 			sprite->ammo1 = nullptr;
-			SpriteOnDeath(sprite);
+			shouldCallDeathFunc = true;
 		}
 		if(sprite->ammo2!=nullptr){
 			Play_GameSFX(sprite->prototype->sounds[SOUND_ATTACK2],100, (int)sprite->x, (int)sprite->y,
@@ -1478,6 +1479,10 @@ void UpdateSprite(SpriteClass* sprite){
 			 * To prevent duplication of legacy projectiles
 			 */
 			sprite->ammo2 = nullptr;
+			shouldCallDeathFunc = true;
+		}
+
+		if(shouldCallDeathFunc){
 			SpriteOnDeath(sprite);
 		}
 	}
