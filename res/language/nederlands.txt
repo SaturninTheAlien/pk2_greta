@@ -19,7 +19,7 @@ Main Menu
 *setup play:            speel
 *main menu links:       links
 *main menu map:         kaart
-*main menu exit game:   sluit
+*main menu exit game:   sluit af
 
 *setup options:         opties
 *main menu controls:    besturing
@@ -41,7 +41,6 @@ Game Controls
 *controls menu egg attack:     leg ei
 *controls menu use item:       gebruik kado
 
-*controls menu edit:           configureer
 *controls menu default:        zet terug
 *controls menu use keyboard:   gebruik toetsenbord
 *controls menu use controller: gebruik controller
@@ -164,7 +163,7 @@ Info Signs
 *info08: de oranje knop schakelt het vuur uit.
 *info09: je kunt kados op elk moment gebruiken.
 *info10: veren herstellen energie.
-*info11: teletransporters zijn onvoorspelbaar! verdwaal niet!
+*info11: teleporters zijn onvoorspelbaar! verdwaal niet!
 *info12: knockouts en bonussen leveren je punten op.
 *info13: zoek altijd naar verborgen bonussen!
 *info14: een sleutel kan een slot openen door hem simpelweg aan te raken.
