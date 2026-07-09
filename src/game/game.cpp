@@ -507,6 +507,18 @@ void GameClass::update(int &debug_active_sprites)
 							player->y = checkpoint_y;
 						}
 
+						LevelSector * sector = player->level_sector;
+						// Change palette
+						sector->background->setPalette();
+
+						// Change weather
+						BG_Particles::Init(sector->weather, sector->rain_color);
+						Particles_Clear();
+
+						sector->startMusic();
+						// Change GFX texture
+						this->gfxTexture = sector->gfxTexture;
+
 					} else {
 						Fade_out(FADE_NORMAL);
 						PSound::set_musicvolume(0);
