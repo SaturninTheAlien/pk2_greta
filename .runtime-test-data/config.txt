@@ -1,0 +1,57 @@
+
+---------------
+-- Should the game panic if there's a missing asset?
+-- It is not advised to disable it.
+-- Some levels may be unplayable anyway.
+-- The best way is to find all the missing assets and rezip the episode!
+*panic_when_missing_assets:    true
+
+
+
+-- To use legacy saving system with "slots"
+*use_save_slots:    true
+
+
+
+-- To be able to complete the game as a killed player.
+-- It was a legacy bug and was removed in 1.5.0
+-- But some players requested it to be reimplemented.
+-- And so many players requested it that it's enabled by default now.
+*dead_level_finish:	 true
+
+
+
+-- Player name
+-- Used to save the game progress if "save slots" are disabled.
+*player:	pekka
+
+
+
+-- Hardcore mode
+-- While enabled, you only have 1 HP and cannot respawn at checkpoints
+-- Only for masochists and no-hit challenges
+-- Some episodes may be unbeatable
+*hardcore_mode:	false
+
+
+
+-- To determine how the links menu should look like
+-- Available options are: main_menu, bottom, none
+*links_menu:    main_menu
+
+
+
+-- Audio Buffer Size
+-- low value = low audio latency; high value = less cpu usage
+-- Default is 1024
+-- Prefer a power of 2: 512 1024 2048 4096 default
+*audio_buffer_size:    default
+
+
+
+ -- Silent suicide
+ -- If set to "true" the player has no destruction effect
+ -- after committing suicide by pressing delete key
+ -- Some players requested it for "psychological reasons".
+ -- disabled by default
+*silent_suicide:  false

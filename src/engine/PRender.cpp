@@ -201,7 +201,7 @@ bool is_vsync() {
 
 void init(int width, int height, const char* name, const char* icon) {
 
-	Uint32 window_flags = SDL_WINDOW_SHOWN;
+	Uint32 window_flags = SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI;
 
 	PLog::Write(PLog::DEBUG, "PRender", "Initializing graphics");
 
@@ -263,10 +263,11 @@ void init(int width, int height, const char* name, const char* icon) {
 
 void terminate() {
 
-	SDL_DestroyWindow(window);
-
 	delete renderer;
 	renderer = nullptr;
+
+	SDL_DestroyWindow(window);
+	window = nullptr;
 
 }
 

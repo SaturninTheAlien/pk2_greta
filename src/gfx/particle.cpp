@@ -27,6 +27,12 @@ Particle::Particle(int type, double x, double y, double a, double b, int anim, i
 Particle::~Particle() {}
 
 void Particle::draw(int camera_x, int camera_y) {
+	constexpr double culling_margin = 64;
+	const double screen_x = x - camera_x;
+	const double screen_y = y - camera_y;
+	if (screen_x < -culling_margin || screen_x > screen_width + culling_margin ||
+		screen_y < -culling_margin || screen_y > screen_height + culling_margin)
+		return;
 
 	alpha = time;
 	if (alpha > 100) alpha = 100;
@@ -117,10 +123,9 @@ void Particle::draw_smoke() {
 void Particle::draw_dust() {
 
 	if (alpha > 99)
-		PDraw::image_cutclip(Game->gfxTexture,x-cam_x,y-cam_y,226,2,224,49);
+		PDraw::image_cutclip(Game->gfxTexture, x-cam_x, y-cam_y, 226, 2, 244, 21);
 	else
 		PDraw::image_cutcliptransparent(Game->gfxTexture, 226, 2, 18, 19, int(x)-cam_x, int(y)-cam_y, alpha, color);
-	PDraw::image_cutclip(Game->gfxTexture,x-cam_x,y-cam_y,226, 2, 18, 19);
 
 }
 

@@ -7,6 +7,8 @@
 #include "screen.hpp"
 #include "game/spriteclass.hpp"
 
+#include <string>
+
 class PlayingScreen: public Screen{
 public:
     PlayingScreen();
@@ -19,6 +21,10 @@ public:
     void onKeyPressed(const PInput::Key& key)override;
 private:
     void drawDevStuff();
+	void drawQuickSaveToast();
+	void showQuickSaveToast(const std::string& text, bool is_error = false);
+	void updatePolishAnimations();
+	void loadLatestQuickSave();
 
     void Draw_InGame_DebugInfo();
     void Draw_InGame_DevKeys();
@@ -31,4 +37,14 @@ private:
 
     bool takingScreenshot = false;
     bool goingToTheMenu = false;
+
+	std::string quickSaveToastText;
+	int quickSaveToastTimer = 0;
+	bool quickSaveToastError = false;
+
+	int lastEnergy = -1;
+	int lastScore = -1;
+	int energyPulseTimer = 0;
+	int scorePulseTimer = 0;
+	bool energyPulseIsDamage = false;
 };

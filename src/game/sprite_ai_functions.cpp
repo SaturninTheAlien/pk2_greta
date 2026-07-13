@@ -1406,7 +1406,8 @@ void StaticProjectile(SpriteClass*sprite, SpriteClass*shooter){
 
 
 void ProjectileAimRandomly(SpriteClass*sprite, SpriteClass*){
-	double angle = (double(rand())/RAND_MAX) * 2 * M_PI;
+	constexpr double PI = 3.14159265358979323846;
+	double angle = (double(rand())/RAND_MAX) * 2 * PI;
 	double v = sprite->prototype->max_speed;
 
 	sprite->a = v * cos(angle);

@@ -1,0 +1,82 @@
+{
+    "double_speed": false,
+    "filtering": 1,
+    "fps": 1,
+    "fullscreen": true,
+    "gui": true,
+    "joystick": {
+        "attack1": {
+            "code": 0,
+            "type": 2
+        },
+        "attack2": {
+            "code": 1,
+            "type": 2
+        },
+        "down": {
+            "code": 12,
+            "type": 2
+        },
+        "left": {
+            "code": 13,
+            "type": 2
+        },
+        "open_gift": {
+            "code": 9,
+            "type": 2
+        },
+        "right": {
+            "code": 14,
+            "type": 2
+        },
+        "up": {
+            "code": 11,
+            "type": 2
+        },
+        "walk_slow": {
+            "code": 3,
+            "type": 2
+        }
+    },
+    "keyboard": {
+        "attack1": {
+            "code": 224,
+            "type": 1
+        },
+        "attack2": {
+            "code": 225,
+            "type": 1
+        },
+        "down": {
+            "code": 81,
+            "type": 1
+        },
+        "left": {
+            "code": 80,
+            "type": 1
+        },
+        "open_gift": {
+            "code": 44,
+            "type": 1
+        },
+        "right": {
+            "code": 79,
+            "type": 1
+        },
+        "up": {
+            "code": 82,
+            "type": 1
+        },
+        "walk_slow": {
+            "code": 226,
+            "type": 1
+        }
+    },
+    "language": "english.txt",
+    "music_max_volume": 35,
+    "sfx_max_volume": 85,
+    "touchscreen": false,
+    "transparent_text": false,
+    "use_joystick": false,
+    "use_vibration": false
+}

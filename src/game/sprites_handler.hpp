@@ -3,6 +3,7 @@
 #include "spriteclass.hpp"
 
 #include <list>
+#include <unordered_map>
 
 class LevelSector;
 
@@ -71,8 +72,10 @@ public:
     void drawFGsprites(int camera_x, int camera_y, bool gamePaused, int& debug_drawn_sprite);
 
 
-    nlohmann::json toJson()const;
+    nlohmann::json toJson(bool includeRemoved = false)const;
     void fromJSON(const nlohmann::json& j, PrototypesHandler& handler, LevelSector*sector);
+    void resolveReferences(const std::unordered_map<std::size_t, SpriteClass*>& spritesById,
+        bool requireAll = false);
 
 
     std::size_t size()const{

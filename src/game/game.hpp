@@ -5,6 +5,8 @@
 #pragma once
 
 #include <array>
+#include <optional>
+#include <string>
 #include "engine/types.hpp"
 #include "engine/PInputKey.hpp"
 
@@ -18,6 +20,14 @@ const int INFO_TIME = 700;
 namespace sol{
 	class state;
 }
+
+struct QuickSaveInfo {
+	int schemaVersion = 0;
+	std::string episodeName;
+	std::string playerName;
+	std::string levelFile;
+	int levelId = -1;
+};
 
 class GameClass {
 
@@ -90,7 +100,7 @@ class GameClass {
 
 		void update(int& debug_active_sprites);
 
-		void start();
+		void start(bool initializeLua = true);
 		void finish();
 
 		
@@ -129,6 +139,11 @@ class GameClass {
 		
 		void saveGameState()const;
 		void loadGameState();
+		static std::optional<QuickSaveInfo> getQuickSaveInfo();
+		void saveQuickGameState() const;
+		void loadQuickGameState(bool initializeLua = true);
+		void refreshPresentationState();
+		void restartLuaForCurrentState();
 
 		void vibrate(int vibration);
 		int getVibration()const{
@@ -146,7 +161,8 @@ class GameClass {
 		void exposePlayerToAIs();
 
 		nlohmann::json toJson()const;
-		void fromJson(const nlohmann::json& j);
+		nlohmann::json toQuickJson()const;
+		void fromJson(const nlohmann::json& j, bool restoreExactState = false);
 
 
 		PrototypeClass* initialPlayerPrototype = nullptr;

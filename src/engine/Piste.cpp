@@ -55,7 +55,7 @@ static void wait_frame() {
 
 }
 
-static void logic() {
+static void update_input() {
 	
 	SDL_Event event;
 
@@ -66,7 +66,8 @@ static void logic() {
 		}
 		else if(event.type == SDL_WINDOWEVENT){
 
-			if(event.window.event == SDL_WINDOWEVENT_RESIZED){
+			if(event.window.event == SDL_WINDOWEVENT_RESIZED ||
+			   event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED){
 				PRender::adjust_screen();
 			}
 			else if(event.window.event == SDL_WINDOWEVENT_RESTORED){
@@ -80,6 +81,10 @@ static void logic() {
 
 	PInput::InputSystem::instance().updateMouse();
 	PInput::InputSystem::instance().updateTouch();
+
+}
+
+static void finish_frame() {
 
 	// Pass PDraw informations do PRender
 	if (draw) {
@@ -160,13 +165,23 @@ void loop(std::function<void()> GameLogic) {
 	
 	static int frame_counter = 0;
 	static u32 last_time = 0;
+	bool first_frame = true;
 
 	running = true;
 
 	while(running) {
-		
+
+		// ScreensHandler creates its first active screen in GameLogic. Delay input
+		// dispatch until that has happened so early events cannot hit a null screen.
+		if (!first_frame) {
+			update_input();
+			if (!running)
+				break;
+		}
+
 		GameLogic();
-		logic();
+		finish_frame();
+		first_frame = false;
 
 		frame_counter++;
 		if (frame_counter >= UPDATE_FPS) {

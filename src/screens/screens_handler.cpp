@@ -134,7 +134,9 @@ ScreensHandler::~ScreensHandler(){
 void ScreensHandler::onKeyPressed(const PInput::Key& key){
 	//std::cout<<"Key pressed: "<<key.getName()<<std::endl;
 
-	this->current_screen->onKeyPressed(key);
+	if(this->current_screen != nullptr){
+		this->current_screen->onKeyPressed(key);
+	}
 
 #ifndef __ANDROID__
 	if(key==Settings.getInput().fullscreenModeSwitch || (key==PInput::Key::RETURN && PInput::Key::LALT.isPressed())){
@@ -147,13 +149,12 @@ void ScreensHandler::onKeyPressed(const PInput::Key& key){
 void ScreensHandler::onKeyReleased(const PInput::Key& key){
 	//std::cout<<"Key released: "<<key.getName()<<std::endl;
 	
-	this->current_screen->onKeyReleased(key);
+	if(this->current_screen != nullptr){
+		this->current_screen->onKeyReleased(key);
+	}
 }
 
-
-//Main Loop
-void ScreensHandler::Loop() {
-
+void ScreensHandler::changeScreenIfNeeded(){
 	if(Screen::next_screen != this->current_screen_index){
 		this->current_screen_index = Screen::next_screen;
 
@@ -168,7 +169,14 @@ void ScreensHandler::Loop() {
 		Fade_in(FADE_NORMAL);
 
 		this->current_screen->Init();
-	}	
+	}
+}
+
+
+//Main Loop
+void ScreensHandler::Loop() {
+
+	this->changeScreenIfNeeded();
 
 	if (Settings.touchscreen_mode)
 		TouchScreenControls.update();
@@ -176,6 +184,11 @@ void ScreensHandler::Loop() {
 	PInput::InputSystem::instance().mouseKeysEnabled = this->current_screen->mouseKeysEnabled;
 	this->current_screen->Loop();
 	this->current_screen->clearMouseInput();
+
+	// A screen can finish and release its game object from inside Loop(). Apply
+	// that transition now so input polled before the next frame never reaches the
+	// stale screen.
+	this->changeScreenIfNeeded();
 
 	if (Screen::closing_game && !Is_Fading()){
 		Piste::stop();

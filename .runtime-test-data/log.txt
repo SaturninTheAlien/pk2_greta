@@ -1,0 +1,64 @@
+[DEBUG]	PK2	- Pekka Kana 2 started!
+[DEBUG]	PK2	- Game version: Pekka Kana 2 Greta Engine v0.340 (zip)
+[DEBUG]	PK2	- Assets path - .\res
+[DEBUG]	PK2	- Data path - .\.runtime-test-data
+[DEBUG]	Piste	- We compiled against SDL version 2.32.10 ...
+[DEBUG]	Piste	- But we are linking against SDL version 2.32.10.
+[DEBUG]	PDraw	- Initializing buffers
+[DEBUG]	PRender	- Initializing graphics
+[INFO]	PRender	- Video driver: windows
+[INFO]	PInput	- No Controller found
+[INFO]	PInput	- No haptic found
+[DEBUG]	PSound	- buffer size: 1024
+[DEBUG]	PSound	- Desired 44100hz 0x8010
+[DEBUG]	PSound	- Audio driver: wasapi
+[DEBUG]	PSound	- Got 44100hz 0x8010
+[DEBUG]	PK2	- Loading language from .\res\language\english.txt
+[DEBUG]	PDraw	- Created font from .\res\language\fonts\ScandicSmall.txt - id 0
+[DEBUG]	PDraw	- Created font from .\res\language\fonts\ScandicBig1.txt - id 1
+[DEBUG]	PDraw	- Created font from .\res\language\fonts\ScandicBig2.txt - id 2
+[DEBUG]	PDraw	- Created font from .\res\language\fonts\ScandicBig3.txt - id 3
+[INFO]	PInput	- No Controller found
+[INFO]	PInput	- No haptic found
+[DEBUG]	Piste	- FPS set to 60
+[DEBUG]	PK2	- Testing episode 'rooster island 1' level 'level001.map'
+[DEBUG]	PK2	- Loading .\res\episodes\rooster island 1\level001.map, version 1.3
+[INFO]	PK2lua	- No Lua scripting in this level
+[DEBUG]	PSound	- Loaded .\res\music\song01.xm
+[INFO]	PK2	- Saving quick-save...
+[DEBUG]	PK2	- Quick-save saved!
+[DEBUG]	PK2	- Loading .\res\episodes\rooster island 1\level001.map, version 1.3
+[INFO]	PK2	- Loading quick-save...
+[DEBUG]	PK2	- Loading .\.runtime-test-data\quicksave\level.map, version 1.5
+[DEBUG]	PK2	- Quick-save loaded!
+[DEBUG]	PSound	- Loaded .\res\music\song01.xm
+[DEBUG]	PK2	- Loading .\res\episodes\rooster island 1\level001.map, version 1.3
+[INFO]	PK2	- Loading quick-save...
+[DEBUG]	PK2	- Loading .\.runtime-test-data\quicksave\level.map, version 1.5
+[DEBUG]	PK2	- Quick-save loaded!
+[DEBUG]	PSound	- Loaded .\res\music\song01.xm
+[INFO]	PK2	- Saving quick-save...
+[DEBUG]	PK2	- Quick-save saved!
+[DEBUG]	PK2	- Loading .\res\episodes\rooster island 1\level001.map, version 1.3
+[INFO]	PK2	- Loading quick-save...
+[DEBUG]	PK2	- Loading .\.runtime-test-data\quicksave\level.map, version 1.5
+[DEBUG]	PK2	- Quick-save loaded!
+[DEBUG]	PSound	- Loaded .\res\music\song01.xm
+[DEBUG]	PK2	- Loading .\res\episodes\rooster island 1\level001.map, version 1.3
+[INFO]	PK2	- Loading quick-save...
+[DEBUG]	PK2	- Loading .\.runtime-test-data\quicksave\level.map, version 1.5
+[DEBUG]	PK2	- Quick-save loaded!
+[DEBUG]	PSound	- Loaded .\res\music\song01.xm
+[DEBUG]	PK2	- Loading .\res\episodes\rooster island 1\level001.map, version 1.3
+[INFO]	PK2	- Loading quick-save...
+[DEBUG]	PK2	- Loading .\.runtime-test-data\quicksave\level.map, version 1.5
+[DEBUG]	PK2	- Quick-save loaded!
+[DEBUG]	PSound	- Loaded .\res\music\song01.xm
+[DEBUG]	PK2	- Loading .\res\episodes\rooster island 1\level001.map, version 1.3
+[INFO]	PK2	- Loading quick-save...
+[DEBUG]	PK2	- Loading .\.runtime-test-data\quicksave\level.map, version 1.5
+[DEBUG]	PK2	- Quick-save loaded!
+[DEBUG]	PSound	- Loaded .\res\music\song01.xm
+[DEBUG]	PSdl	- Terminated
+[DEBUG]	PK2	- Terminated
+[DEBUG]	PLog	- Terminated

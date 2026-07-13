@@ -23,6 +23,8 @@ public:
 
 	bool clicked = false;
 private:
+	void changeScreenIfNeeded();
+
 	Screen* current_screen = nullptr;
 	int current_screen_index = SCREEN_NOT_SET;
 

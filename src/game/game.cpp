@@ -34,15 +34,197 @@
 #include "lua/lua_game_events.hpp"
 
 #include <optional>
+#include <algorithm>
+#include <chrono>
+#include <cmath>
 #include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <stdexcept>
+#include <unordered_map>
 
 
 static const char * CHECKPOINT_DIR_NAME = "checkpoint";
+static const char * QUICK_SAVE_DIR_NAME = "quicksave";
+static const char * QUICK_SAVE_TEMP_DIR_NAME = "quicksave.tmp";
+static const char * QUICK_SAVE_BACKUP_DIR_NAME = "quicksave.backup";
+static constexpr int QUICK_SAVE_SCHEMA_VERSION = 1;
 
 namespace fs = std::filesystem;
+
+namespace {
+
+bool isCompleteQuickSaveDirectory(const fs::path& directory) {
+	return fs::is_directory(directory)
+		&& fs::is_regular_file(directory / "level.map")
+		&& fs::is_regular_file(directory / "game.dat");
+}
+
+nlohmann::json readQuickSavePayload(const fs::path& directory) {
+	PFile::RW file = PFile::Path((directory / "game.dat").string()).GetRW2("r");
+	nlohmann::json payload = file.readCBOR();
+	file.close();
+	return payload;
+}
+
+QuickSaveInfo quickSaveInfoFromJson(const nlohmann::json& payload) {
+	QuickSaveInfo info;
+	payload.at("schema_version").get_to(info.schemaVersion);
+	payload.at("episode_name").get_to(info.episodeName);
+	payload.at("player_name").get_to(info.playerName);
+	payload.at("level_file").get_to(info.levelFile);
+	payload.at("level_id").get_to(info.levelId);
+	// Parse the source fields here as well so metadata inspection rejects a
+	// truncated identity before the caller offers the save for loading.
+	payload.at("episode_is_zip").get<bool>();
+	payload.at("episode_path").get<std::string>();
+	payload.at("episode_zipfile").get<std::string>();
+
+	if (info.schemaVersion != QUICK_SAVE_SCHEMA_VERSION) {
+		throw std::runtime_error("Unsupported quick-save version");
+	}
+	if (info.episodeName.empty() || info.levelFile.empty()) {
+		throw std::runtime_error("Quick-save identity is incomplete");
+	}
+	if (!payload.contains("state") || !payload.at("state").is_object()) {
+		throw std::runtime_error("Quick-save game state is missing");
+	}
+	return info;
+}
+
+void validateQuickSaveStateShape(const nlohmann::json& state,
+	std::size_t sectorCount) {
+	state.at("game_over").get<bool>();
+	state.at("level_clear").get<bool>();
+	state.at("repeating").get<bool>();
+	state.at("exit_timer").get<u32>();
+	state.at("timeout").get<int>();
+	state.at("has_time").get<bool>();
+	state.at("frame_count").get<u64>();
+	state.at("tiles_animation_counter").get<int>();
+	state.at("button_vibration").get<int>();
+	state.at("button1").get<u32>();
+	state.at("button2").get<u32>();
+	state.at("button3").get<u32>();
+	state.at("score").get<int>();
+	state.at("score_increment").get<int>();
+	state.at("apples_count").get<u32>();
+	state.at("apples_got").get<u32>();
+	state.at("vibration").get<int>();
+	state.at("camera_x").get<int>();
+	state.at("camera_y").get<int>();
+	state.at("dcamera_x").get<double>();
+	state.at("dcamera_y").get<double>();
+	state.at("dcamera_a").get<double>();
+	state.at("dcamera_b").get<double>();
+	state.at("paused").get<bool>();
+	state.at("gift_cooldown").get<int>();
+	state.at("global_animation_degree").get<int>();
+	state.at("global_animation_degree_temp").get<int>();
+	state.at("music_stopped").get<bool>();
+	state.at("keys").get<int>();
+	state.at("enemies").get<int>();
+	state.at("info_timer").get<int>();
+	state.at("info_text").get<std::string>();
+	state.at("item_panel_x").get<int>();
+	state.at("change_skulls").get<bool>();
+	state.at("event1").get<bool>();
+	state.at("event2").get<bool>();
+	if (!state.at("last_cp_id").is_null()) {
+		state.at("last_cp_id").get<std::size_t>();
+	}
+
+	const nlohmann::json& levelRuntime = state.at("level_runtime");
+	levelRuntime.at("arrows_block_degree").get<int>();
+	levelRuntime.at("tiles_animation_timer").get<int>();
+	levelRuntime.at("block_animation_frame").get<int>();
+	levelRuntime.at("button1_timer").get<u32>();
+	levelRuntime.at("button2_timer").get<u32>();
+	levelRuntime.at("button3_timer").get<u32>();
+
+	const nlohmann::json& spriteSectors = state.at("sprites");
+	if (!spriteSectors.is_array() || spriteSectors.size() != sectorCount) {
+		throw std::runtime_error("Quick-save sprite sectors are invalid");
+	}
+	static const char* requiredSpriteFields[] = {
+		"id", "active", "removed", "prototype", "orig_x", "orig_y", "x", "y",
+		"a", "b", "flip_x", "flip_y", "jump_timer", "coyote_timer",
+		"jump_buffer_timer", "jump_input_held", "can_move_up", "can_move_down",
+		"can_move_right", "can_move_left", "edge_on_the_left", "edge_on_the_right",
+		"energy", "parent_id", "target_id", "weight", "weight_button", "crouched",
+		"damage_timer", "invisible_timer", "super_mode_timer", "charging_timer",
+		"attack1_timer", "attack2_timer", "in_water", "swimming",
+		"max_speed_available", "hidden", "initial_weight", "damage_taken",
+		"damage_taken_type", "enemy", "ammo1", "ammo2", "seen_player_x",
+		"seen_player_y", "action_timer", "animation_index", "current_sequence",
+		"frame_timer", "mutation_timer", "respawn_timer", "current_command",
+		"command_timer", "self_destruction", "initial_update",
+		"legacy_indestructible_ammo", "can_collect_bonuses", "can_push_bonuses",
+		"original", "player_c"
+	};
+	for (const nlohmann::json& sectorSprites : spriteSectors) {
+		if (!sectorSprites.is_array()) {
+			throw std::runtime_error("Quick-save sprite list is invalid");
+		}
+		for (const nlohmann::json& sprite : sectorSprites) {
+			if (!sprite.is_object()) {
+				throw std::runtime_error("Quick-save sprite state is invalid");
+			}
+			for (const char* field : requiredSpriteFields) {
+				if (!sprite.contains(field)) {
+					throw std::runtime_error("Quick-save sprite state is incomplete");
+				}
+			}
+		}
+	}
+
+	const nlohmann::json& progress = state.at("episode_progress");
+	progress.at("level_statuses").get<std::vector<int>>();
+	progress.at("best_scores").get<std::vector<int>>();
+	progress.at("level_files").get<std::vector<std::string>>();
+	progress.at("next_level").get<u32>();
+	progress.at("completed").get<bool>();
+	state.at("gifts");
+}
+
+bool isValidQuickSaveDirectory(const fs::path& directory) {
+	if (!isCompleteQuickSaveDirectory(directory)) {
+		return false;
+	}
+
+	try {
+		const nlohmann::json payload = readQuickSavePayload(directory);
+		quickSaveInfoFromJson(payload);
+		const std::size_t sectors = LevelClass::validateVersion15Save(
+			PFile::Path((directory / "level.map").string()));
+		validateQuickSaveStateShape(payload.at("state"), sectors);
+		return true;
+	}
+	catch (const std::exception&) {
+		return false;
+	}
+}
+
+fs::path findQuickSaveDirectory() {
+	const fs::path dataPath = PFilesystem::GetDataPath();
+	const fs::path current = dataPath / QUICK_SAVE_DIR_NAME;
+	if (isValidQuickSaveDirectory(current)) {
+		return current;
+	}
+
+	// A backup can remain if the process stopped between the two directory
+	// renames used to publish a save. Validate it rather than allowing a corrupt
+	// current generation to shadow the last known-good one.
+	const fs::path backup = dataPath / QUICK_SAVE_BACKUP_DIR_NAME;
+	if (isValidQuickSaveDirectory(backup)) {
+		return backup;
+	}
+
+	return {};
+}
+
+}
 
 GameClass *Game = nullptr;
 
@@ -546,12 +728,12 @@ void GameClass::startSupermodeMusic()
 	}
 }
 
-void GameClass::start()
+void GameClass::start(bool initializeLua)
 {
 	if (this->started)
 		return;
 
-	if (this->lua != nullptr)
+	if (initializeLua && this->lua != nullptr)
 	{
 		PK2lua::DestroyGameLuaVM(this->lua);
 		this->lua = nullptr;
@@ -571,11 +753,11 @@ void GameClass::start()
 	 * @brief
 	 * Load lua
 	 */
-	if (this->level.lua_script != "")
+	if (initializeLua && this->level.lua_script != "")
 	{
 		this->lua = PK2lua::CreateGameLuaVM(this->level.lua_script);
 	}
-	else
+	else if (initializeLua)
 	{
 		PLog::Write(PLog::INFO, "PK2lua", "No Lua scripting in this level");
 	}
@@ -963,17 +1145,10 @@ void GameClass::setCamera(bool legacy_mode)
 		this->camera_y = (int)this->playerSprite->y - screen_height / 2;
 	}
 
-	if (this->camera_x < 0)
-		this->camera_x = 0;
-
-	if (this->camera_y < 0)
-		this->camera_y = 0;
-
-	if (this->camera_x > int(sector->getWidth() - screen_width / 32) * 32)
-		this->camera_x = int(sector->getWidth() - screen_width / 32) * 32;
-
-	if (this->camera_y > int(sector->getHeight() - screen_height / 32) * 32)
-		this->camera_y = int(sector->getHeight() - screen_height / 32) * 32;
+	const int maxCameraX = std::max(0, int(sector->getWidth() * 32) - screen_width);
+	const int maxCameraY = std::max(0, int(sector->getHeight() * 32) - screen_height);
+	this->camera_x = std::clamp(this->camera_x, 0, maxCameraX);
+	this->camera_y = std::clamp(this->camera_y, 0, maxCameraY);
 
 	this->dcamera_x = this->camera_x;
 	this->dcamera_y = this->camera_y;
@@ -989,72 +1164,72 @@ void GameClass::vibrate(int vibration){
 
 void GameClass::updateCamera()
 {
-	this->camera_x = (int)this->playerSprite->x - screen_width / 2;
-	this->camera_y = (int)this->playerSprite->y - screen_height / 2;
+	LevelSector *sector = this->playerSprite->level_sector;
+	const bool legacyCamera = Episode->legacy_camera_offset;
 
-	LevelSector *sector = playerSprite->level_sector;
+	double targetX = this->playerSprite->x - screen_width / 2.0;
+	double targetY = this->playerSprite->y - screen_height / 2.0;
+
+	if (!legacyCamera) {
+		// Lead gently into motion so the player can see more of what they are
+		// approaching. The bounded instantaneous velocity avoids stale momentum
+		// when the player turns around or lands.
+		const double maxLookAheadX = screen_width * 0.16;
+		const double maxLookAheadY = screen_height * 0.08;
+		targetX += std::clamp(this->playerSprite->a * 18.0,
+			-maxLookAheadX, maxLookAheadX);
+		targetY += std::clamp(this->playerSprite->b * 8.0,
+			-maxLookAheadY, maxLookAheadY);
+	}
 
 	if (dev_mode && PInput::Key::MOUSE_LEFT.isPressed() && !Settings.touchscreen_mode){
 
 		const Point2D& mousePos = PInput::InputSystem::instance().getMousePos();
-		this->camera_x += mousePos.x - screen_width / 2;
-		this->camera_y += mousePos.y - screen_height / 2;
+		targetX += mousePos.x - screen_width / 2;
+		targetY += mousePos.y - screen_height / 2;
 	}
 
+	const double maxCameraX = std::max(0.0, sector->getWidth() * 32.0 - screen_width);
+	const double maxCameraY = std::max(0.0, sector->getHeight() * 32.0 - screen_height);
+	targetX = std::clamp(targetX, 0.0, maxCameraX);
+	targetY = std::clamp(targetY, 0.0, maxCameraY);
+
+	if (legacyCamera) {
+		this->dcamera_a = std::clamp((targetX - this->dcamera_x) / 15.0, -6.0, 6.0);
+		this->dcamera_b = std::clamp((targetY - this->dcamera_y) / 15.0, -6.0, 6.0);
+	}
+	else {
+		// Exponential tracking is frame-stable, monotonic, and cannot overshoot.
+		constexpr double CAMERA_EASING = 0.14;
+		this->dcamera_a = (targetX - this->dcamera_x) * CAMERA_EASING;
+		this->dcamera_b = (targetY - this->dcamera_y) * CAMERA_EASING;
+	}
+
+	this->dcamera_x = std::clamp(this->dcamera_x + this->dcamera_a, 0.0, maxCameraX);
+	this->dcamera_y = std::clamp(this->dcamera_y + this->dcamera_b, 0.0, maxCameraY);
+
+	double shakeX = 0;
+	double shakeY = 0;
 	if (this->vibration > 0)
 	{
-		this->dcamera_x += (rand() % this->vibration - rand() % this->vibration) / 5;
-		this->dcamera_y += (rand() % this->vibration - rand() % this->vibration) / 5;
+		shakeX += (rand() % this->vibration - rand() % this->vibration) / 5.0;
+		shakeY += (rand() % this->vibration - rand() % this->vibration) / 5.0;
 
 		this->vibration--;
 	}
 
 	if (this->button_vibration > 0)
 	{
-		this->dcamera_x += (rand() % 9 - rand() % 9); // 3
-		this->dcamera_y += (rand() % 9 - rand() % 9);
+		shakeX += rand() % 9 - rand() % 9;
+		shakeY += rand() % 9 - rand() % 9;
 
 		this->button_vibration--;
 	}
 
-	if (this->dcamera_x != this->camera_x)
-		this->dcamera_a = (this->camera_x - this->dcamera_x) / 15;
-
-	if (this->dcamera_y != this->camera_y)
-		this->dcamera_b = (this->camera_y - this->dcamera_y) / 15;
-
-	if(Episode->legacy_camera_offset){
-		if (this->dcamera_a > 6)
-			this->dcamera_a = 6;
-
-		if (this->dcamera_a < -6)
-			this->dcamera_a = -6;
-
-		if (this->dcamera_b > 6)
-			this->dcamera_b = 6;
-
-		if (this->dcamera_b < -6)
-			this->dcamera_b = -6;
-	}
-
-
-	this->dcamera_x += this->dcamera_a;
-	this->dcamera_y += this->dcamera_b;
-
-	this->camera_x = (int)this->dcamera_x;
-	this->camera_y = (int)this->dcamera_y;
-
-	if (this->camera_x < 0)
-		this->camera_x = 0;
-
-	if (this->camera_y < 0)
-		this->camera_y = 0;
-
-	if (this->camera_x > int(sector->getWidth() - screen_width / 32) * 32)
-		this->camera_x = int(sector->getWidth() - screen_width / 32) * 32;
-
-	if (this->camera_y > int(sector->getHeight() - screen_height / 32) * 32)
-		this->camera_y = int(sector->getHeight() - screen_height / 32) * 32;
+	this->camera_x = std::clamp(int(std::lround(this->dcamera_x + shakeX)),
+		0, int(maxCameraX));
+	this->camera_y = std::clamp(int(std::lround(this->dcamera_y + shakeY)),
+		0, int(maxCameraY));
 }
 
 
@@ -1102,6 +1277,246 @@ void GameClass::loadGameState(){
 
 	this->info_timer = 0;
 	PLog::Write(PLog::DEBUG, "PK2", "Checkpoint loaded!");
+}
+
+std::optional<QuickSaveInfo> GameClass::getQuickSaveInfo() {
+	const fs::path directory = findQuickSaveDirectory();
+	if (directory.empty()) {
+		return {};
+	}
+
+	return quickSaveInfoFromJson(readQuickSavePayload(directory));
+}
+
+void GameClass::saveQuickGameState() const {
+	if (Episode == nullptr || this->playerSprite == nullptr || this->level.sectors.empty()) {
+		throw std::runtime_error("The game is not ready to quick-save");
+	}
+
+	PLog::Write(PLog::INFO, "PK2", "Saving quick-save...");
+
+	const fs::path dataPath = PFilesystem::GetDataPath();
+	const fs::path destination = dataPath / QUICK_SAVE_DIR_NAME;
+	const fs::path backup = dataPath / QUICK_SAVE_BACKUP_DIR_NAME;
+
+	// A unique sibling avoids two game processes writing into the same staging
+	// directory. create_directory is the atomic claim operation.
+	fs::path temporary;
+	const auto nonce = std::chrono::high_resolution_clock::now()
+		.time_since_epoch().count();
+	for (int attempt = 0; attempt < 100; ++attempt) {
+		temporary = dataPath / (std::string(QUICK_SAVE_TEMP_DIR_NAME) + "."
+			+ std::to_string(nonce) + "." + std::to_string(attempt));
+		std::error_code createError;
+		if (fs::create_directory(temporary, createError)) {
+			break;
+		}
+		if (createError) {
+			throw std::runtime_error("Could not prepare the quick-save directory: "
+				+ createError.message());
+		}
+		temporary.clear();
+	}
+	if (temporary.empty() || !fs::is_directory(temporary)) {
+		throw std::runtime_error("Could not reserve a quick-save directory");
+	}
+
+	try {
+		this->level.saveVersion15(PFile::Path((temporary / "level.map").string()));
+
+		nlohmann::json payload;
+		payload["schema_version"] = QUICK_SAVE_SCHEMA_VERSION;
+		payload["episode_name"] = Episode->entry.name;
+		payload["episode_is_zip"] = Episode->entry.is_zip;
+		payload["episode_path"] = Episode->entry.path;
+		payload["episode_zipfile"] = Episode->entry.zipfile;
+		payload["player_name"] = Episode->player_name;
+		payload["level_file"] = this->level_file;
+		payload["level_id"] = this->level_id;
+		payload["state"] = this->toQuickJson();
+
+		PFile::RW stateFile = PFile::Path((temporary / "game.dat").string()).GetRW2("w");
+		stateFile.writeCBOR(payload);
+		stateFile.close();
+
+		if (!isValidQuickSaveDirectory(temporary)) {
+			throw std::runtime_error("Quick-save files were not written completely");
+		}
+	}
+	catch (...) {
+		std::error_code ignored;
+		fs::remove_all(temporary, ignored);
+		throw;
+	}
+
+	// Publish both files together. Never discard the backup unless the current
+	// generation has itself been validated, so a failed Windows rename always
+	// leaves at least one discoverable complete save.
+	const bool validDestination = isValidQuickSaveDirectory(destination);
+	const bool validBackup = isValidQuickSaveDirectory(backup);
+	try {
+		if (fs::exists(destination) && !validDestination) {
+			fs::remove_all(destination);
+		}
+
+		if (validDestination) {
+			if (fs::exists(backup)) {
+				fs::remove_all(backup);
+			}
+			fs::rename(destination, backup);
+		}
+		else if (!validBackup && fs::exists(backup)) {
+			fs::remove_all(backup);
+		}
+
+		fs::rename(temporary, destination);
+	}
+	catch (...) {
+		if (validDestination && !fs::exists(destination)
+			&& isValidQuickSaveDirectory(backup)) {
+			std::error_code restoreError;
+			fs::rename(backup, destination, restoreError);
+		}
+		std::error_code ignored;
+		fs::remove_all(temporary, ignored);
+		throw;
+	}
+
+	std::error_code cleanupError;
+	fs::remove_all(backup, cleanupError);
+	if (cleanupError) {
+		PLog::Write(PLog::WARN, "PK2", "Could not remove quick-save backup: %s",
+			cleanupError.message().c_str());
+	}
+
+	PLog::Write(PLog::DEBUG, "PK2", "Quick-save saved!");
+}
+
+void GameClass::loadQuickGameState(bool initializeLua) {
+	if (Episode == nullptr || !this->started) {
+		throw std::runtime_error("The game is not ready to quick-load");
+	}
+
+	const fs::path directory = findQuickSaveDirectory();
+	if (directory.empty()) {
+		throw std::runtime_error("No quick save found");
+	}
+
+	PLog::Write(PLog::INFO, "PK2", "Loading quick-save...");
+	nlohmann::json payload = readQuickSavePayload(directory);
+	const QuickSaveInfo info = quickSaveInfoFromJson(payload);
+
+	if (info.episodeName != Episode->entry.name) {
+		throw std::runtime_error("Quick save is from another episode");
+	}
+	if (payload.at("episode_is_zip").get<bool>() != Episode->entry.is_zip
+		|| payload.at("episode_path").get<std::string>() != Episode->entry.path
+		|| payload.at("episode_zipfile").get<std::string>() != Episode->entry.zipfile) {
+		throw std::runtime_error("Quick save is from another episode source");
+	}
+	if (info.playerName != Episode->player_name) {
+		throw std::runtime_error("Quick save belongs to another player");
+	}
+	if (info.levelId != this->level_id || info.levelFile != this->level_file) {
+		throw std::runtime_error("Quick save is from another level");
+	}
+
+	const nlohmann::json& state = payload.at("state");
+	const nlohmann::json& progress = state.at("episode_progress");
+	const std::vector<int> levelStatuses =
+		progress.at("level_statuses").get<std::vector<int>>();
+	const std::vector<int> bestScores =
+		progress.at("best_scores").get<std::vector<int>>();
+	const std::vector<std::string> savedLevelFiles =
+		progress.at("level_files").get<std::vector<std::string>>();
+	const u32 savedNextLevel = progress.at("next_level").get<u32>();
+	const bool savedCompleted = progress.at("completed").get<bool>();
+	if (levelStatuses.size() != Episode->getLevelsNumber()
+		|| bestScores.size() != Episode->getLevelsNumber()
+		|| savedLevelFiles.size() != Episode->getLevelsNumber()) {
+		throw std::runtime_error("Quick-save episode progress does not match this episode");
+	}
+	for (std::size_t i = 0; i < savedLevelFiles.size(); ++i) {
+		if (savedLevelFiles[i] != Episode->getLevelEntries()[i].fileName) {
+			throw std::runtime_error("Quick-save episode levels have changed");
+		}
+	}
+	for (int status : levelStatuses) {
+		if (status < 0 || status > 255) {
+			throw std::runtime_error("Quick-save episode progress is invalid");
+		}
+	}
+
+	if (!initializeLua && this->lua != nullptr) {
+		throw std::runtime_error("Cannot defer an already initialized Lua state");
+	}
+
+	if (initializeLua && this->lua != nullptr) {
+		PK2lua::DestroyGameLuaVM(this->lua);
+		this->lua = nullptr;
+	}
+
+	try {
+		this->level.clearSectors();
+		this->level.load(PFile::Path((directory / "level.map").string()), false);
+		this->lastCheckpoint = nullptr;
+		this->fromJson(state, true);
+
+		if (initializeLua && !this->level.lua_script.empty()) {
+			this->lua = PK2lua::CreateGameLuaVM(this->level.lua_script);
+		}
+	}
+	catch (...) {
+		if (initializeLua && this->lua != nullptr) {
+			PK2lua::DestroyGameLuaVM(this->lua);
+			this->lua = nullptr;
+		}
+		throw;
+	}
+
+	// Restoring progression is intentionally in-memory only. Normal save slots
+	// are still written only by their existing explicit workflow.
+	for (std::size_t i = 0; i < levelStatuses.size(); ++i) {
+		Episode->updateLevelStatus(int(i), u8(levelStatuses[i]));
+		Episode->updateLevelBestScore(int(i), bestScores[i]);
+	}
+	Episode->next_level = savedNextLevel;
+	Episode->completed = savedCompleted;
+
+	PLog::Write(PLog::DEBUG, "PK2", "Quick-save loaded!");
+}
+
+void GameClass::refreshPresentationState() {
+	Fadetext_Init();
+	Particles_Clear();
+
+	if (this->playerSprite == nullptr || this->playerSprite->level_sector == nullptr) {
+		return;
+	}
+
+	LevelSector* sector = this->playerSprite->level_sector;
+	sector->background->setPalette();
+	BG_Particles::Init(sector->weather, sector->rain_color);
+	this->gfxTexture = sector->gfxTexture;
+	if (this->playerSprite->super_mode_timer > 0 && Episode->supermode_music) {
+		this->startSupermodeMusic();
+	}
+	else {
+		sector->startMusic();
+	}
+	PSound::set_musicvolume_now(this->music_stopped ? 0 : Settings.music_max_volume);
+	this->exposePlayerToAIs();
+}
+
+void GameClass::restartLuaForCurrentState() {
+	if (this->lua != nullptr) {
+		PK2lua::DestroyGameLuaVM(this->lua);
+		this->lua = nullptr;
+	}
+
+	if (!this->level.lua_script.empty()) {
+		this->lua = PK2lua::CreateGameLuaVM(this->level.lua_script);
+	}
 }
 
 
@@ -1161,7 +1576,55 @@ nlohmann::json GameClass::toJson() const
 	return j;
 }
 
-void GameClass::fromJson(const nlohmann::json &j)
+nlohmann::json GameClass::toQuickJson() const
+{
+	nlohmann::json j = this->toJson();
+
+	// Checkpoints intentionally consolidate a pending score animation. A quick
+	// save instead preserves both values so the HUD and score resume exactly.
+	j["score"] = this->score;
+	j["score_increment"] = this->score_increment;
+	j["camera_x"] = this->camera_x;
+	j["camera_y"] = this->camera_y;
+	j["dcamera_x"] = this->dcamera_x;
+	j["dcamera_y"] = this->dcamera_y;
+	j["dcamera_a"] = this->dcamera_a;
+	j["dcamera_b"] = this->dcamera_b;
+	j["paused"] = this->paused;
+	j["gift_cooldown"] = this->giftCooldown;
+	j["global_animation_degree"] = degree;
+	j["global_animation_degree_temp"] = degree_temp;
+	j["level_runtime"] = this->level.runtimeStateToJson();
+
+	std::vector<nlohmann::json> sprites;
+	for (const LevelSector* sector : this->level.sectors) {
+		sprites.emplace_back(sector->sprites.toJson(true));
+	}
+	j["sprites"] = sprites;
+
+	nlohmann::json episodeProgress;
+	std::vector<int> statuses;
+	std::vector<int> bestScores;
+	std::vector<std::string> levelFiles;
+	statuses.reserve(Episode->getLevelsNumber());
+	bestScores.reserve(Episode->getLevelsNumber());
+	levelFiles.reserve(Episode->getLevelsNumber());
+	for (const LevelEntry& entry : Episode->getLevelEntries()) {
+		statuses.push_back(int(entry.status));
+		bestScores.push_back(entry.best_score);
+		levelFiles.push_back(entry.fileName);
+	}
+	episodeProgress["level_statuses"] = statuses;
+	episodeProgress["best_scores"] = bestScores;
+	episodeProgress["level_files"] = levelFiles;
+	episodeProgress["next_level"] = Episode->next_level;
+	episodeProgress["completed"] = Episode->completed;
+	j["episode_progress"] = episodeProgress;
+
+	return j;
+}
+
+void GameClass::fromJson(const nlohmann::json &j, bool restoreExactState)
 {
 	// Restore basic game state
 	j.at("game_over").get_to(this->game_over);
@@ -1177,20 +1640,29 @@ void GameClass::fromJson(const nlohmann::json &j)
 	j.at("button2").get_to(this->button2);
 	j.at("button3").get_to(this->button3);
 	j.at("score").get_to(this->score);
-	//j.at("score_increment").get_to(this->score_increment);
-
-	this->score_increment = 0;
+	if (restoreExactState) {
+		j.at("score_increment").get_to(this->score_increment);
+	}
+	else {
+		this->score_increment = 0;
+	}
 
 	j.at("apples_count").get_to(this->apples_count);
 	j.at("apples_got").get_to(this->apples_got);
 	j.at("vibration").get_to(this->vibration);
-	/*j.at("camera_x").get_to(this->camera_x);
-	j.at("camera_y").get_to(this->camera_y);
-	j.at("dcamera_x").get_to(this->dcamera_x);
-	j.at("dcamera_y").get_to(this->dcamera_y);
-	j.at("dcamera_a").get_to(this->dcamera_a);
-	j.at("dcamera_b").get_to(this->dcamera_b);
-	j.at("paused").get_to(this->paused);*/
+	if (restoreExactState) {
+		j.at("camera_x").get_to(this->camera_x);
+		j.at("camera_y").get_to(this->camera_y);
+		j.at("dcamera_x").get_to(this->dcamera_x);
+		j.at("dcamera_y").get_to(this->dcamera_y);
+		j.at("dcamera_a").get_to(this->dcamera_a);
+		j.at("dcamera_b").get_to(this->dcamera_b);
+		j.at("paused").get_to(this->paused);
+		j.at("gift_cooldown").get_to(this->giftCooldown);
+		j.at("global_animation_degree").get_to(degree);
+		j.at("global_animation_degree_temp").get_to(degree_temp);
+		this->level.runtimeStateFromJson(j.at("level_runtime"));
+	}
 	j.at("music_stopped").get_to(this->music_stopped);
 	j.at("keys").get_to(this->keys);
 	j.at("enemies").get_to(this->enemies);
@@ -1202,6 +1674,9 @@ void GameClass::fromJson(const nlohmann::json &j)
 	j.at("event2").get_to(this->event2);
 	// Restore sprites for each sector
 	const auto &sprites_json = j.at("sprites");
+	if (!sprites_json.is_array() || sprites_json.size() != this->level.sectors.size()) {
+		throw std::runtime_error("Saved sprite sectors do not match the level");
+	}
 
 	std::optional<std::size_t> lastCheckpointId;
 	if(!j.at("last_cp_id").is_null()){
@@ -1210,23 +1685,36 @@ void GameClass::fromJson(const nlohmann::json &j)
 
 	this->lastCheckpoint = nullptr;
 	this->playerSprite = nullptr;
+	std::unordered_map<std::size_t, SpriteClass*> spritesById;
 
 	for (size_t i = 0; i < sprites_json.size() && i < this->level.sectors.size(); ++i) {
 
 		LevelSector* sector =  this->level.sectors.at(i);
 		SpritesHandler& sprites = sector->sprites;
 		sprites.fromJSON(sprites_json[i], this->spritePrototypes, sector);
+		for (SpriteClass* sprite : sprites.Sprites_List) {
+			if (!spritesById.emplace(sprite->id, sprite).second) {
+				throw std::runtime_error("Duplicate sprite ID in saved game");
+			}
+		}
 
 		SpriteClass* player = sprites.findPlayer();
 		if(player!=nullptr){
 			this->playerSprite = player;
 		}
 
-		if(lastCheckpointId.has_value()){
-			SpriteClass * s = sprites.getSpriteById(*lastCheckpointId);
-			if(s!=nullptr){
-				this->lastCheckpoint = s;
-			}
+	}
+
+	for (LevelSector* sector : this->level.sectors) {
+		sector->sprites.resolveReferences(spritesById, restoreExactState);
+	}
+	if (lastCheckpointId.has_value()) {
+		auto checkpoint = spritesById.find(*lastCheckpointId);
+		if (checkpoint != spritesById.end()) {
+			this->lastCheckpoint = checkpoint->second;
+		}
+		else if (restoreExactState) {
+			throw std::runtime_error("Saved checkpoint sprite ID was not found");
 		}
 	}
 
@@ -1237,8 +1725,11 @@ void GameClass::fromJson(const nlohmann::json &j)
 	this->gifts.fromJson(j.at("gifts"), this->spritePrototypes);
 
 	
-	// Update camera and GFX texture
-	this->setCamera();
+	// Checkpoint loading retains its historical camera recentering. Quick-load
+	// restores the saved integer and smoothed camera coordinates verbatim.
+	if (!restoreExactState) {
+		this->setCamera();
+	}
 	this->gfxTexture = this->playerSprite->level_sector->gfxTexture;
 	this->exposePlayerToAIs();
 }

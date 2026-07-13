@@ -38,6 +38,9 @@ public:
     bool    flip_x           = false;           // if it is flipped horizontally
     bool    flip_y           = false;           // if it is flipped vertically
     int     jump_timer       = 0;               // jump times: = 0 not jumping; > 0 jumping; < 0 falling
+    int     coyote_timer     = 0;               // frames left to jump after leaving solid ground
+    int     jump_buffer_timer = 0;              // frames left for a queued jump press
+    bool    jump_input_held  = false;           // used to detect a fresh jump press
     bool    can_move_up             = true;            // can sprite move up now?
     bool    can_move_down             = true;            // can sprite move down now?
     bool    can_move_right         = true;            // can sprite move right now?
@@ -124,6 +127,8 @@ public:
     SpriteClass();
     SpriteClass(PrototypeClass *prototype, int player_c, double x, double y, LevelSector*sector, SpriteClass*parent=nullptr);
     ~SpriteClass();
+
+    static void ensureIdCounterAbove(std::size_t usedId);
 
     void  draw(int camera_x, int camera_y);   // animate and draw the sprite
     void  SetAnimation(int anim_i, bool reset);  // set sprite animation
