@@ -300,6 +300,10 @@ AI_Table::AI_Table(){
     Init_AI(AI_FOLLOW_ENEMY_Y, AI_TRIGGER_ALIVE, AI_Functions::Follow_Enemy_Y, true, false, false, false);
     Init_AI(AI_FOLLOW_ENEMY_DIAGONALLY, AI_TRIGGER_ALIVE, AI_Functions::Follow_Enemy_Diagonally, true, false, false, false);
 
+    Init_AI(AI_JUMP_ON_CLIFF, AI_TRIGGER_ALIVE, AI_Functions::JumpOnCliff, true, false, false, false, false);
+    Init_AI(AI_JUMP_IN_FRONT_OF_WALL, AI_TRIGGER_ALIVE, AI_Functions::JumpInFrontOfWall, true, false, false, false, false);
+
+
     Init_AI(AI_LIMITED_PLAYER_CONTROL, AI_TRIGGER_TRANSFORMATION, AI_Functions::UncontrollablePlayer, false, true, false, false);
     Init_AI(AI_VERY_LIMITED_PLAYER_CONTROL, AI_TRIGGER_TRANSFORMATION, AI_Functions::UncontrollablePlayer2, false, true, false, false);
 

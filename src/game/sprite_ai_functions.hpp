@@ -120,6 +120,10 @@ void Follow_Enemy_X(SpriteClass*s);
 void Follow_Enemy_Y(SpriteClass*s);
 void Follow_Enemy_Diagonally(SpriteClass*s);
 
+
+void JumpOnCliff(SpriteClass*s);
+void JumpInFrontOfWall(SpriteClass*s);
+
 /**
  * @brief 
  * AIs triggered on death

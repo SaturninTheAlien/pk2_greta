@@ -1202,6 +1202,36 @@ void Follow_Enemy_Diagonally(SpriteClass*s){
 	}
 }
 
+void JumpOnCliff(SpriteClass*s){
+	if(!s->can_move_down){
+		if(s->flip_x){
+			if(s->edge_on_the_left){
+				s->jump_timer = 1;
+			}
+		}
+		else{
+			if(s->edge_on_the_right){
+				s->jump_timer = 1;
+			}
+		}
+	}	
+}
+
+void JumpInFrontOfWall(SpriteClass*s){
+	if(!s->can_move_down){
+		if(s->flip_x){
+			if(!s->can_move_left){
+				s->jump_timer = 1;
+			}
+		}
+		else{
+			if(!s->can_move_right){
+				s->jump_timer = 1;
+			}
+		}
+	}
+}
+
 /**
  * @brief 
  * AIs triggered on death
