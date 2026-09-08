@@ -1,0 +1,169 @@
+FROM registry.gitlab.steamos.cloud/steamrt/sniper/sdk
+
+ARG LIBMODPLUG_VERSION=0.8.9.0
+ARG SDL2_MIXER_VERSION=2.8.1
+ARG LIBZIP_VERSION=1.11.4
+ARG LUA_VERSION=5.4.9
+ARG LUA_SHA256=2335b6c582a52654f94612bf10d2f4672805d05329aa6568b1d8cd9e5c6fb8e6
+
+# ---------------------------------------------------------------------------
+# libmodplug
+# ---------------------------------------------------------------------------
+
+ARG LIBMODPLUG_VERSION=0.8.9.0
+
+RUN curl -fsSL \
+        "https://downloads.sourceforge.net/project/modplug-xmms/libmodplug/${LIBMODPLUG_VERSION}/libmodplug-${LIBMODPLUG_VERSION}.tar.gz" \
+        -o /tmp/libmodplug.tar.gz \
+    && mkdir /tmp/libmodplug \
+    && tar -xzf /tmp/libmodplug.tar.gz \
+        -C /tmp/libmodplug \
+        --strip-components=1 \
+    && cd /tmp/libmodplug \
+    && ./configure \
+        --prefix=/usr/local \
+        --disable-static \
+        --enable-shared \
+    && make -j"$(nproc)" \
+    && make install \
+    && ldconfig \
+    && rm -rf /tmp/libmodplug /tmp/libmodplug.tar.gz
+
+
+# ---------------------------------------------------------------------------
+# SDL2_mixer
+# ---------------------------------------------------------------------------
+
+RUN curl -fsSL \
+        "https://github.com/libsdl-org/SDL_mixer/releases/download/release-${SDL2_MIXER_VERSION}/SDL2_mixer-${SDL2_MIXER_VERSION}.tar.gz" \
+        -o /tmp/SDL2_mixer.tar.gz \
+    && mkdir /tmp/SDL2_mixer \
+    && tar -xzf /tmp/SDL2_mixer.tar.gz \
+        -C /tmp/SDL2_mixer \
+        --strip-components=1 \
+    && cmake -S /tmp/SDL2_mixer \
+        -B /tmp/SDL2_mixer/build \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr/local \
+        -DBUILD_SHARED_LIBS=ON \
+        -DSDL2MIXER_INSTALL=ON \
+        -DSDL2MIXER_SAMPLES=OFF \
+        -DSDL2MIXER_MOD=ON \
+        -DSDL2MIXER_MOD_MODPLUG=ON \
+        -DSDL2MIXER_MOD_MODPLUG_SHARED=ON \
+        -DSDL2MIXER_MOD_XMP=OFF \
+        -DSDL2MIXER_MIDI_FLUIDSYNTH=OFF \
+        -DSDL2MIXER_WAVPACK=OFF \
+    && cmake --build /tmp/SDL2_mixer/build --parallel \
+    && cmake --install /tmp/SDL2_mixer/build \
+    && ldconfig \
+    && rm -rf /tmp/SDL2_mixer /tmp/SDL2_mixer.tar.gz
+
+
+# ---------------------------------------------------------------------------
+# Lua 5.4
+# ---------------------------------------------------------------------------
+
+RUN curl -fsSL \
+        "https://www.lua.org/ftp/lua-${LUA_VERSION}.tar.gz" \
+        -o /tmp/lua.tar.gz \
+    && echo "${LUA_SHA256}  /tmp/lua.tar.gz" | sha256sum -c - \
+    && mkdir /tmp/lua \
+    && tar -xzf /tmp/lua.tar.gz \
+        -C /tmp/lua \
+        --strip-components=1 \
+    && cd /tmp/lua/src \
+    && gcc -O3 -fPIC -c \
+        lapi.c \
+        lcode.c \
+        lctype.c \
+        ldebug.c \
+        ldo.c \
+        ldump.c \
+        lfunc.c \
+        lgc.c \
+        llex.c \
+        lmem.c \
+        lobject.c \
+        lopcodes.c \
+        lparser.c \
+        lstate.c \
+        lstring.c \
+        ltable.c \
+        ltm.c \
+        lundump.c \
+        lvm.c \
+        lzio.c \
+        lauxlib.c \
+        lbaselib.c \
+        lcorolib.c \
+        ldblib.c \
+        liolib.c \
+        lmathlib.c \
+        loadlib.c \
+        loslib.c \
+        lstrlib.c \
+        ltablib.c \
+        lutf8lib.c \
+        linit.c \
+    && gcc -O3 -shared \
+        -Wl,-soname,liblua5.4.so.0 \
+        -o /usr/local/lib/liblua5.4.so.0.0.0 \
+        *.o \
+        -lm \
+        -ldl \
+    && mkdir -p /usr/local/include/lua5.4 \
+    && cp *.h /usr/local/include/lua5.4/ \
+    && ln -sf liblua5.4.so.0.0.0 /usr/local/lib/liblua5.4.so.0 \
+    && ln -sf liblua5.4.so.0 /usr/local/lib/liblua5.4.so \
+    && ldconfig \
+    && rm -rf /tmp/lua /tmp/lua.tar.gz \
+    && mkdir -p /usr/local/lib/pkgconfig \
+    && cat > /usr/local/lib/pkgconfig/lua.pc <<'EOF'
+prefix=/usr/local
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include/lua5.4
+
+Name: Lua
+Description: Lua scripting language
+Version: 5.4.9
+Libs: -L${libdir} -llua5.4 -lm -ldl
+Cflags: -I${includedir}
+EOF
+
+ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig
+ENV LD_LIBRARY_PATH=/usr/local/lib
+
+
+# ---------------------------------------------------------------------------
+# libzip
+# ---------------------------------------------------------------------------
+
+RUN curl -fsSL \
+        "https://libzip.org/download/libzip-${LIBZIP_VERSION}.tar.xz" \
+        -o /tmp/libzip.tar.xz \
+    && mkdir /tmp/libzip \
+    && tar -xJf /tmp/libzip.tar.xz \
+        -C /tmp/libzip \
+        --strip-components=1 \
+    && cmake -S /tmp/libzip \
+        -B /tmp/libzip/build \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr/local \
+        -DBUILD_SHARED_LIBS=ON \
+        -DBUILD_TOOLS=OFF \
+        -DBUILD_REGRESS=OFF \
+    && cmake --build /tmp/libzip/build --parallel \
+    && cmake --install /tmp/libzip/build \
+    && ldconfig \
+    && rm -rf /tmp/libzip /tmp/libzip.tar.xz
+
+
+# ---------------------------------------------------------------------------
+# git
+# ---------------------------------------------------------------------------
+
+RUN git config --global --add safe.directory /pk2
+
+WORKDIR /pk2
