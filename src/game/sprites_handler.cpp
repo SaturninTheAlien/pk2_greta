@@ -11,6 +11,7 @@
 #include "physics.hpp"
 #include "episode/episodeclass.hpp"
 #include "settings/settings.hpp"
+#include "settings/config_txt.hpp"
 
 #include <limits.h>
 #include <sstream>
@@ -225,6 +226,10 @@ SpriteClass* SpritesHandler::addPlayer(PrototypeClass*prototype, double x, doubl
 
 	sprite->orig_x = sprite->x;
 	sprite->orig_y = sprite->y;
+
+	if(config_txt.hardcore_mode){
+		sprite->energy = 1;
+	}
 
 	return sprite;
 }

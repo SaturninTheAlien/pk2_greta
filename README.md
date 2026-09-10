@@ -67,6 +67,12 @@ MS Windows binaries were compiled using MS Visual Studio Community 2022 on MS Wi
 so if there is any missing DLL file you perhaps need to install the latest Microsoft Visual C++ Redistributable:\
 https://aka.ms/vs/17/release/vc_redist.x64.exe
 
+### Steam
+Coming soon!
+
+### Flatpak
+Official Flatpak distribution is available on Flathub:
+https://flathub.org/en/apps/net.pistegamez.PekkaKana2
 
 ## Compiling
 
@@ -183,7 +189,7 @@ and full game episodes.
 ## User-made episodes
 
 Community-created episodes are available here:
-https://sites.google.com/view/pekka-kana-fanpage/pk2-makyunis-mapstore
+https://sites.google.com/view/pekka-kana-fanpage/pekka-kana-2/makyunis-mapstore
 
 To install an episode, download the ZIP file and place it in the `data/mapstore`
 directory.

@@ -11,6 +11,7 @@
 #include "sfx.hpp"
 #include "engine/PSound.hpp"
 #include "language.hpp"
+#include "settings/config_txt.hpp"
 
 namespace AI_Functions{
 
@@ -803,6 +804,8 @@ void Transform_When_Energy_Under_2(SpriteClass* s){
 
 	PrototypeClass* transformation = s->prototype->transformation;
 
+	if(s->isPlayer() && config_txt.hardcore_mode) return;
+
 	if (transformation!=nullptr&& !s->removed && s->energy < 2 && transformation != s->prototype) {
 		if(s->energy == 1 || !s->HasAI(AI_ROOSTER)){
 
@@ -1196,6 +1199,36 @@ void Follow_Enemy_Diagonally(SpriteClass*s){
 	SpriteClass*target = s->level_sector->sprites.findNearestTarget(s);
 	if(target!=nullptr){
 		s->flyToWaypointXY(target->x, target->y);		
+	}
+}
+
+void JumpOnCliff(SpriteClass*s){
+	if(!s->can_move_down){
+		if(s->flip_x){
+			if(s->edge_on_the_left){
+				s->jump_timer = 1;
+			}
+		}
+		else{
+			if(s->edge_on_the_right){
+				s->jump_timer = 1;
+			}
+		}
+	}	
+}
+
+void JumpInFrontOfWall(SpriteClass*s){
+	if(!s->can_move_down){
+		if(s->flip_x){
+			if(!s->can_move_left){
+				s->jump_timer = 1;
+			}
+		}
+		else{
+			if(!s->can_move_right){
+				s->jump_timer = 1;
+			}
+		}
 	}
 }
 

@@ -30,6 +30,7 @@ public:
     bool panic_when_missing_assets = true;
     bool save_slots = true;
 #endif
+    bool hardcore_mode = false;
 };
 
 extern Config_txt config_txt;
