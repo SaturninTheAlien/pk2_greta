@@ -38,7 +38,7 @@ static const char default_config[] =
 "\r\n"
 
 "\r\n-- To use legacy saving system with \"slots\""
-"\r\n*use_save_slots:    true"
+"\r\n*use_save_slots:    false"
 "\r\n"
 "\r\n"
 "\r\n"
@@ -134,7 +134,7 @@ void Config_txt::readFile(){
 	this->save_slots = conf.getBoolean("use_save_slots", false);
 	#else
 	this->panic_when_missing_assets = conf.getBoolean("panic_when_missing_assets", true);
-	this->save_slots = conf.getBoolean("use_save_slots", true);
+	this->save_slots = conf.getBoolean("use_save_slots", false);
 	#endif
 }
 
