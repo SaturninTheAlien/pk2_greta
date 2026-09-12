@@ -550,13 +550,16 @@ SpriteClass* SpritesHandler::findNearestTarget(const SpriteClass* agent)const{
 }
 
 
-nlohmann::json SpritesHandler::toJson()const{
+nlohmann::json SpritesHandler::toJson(bool includeRemoved)const{
 	std::vector<nlohmann::json> vec;
 	for(SpriteClass *sprite: this->Sprites_List){
-		if(sprite->removed)continue;
+		if(sprite->removed && !includeRemoved)continue;
 
 		nlohmann::json j;
 		this->spriteToJson(j, *sprite);
+		if (includeRemoved) {
+			j["removed"] = sprite->removed;
+		}
 		vec.emplace_back(j);
 	}
 
@@ -571,19 +574,11 @@ void SpritesHandler::fromJSON(const nlohmann::json& j, PrototypesHandler& handle
 		SpriteClass* sprite = new SpriteClass();
 		this->jsonToSprite(j2, *sprite, handler);
 		sprite->level_sector = sector;
-		sprite->removed = false;
+		sprite->removed = j2.value("removed", false);
 		this->Sprites_List.push_back(sprite);
 	}
 
 	for(SpriteClass* sprite: this->Sprites_List){
-		if(sprite->parent_sprite_id.has_value()){
-			sprite->parent_sprite = this->getSpriteById(*sprite->parent_sprite_id);
-		}
-
-		if(sprite->target_sprite_id.has_value()){
-			sprite->target_sprite = this->getSpriteById(*sprite->target_sprite_id);
-		}
-
 		switch (sprite->prototype->type)
 		{
 		case TYPE_BACKGROUND:
@@ -599,6 +594,35 @@ void SpritesHandler::fromJSON(const nlohmann::json& j, PrototypesHandler& handle
 	}
 
 	this->sortBg();
+}
+
+void SpritesHandler::resolveReferences(
+	const std::unordered_map<std::size_t, SpriteClass*>& spritesById,
+	bool requireAll) {
+	for (SpriteClass* sprite : this->Sprites_List) {
+		sprite->parent_sprite = nullptr;
+		sprite->target_sprite = nullptr;
+
+		if (sprite->parent_sprite_id.has_value()) {
+			auto it = spritesById.find(*sprite->parent_sprite_id);
+			if (it != spritesById.end()) {
+				sprite->parent_sprite = it->second;
+			}
+			else if (requireAll) {
+				throw std::runtime_error("Saved sprite parent ID was not found");
+			}
+		}
+
+		if (sprite->target_sprite_id.has_value()) {
+			auto it = spritesById.find(*sprite->target_sprite_id);
+			if (it != spritesById.end()) {
+				sprite->target_sprite = it->second;
+			}
+			else if (requireAll) {
+				throw std::runtime_error("Saved sprite target ID was not found");
+			}
+		}
+	}
 }
 
 SpriteClass* SpritesHandler::findPlayer(){
@@ -630,6 +654,9 @@ void SpritesHandler::spriteToJson(nlohmann::json&j, const SpriteClass&s)const{
 	j["flip_x"] = s.flip_x;
 	j["flip_y"] = s.flip_y;
 	j["jump_timer"] = s.jump_timer;
+	j["coyote_timer"] = s.coyote_timer;
+	j["jump_buffer_timer"] = s.jump_buffer_timer;
+	j["jump_input_held"] = s.jump_input_held;
 
 	j["can_move_up"] = s.can_move_up;
 	j["can_move_down"] = s.can_move_down;
@@ -705,12 +732,14 @@ void SpritesHandler::spriteToJson(nlohmann::json&j, const SpriteClass&s)const{
 	j["initial_update"] = s.initial_update;
 	j["legacy_indestructible_ammo"] = s.legacy_indestructible_ammo;
 	j["can_collect_bonuses"] = s.can_collect_bonuses;
+	j["can_push_bonuses"] = s.can_push_bonuses;
 	j["original"] = s.original;
 	j["player_c"] = s.player_c;
 }
 
 void SpritesHandler::jsonToSprite(const nlohmann::json&j, SpriteClass&s, PrototypesHandler&handler)const{
     j.at("id").get_to(s.id);
+	SpriteClass::ensureIdCounterAbove(s.id);
     j.at("active").get_to(s.active);
     s.prototype = handler.loadPrototype(j.at("prototype").get<std::string>());
 
@@ -724,6 +753,9 @@ void SpritesHandler::jsonToSprite(const nlohmann::json&j, SpriteClass&s, Prototy
     j.at("flip_x").get_to(s.flip_x);
     j.at("flip_y").get_to(s.flip_y);
     j.at("jump_timer").get_to(s.jump_timer);
+	s.coyote_timer = j.value("coyote_timer", 0);
+	s.jump_buffer_timer = j.value("jump_buffer_timer", 0);
+	s.jump_input_held = j.value("jump_input_held", false);
 
     j.at("can_move_up").get_to(s.can_move_up);
     j.at("can_move_down").get_to(s.can_move_down);
@@ -788,4 +820,20 @@ void SpritesHandler::jsonToSprite(const nlohmann::json&j, SpriteClass&s, Prototy
     j.at("can_collect_bonuses").get_to(s.can_collect_bonuses);
     j.at("original").get_to(s.original);
 	j.at("player_c").get_to(s.player_c);
+
+	if (j.contains("can_push_bonuses")) {
+		j.at("can_push_bonuses").get_to(s.can_push_bonuses);
+	}
+	else if (s.prototype->can_push_bonuses.has_value()) {
+		s.can_push_bonuses = s.prototype->can_push_bonuses.value();
+	}
+	else if (s.prototype->type == TYPE_BONUS) {
+		s.can_push_bonuses = false;
+	}
+	else if (s.prototype->ambient) {
+		s.can_push_bonuses = s.isPlayer() || s.prototype->weight > 0;
+	}
+	else {
+		s.can_push_bonuses = true;
+	}
 }

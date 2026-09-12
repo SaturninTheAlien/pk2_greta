@@ -18,6 +18,7 @@
 #include <cstring>
 #include <algorithm>
 #include <sstream>
+#include <limits>
 
 std::size_t SpriteClass::ID_COUNTER=0;
 
@@ -65,6 +66,16 @@ SpriteClass::SpriteClass(PrototypeClass *prototype, int player_c,
 }
 
 SpriteClass::~SpriteClass() {}
+
+void SpriteClass::ensureIdCounterAbove(std::size_t usedId) {
+	if (usedId < ID_COUNTER) {
+		return;
+	}
+	if (usedId == std::numeric_limits<std::size_t>::max()) {
+		throw std::overflow_error("Saved sprite ID is too large");
+	}
+	ID_COUNTER = usedId + 1;
+}
 
 void SpriteClass::SetAnimation(int anim_i, bool reset){
 	if (anim_i != animation_index){

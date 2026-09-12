@@ -3,6 +3,9 @@
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
 #include <sstream>
+#include <algorithm>
+#include <cmath>
+#include <stdexcept>
 
 #include "engine/PFilesystem.hpp"
 #include "playing_screen.hpp"
@@ -28,6 +31,19 @@
 #include "settings/settings.hpp"
 #include "settings/config_txt.hpp"
 
+namespace {
+
+constexpr int QUICK_SAVE_TOAST_TIME = 150;
+
+void drawHudPanel(int x, int y, int width, int height, int accent = 46){
+	PDraw::screen_fill(x + 2, y + 2, x + width + 2, y + height + 2, 0);
+	PDraw::screen_fill(x, y, x + width, y + height, 0);
+	PDraw::screen_fill(x + 1, y + 1, x + width - 1, y + height - 1, 38);
+	PDraw::screen_fill(x + 2, y + 2, x + 4, y + height - 2, accent);
+}
+
+}
+
 PlayingScreen::PlayingScreen(){
 
 }
@@ -37,6 +53,29 @@ PlayingScreen::~PlayingScreen(){
 }
 
 void PlayingScreen::onKeyPressed(const PInput::Key& key){
+	if(key == PInput::Key(SDL_SCANCODE_F5)){
+		try{
+			Game->saveQuickGameState();
+			this->showQuickSaveToast("Game saved");
+		}
+		catch(const std::exception& e){
+			PLog::Write(PLog::ERR, "PK2 quick save", "%s", e.what());
+			this->showQuickSaveToast("Could not save game", true);
+		}
+		return;
+	}
+
+	if(key == PInput::Key(SDL_SCANCODE_F9)){
+		try{
+			this->loadLatestQuickSave();
+		}
+		catch(const std::exception& e){
+			PLog::Write(PLog::ERR, "PK2 quick load", "%s", e.what());
+			this->showQuickSaveToast(e.what(), true);
+		}
+		return;
+	}
+
 	Game->onKeyPressed(key);
 
 
@@ -197,6 +236,9 @@ void PlayingScreen::Draw_InGame_Lower_Menu() {
 
 		x = screen_width / 2 + 69;
 		y = screen_height-39;
+		const int timeAccent = timeout < 600 && (degree / 8) % 2 == 0
+			? COLOR_RED + 12 : COLOR_TURQUOISE + 10;
+		drawHudPanel(x - 12, y - 26, 128, 58, timeAccent);
 		PDraw::font_write_line(fontti1,tekstit->Get_Text(PK_txt.game_time),x,y-20);
 
 		//sprintf(luku, "%i", min);
@@ -217,6 +259,7 @@ void PlayingScreen::Draw_InGame_Lower_Menu() {
 	if(Game->level.game_mode==GAME_MODE_KILL_ALL){
 		x = screen_width / 2 + 210;
 		y = screen_height - 39;
+		drawHudPanel(x - 12, y - 26, 112, 58, COLOR_RED + 10);
 		PDraw::font_write_line(fontti1,"enemies:",x,y-20);
 		ShadowedText_Draw(std::to_string(Game->enemies), x, y);
 
@@ -224,6 +267,7 @@ void PlayingScreen::Draw_InGame_Lower_Menu() {
 	else if (Game->keys > 0){
 		x = screen_width / 2 + 210;
 		y = screen_height - 39;
+		drawHudPanel(x - 12, y - 26, 112, 58, COLOR_ORANGE + 10);
 		PDraw::font_write_line(fontti1,tekstit->Get_Text(PK_txt.game_keys),x,y-20);
 		ShadowedText_Draw(std::to_string(Game->keys), x, y);
 	}
@@ -231,12 +275,6 @@ void PlayingScreen::Draw_InGame_Lower_Menu() {
 	/////////////////
 	// Draw Gifts
 	/////////////////
-
-	if (Game->gifts.count() > 0 && Game->item_panel_x < 10)
-	Game->item_panel_x++;
-
-	if (Game->gifts.count() == 0 && Game->item_panel_x > -215)
-		Game->item_panel_x--;
 
 	if (Game->item_panel_x > -215)
 		PDraw::image_cutclip(Game->gfxTexture,Game->item_panel_x,screen_height-60,
@@ -251,6 +289,19 @@ void PlayingScreen::Draw_InGame_UI(){
 	int vali = 20;
 	int my = 14;
 
+	int energyAccent = COLOR_TURQUOISE + 10;
+	if(this->energyPulseTimer > 0){
+		energyAccent = this->energyPulseIsDamage ? COLOR_RED + 12 : COLOR_GREEN + 12;
+	}
+	const int scoreAccent = this->scorePulseTimer > 0
+		? COLOR_ORANGE + 12 : COLOR_TURQUOISE + 10;
+
+	drawHudPanel(8, 8, 198, 48, energyAccent);
+	drawHudPanel(218, 8, 170, 32, scoreAccent);
+	if(Game->playerSprite->ammo1 != nullptr || Game->playerSprite->ammo2 != nullptr){
+		drawHudPanel(screen_width - 184, 8, 176, 50, COLOR_ORANGE + 10);
+	}
+
 	/////////////////
 	// Draw Energy
 	/////////////////
@@ -261,6 +312,16 @@ void PlayingScreen::Draw_InGame_UI(){
 		vali = PDraw::font_write_line(fontti1,tekstit->Get_Text(PK_txt.game_energy),60,my);
 		//SpriteClass* Game->playerSprite = Game->playerSprite;
 		ShadowedText_Draw(std::to_string(Game->playerSprite->energy), 60 + vali, my);
+
+		const int maxEnergy = std::max(1, Game->playerSprite->prototype->energy);
+		const int energy = std::clamp(Game->playerSprite->energy, 0, maxEnergy);
+		const int barWidth = 112;
+		const int fillWidth = barWidth * energy / maxEnergy;
+		PDraw::screen_fill(60, my + 21, 60 + barWidth, my + 26, 0);
+		if(fillWidth > 0){
+			PDraw::screen_fill(61, my + 22, 61 + fillWidth - 1, my + 25,
+				energy <= maxEnergy / 3 ? COLOR_RED + 12 : COLOR_GREEN + 12);
+		}
 	}
 
 	/////////////////
@@ -390,7 +451,16 @@ void PlayingScreen::Draw() {
 	if (Game->paused) {
 		const std::string& txt = tekstit->Get_Text(PK_txt.game_paused);
 		std::pair<int, int> p = PDraw::font_get_text_size(fontti2, txt);
-		PDraw::font_write_line(fontti2,txt,screen_width/2-p.first/2,screen_height/2-p.second/2);
+		const int panelWidth = 286;
+		const int panelHeight = 72;
+		const int panelX = screen_width / 2 - panelWidth / 2;
+		const int panelY = screen_height / 2 - panelHeight / 2;
+		drawHudPanel(panelX, panelY, panelWidth, panelHeight, COLOR_TURQUOISE + 12);
+		PDraw::font_write_line(fontti2,txt,screen_width/2-p.first/2,panelY + 14);
+		const std::string quickKeys = "F5  Quick save     F9  Quick load";
+		const std::pair<int, int> quickKeysSize = PDraw::font_get_text_size(fontti1, quickKeys);
+		PDraw::font_write_line(fontti1, quickKeys,
+			screen_width / 2 - quickKeysSize.first / 2, panelY + 48);
 	}
 
 	if (Game->level_clear) {
@@ -424,6 +494,9 @@ void PlayingScreen::Draw() {
 		this->drawDevStuff();
 	}
 
+	// Save/load feedback is independent from the optional gameplay HUD.
+	this->drawQuickSaveToast();
+
 	/**
 	 * @brief 
 	 * For debugging touchscreen controls
@@ -449,11 +522,17 @@ void PlayingScreen::Init(){
 		degree = degree_temp;
 	
 	}
+
+	this->lastEnergy = Game->playerSprite != nullptr ? Game->playerSprite->energy : -1;
+	this->lastScore = Game->score;
+	this->energyPulseTimer = 0;
+	this->scorePulseTimer = 0;
 }
 
 void PlayingScreen::Loop(){
 
 	Game->update(this->debug_active_sprites);
+	this->updatePolishAnimations();
 
 	static bool skip_frame = false;
 
@@ -505,5 +584,139 @@ void PlayingScreen::Loop(){
 
 		next_screen = SCREEN_MENU;
 		degree_temp = degree;
+	}
+}
+
+void PlayingScreen::showQuickSaveToast(const std::string& text, bool is_error){
+	this->quickSaveToastText = text;
+	this->quickSaveToastTimer = QUICK_SAVE_TOAST_TIME;
+	this->quickSaveToastError = is_error;
+}
+
+void PlayingScreen::loadLatestQuickSave(){
+	std::optional<QuickSaveInfo> info = GameClass::getQuickSaveInfo();
+	if(!info.has_value()){
+		throw std::runtime_error("No quick save found");
+	}
+
+	if(Episode == nullptr || info->episodeName != Episode->entry.name){
+		throw std::runtime_error("Quick save is from another episode");
+	}
+	if(info->playerName != Episode->player_name){
+		throw std::runtime_error("Quick save belongs to another player");
+	}
+
+	GameClass* oldGame = Game;
+	GameClass* loadedGame = nullptr;
+
+	try{
+		if(test_level || info->levelId < 0){
+			loadedGame = new GameClass(info->levelFile);
+		}
+		else{
+			loadedGame = new GameClass(info->levelId);
+			// Proxy levels must reopen the exact concrete map selected at save time.
+			loadedGame->level_file = info->levelFile;
+		}
+
+		// Several loading paths and Lua helpers intentionally use the global game.
+		Game = loadedGame;
+		// Defer Lua until the old game is gone because the scripting registries are
+		// process-global and two live VMs would otherwise clear each other's hooks.
+		loadedGame->start(false);
+		loadedGame->loadQuickGameState(false);
+	}
+	catch(...){
+		if(loadedGame != nullptr){
+			Game = loadedGame;
+			delete loadedGame;
+		}
+		Game = oldGame;
+		if(oldGame != nullptr){
+			oldGame->refreshPresentationState();
+		}
+		throw;
+	}
+
+	Game = loadedGame;
+	delete oldGame;
+	loadedGame->restartLuaForCurrentState();
+	loadedGame->refreshPresentationState();
+
+	this->debug_active_sprites = 0;
+	this->debug_drawn_sprites = 0;
+	this->goingToTheMenu = false;
+	this->takingScreenshot = false;
+	this->lastEnergy = Game->playerSprite->energy;
+	this->lastScore = Game->score;
+	this->showQuickSaveToast("Game loaded");
+}
+
+void PlayingScreen::drawQuickSaveToast(){
+	if(this->quickSaveToastTimer <= 0 || this->quickSaveToastText.empty()){
+		return;
+	}
+
+	const std::pair<int, int> textSize = PDraw::font_get_text_size(fontti1, this->quickSaveToastText);
+	const int panelWidth = textSize.first + 28;
+	const int panelHeight = std::max(24, textSize.second + 12);
+	const int elapsed = QUICK_SAVE_TOAST_TIME - this->quickSaveToastTimer;
+	const int slide = elapsed < 10 ? (10 - elapsed) * 4 : 0;
+	const int x = screen_width - panelWidth - 12 + slide;
+	const int y = 58;
+	const int accent = this->quickSaveToastError ? COLOR_RED + 12 : COLOR_GREEN + 12;
+
+	drawHudPanel(x, y, panelWidth, panelHeight, accent);
+
+	int alpha = 100;
+	if(this->quickSaveToastTimer < 20){
+		alpha = this->quickSaveToastTimer * 5;
+	}
+	else if(elapsed < 10){
+		alpha = elapsed * 10;
+	}
+
+	PDraw::screen_fill(x + 8, y + panelHeight / 2 - 2,
+		x + 12, y + panelHeight / 2 + 2, accent);
+	PDraw::font_writealpha_s(fontti1, this->quickSaveToastText,
+		x + 18, y + (panelHeight - textSize.second) / 2, alpha);
+}
+
+void PlayingScreen::updatePolishAnimations(){
+	if(this->quickSaveToastTimer > 0){
+		--this->quickSaveToastTimer;
+	}
+
+	if(this->energyPulseTimer > 0){
+		--this->energyPulseTimer;
+	}
+	if(this->scorePulseTimer > 0){
+		--this->scorePulseTimer;
+	}
+
+	if(Game == nullptr || Game->playerSprite == nullptr){
+		return;
+	}
+
+	const int energy = Game->playerSprite->energy;
+	if(this->lastEnergy >= 0 && energy != this->lastEnergy){
+		this->energyPulseIsDamage = energy < this->lastEnergy;
+		this->energyPulseTimer = 18;
+	}
+	this->lastEnergy = energy;
+
+	if(this->lastScore >= 0 && Game->score != this->lastScore){
+		this->scorePulseTimer = 12;
+	}
+	this->lastScore = Game->score;
+
+	const int itemTarget = Game->gifts.count() > 0 ? 10 : -215;
+	const int itemDistance = itemTarget - Game->item_panel_x;
+	if(itemDistance != 0){
+		const int step = std::clamp(std::abs(itemDistance) / 6, 1, 36);
+		Game->item_panel_x += itemDistance > 0 ? step : -step;
+		if(std::abs(itemTarget - Game->item_panel_x) < 2){
+			Game->item_panel_x = itemTarget;
+		}
 	}
 }

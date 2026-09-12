@@ -27,11 +27,20 @@ public:
 
 private:
 
+    bool ensure_screen_resources(SDL_Surface* source);
+    void apply_texture_filter(SDL_Texture* texture);
+    void destroy_screen_resources();
+
     SDL_Window* curr_window = NULL;
     SDL_Renderer* renderer = NULL;
 
+    SDL_Texture* screen_texture = NULL;
+    SDL_Surface* screen_surface = NULL;
+
     SDL_Texture* ui_texture = NULL;
     SDL_Surface* ui_surface = NULL;
+
+    int shader_mode = PRender::SHADER_LINEAR;
 
     SDL_Rect screen_dest;
     

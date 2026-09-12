@@ -40,6 +40,22 @@ static double sprite_bottom;
 static int sprite_width;
 static int sprite_height;
 
+static double NormalizeHorizontalAxis(double axis) {
+	constexpr double deadzone = 0.18;
+
+	if (axis > 1.0)
+		axis = 1.0;
+	else if (axis < -1.0)
+		axis = -1.0;
+
+	const double magnitude = axis < 0 ? -axis : axis;
+	if (magnitude <= deadzone)
+		return 0;
+
+	const double normalized = (magnitude - deadzone) / (1.0 - deadzone);
+	return axis < 0 ? -normalized : normalized;
+}
+
 static void Check_SpriteBlock(SpriteClass* sprite, const PK2BLOCK &block) {
 
 	//left and right
@@ -773,7 +789,7 @@ void UpdateSprite(SpriteClass* sprite){
 
 			/* NAVIGATING*/
 
-			int navigation = Settings.getJoystickAxis(0) * 100;;
+			int navigation = int(NormalizeHorizontalAxis(Settings.getJoystickAxis(0)) * 100);
 
 			if (TouchScreenControls.pad_button == 0 || TouchScreenControls.pad_button == 1)
 				navigation = -100;
@@ -817,19 +833,48 @@ void UpdateSprite(SpriteClass* sprite){
 		if(sprite->player_c < 3){
 			/* JUMPING */
 			if (sprite->prototype->weight > 0 && !sprite->swimming) {
-				if (input.up.isPressed() || TouchScreenControls.up) {
-					if (!sprite->crouched) {
-						if (sprite->jump_timer == 0)
-							Play_GameSFX(Episode->sfx.jump_sound, 100, (int)sprite->x, (int)sprite->y,
-										sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
+				constexpr int jump_grace_frames = 6;
+				const bool grounded_before_collision = !sprite->can_move_down;
+				const bool jump_pressed = input.up.isPressed() || TouchScreenControls.up;
+				const bool jump_just_pressed = jump_pressed && !sprite->jump_input_held;
+				sprite->jump_input_held = jump_pressed;
 
-						if (sprite->jump_timer <= 0)
-							sprite->jump_timer = 1; //10;
+				if (grounded_before_collision)
+					sprite->coyote_timer = jump_grace_frames;
+
+				if (jump_just_pressed)
+					sprite->jump_buffer_timer = jump_grace_frames;
+
+				const bool coyote_jump = sprite->jump_timer >= 90 && sprite->coyote_timer > 0;
+				const bool can_start_jump = sprite->jump_timer <= 0 || coyote_jump;
+				const bool wants_to_jump = jump_pressed || sprite->jump_buffer_timer > 0;
+				bool started_jump = false;
+
+				if (wants_to_jump && can_start_jump && !sprite->crouched) {
+					if (sprite->jump_timer == 0 || coyote_jump)
+						Play_GameSFX(Episode->sfx.jump_sound, 100, (int)sprite->x, (int)sprite->y,
+									sprite->prototype->sound_frequency, sprite->prototype->random_sound_frequency);
+
+					sprite->jump_timer = 1; //10;
+					sprite->coyote_timer = 0;
+					sprite->jump_buffer_timer = 0;
+					started_jump = true;
+
+					if (grounded_before_collision && sprite->player_c == 1 && !sprite->in_water) {
+						const double dust_speed = sprite->a > 0 ? -0.2 : (sprite->a < 0 ? 0.2 : 0);
+						Particles_New(PARTICLE_DUST_CLOUDS, sprite->x - 9, sprite_bottom - 8,
+									dust_speed, -0.12, 32, 0, 0);
 					}
-				} else {
-					if (sprite->jump_timer > 0 && sprite->jump_timer < 45)
-						sprite->jump_timer = 55;
 				}
+
+				if (!jump_pressed && !started_jump && sprite->jump_timer > 0 && sprite->jump_timer < 45)
+					sprite->jump_timer = 55;
+
+				if (!grounded_before_collision && sprite->coyote_timer > 0)
+					sprite->coyote_timer--;
+
+				if (sprite->jump_buffer_timer > 0)
+					sprite->jump_buffer_timer--;
 
 				/* dripping quietly down */
 				bool axis_up = Settings.getJoystickAxis(1) < -0.5;
@@ -839,6 +884,9 @@ void UpdateSprite(SpriteClass* sprite){
 			}
 			/* MOVING UP AND DOWN */
 			else { // if the player sprite-weight is 0 - like birds
+				sprite->coyote_timer = 0;
+				sprite->jump_buffer_timer = 0;
+				sprite->jump_input_held = input.up.isPressed() || TouchScreenControls.up;
 
 				double speed = 0.15;
 				if (sprite->max_speed_available)
@@ -1298,7 +1346,14 @@ void UpdateSprite(SpriteClass* sprite){
 
 					if(sprite->weight>0){
 						Play_GameSFX(Episode->sfx.pump_sound,30,(int)sprite->x, (int)sprite->y,
-				                  int(25050-sprite->weight*3000),true);
+					                  int(25050-sprite->weight*3000),true);
+
+						if (sprite->isPlayer() && !sprite->in_water) {
+							const double dust_x = sprite->x - 9;
+							const double dust_y = sprite->y + sprite_height / 2.0 - 8;
+							Particles_New(PARTICLE_DUST_CLOUDS, dust_x, dust_y, -0.2, -0.12, 36, 0, 0);
+							Particles_New(PARTICLE_DUST_CLOUDS, dust_x, dust_y,  0.2, -0.12, 36, 0, 0);
+						}
 
 						//Particles_New(	PARTICLE_DUST_CLOUDS,sprite->x+rand()%5-rand()%5-10,sprite_bottom+rand()%3-rand()%3,
 						//			  0,-0.2,rand()%50+20,0,0);

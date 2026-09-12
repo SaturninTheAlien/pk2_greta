@@ -215,6 +215,13 @@ Pekka Kana 2 is installed or run. This is expected behavior.
 
 ## Advanced options
 
+### Quick save
+
+While playing a level, press **F5** to save the exact current game state and
+**F9** to load the latest quick save. Quick saves are kept separate from level
+checkpoints, so using them does not change normal checkpoint respawns or score
+penalties.
+
 ### Commandline arguments 
 
 The game can be started with the "--dev" argument to enable the

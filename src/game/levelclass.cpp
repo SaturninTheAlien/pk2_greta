@@ -17,6 +17,8 @@
 #include <cstring>
 #include <cmath>
 #include <array>
+#include <fstream>
+#include <limits>
 
 
 #define PK2MAP_MAP_WIDTH  256
@@ -33,6 +35,26 @@ void LevelClass::setTilesAnimations(int degree, int anim, u32 aika1, u32 aika2, 
 	button2_timer = aika2;
 	button3_timer = aika3;
 
+}
+
+nlohmann::json LevelClass::runtimeStateToJson() const {
+	nlohmann::json j;
+	j["arrows_block_degree"] = this->arrows_block_degree;
+	j["tiles_animation_timer"] = this->tiles_animation_timer;
+	j["block_animation_frame"] = this->block_animation_frame;
+	j["button1_timer"] = this->button1_timer;
+	j["button2_timer"] = this->button2_timer;
+	j["button3_timer"] = this->button3_timer;
+	return j;
+}
+
+void LevelClass::runtimeStateFromJson(const nlohmann::json& j) {
+	j.at("arrows_block_degree").get_to(this->arrows_block_degree);
+	j.at("tiles_animation_timer").get_to(this->tiles_animation_timer);
+	j.at("block_animation_frame").get_to(this->block_animation_frame);
+	j.at("button1_timer").get_to(this->button1_timer);
+	j.at("button2_timer").get_to(this->button2_timer);
+	j.at("button3_timer").get_to(this->button3_timer);
 }
 
 LevelClass::LevelClass(){
@@ -501,6 +523,7 @@ void LevelClass::saveVersion15(PFile::Path path)const{
 		j["background"] = sector->background->name;
 		j["scrolling"] = sector->background->scrolling;
 		j["weather"] = sector->weather;
+		j["slipperiness"] = sector->slipperiness_factor;
 
 		j["splash_color"] = sector->splash_color;
 		j["fire_color_1"] = sector->fire_color_1;
@@ -523,6 +546,88 @@ void LevelClass::saveVersion15(PFile::Path path)const{
 	}
 
 	file.close();
+}
+
+std::size_t LevelClass::validateVersion15Save(PFile::Path path) {
+	std::ifstream file(path.str(), std::ios::binary);
+	if (!file) {
+		throw std::runtime_error("Cannot open saved level map");
+	}
+
+	file.seekg(0, std::ios::end);
+	const std::streamoff fileSize = file.tellg();
+	file.seekg(0, std::ios::beg);
+	if (fileSize < 9) {
+		throw std::runtime_error("Saved level map is truncated");
+	}
+
+	auto readExact = [&](void* destination, std::size_t size) {
+		file.read(static_cast<char*>(destination), std::streamsize(size));
+		if (file.gcount() != std::streamsize(size)) {
+			throw std::runtime_error("Saved level map is truncated");
+		}
+	};
+
+	auto readCborFrame = [&]() {
+		u8 lengthBytes[4];
+		readExact(lengthBytes, sizeof(lengthBytes));
+		const u32 length = u32(lengthBytes[0])
+			| (u32(lengthBytes[1]) << 8)
+			| (u32(lengthBytes[2]) << 16)
+			| (u32(lengthBytes[3]) << 24);
+
+		const std::streamoff position = file.tellg();
+		if (position < 0 || std::streamoff(length) > fileSize - position) {
+			throw std::runtime_error("Saved level map contains a truncated header");
+		}
+
+		std::vector<u8> data(length);
+		if (length > 0) {
+			readExact(data.data(), length);
+		}
+		return nlohmann::json::from_cbor(data);
+	};
+
+	char version[5];
+	readExact(version, sizeof(version));
+	if (std::memcmp(version, "1.5", 4) != 0) {
+		throw std::runtime_error("Quick-save level map has an unsupported version");
+	}
+
+	const nlohmann::json header = readCborFrame();
+	const u32 compression = header.at("compression").get<u32>();
+	const u32 sectorCount = header.at("sectors").get<u32>();
+	if (compression != TILES_COMPRESSION_NONE || sectorCount == 0) {
+		throw std::runtime_error("Quick-save level map has invalid encoding");
+	}
+
+	for (u32 i = 0; i < sectorCount; ++i) {
+		const nlohmann::json sector = readCborFrame();
+		const u32 width = sector.at("width").get<u32>();
+		const u32 height = sector.at("height").get<u32>();
+		sector.at("tileset").get<std::string>();
+		sector.at("background").get<std::string>();
+
+		if (width == 0 || height == 0
+			|| std::size_t(width) > std::numeric_limits<std::size_t>::max() / height / 3) {
+			throw std::runtime_error("Quick-save level map has invalid dimensions");
+		}
+		const std::size_t tileBytes = std::size_t(width) * height * 3;
+		if (tileBytes > std::size_t(std::numeric_limits<std::streamoff>::max())) {
+			throw std::runtime_error("Quick-save level map is too large");
+		}
+		const std::streamoff position = file.tellg();
+		if (position < 0 || std::streamoff(tileBytes) > fileSize - position) {
+			throw std::runtime_error("Quick-save level map has truncated tile data");
+		}
+		file.seekg(std::streamoff(tileBytes), std::ios::cur);
+	}
+
+	if (file.tellg() != fileSize) {
+		throw std::runtime_error("Quick-save level map has trailing data");
+	}
+
+	return sectorCount;
 }
 
 

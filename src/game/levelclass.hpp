@@ -111,6 +111,10 @@ class LevelClass {
     }
 
     void saveVersion15(PFile::Path path)const;
+    static std::size_t validateVersion15Save(PFile::Path path);
+
+    nlohmann::json runtimeStateToJson() const;
+    void runtimeStateFromJson(const nlohmann::json& j);
 
     void calculateBlockTypes();
     void moveBlocks(u32 button1, u32 button2, u32 button3);

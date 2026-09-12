@@ -106,11 +106,12 @@ void Update_Colors() {
 }
 
 void Calculate_SinCos(){
+	constexpr double PI = 3.14159265358979323846;
 
 	for ( int i = 0; i < 360; i++ ) {
 	
-		cos_table[i] = cos(M_PI*2*i/180) * 33;
-		sin_table[i] = sin(M_PI*2*i/180) * 33;
+		cos_table[i] = cos(PI*2*i/180) * 33;
+		sin_table[i] = sin(PI*2*i/180) * 33;
 	
 	}
 
