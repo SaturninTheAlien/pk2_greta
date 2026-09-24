@@ -94,6 +94,11 @@ int SpriteClass::Animoi(){
 		}
 	}
 
+	if(this->animation_index<0 || (std::size_t)(this->animation_index)>=prototype->animations.size()){
+		this->animation_index = 0;
+	}
+
+
 	const SpriteAnimation& anim = prototype->animations[animation_index];
 
 	/*if (current_sequence >= animaatio.frames_number)
