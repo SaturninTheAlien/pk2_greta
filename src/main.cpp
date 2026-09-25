@@ -169,6 +169,8 @@ void pk2_main(bool _dev_mode, bool _show_fps, bool _test_level, const std::strin
 
 int main(int argc, char **argv) {
 
+	try{
+
 	bool test_level = false;
 	bool dev_mode = false;
 	bool show_fps = false;
@@ -237,14 +239,7 @@ int main(int argc, char **argv) {
 					state = 2;
 				}
 				else{
-
-					try{
-						PFilesystem::SetAssetsPath(value);
-					}
-					catch(const std::exception& e){
-						printf("%s\n", e.what());
-						return 1;
-					}
+					PFilesystem::SetAssetsPath(value);
 				}
 			}
 
@@ -253,17 +248,11 @@ int main(int argc, char **argv) {
 					state = 6;
 				}
 				else {
-					try{
-						if(value=="PREF_PATH"){
-							PFilesystem::SetPrefDataPath();
-						}
-						else{
-							PFilesystem::SetDataPath(value);
-						}
+					if(value=="PREF_PATH"){
+						PFilesystem::SetPrefDataPath();
 					}
-					catch(const std::exception& e){
-						printf("%s\n", e.what());
-						return 1;
+					else{
+						PFilesystem::SetDataPath(value);
 					}
 				}
 			}
@@ -273,7 +262,7 @@ int main(int argc, char **argv) {
 			}
 			else {
 				printf("Invalid arg \"%s\"\n", arg.c_str());
-				return 1;
+				return 2;
 			}
 		}
 		break;
@@ -283,16 +272,8 @@ int main(int argc, char **argv) {
 			state = 0;
 		}
 		break;
-		case 2:{
-			
-			try{
-				PFilesystem::SetAssetsPath(arg);
-			}
-			catch(const std::exception& e){
-				printf("%s\n", e.what());
-				return 1;
-			}
-
+		case 2:{			
+			PFilesystem::SetAssetsPath(arg);
 			state = 0;
 		}
 		break;
@@ -312,29 +293,29 @@ int main(int argc, char **argv) {
 		}
 		break;
 		case 6:{
-			try{
-				if(arg=="PREF_PATH"){
-					PFilesystem::SetPrefDataPath();
-				}
-				else{
-					PFilesystem::SetDataPath(arg);
-				}
+			if(arg=="PREF_PATH"){
+				PFilesystem::SetPrefDataPath();
 			}
-			catch(const std::exception& e){
-				printf("%s\n", e.what());
-				return 1;
+			else{
+				PFilesystem::SetDataPath(arg);
 			}
 			state=0;
 		}
 		break;
 		default:
 			printf("Invalid state: %i\n", state);
-			return 1;
+			return 2;
 		}
 	}
 
 	pk2_init();
     pk2_main(dev_mode, show_fps, test_level, test_path);
+
+	}catch(const std::exception& e){
+		printf("%s\n", e.what());
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Fatal error!", e.what(), nullptr);
+		return 1;
+	}
 	
 	return 0;
 }
