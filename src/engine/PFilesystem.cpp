@@ -52,25 +52,23 @@ static PZip::PZip* mEpisodeZip;
 static bool mAssetsPathSet = false;
 static bool mDataPathSet = false;
 
-void CreateDirectory(const std::string& path_in){
-    fs::path p(path_in);
 
-    /*if(!p.is_absolute()){
-        p = mAssetsPath / p;
-    }*/
 
-	if(!std::filesystem::exists(p) || !std::filesystem::is_directory(p)){
-		std::filesystem::create_directory(p);
-	}
+static void CreateDirectoryPath(const fs::path& path){
+    if (!fs::exists(path) || !fs::is_directory(path)) {
+        fs::create_directory(path);
+    }
 }
 
 
-
+void CreateDirectory(const std::string& path){
+    CreateDirectoryPath(fs::u8path(path));
+}
 
 void SetAssetsPath(const std::string& name){
 
     mAssetsPathSet = true;
-    fs::path p = name;
+    fs::path p = fs::u8path(name);
 
     fs::path p1 = p / "gfx" / "pk2stuff.bmp";
 
@@ -92,7 +90,7 @@ void SetAssetsPath(const std::string& name){
 }
 
 void SetDataPath(const std::string& name){
-    mDataPath = name;
+    mDataPath = fs::u8path(name);
     mDataPathSet = true;
 
     /**
@@ -100,13 +98,13 @@ void SetDataPath(const std::string& name){
      * Create the directories if they don't exist.
      */
 
-    CreateDirectory(mDataPath.string());
-    CreateDirectory( (mDataPath / "scores").string());
-    CreateDirectory( (mDataPath / "mapstore").string());
-    CreateDirectory( (mDataPath / "saves").string());
-    CreateDirectory( (mDataPath / "screenshots").string());
-    CreateDirectory( (mDataPath / "checkpoint").string());
-    CreateDirectory( (mDataPath / "episodes").string());
+    CreateDirectoryPath(mDataPath);
+    CreateDirectoryPath( (mDataPath / "scores"));
+    CreateDirectoryPath( (mDataPath / "mapstore"));
+    CreateDirectoryPath( (mDataPath / "saves"));
+    CreateDirectoryPath( (mDataPath / "screenshots"));
+    CreateDirectoryPath( (mDataPath / "checkpoint"));
+    CreateDirectoryPath( (mDataPath / "episodes"));
 
 
     //TODO
@@ -126,7 +124,7 @@ void SetPrefDataPath(){
     SDL_free(data_path_p);
 }
 
-fs::path getBasePath(){
+static fs::path getBasePath(){
     char* c_path = SDL_GetBasePath();
 	if(c_path==nullptr){
 

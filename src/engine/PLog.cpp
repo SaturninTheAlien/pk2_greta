@@ -52,10 +52,6 @@ void Init(u8 level, bool _print_to_stdout, bool _print_to_file) {
     print_to_file = _print_to_file;
     print_to_stdout = _print_to_stdout;
 
-#ifdef _WIN32
-    SetConsoleOutputCP(CP_UTF8);
-#endif
-
     if (mutex == nullptr){
         mutex = SDL_CreateMutex();
     }

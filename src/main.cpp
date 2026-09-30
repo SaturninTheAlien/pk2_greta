@@ -40,6 +40,14 @@
 #include "episode/save_slots.hpp"
 
 
+/**
+ * To fix UTF-8 encoding on Windows
+ */
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
+
 static void start_test(const char* arg) {
 	
 	if (arg == NULL) return;
@@ -170,6 +178,13 @@ void pk2_main(bool _dev_mode, bool _show_fps, bool _test_level, const std::strin
 int main(int argc, char **argv) {
 
 	try{
+
+	/**
+	 * To fix UTF-8 encoding on Windows
+	 */
+#ifdef _WIN32
+    SetConsoleOutputCP(CP_UTF8);
+#endif
 
 	bool test_level = false;
 	bool dev_mode = false;
