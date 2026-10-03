@@ -31,7 +31,7 @@
 namespace fs = std::filesystem;
 
 
-void LevelEntry::loadLevelHeader(PFile::Path levelFile){
+void LevelEntry::loadLevelHeader(const PFile::File& levelFile){
 	LevelClass temp;
 
 	temp.load(levelFile, true);
@@ -71,13 +71,20 @@ EpisodeClass::~EpisodeClass(){
 	PFilesystem::SetEpisode("", nullptr);
 }
 
-std::string EpisodeClass::getScoresPath()const{
-	return (fs::path(PFilesystem::GetDataPath()) / "scores" / (this->entry.name + ".dat")).string();
+std::filesystem::path EpisodeClass::getScoresPathP()const{
+	return PFilesystem::GetDataPathP() / "scores" / fs::u8path(this->entry.name + ".dat");
 }
 
 void EpisodeClass::openScores() {
 	try{
-		this->scoresTable.load(this->getScoresPath());
+
+		std::filesystem::path p = this->getScoresPathP();
+		if(!std::filesystem::exists(p)){
+			return;
+		}
+
+
+		this->scoresTable.load(PFile::File(p));
 		/**
 		 * @brief 
 		 * Fix missing level filenames, for example, in old score files
@@ -94,13 +101,12 @@ void EpisodeClass::openScores() {
 	catch(const std::exception&e){
 		PLog::Write(PLog::WARN, "PK2", e.what());
 		PLog::Write(PLog::INFO, "PK2", "Can't load scores files");
-
 	}
 }
 
 // Version 1.1
 void EpisodeClass::saveScores() {
-	PFile::Path path(this->getScoresPath());
+	PFile::File path(this->getScoresPathP());
 
 	try{
 		scoresTable.save(path);
@@ -114,7 +120,7 @@ void EpisodeClass::saveScores() {
 //TODO - Load info from different languages
 void EpisodeClass::loadInfo() {
 
-	std::optional<PFile::Path> infofile = PFilesystem::FindEpisodeAsset("infosign.txt", "");
+	std::optional<PFile::File> infofile = PFilesystem::FindEpisodeAsset("infosign.txt", "");
 	if(infofile.has_value()){
 		if (this->infos.Read_File(*infofile)){
 			PLog::Write(PLog::DEBUG, "PK2", "%s loaded", infofile->c_str());
@@ -128,7 +134,7 @@ void EpisodeClass::loadInfo() {
 //TODO - don't load the same image again
 void EpisodeClass::loadAssets() {
 
-	std::optional<PFile::Path> path = PFilesystem::FindAsset("pk2stuff.png",
+	std::optional<PFile::File> path = PFilesystem::FindAsset("pk2stuff.png",
 		PFilesystem::GFX_DIR, ".bmp");
 
 	if(!path.has_value()){
@@ -158,17 +164,17 @@ void from_json(const nlohmann::json& j, ProxyLevelEntry& proxy){
 
 
 void EpisodeClass::loadLevels(){
-	std::string dir = PFilesystem::GetEpisodeDirectory();
+	std::filesystem::path dir = PFilesystem::GetEpisodeDirectoryP();
 
 
-	std::vector<PFile::Path> proxyLevelFiles;
+	std::vector<PFile::File> proxyLevelFiles;
 	std::vector<std::string> proxyLevelNames;
 
 	if(entry.is_zip){
 		std::vector<PZip::PZipEntry> v = this->source_zip.scanDirectory(
 			std::string("episodes/")+this->entry.name, ".proxy");
 		for(const PZip::PZipEntry& en: v){
-			proxyLevelFiles.emplace_back(PFile::Path(&this->source_zip, en));
+			proxyLevelFiles.emplace_back(PFile::File(&this->source_zip, en));
 			proxyLevelNames.emplace_back(en.name);
 		}
 	}
@@ -176,11 +182,11 @@ void EpisodeClass::loadLevels(){
 
 		proxyLevelNames = PFilesystem::ScanOriginalAssetsDirectory(dir, ".proxy");
 		for(const std::string& name: proxyLevelNames){
-			proxyLevelFiles.emplace_back(PFile::Path((fs::path(dir) / name).string()));
+			proxyLevelFiles.emplace_back(PFile::File(fs::path(dir) / name));
 		}
 	}
 
-	std::vector<PFile::Path> realLevelFiles;
+	std::vector<PFile::File> realLevelFiles;
 	std::vector<std::string> realLevelNames;
 
 
@@ -188,7 +194,7 @@ void EpisodeClass::loadLevels(){
 		std::vector<PZip::PZipEntry> v = this->source_zip.scanDirectory(
 			std::string("episodes/")+this->entry.name, ".map");
 		for(const PZip::PZipEntry& en: v){
-			realLevelFiles.emplace_back(PFile::Path(&this->source_zip, en));
+			realLevelFiles.emplace_back(PFile::File(&this->source_zip, en));
 			realLevelNames.emplace_back(en.name);
 		}
 	}
@@ -196,7 +202,7 @@ void EpisodeClass::loadLevels(){
 
 		realLevelNames = PFilesystem::ScanOriginalAssetsDirectory(dir, ".map");
 		for(const std::string& name: realLevelNames){
-			realLevelFiles.emplace_back(PFile::Path((fs::path(dir) / name).string()));
+			realLevelFiles.emplace_back(PFile::File(fs::path(dir) / name));
 		}
 	}
 
@@ -208,7 +214,7 @@ void EpisodeClass::loadLevels(){
 		try{
 			LevelEntry levelEntry;
 			levelEntry.fileName = proxyLevelNames[i];
-			nlohmann::json j = proxyLevelFiles[i].GetJSON();
+			nlohmann::json j = proxyLevelFiles[i].readJSON();
 
 			PJson::jsonReadString(j, "name", levelEntry.levelName);
 			PJson::jsonReadU32(j, "number", levelEntry.number);
@@ -300,15 +306,15 @@ void EpisodeClass::loadLevels(){
 void EpisodeClass::load() {
 	
 	if (entry.is_zip){
-		this->source_zip.open( (fs::path(PFilesystem::GetDataPath())/"mapstore"/entry.zipfile).string());
+		this->source_zip.open( (PFilesystem::GetDataPathP()/"mapstore"/entry.zipfile).string());
 		PFilesystem::SetEpisode(entry.name, &this->source_zip);
 	}
 	else{
 
-		if(entry.path.empty()){
+		if(entry.pathP.empty()){
 			PFilesystem::SetEpisode(entry.name, nullptr);
 		} else {
-			PFilesystem::SetEpisode(entry.path, nullptr);
+			PFilesystem::SetEpisode(entry.pathP.string(), nullptr);
 		}		
 	}
 
@@ -324,7 +330,7 @@ void EpisodeClass::load() {
 		}		
 	}
 
-	std::optional<PFile::Path> config_path = PFilesystem::FindEpisodeAsset("config.txt", "");
+	std::optional<PFile::File> config_path = PFilesystem::FindEpisodeAsset("config.txt", "");
 	if(config_path.has_value()){
 
 		PLang config(*config_path);

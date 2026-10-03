@@ -103,8 +103,8 @@ static void log_data() {
 
 	PLog::Write(PLog::DEBUG, "PK2", "Pekka Kana 2 started!");
 	PLog::Write(PLog::DEBUG, "PK2", "Game version: %s", PK2_VERSION_STR);
-	PLog::Write(PLog::DEBUG, "PK2", "Assets path - %s", PFilesystem::GetAssetsPath().c_str());
-	PLog::Write(PLog::DEBUG, "PK2", "Data path - %s", PFilesystem::GetDataPath().c_str());
+	PLog::Write(PLog::DEBUG, "PK2", "Assets path - %s", PFilesystem::GetAssetsPathP().c_str());
+	PLog::Write(PLog::DEBUG, "PK2", "Data path - %s", PFilesystem::GetDataPathP().c_str());
 
 }
 
@@ -134,7 +134,7 @@ void pk2_main(bool _dev_mode, bool _show_fps, bool _test_level, const std::strin
 			}
 		}	
 
-		std::optional<PFile::Path> iconPath = PFilesystem::FindVanillaAsset("icon.bmp", PFilesystem::GFX_DIR, ".png");
+		std::optional<PFile::File> iconPath = PFilesystem::FindVanillaAsset("icon.bmp", PFilesystem::GFX_DIR, ".png");
 		if(!iconPath.has_value()){
 			throw std::runtime_error("\"icon[.bmp/.png]\" not found!");			
 		}

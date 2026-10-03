@@ -45,7 +45,7 @@ PrototypeClass* PrototypesHandler::loadPrototype(const std::string& filename_cAs
 	
 	std::string extension = std::filesystem::path(filename).extension().string();
 
-	std::optional<PFile::Path> path;
+	std::optional<PFile::File> path;
 
 	if(commandLineTool && extension==".spr"){
 		path = PFilesystem::FindAsset(filename, PFilesystem::SPRITES_DIR);
@@ -74,7 +74,7 @@ PrototypeClass* PrototypesHandler::loadPrototype(const std::string& filename_cAs
 		}		
 	}
 
-	extension = PString::lowercase(std::filesystem::path(path->str()).extension().string());
+	extension = PString::lowercase(path->extension());
 
 
 	PrototypeClass* protot = new PrototypeClass();

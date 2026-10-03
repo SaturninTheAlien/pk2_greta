@@ -221,13 +221,13 @@ public:
      * @brief 
      * Load JSON sprite prototype
      */
-    void     loadPrototypeJSON(PFile::Path path,
+    void     loadPrototypeJSON(const PFile::File& path,
         std::function<PrototypeClass*(const std::string&)> fn_loadPrototype=nullptr);
     /**
      * @brief 
      * Load legacy sprite prototype
      */
-    void     loadPrototypeLegacy(PFile::Path path);
+    void     loadPrototypeLegacy(const PFile::File& path);
 
     /**
      * @brief 

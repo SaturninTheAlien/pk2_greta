@@ -51,13 +51,13 @@ int PFont::get_image(int x, int y, int img_source) {
 
 }
 
-int PFont::load(PFile::Path path) {
+int PFont::load(const PFile::File& file) {
 
 	int i = 0;
 
 	PLang param_file = PLang();
 
-	if (!param_file.Read_File(path))
+	if (!param_file.Read_File(file))
 		return -1;
 
 	//i = param_file.Search_Id("image width");
@@ -91,7 +91,7 @@ int PFont::load(PFile::Path path) {
 
 	i = param_file.Search_Id("image");
 
-	std::optional<PFile::Path> imagePath = PFilesystem::FindVanillaAsset(param_file.Get_Text(i), PFilesystem::FONTS_DIR);
+	std::optional<PFile::File> imagePath = PFilesystem::FindVanillaAsset(param_file.Get_Text(i), PFilesystem::FONTS_DIR);
 	if (!imagePath.has_value()){
 		//TODO Add exception here
 		return -1;

@@ -315,7 +315,7 @@ void ScoreScreen::Init() {
 	
 	PDraw::set_offset(640, 480);
 
-	std::optional<PFile::Path> menu_path = PFilesystem::FindAsset("menu.bmp", PFilesystem::GFX_DIR, ".png");
+	std::optional<PFile::File> menu_path = PFilesystem::FindAsset("menu.bmp", PFilesystem::GFX_DIR, ".png");
 	if(!menu_path.has_value()){
 		throw std::runtime_error("\"menu.bmp\" not found!");
 	}

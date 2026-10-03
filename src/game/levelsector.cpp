@@ -330,7 +330,7 @@ void LevelSector::startMusic(){
 	this->music_name = PString::rtrim(this->music_name); // to fix bugs with blank field
 
 	if (!this->music_name.empty()) {
-		std::optional<PFile::Path> music_path = PFilesystem::FindAsset(this->music_name,
+		std::optional<PFile::File> music_path = PFilesystem::FindAsset(this->music_name,
 		PFilesystem::MUSIC_DIR);
 
 		if (!music_path.has_value()) {

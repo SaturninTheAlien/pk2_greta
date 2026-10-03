@@ -63,8 +63,8 @@ void Init(u8 level, bool _print_to_stdout, bool _print_to_file) {
     }
 
     if(print_to_file){
-        PFile::Path file = PFilesystem::GetDataFileW("log.txt");
-        log_file = new PFile::RW(file.GetRW2("w"));
+        PFile::File file(PFilesystem::GetDataPathP() / "log.txt");
+        log_file = new PFile::RW(file.getRW("w"));
     }
 }
 

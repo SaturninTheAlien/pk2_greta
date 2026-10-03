@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <optional>
+#include <filesystem>
 
 #include "mapstore.hpp"
 #include "scores_table.hpp"
@@ -42,7 +43,7 @@ public:
 
 	std::optional<std::vector<ProxyLevelEntry>> proxies;
 
-	void loadLevelHeader(PFile::Path levelFile);
+	void loadLevelHeader(const PFile::File& levelFile);
 	std::string getLevelFilename(bool proxy)const;
 
 };
@@ -138,7 +139,7 @@ class EpisodeClass {
 
 		std::vector<LevelEntry> levels_list_v;
 
-		std::string getScoresPath()const;		
+		std::filesystem::path getScoresPathP()const;		
 		void openScores();
 };
 

@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 #include <optional>
+#include <filesystem>
 #include "PFile.hpp"
 
 namespace PFilesystem{
@@ -32,7 +33,7 @@ extern const std::string LUA_DIR;
 extern const std::string LIFE_DIR;
 
 
-void CreateDirectory(const std::string& path);
+void CreateDirectoryP(const std::filesystem::path& path);
 
 void SetAssetsPath(const std::string& name);
 void SetDataPath(const std::string& name);
@@ -40,23 +41,26 @@ void SetPrefDataPath();
 
 void SetDefaultPaths();
 
-std::string GetAssetsPath();
-std::string GetDataPath();
+/*std::string GetAssetsPath();
+std::string GetDataPath();*/
 
-PFile::Path GetDataFileW(const std::string& filename);
+const std::filesystem::path& GetAssetsPathP();
+const std::filesystem::path& GetDataPathP();
 
-std::string GetEpisodeDirectory();
+//PFile::File GetDataFileW(const std::string& filename);
 
-std::string GetScreenshotName();
+const std::filesystem::path& GetEpisodeDirectoryP();
+
+std::filesystem::path GetScreenshotNameP();
 
 void SetEpisode(const std::string& episodeName, PZip::PZip* zip_file=nullptr);
 //bool FindAsset_s(std::string& name, const std::string& default_dir, const std::string& alt_extension);
 
-std::optional<PFile::Path> FindAsset(const std::string& name, const std::string& default_dir, const std::string& alt_extension="");
-std::optional<PFile::Path> FindVanillaAsset(const std::string& name, const std::string& default_dir, const std::string& alt_extension="");
-std::optional<PFile::Path> FindEpisodeAsset(const std::string& name, const std::string& default_dir, const std::string& alt_extension="");
+std::optional<PFile::File> FindAsset(const std::string& name, const std::string& default_dir, const std::string& alt_extension="");
+std::optional<PFile::File> FindVanillaAsset(const std::string& name, const std::string& default_dir, const std::string& alt_extension="");
+std::optional<PFile::File> FindEpisodeAsset(const std::string& name, const std::string& default_dir, const std::string& alt_extension="");
 
-std::vector<std::string> ScanDirectory_s(const std::string& name, const std::string& filter="");
+std::vector<std::string> ScanDirectoryP(const std::filesystem::path& path_in, const std::string& filter="");
 std::vector<std::string> ScanOriginalAssetsDirectory(const std::string& name, const std::string& filter="");
 
 

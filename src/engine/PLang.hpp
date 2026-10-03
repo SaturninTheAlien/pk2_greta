@@ -19,9 +19,9 @@ class PLang {
 		bool loaded = false;
 
 		PLang();
-		PLang(PFile::Path path);
+		PLang(const PFile::File& file);
 		~PLang();
-		bool Read_File(PFile::Path path);
+		bool Read_File(const PFile::File& file);
 
 		const std::string& getString(int id, const std::string& def)const;
 		bool getBoolean(int id, bool def)const;

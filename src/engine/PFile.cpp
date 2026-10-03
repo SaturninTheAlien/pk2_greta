@@ -28,6 +28,7 @@ namespace fs = std::filesystem;
 
 namespace PFile {
 
+
 #ifdef __ANDROID__
 
 static void getAndroidAsset(const std::string& name, const std::function<void(jbyte*, int)>& func){
@@ -72,33 +73,15 @@ static void getAndroidAsset(const std::string& name, const std::function<void(jb
 #endif
 
 
-Path::Path(std::string path) {
+bool File::operator==(const File& second)const {
 
-	path = path.substr(0, path.find_last_not_of(" ") + 1);
-    this->path = path;
-	
-	this->zip_file = nullptr;
-}
+#ifdef __ANDROID__
+	if(this->insideAndroidAPK!=second.insideAndroidAPK){
+		return false;
+	}
+#endif
 
-Path::Path(PZip::PZip* zip_file, const PZip::PZipEntry&e):
-zip_file(zip_file), zip_entry(e) {
-	this->path = zip_entry.name;
-}
-
-Path::Path(Path path, std::string file) {
-
-	*this = path;
-	
-	file = file.substr(0, file.find_last_not_of(" ") + 1);
-	this->path += file;
-}
-
-Path::~Path() {
-
-}
-
-bool Path::operator==(const Path& second)const {
-	if(this->zip_file!=nullptr || second.zip_file!=nullptr){
+    if(this->zip_file!=nullptr || second.zip_file!=nullptr){
 		return this->zip_file == second.zip_file && this->zip_entry == second.zip_entry;
 	}
 	else{
@@ -106,17 +89,7 @@ bool Path::operator==(const Path& second)const {
 	}
 }
 
-bool Path::exists()const{
-	if(this->zip_file!=nullptr){
-		throw std::runtime_error("Unimplemented Path::exists (zip)");
-	}
-	else{
-		return fs::exists(this->path);
-	}
-}
-
-RW Path::GetRW2(std::string mode)const {
-
+RW File::getRW(std::string mode)const {
 
 	SDL_RWops* ret = nullptr;
 
@@ -125,7 +98,7 @@ RW Path::GetRW2(std::string mode)const {
 		void * buffer = nullptr;
 		int size = 0;
 
-		getAndroidAsset(this->path, [&](jbyte* data_j, int size_j){
+		getAndroidAsset(this->path.string(), [&](jbyte* data_j, int size_j){
 			buffer = SDL_malloc(size_j);
 			memcpy(buffer, data_j, size_j);
 			size = size_j;
@@ -151,7 +124,7 @@ RW Path::GetRW2(std::string mode)const {
 		if (!ret) {
 
 			std::ostringstream os;
-			os<<"Can't get RW from the file: \""<<this->path<<"\"";
+			os<<"Can't get RW from the file: "<<this->path;
 			std::string s = os.str();
 			throw PFileException(s);
 		}
@@ -161,7 +134,7 @@ RW Path::GetRW2(std::string mode)const {
 }
 
 
-nlohmann::json Path::GetJSON()const{
+nlohmann::json File::readJSON()const{
 
 #ifdef __ANDROID__
 	if(this->insideAndroidAPK){
@@ -197,8 +170,9 @@ nlohmann::json Path::GetJSON()const{
 	}
 }
 
-std::string Path::GetContentAsString()const{
 
+std::string File::readString()const{
+	
 #ifdef __ANDROID__
 	if(this->insideAndroidAPK){
 		char * buffer = nullptr;
@@ -214,8 +188,6 @@ std::string Path::GetContentAsString()const{
 		return res;
 	}
 #endif
-
-
 	if(this->zip_file!=nullptr){
 		char * buffer = new char[this->zip_entry.size + 1];
 		buffer[this->zip_entry.size] = '\0';
@@ -231,6 +203,8 @@ std::string Path::GetContentAsString()const{
 		return std::string((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
 	}
 }
+
+
 
 RW::RW(RW&& source){
 	this->_rwops = source._rwops;

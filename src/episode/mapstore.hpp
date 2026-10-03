@@ -9,12 +9,14 @@
 
 #include <vector>
 #include <string>
+#include <filesystem>
+
 
 class episode_entry{
 public:
     std::string name;
     std::string zipfile;
-    std::string path;
+    std::filesystem::path pathP;
     bool is_zip = false;
 };
 

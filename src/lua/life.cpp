@@ -162,7 +162,7 @@ void GameOfLife::placeCell(bool alive, int x, int y){
 
 void GameOfLife::placeRLE(const std::string& name, int x, int y, int direction){
 
-	std::optional<PFile::Path> path = PFilesystem::FindAsset(name, PFilesystem::LIFE_DIR);
+	std::optional<PFile::File> path = PFilesystem::FindAsset(name, PFilesystem::LIFE_DIR);
 
 	if(!path.has_value()){
 		std::ostringstream os;
@@ -198,7 +198,7 @@ void GameOfLife::placeRLE(const std::string& name, int x, int y, int direction){
 	}
 
 
-	PFile::RW rw = path->GetRW2("r");
+	PFile::RW rw = path->getRW("r");
 
 	char c1 = 0;
 	int state = 0;

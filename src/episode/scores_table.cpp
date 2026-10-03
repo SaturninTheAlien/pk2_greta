@@ -64,11 +64,10 @@ struct PK2EPISODESCORES10 {
 
 
 
-void ScoresTable::load(PFile::Path path){
-    if(!path.exists())return;
+void ScoresTable::load(const PFile::File& path){
     char version[4];
 
-    PFile::RW file = path.GetRW2("r");
+    PFile::RW file = path.getRW("r");
     file.read(version, 4);
     version[3] = '\0';
 
@@ -183,8 +182,8 @@ void ScoresTable::load(PFile::Path path){
     }
 }
 
-void ScoresTable::save(PFile::Path path)const{
-    PFile::RW file = path.GetRW2("w");
+void ScoresTable::save(const PFile::File& path)const{
+    PFile::RW file = path.getRW("w");
     char version[4] = "1.2";
     file.write(version, 4);
 

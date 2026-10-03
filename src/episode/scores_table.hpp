@@ -37,8 +37,8 @@ public:
     std::string episodeTopPlayer;
     
 
-    void load(PFile::Path path);
-    void save(PFile::Path path)const;
+    void load(const PFile::File& path);
+    void save(const PFile::File& path)const;
 
     friend void to_json(nlohmann::json& j,const ScoresTable& st);
     friend void from_json(const nlohmann::json& j, ScoresTable& st);

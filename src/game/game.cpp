@@ -460,7 +460,7 @@ void GameClass::update(int &debug_active_sprites)
 
 					if (this->lastCheckpoint != nullptr && this->score >= Episode->checkpointPenalty && !config_txt.hardcore_mode) {
 
-						fs::path dataPath = PFilesystem::GetDataPath();
+						fs::path dataPath = PFilesystem::GetDataPathP();
 						fs::path p3 = dataPath / CHECKPOINT_DIR_NAME / "score.dat";
 
 						/**
@@ -468,7 +468,7 @@ void GameClass::update(int &debug_active_sprites)
 						 * To prevent points farming by dying
 						 */
 
-						PFile::RW in = PFile::Path(p3.string()).GetRW2("r");
+						PFile::RW in = PFile::File(p3).getRW("r");
 						in.read(this->score);
 						in.close();
 						this->score -= Episode->checkpointPenalty;
@@ -480,7 +480,7 @@ void GameClass::update(int &debug_active_sprites)
 							this->score = 0;
 						}
 
-						PFile::RW out = PFile::Path(p3.string()).GetRW2("w");
+						PFile::RW out = PFile::File(p3).getRW("w");
 						out.write(this->score);
 						out.close();
 
@@ -535,7 +535,7 @@ void GameClass::update(int &debug_active_sprites)
 
 void GameClass::startSupermodeMusic()
 {
-	std::optional<PFile::Path> p = PFilesystem::FindAsset("super.xm", PFilesystem::MUSIC_DIR, ".ogg");
+	std::optional<PFile::File> p = PFilesystem::FindAsset("super.xm", PFilesystem::MUSIC_DIR, ".ogg");
 	if (p.has_value())
 	{
 		PSound::start_music(*p);
@@ -560,7 +560,7 @@ void GameClass::start()
 	Fadetext_Init(); // Reset fade text
 	TouchScreenControls.reset();	
 	
-	std::optional<PFile::Path> levelPath = PFilesystem::FindEpisodeAsset(level_file, "");
+	std::optional<PFile::File> levelPath = PFilesystem::FindEpisodeAsset(level_file, "");
 	if (!levelPath.has_value())
 	{
 		throw PExcept::PException("Cannot find the level file: \"" + level_file + "\"!");
@@ -621,7 +621,7 @@ void GameClass::finish()
 
 	this->level_clear = true;
 
-	std::optional<PFile::Path> music_path = PFilesystem::FindAsset("hiscore.xm", PFilesystem::MUSIC_DIR, ".ogg");
+	std::optional<PFile::File> music_path = PFilesystem::FindAsset("hiscore.xm", PFilesystem::MUSIC_DIR, ".ogg");
 
 	if (!music_path.has_value())
 	{
@@ -1062,20 +1062,20 @@ void GameClass::saveGameState()const{
 
 	PLog::Write(PLog::INFO, "PK2", "Saving checkpoint...");
 
-	fs::path dataPath = PFilesystem::GetDataPath();
+	fs::path dataPath = PFilesystem::GetDataPathP();
 	fs::path p1 = dataPath / CHECKPOINT_DIR_NAME / "level.map";
 	fs::path p2 = dataPath / CHECKPOINT_DIR_NAME / "game.dat";
 	fs::path p3 = dataPath / CHECKPOINT_DIR_NAME / "score.dat";
 
-	this->level.saveVersion15(PFile::Path(p1.string()));
+	this->level.saveVersion15(PFile::File(p1));
 
-	PFile::RW file2 = PFile::Path(p2.string()).GetRW2("w");
+	PFile::RW file2 = PFile::File(p2).getRW("w");
 	file2.writeCBOR(this->toJson());
 	file2.close();
 	
 	PLog::Write(PLog::DEBUG, "PK2", "Checkpoint saved!");
 
-	PFile::RW file3 = PFile::Path(p3.string()).GetRW2("w");
+	PFile::RW file3 = PFile::File(p3).getRW("w");
 	file3.write(this->score);
 	file3.close();
 }
@@ -1084,18 +1084,18 @@ void GameClass::loadGameState(){
 
 	PLog::Write(PLog::INFO, "PK2", "Loading checkpoint...");
 
-	fs::path dataPath = PFilesystem::GetDataPath();
+	fs::path dataPath = PFilesystem::GetDataPathP();
 	fs::path p1 = dataPath / CHECKPOINT_DIR_NAME / "level.map";
 	fs::path p2 = dataPath / CHECKPOINT_DIR_NAME / "game.dat";
 	fs::path p3 = dataPath / CHECKPOINT_DIR_NAME / "score.dat";
 
 
 	this->level.clearSectors();
-	this->level.load(PFile::Path(p1.string()), false);
+	this->level.load(PFile::File(p1), false);
 	this->lastCheckpoint = nullptr;
 	
 
-	PFile::RW file = PFile::Path(p2.string()).GetRW2("r");
+	PFile::RW file = PFile::File(p2).getRW("r");
 
 	this->fromJson(file.readCBOR());
 	file.close();

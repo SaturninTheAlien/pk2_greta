@@ -37,7 +37,7 @@ static void mLoadFont(PLang*lang, int& font, const std::string& langID, const st
 
 	const std::string& fontName = ind_font==-1 ? fallbackName: lang->Get_Text(ind_font);
 
-	std::optional<PFile::Path> path = PFilesystem::FindVanillaAsset(fontName, PFilesystem::FONTS_DIR);
+	std::optional<PFile::File> path = PFilesystem::FindVanillaAsset(fontName, PFilesystem::FONTS_DIR);
 	if(!path.has_value()){
 		throw std::runtime_error("Font picture: \""+fontName+"\" not found!");
 	}

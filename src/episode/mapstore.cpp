@@ -89,14 +89,14 @@ void Search_Episodes() {
 	 * Searching for user loose episodes (to improve the integration with the level editor)
 	 */
 	{
-		std::filesystem::path p = std::filesystem::path(PFilesystem::GetDataPath()) / "episodes";
-		std::vector<std::string> list_user = PFilesystem::ScanDirectory_s(p.string(), "/");
+		std::filesystem::path p =  PFilesystem::GetDataPathP() / PFilesystem::EPISODES_DIR;
+		std::vector<std::string> list_user =  PFilesystem::ScanDirectoryP(p);
 		for(std::string ep: list_user){
 			seen_episodes.emplace(ep);
 
 			episode_entry e;
 			e.name = ep;
-			e.path = (p / ep).string();
+			e.pathP = p / ep;
 			e.is_zip = false;
 			episodes.push_back(e);
 		}
@@ -121,12 +121,13 @@ void Search_Episodes() {
 	}
 
 
-	std::string mapstore_path=(fs::path(PFilesystem::GetDataPath())/"mapstore").string();
-	std::vector<std::string> list_zip = PFilesystem::ScanDirectory_s(mapstore_path, ".zip");
+	std::filesystem::path mapstore_path = PFilesystem::GetDataPathP()/"mapstore";
+
+	std::vector<std::string> list_zip = PFilesystem::ScanDirectoryP(mapstore_path, ".zip");
 	for (std::string zip : list_zip) {
 		try{
 
-			PZip::PZip zp((fs::path(mapstore_path)/zip).string());
+			PZip::PZip zp((mapstore_path/zip).string());
 			std::vector<std::string> zip_list = zp.findSubdirectories("episodes");
 
 			for (std::string ep : zip_list) {
@@ -180,7 +181,7 @@ static std::optional<std::string> installZip(const std::string& targetPath){
 
 void Android_InstallZipEpisode(){
 	std::optional<std::string> res = installZip(
-		(fs::path(PFilesystem::GetDataPath())/"mapstore").string());
+		(PFilesystem::GetDataPath()/"mapstore").string());
 
 	if(res.has_value()){
 		PLog::Write(PLog::INFO, "PK2", "Installed a new zip episode: %s", res->c_str());
