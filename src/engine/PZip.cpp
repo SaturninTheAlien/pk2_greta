@@ -6,7 +6,7 @@
 #include "PFile.hpp"
 #include "PString.hpp"
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include <zip.h>
 #include <sstream>
 #include <filesystem>
@@ -22,19 +22,20 @@ PZip::PZip(PZip&& pzip)
 }
 
 void PZip::open(const std::string& path){
-	SDL_RWops* rw = SDL_RWFromFile(path.c_str(), "r");
-	if (rw == NULL) {
+
+	SDL_IOStream* io = SDL_IOFromFile(path.c_str(), "rb");
+	if (io == nullptr) {
         std::ostringstream os;
         os<<"Can't open \""<<path<<"\"";       
         throw PZipException(os.str());
     }
 
-	int size = SDL_RWsize(rw);
+	int size = SDL_GetIOSize(io);
 
 	void* buffer = malloc(size);
 
-	SDL_RWread(rw, buffer, size, 1);
-	SDL_RWclose(rw);
+	SDL_ReadIO(io, buffer, size);
+	SDL_CloseIO(io);
 
 	zip_error err;
 

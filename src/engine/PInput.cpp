@@ -20,54 +20,67 @@ void InputSystem::searchForInputDevices(){
 
 	this->closeInputDevices();
 
-	int num = SDL_NumJoysticks();
+	int num = 0;
+	SDL_JoystickID* joysticks = SDL_GetJoysticks(&num);
+
 	for (int i = start; i < num; ++i) {
-		if (SDL_IsGameController(i)) {
-			this->gController = SDL_GameControllerOpen(i);
+		SDL_JoystickID id = joysticks[i];
+
+		if (SDL_IsGamepad(id)) {
+			this->gController = SDL_OpenGamepad(id);
 			if (this->gController) {
-				PLog::Write(PLog::INFO, "PInput", "Controller found: %s", SDL_GameControllerName(gController));
+				PLog::Write(
+					PLog::INFO,
+					"PInput",
+					"Controller found: %s",
+					SDL_GetGamepadName(this->gController)
+				);
 				break;
 			}
 		}
 	}
+
+	SDL_free(joysticks);
 
 	if(this->gController == nullptr) {
 		PLog::Write(PLog::INFO, "PInput", "No Controller found");
 	}
 
 	if (this->gController) {
-		SDL_Joystick* joy = SDL_GameControllerGetJoystick(this->gController);
-		this->gHaptic = SDL_HapticOpenFromJoystick(joy);
+		SDL_Joystick* joy = SDL_GetGamepadJoystick(this->gController);
+		this->gHaptic = SDL_OpenHapticFromJoystick(joy);
 
 		if (this->gHaptic) {
 			if (SDL_HapticRumbleSupported(this->gHaptic) &&
-				SDL_HapticRumbleInit(this->gHaptic) == 0) {
+				SDL_InitHapticRumble(this->gHaptic)) {
 				// success
 			} else {
-				SDL_HapticClose(this->gHaptic);
+				SDL_CloseHaptic(this->gHaptic);
 				this->gHaptic = nullptr;
 			}
 		}
 	}
-	else{
+	else {
+		int numHaptics = 0;
+		SDL_HapticID* haptics = SDL_GetHaptics(&numHaptics);
 
-		int numHaptics = SDL_NumHaptics();
-		for (int i = 0; i < numHaptics; i++) {
+		for (int i = 0; i < numHaptics; ++i) {
 
-			this->gHaptic = SDL_HapticOpen(i);
-			if (this->gHaptic == nullptr)
+			this->gHaptic = SDL_OpenHaptic(haptics[i]);
+
+			if (!this->gHaptic)
 				continue;
-			
-			if (SDL_HapticRumbleSupported(this->gHaptic)) {
-				if (SDL_HapticRumbleInit(this->gHaptic) == 0) {
-					break; // ✔ success
-				}
+
+			if (SDL_HapticRumbleSupported(this->gHaptic) &&
+				SDL_InitHapticRumble(this->gHaptic)) {
+				break; // success
 			}
 
-			SDL_HapticClose(this->gHaptic);
+			SDL_CloseHaptic(this->gHaptic);
 			this->gHaptic = nullptr;
-
 		}
+
+		SDL_free(haptics);
 	}
 
 	if (this->gHaptic == nullptr) {
@@ -77,22 +90,23 @@ void InputSystem::searchForInputDevices(){
 }
 
 
-void InputSystem::closeInputDevices(){
-	if(this->gController!=nullptr){
-		SDL_GameControllerClose(this->gController);
-		this->gController = nullptr;
-	}
-	if(this->gHaptic!=nullptr){
-		SDL_HapticClose(this->gHaptic);
-		this->gHaptic = nullptr;
-	}
+void InputSystem::closeInputDevices() {
+
+    if (this->gController != nullptr) {
+        SDL_CloseGamepad(this->gController);
+        this->gController = nullptr;
+    }
+
+    if (this->gHaptic != nullptr) {
+        SDL_CloseHaptic(this->gHaptic);
+        this->gHaptic = nullptr;
+    }
 }
 
-
 void InputSystem::handleEvent(const SDL_Event& event){
-	if( (event.type == SDL_KEYDOWN && event.key.repeat == 0) ||
-		event.type == SDL_MOUSEBUTTONDOWN ||
-		event.type == SDL_CONTROLLERBUTTONDOWN ){
+	if( (event.type == SDL_EVENT_KEY_DOWN && event.key.repeat == 0) ||
+		event.type ==  SDL_EVENT_MOUSE_BUTTON_DOWN ||
+		event.type == SDL_EVENT_GAMEPAD_BUTTON_DOWN){
 
 		Key eventKey(event);
 		for(const std::function<void(const Key&)> &f: this->keyDownListeners){
@@ -100,61 +114,60 @@ void InputSystem::handleEvent(const SDL_Event& event){
 		}
 	}
 
-	else if(event.type == SDL_KEYUP ||
-		event.type == SDL_MOUSEBUTTONUP ||
-		event.type == SDL_CONTROLLERBUTTONUP ){
+	else if(event.type == SDL_EVENT_KEY_UP ||
+		event.type == SDL_EVENT_MOUSE_BUTTON_UP ||
+		event.type == SDL_EVENT_GAMEPAD_BUTTON_UP ){
 
 		Key eventKey(event);
 		for(const std::function<void(const Key&)> &f: this->keyUpListeners){
 			f(eventKey);
 		}
 	}
-	else if(event.type == SDL_TEXTINPUT){
+	else if(event.type == SDL_EVENT_TEXT_INPUT){
 		if(this->textInput){
 			this->lastUTF8Char.read(event.text.text);
 		}
 	}
-	else if(event.type == SDL_MOUSEMOTION){
+	else if(event.type == SDL_EVENT_MOUSE_MOTION){
 		for(const std::function<void()>& f: this->physicalMouseMotionListeners){
 			f();
 		}
 	}
 
-	else if(event.type == SDL_CONTROLLERDEVICEADDED || event.type == SDL_CONTROLLERDEVICEREMOVED){
+	else if(event.type ==  SDL_EVENT_GAMEPAD_ADDED || event.type == SDL_EVENT_GAMEPAD_REMOVED){
 		this->searchForInputDevices();
 	}
 }
 
-bool InputSystem::isKeyPressed(const Key& key){
+bool InputSystem::isKeyPressed(const Key& key) {
 
-	switch (key.type)
+    switch (key.type)
     {
-    case INPUT_KEYBOARD:{
-        const Uint8* keymap = SDL_GetKeyboardState(NULL);
+    case INPUT_KEYBOARD: {
+        const bool* keymap = SDL_GetKeyboardState(nullptr);
         return keymap[(SDL_Scancode)key.code];
-    }     
-    break;
-
-    case INPUT_MOUSE_BUTTON:{
-        int x, y;
-        Uint32 buttons = SDL_GetMouseState(&x, &y);
-        return (buttons & SDL_BUTTON(key.code)) != 0;
     }
-    break;
 
-    case INPUT_GAME_CONTROLLER:{
-        if (!gController) return false;
+    case INPUT_MOUSE_BUTTON: {
+        float x, y;
+        SDL_MouseButtonFlags buttons = SDL_GetMouseState(&x, &y);
+        return (buttons & SDL_BUTTON_MASK(key.code)) != 0;
+    }
 
-        return SDL_GameControllerGetButton(
+    case INPUT_GAME_CONTROLLER: {
+        if (!gController)
+            return false;
+
+        return SDL_GetGamepadButton(
             gController,
-            (SDL_GameControllerButton)key.code
-        ) != 0;
+            (SDL_GamepadButton)key.code
+        );
     }
 
     default:
-
         break;
     }
+
     return false;
 }
 
@@ -162,7 +175,7 @@ void InputSystem::startTextInput(){
 
 	if(!this->textInput){
 		this->textInput = true;
-		SDL_StartTextInput();
+		SDL_StartTextInput(PRender::window);
 
 		this->lastUTF8Char = PString::UTF8_Char();
 	}
@@ -171,7 +184,7 @@ void InputSystem::startTextInput(){
 void InputSystem::stopTextInput(){
 	if(this->textInput){
 		this->textInput = false;
-		SDL_StopTextInput();
+		SDL_StopTextInput(PRender::window);
 	}
 }
 
@@ -186,31 +199,32 @@ PString::UTF8_Char InputSystem::getLastUTF8(){
 
 
 
-float InputSystem::getAxis(int axis)const{
+float InputSystem::getAxis(int axis) const {
 
-	if(this->gController==nullptr)return 0;
+    if (this->gController == nullptr)
+        return 0.f;
 
-	float fac = 1.f/32768;
+    float fac = 1.f / 32768.f;
 
-	if (axis == 0)
-		fac *= SDL_GameControllerGetAxis(gController, SDL_CONTROLLER_AXIS_LEFTX);
-	else if (axis == 1)
-		fac *= SDL_GameControllerGetAxis(gController, SDL_CONTROLLER_AXIS_LEFTY);
-	else if (axis == 2)
-		fac *= SDL_GameControllerGetAxis(gController, SDL_CONTROLLER_AXIS_RIGHTX);
-	else if (axis == 3)
-		fac *= SDL_GameControllerGetAxis(gController, SDL_CONTROLLER_AXIS_RIGHTY);
-	else if (axis == 4)
-		fac *= SDL_GameControllerGetAxis(gController, SDL_CONTROLLER_AXIS_TRIGGERLEFT);
-	else if (axis == 5)
-		fac *= SDL_GameControllerGetAxis(gController, SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
-	else
-		return 0.f;
-	
-	if (abs(fac) < 0.15)
-		fac = 0.f;
+    if (axis == 0)
+        fac *= SDL_GetGamepadAxis(gController, SDL_GAMEPAD_AXIS_LEFTX);
+    else if (axis == 1)
+        fac *= SDL_GetGamepadAxis(gController, SDL_GAMEPAD_AXIS_LEFTY);
+    else if (axis == 2)
+        fac *= SDL_GetGamepadAxis(gController, SDL_GAMEPAD_AXIS_RIGHTX);
+    else if (axis == 3)
+        fac *= SDL_GetGamepadAxis(gController, SDL_GAMEPAD_AXIS_RIGHTY);
+    else if (axis == 4)
+        fac *= SDL_GetGamepadAxis(gController, SDL_GAMEPAD_AXIS_LEFT_TRIGGER);
+    else if (axis == 5)
+        fac *= SDL_GetGamepadAxis(gController, SDL_GAMEPAD_AXIS_RIGHT_TRIGGER);
+    else
+        return 0.f;
 
-	return fac;
+    if (std::abs(fac) < 0.15f)
+        fac = 0.f;
+
+    return fac;
 }
 
 void InputSystem::vibrate(int duration, float strength)const{
@@ -219,146 +233,147 @@ void InputSystem::vibrate(int duration, float strength)const{
 
 	if(this->gController!=nullptr){
 		u16 rumble = (u16)(0xFFFF * strength);
-		SDL_GameControllerRumble(this->gController, rumble, rumble, duration_ms);
+		SDL_RumbleGamepad(this->gController, rumble, rumble, duration_ms);
 	}
 
 	if(this->gHaptic!=nullptr){
-		SDL_HapticRumblePlay(this->gHaptic, strength, duration_ms);
+		SDL_PlayHapticRumble(this->gHaptic, strength, duration_ms);
 	}
 }
 
 
-void InputSystem::updateMouse(){
-	static int last_x, last_y;
-	static bool ignore_mouse = false;
+void InputSystem::updateMouse() {
+    static float last_x = 0.f, last_y = 0.f;
+    static bool ignore_mouse = false;
 
-	int sw, sh;
-	PRender::get_window_size(&sw, &sh);
+    int sw, sh;
+    PRender::get_window_size(&sw, &sh);
 
-	int bw, bh;
-	PDraw::get_buffer_size(&bw, &bh);
+    int bw, bh;
+    PDraw::get_buffer_size(&bw, &bh);
 
-	int off_x, off_y;
-	PDraw::get_offset(&off_x, &off_y);
+    int off_x, off_y;
+    PDraw::get_offset(&off_x, &off_y);
 
+    if (!PRender::is_fullscreen()) {
+        SDL_SetWindowRelativeMouseMode(PRender::window, false);
 
-	//if(!Settings.touchscreen_mode){
+        float tmpx, tmpy;
+        SDL_GetMouseState(&tmpx, &tmpy);
 
-		if (!PRender::is_fullscreen()) {
-			SDL_SetRelativeMouseMode(SDL_FALSE);
+        // Problem with fitScreen
+        tmpx *= float(bw) / sw;
+        tmpy *= float(bh) / sh;
 
-			int tmpx, tmpy;
-			SDL_GetMouseState(&tmpx, &tmpy);
+        tmpx -= off_x;
+        tmpy -= off_y;
 
-			//Problem with fitScreen
-			tmpx *= float(bw) / sw;
-			tmpy *= float(bh) / sh;
+        // Mouse moved
+        if (std::abs(last_x - tmpx) > 0.f ||
+            std::abs(last_y - tmpy) > 0.f)
+            ignore_mouse = false;
 
-			tmpx -= off_x;
-			tmpy -= off_y;
+        last_x = tmpx;
+        last_y = tmpy;
 
-			// Mouse moved
-			if (abs(last_x - tmpx) > 0 || abs(last_y - tmpy) > 0)
-				ignore_mouse = false;
+        if (!ignore_mouse) {
+            mousePos.x = tmpx;
+            mousePos.y = tmpy;
+        }
 
-			last_x = tmpx;
-			last_y = tmpy;
-			
-			if (!ignore_mouse) {
-				mousePos.x = float(tmpx);
-				mousePos.y = float(tmpy);
-			}
-	
-		} else {
-			SDL_SetRelativeMouseMode(SDL_TRUE);
+    } else {
+		SDL_SetWindowRelativeMouseMode(PRender::window, true);
 
-			ignore_mouse = false;
+        ignore_mouse = false;
 
-			int delta_x, delta_y;
-			SDL_GetRelativeMouseState(&delta_x, &delta_y);
+        float delta_x, delta_y;
+        SDL_GetRelativeMouseState(&delta_x, &delta_y);
 
-			mousePos.x += 0.4 * delta_x;
-			mousePos.y += 0.4 * delta_y;
-		}
-	//}
+        mousePos.x += 0.4f * delta_x;
+        mousePos.y += 0.4f * delta_y;
+    }
 
-	if(this->mouseKeysEnabled) {
+    if (this->mouseKeysEnabled) {
 
-		float delta_x = 0;
-		float delta_y = 0;
+        float delta_x = 0.f;
+        float delta_y = 0.f;
 
-		delta_x += getAxis(0) * 3;
-		delta_y += getAxis(1) * 3;
+        delta_x += getAxis(0) * 3.f;
+        delta_y += getAxis(1) * 3.f;
 
-		if (isKeyPressed(Key::LEFT) || isKeyPressed(Key::JOY_LEFT) ){
-			delta_x += -3;
-		}  
-		if (isKeyPressed(Key::RIGHT) || isKeyPressed(Key::JOY_RIGHT) ){
-			delta_x += +3;
-		}
-		if (isKeyPressed(Key::UP) || isKeyPressed(Key::JOY_UP) ){
-			delta_y += -3;
-		}
-		if (isKeyPressed(Key::DOWN) || isKeyPressed(Key::JOY_DOWN) ){
-			delta_y += +3;
-		}
+        if (isKeyPressed(Key::LEFT) || isKeyPressed(Key::JOY_LEFT))
+            delta_x -= 3.f;
 
-		if (delta_x > 0.1 || delta_x < -0.1 || 
-		    delta_y > 0.1 || delta_y < -0.1)
-			ignore_mouse = true;
+        if (isKeyPressed(Key::RIGHT) || isKeyPressed(Key::JOY_RIGHT))
+            delta_x += 3.f;
 
-		mousePos.x += delta_x;
-		mousePos.y += delta_y;
-		
-	}
+        if (isKeyPressed(Key::UP) || isKeyPressed(Key::JOY_UP))
+            delta_y -= 3.f;
 
-	// set limits
-	if (mousePos.x < -off_x) mousePos.x = -off_x;
-	if (mousePos.x > bw - off_x - 19) mousePos.x = bw - off_x - 19;
-	if (mousePos.y < -off_y) mousePos.y = -off_y;
-	if (mousePos.y > bh - off_y - 19) mousePos.y = bh - off_y - 19;
+        if (isKeyPressed(Key::DOWN) || isKeyPressed(Key::JOY_DOWN))
+            delta_y += 3.f;
+
+        if (delta_x > 0.1f || delta_x < -0.1f ||
+            delta_y > 0.1f || delta_y < -0.1f)
+            ignore_mouse = true;
+
+        mousePos.x += delta_x;
+        mousePos.y += delta_y;
+    }
+
+    // set limits
+    if (mousePos.x < -off_x) mousePos.x = -off_x;
+    if (mousePos.x > bw - off_x - 19) mousePos.x = bw - off_x - 19;
+    if (mousePos.y < -off_y) mousePos.y = -off_y;
+    if (mousePos.y > bh - off_y - 19) mousePos.y = bh - off_y - 19;
 }
 
 
-void InputSystem::updateTouch(){
-	this->mTouchlist.clear();
-	
-	int bw, bh;
-	PDraw::get_buffer_size(&bw, &bh);
+void InputSystem::updateTouch() {
+    this->mTouchlist.clear();
 
-	int off_x, off_y;
-	PDraw::get_offset(&off_x, &off_y);
+    int bw, bh;
+    PDraw::get_buffer_size(&bw, &bh);
 
-	int devicesNumber = SDL_GetNumTouchDevices();
+    int off_x, off_y;
+    PDraw::get_offset(&off_x, &off_y);
 
-	bool mouseSet = false;
-	for (int i = 0; i < devicesNumber; i++) {
-		
-		SDL_TouchID id = SDL_GetTouchDevice(i);
+    int devicesNumber = 0;
+    SDL_TouchID* devices = SDL_GetTouchDevices(&devicesNumber);
 
-		int fingers = SDL_GetNumTouchFingers(id);
+    bool mouseSet = false;
 
-		for(int j = 0; j < fingers; j++){
+    for (int i = 0; i < devicesNumber; i++) {
 
-			SDL_Finger* finger = SDL_GetTouchFinger(id, j);
-			if(finger!=nullptr) {
+        SDL_TouchID id = devices[i];
 
-				Touch touch(finger->x, finger->y, finger->id);
-				this->mTouchlist.emplace_back(touch);
+        int fingersNumber = 0;
+        SDL_Finger** fingers = SDL_GetTouchFingers(id, &fingersNumber);
 
-				int tmpx = finger->x * bw - off_x;
-				int tmpy = finger->y * bh - off_y;
-				if(!mouseSet){
-					mouseSet = true;
-					this->mousePos.x = tmpx;
-					this->mousePos.y = tmpy;
-				}
-			}
+        for (int j = 0; j < fingersNumber; j++) {
 
-				
-		}
+            SDL_Finger* finger = fingers[j];
 
-	}
+            if (finger != nullptr) {
+
+                Touch touch(finger->x, finger->y, finger->id);
+                this->mTouchlist.emplace_back(touch);
+
+                int tmpx = finger->x * bw - off_x;
+                int tmpy = finger->y * bh - off_y;
+
+                if (!mouseSet) {
+                    mouseSet = true;
+                    this->mousePos.x = tmpx;
+                    this->mousePos.y = tmpy;
+                }
+            }
+        }
+
+        SDL_free(fingers);
+    }
+
+    SDL_free(devices);
 }
 
 

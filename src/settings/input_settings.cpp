@@ -28,15 +28,15 @@ void InputSettings::setDefault(){
 }
 
 void InputSettings::setDefaultJoystick(){
-	this->left = PInput::Key(SDL_CONTROLLER_BUTTON_DPAD_LEFT, PInput::INPUT_GAME_CONTROLLER);
-	this->right = PInput::Key(SDL_CONTROLLER_BUTTON_DPAD_RIGHT, PInput::INPUT_GAME_CONTROLLER);
-	this->up = PInput::Key(SDL_CONTROLLER_BUTTON_DPAD_UP, PInput::INPUT_GAME_CONTROLLER);
-	this->down = PInput::Key(SDL_CONTROLLER_BUTTON_DPAD_DOWN, PInput::INPUT_GAME_CONTROLLER);
+	this->left = PInput::Key::JOY_LEFT;
+	this->right = PInput::Key::JOY_RIGHT;
+	this->up = PInput::Key::JOY_UP;
+	this->down = PInput::Key::JOY_DOWN;
 
-	this->walk_slow = PInput::Key(SDL_CONTROLLER_BUTTON_Y, PInput::INPUT_GAME_CONTROLLER);
-	this->attack1 = PInput::Key(SDL_CONTROLLER_BUTTON_A, PInput::INPUT_GAME_CONTROLLER);
-	this->attack2 = PInput::Key(SDL_CONTROLLER_BUTTON_B, PInput::INPUT_GAME_CONTROLLER);
-	this->open_gift = PInput::Key(SDL_CONTROLLER_BUTTON_LEFTSHOULDER, PInput::INPUT_GAME_CONTROLLER);
+	this->walk_slow = PInput::Key::JOY_Y;
+	this->attack1 = PInput::Key::JOY_A;
+	this->attack2 = PInput::Key::JOY_B;
+	this->open_gift = PInput::Key::JOY_LEFT_SHOULDER;
 }
 
 

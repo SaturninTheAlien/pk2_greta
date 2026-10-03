@@ -20,42 +20,44 @@ const Key Key::LALT = Key(SDL_SCANCODE_LALT, INPUT_KEYBOARD);
 const Key Key::MOUSE_LEFT = Key(SDL_BUTTON_LEFT, INPUT_MOUSE_BUTTON);
 const Key Key::MOUSE_RIGHT = Key(SDL_BUTTON_RIGHT, INPUT_MOUSE_BUTTON);
  
-const Key Key::JOY_A = Key(SDL_CONTROLLER_BUTTON_A, INPUT_GAME_CONTROLLER);
-const Key Key::JOY_B = Key(SDL_CONTROLLER_BUTTON_B, INPUT_GAME_CONTROLLER);
-const Key Key::JOY_X = Key(SDL_CONTROLLER_BUTTON_X, INPUT_GAME_CONTROLLER);
-const Key Key::JOY_Y = Key(SDL_CONTROLLER_BUTTON_Y, INPUT_GAME_CONTROLLER);
+const Key Key::JOY_A = Key(SDL_GAMEPAD_BUTTON_SOUTH, INPUT_GAME_CONTROLLER);
+const Key Key::JOY_B = Key(SDL_GAMEPAD_BUTTON_EAST, INPUT_GAME_CONTROLLER);
+const Key Key::JOY_X = Key(SDL_GAMEPAD_BUTTON_WEST, INPUT_GAME_CONTROLLER);
+const Key Key::JOY_Y = Key(SDL_GAMEPAD_BUTTON_NORTH, INPUT_GAME_CONTROLLER);
 
-const Key Key::JOY_UP = Key(SDL_CONTROLLER_BUTTON_DPAD_UP, INPUT_GAME_CONTROLLER);
-const Key Key::JOY_DOWN = Key(SDL_CONTROLLER_BUTTON_DPAD_DOWN, INPUT_GAME_CONTROLLER);
-const Key Key::JOY_LEFT = Key(SDL_CONTROLLER_BUTTON_DPAD_LEFT, INPUT_GAME_CONTROLLER);
-const Key Key::JOY_RIGHT = Key(SDL_CONTROLLER_BUTTON_DPAD_RIGHT, INPUT_GAME_CONTROLLER);
+const Key Key::JOY_UP = Key(SDL_GAMEPAD_BUTTON_DPAD_UP, INPUT_GAME_CONTROLLER);
+const Key Key::JOY_DOWN = Key(SDL_GAMEPAD_BUTTON_DPAD_DOWN, INPUT_GAME_CONTROLLER);
+const Key Key::JOY_LEFT = Key(SDL_GAMEPAD_BUTTON_DPAD_LEFT, INPUT_GAME_CONTROLLER);
+const Key Key::JOY_RIGHT = Key(SDL_GAMEPAD_BUTTON_DPAD_RIGHT, INPUT_GAME_CONTROLLER);
 
-const Key Key::JOY_START = Key(SDL_CONTROLLER_BUTTON_START, INPUT_GAME_CONTROLLER);
+const Key Key::JOY_START = Key(SDL_GAMEPAD_BUTTON_START, INPUT_GAME_CONTROLLER);
 
-const Key Key::JOY_STICK_LEFT = Key(SDL_CONTROLLER_BUTTON_LEFTSTICK, INPUT_GAME_CONTROLLER);
-const Key Key::JOY_STICK_RIGHT = Key(SDL_CONTROLLER_BUTTON_RIGHTSTICK, INPUT_GAME_CONTROLLER);
+const Key Key::JOY_STICK_LEFT = Key(SDL_GAMEPAD_BUTTON_LEFT_STICK, INPUT_GAME_CONTROLLER);
+const Key Key::JOY_STICK_RIGHT = Key(SDL_GAMEPAD_BUTTON_RIGHT_STICK, INPUT_GAME_CONTROLLER);
+const Key Key::JOY_GUIDE = Key(SDL_GAMEPAD_BUTTON_GUIDE, INPUT_GAME_CONTROLLER);
 
-const Key Key::JOY_GUIDE = Key(SDL_CONTROLLER_BUTTON_GUIDE, INPUT_GAME_CONTROLLER);
+const Key Key::JOY_LEFT_SHOULDER = Key(SDL_GAMEPAD_BUTTON_LEFT_SHOULDER, INPUT_GAME_CONTROLLER);
+const Key Key::JOY_RIGHT_SHOULDER = Key(SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER, INPUT_GAME_CONTROLLER);
 
-Key::Key(const SDL_Event& event){
+Key::Key(const SDL_Event& event) {
     switch (event.type)
     {
-    case SDL_KEYDOWN:
-    case SDL_KEYUP:
+    case SDL_EVENT_KEY_DOWN:
+    case SDL_EVENT_KEY_UP:
         this->type = INPUT_KEYBOARD;
-        this->code = event.key.keysym.scancode;
+        this->code = event.key.scancode;
         break;
 
-    case SDL_MOUSEBUTTONDOWN:
-    case SDL_MOUSEBUTTONUP:
+    case SDL_EVENT_MOUSE_BUTTON_DOWN:
+    case SDL_EVENT_MOUSE_BUTTON_UP:
         this->type = INPUT_MOUSE_BUTTON;
         this->code = event.button.button;
         break;
 
-    case SDL_CONTROLLERBUTTONDOWN:
-    case SDL_CONTROLLERBUTTONUP:
+    case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+    case SDL_EVENT_GAMEPAD_BUTTON_UP:
         this->type = INPUT_GAME_CONTROLLER;
-        this->code = event.cbutton.button;
+        this->code = event.gbutton.button;
         break;
 
     default:
@@ -72,22 +74,22 @@ bool Key::isPressed()const{
 
 bool Key::accept(const SDL_Event& event) const {
 
-    switch (event.type){
-        
-    case SDL_KEYDOWN:
-    case SDL_KEYUP:
-        return this->type == INPUT_KEYBOARD &&
-               this->code == event.key.keysym.scancode;
+    switch (event.type) {
 
-    case SDL_MOUSEBUTTONDOWN:
-    case SDL_MOUSEBUTTONUP:
+    case SDL_EVENT_KEY_DOWN:
+    case SDL_EVENT_KEY_UP:
+        return this->type == INPUT_KEYBOARD &&
+               this->code == event.key.scancode;
+
+    case SDL_EVENT_MOUSE_BUTTON_DOWN:
+    case SDL_EVENT_MOUSE_BUTTON_UP:
         return this->type == INPUT_MOUSE_BUTTON &&
                this->code == event.button.button;
 
-    case SDL_CONTROLLERBUTTONDOWN:
-    case SDL_CONTROLLERBUTTONUP:
+    case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+    case SDL_EVENT_GAMEPAD_BUTTON_UP:
         return this->type == INPUT_GAME_CONTROLLER &&
-               this->code == event.cbutton.button;
+               this->code == event.gbutton.button;
 
     default:
         break;
@@ -96,13 +98,18 @@ bool Key::accept(const SDL_Event& event) const {
     return false;
 }
 
-std::string Key::getName()const{
+std::string Key::getName() const {
 
     switch (this->type)
     {
     case INPUT_KEYBOARD:
     {
-        SDL_Keycode keycode = SDL_GetKeyFromScancode((SDL_Scancode)this->code);
+        SDL_Keycode keycode = SDL_GetKeyFromScancode(
+            (SDL_Scancode)this->code,
+            SDL_KMOD_NONE,
+            false
+        );
+
         const char* name = SDL_GetKeyName(keycode);
 
         if (name && name[0] != '\0')
@@ -126,30 +133,35 @@ std::string Key::getName()const{
 
     case INPUT_GAME_CONTROLLER:
     {
-
         switch (this->code)
         {
-        case SDL_CONTROLLER_BUTTON_A:
+        case SDL_GAMEPAD_BUTTON_SOUTH:
             return "Joy A";
-        case SDL_CONTROLLER_BUTTON_B:
+
+        case SDL_GAMEPAD_BUTTON_EAST:
             return "Joy B";
-        case SDL_CONTROLLER_BUTTON_X:
+
+        case SDL_GAMEPAD_BUTTON_WEST:
             return "Joy X";
-        case SDL_CONTROLLER_BUTTON_Y:
+
+        case SDL_GAMEPAD_BUTTON_NORTH:
             return "Joy Y";
-        case SDL_CONTROLLER_BUTTON_BACK:
+
+        case SDL_GAMEPAD_BUTTON_BACK:
             return "Joy Back";
-        case SDL_CONTROLLER_BUTTON_GUIDE:
+
+        case SDL_GAMEPAD_BUTTON_GUIDE:
             return "Joy Guide";
-        case SDL_CONTROLLER_BUTTON_START:
+
+        case SDL_GAMEPAD_BUTTON_START:
             return "Joy Start";
-        
+
         default:
             break;
         }
 
-        const char* name = SDL_GameControllerGetStringForButton(
-            (SDL_GameControllerButton)this->code
+        const char* name = SDL_GetGamepadStringForButton(
+            (SDL_GamepadButton)this->code
         );
 
         if (name && name[0] != '\0')

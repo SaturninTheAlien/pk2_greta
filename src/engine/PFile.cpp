@@ -8,7 +8,6 @@
 #include <filesystem>
 #include <cstring>
 #include <fstream>
-#include <SDL.h>
 #include <stdexcept>
 
 #ifdef __ANDROID__
@@ -91,7 +90,7 @@ bool File::operator==(const File& second)const {
 
 RW File::getRW(std::string mode)const {
 
-	SDL_RWops* ret = nullptr;
+	SDL_IOStream* ret = nullptr;
 
 #ifdef __ANDROID__
 	if(this->insideAndroidAPK){
@@ -104,7 +103,7 @@ RW File::getRW(std::string mode)const {
 			size = size_j;
 		});
 
-		ret = SDL_RWFromConstMem(buffer, size);
+		ret = SDL_IOFromConstMem(buffer, size);
 		return RW(ret, buffer);
 	}
 #endif
@@ -112,7 +111,7 @@ RW File::getRW(std::string mode)const {
 	if (this->zip_file != nullptr && this->zip_entry.good()) {
 		void * buffer = SDL_malloc(this->zip_entry.size);
 		this->zip_file->read(this->zip_entry, buffer);
-		ret = SDL_RWFromConstMem(buffer, this->zip_entry.size);
+		ret = SDL_IOFromConstMem(buffer, this->zip_entry.size);
 		return RW(ret, buffer);
 	}
 	else{
@@ -120,7 +119,7 @@ RW File::getRW(std::string mode)const {
 			mode+="b";
 		}
 
-		ret = SDL_RWFromFile(this->path.c_str(), mode.c_str());
+		ret = SDL_IOFromFile(this->path.c_str(), mode.c_str());
 		if (!ret) {
 
 			std::ostringstream os;
@@ -206,57 +205,78 @@ std::string File::readString()const{
 
 
 
-RW::RW(RW&& source){
-	this->_rwops = source._rwops;
-	this->_mem_buffer = source._mem_buffer;
-
-	source._rwops = nullptr;
-	source._mem_buffer = nullptr;
+RW::RW(RW&& source)
+    : io(source.io),
+      _mem_buffer(source._mem_buffer)
+{
+    source.io = nullptr;
+    source._mem_buffer = nullptr;
 }
 
-int RW::read(void* val, size_t size) {
+std::size_t RW::read(void* val, size_t size) {
 
-	return SDL_RWread((SDL_RWops*)(this->_rwops), val, 1, size);
+	return SDL_ReadIO(this->io, val, size);
 
 }
+
+
+static void ioFailed(){
+
+	std::ostringstream os;
+	os<<"SDL_Read error: "<<SDL_GetError();
+	throw PFile::PFileException(os.str());
+}
+
 void RW::read(bool& val) {
 
-	u8 v = SDL_ReadU8((SDL_RWops*)(this->_rwops));
+	u8 v = 0;
+	if(!SDL_ReadU8(this->io, &v)){
+		ioFailed();
+	}
 	
 	if (v == 0) val = false;
 	else val = true;
 }
 void RW::read(u8& val) {
 
-	val = SDL_ReadU8((SDL_RWops*)(this->_rwops));
-
+	if(!SDL_ReadU8(this->io, &val)){
+		ioFailed();
+	}
 }
 void RW::read(s8& val) {
-
-	val = SDL_ReadU8((SDL_RWops*)(this->_rwops));
+	if(!SDL_ReadS8(this->io, &val)){
+		ioFailed();
+	}
 }
 void RW::read(u16& val) {
-
-	val = SDL_ReadLE16((SDL_RWops*)(this->_rwops));
+	if(!SDL_ReadU16LE(this->io, &val)){
+		ioFailed();
+	}
 }
 void RW::read(s16& val) {
-
-	val = SDL_ReadLE16((SDL_RWops*)(this->_rwops));
+	if(!SDL_ReadS16LE(this->io, &val)){
+		ioFailed();
+	}
 }
 void RW::read(u32& val) {
-
-	val = SDL_ReadLE32((SDL_RWops*)(this->_rwops));
-
+	if(!SDL_ReadU32LE(this->io, &val)){
+		ioFailed();
+	}
 }
 void RW::read(s32& val) {
-
-	val = SDL_ReadLE32((SDL_RWops*)(this->_rwops));
+	if(!SDL_ReadS32LE(this->io, &val)){
+		ioFailed();
+	}
 }
 void RW::read(u64& val) {
-	val = SDL_ReadLE64((SDL_RWops*)(this->_rwops));
+	if(!SDL_ReadU64LE(this->io, &val)){
+		ioFailed();
+	}
 }
 void RW::read(s64& val) {
-	val = SDL_ReadLE64((SDL_RWops*)(this->_rwops));
+	if(!SDL_ReadS64LE(this->io, &val)){
+		ioFailed();
+	}
 }
 
 void RW::readLegacyStrInt(int&val){
@@ -292,50 +312,58 @@ void RW::readLegacyStr40Chars(std::string & val){
 /*
 int RW::write(std::string& str) {
 
-	return SDL_RWwrite((SDL_RWops*)(this->_rwops), str.c_str(), 1, str.size() + 1);
+	return SDL_RWwrite((SDL_IOStream*)(this->_rwops), str.c_str(), 1, str.size() + 1);
 
 }*/
 
-int RW::write(const void* val, size_t size) {
-
-	return SDL_RWwrite((SDL_RWops*)(this->_rwops), val, size, 1);
-
+std::size_t RW::write(const void* val, size_t size) {
+	return SDL_WriteIO(this->io, val, size);
 }
 void RW::write(bool val) {
-	SDL_WriteU8((SDL_RWops*)(this->_rwops), val);
-
+	if(!SDL_WriteU8(this->io, val)){
+		ioFailed();
+	}
 }
 void RW::write(u8 val) {
-	SDL_WriteU8((SDL_RWops*)(this->_rwops), val);
-
+	if(!SDL_WriteU8(this->io, val)){
+		ioFailed();
+	}
 }
 void RW::write(s8 val) {
-	SDL_WriteU8((SDL_RWops*)(this->_rwops), val);
+	if(!SDL_WriteS8(this->io, val)){
+		ioFailed();
+	}
 
 }
 void RW::write(u16 val) {
-	SDL_WriteLE16((SDL_RWops*)(this->_rwops), val);
-
+	if(!SDL_WriteU16LE(this->io, val)){
+		ioFailed();
+	}
 }
 void RW::write(s16 val) {
-	SDL_WriteLE16((SDL_RWops*)(this->_rwops), val);
-
+	if(!SDL_WriteS16LE(this->io, val)){
+		ioFailed();
+	}
 }
 void RW::write(u32 val) {
-	SDL_WriteLE32((SDL_RWops*)(this->_rwops), val);
-
+	if(!SDL_WriteU32LE(this->io, val)){
+		ioFailed();
+	}
 }
 void RW::write(s32 val) {
-	SDL_WriteLE32((SDL_RWops*)(this->_rwops), val);
-
+	if(!SDL_WriteS32LE(this->io, val)){
+		ioFailed();
+	}
 }
 void RW::write(u64 val) {
-	SDL_WriteLE64((SDL_RWops*)(this->_rwops), val);
-
+	if(!SDL_WriteU64LE(this->io, val)){
+		ioFailed();
+	}
 }
 void RW::write(s64 val) {
-	SDL_WriteLE64((SDL_RWops*)(this->_rwops), val);
-
+	if(!SDL_WriteS64LE(this->io, val)){
+		ioFailed();
+	}
 }
 
 void RW::writeCBOR(const nlohmann::json& j){
@@ -358,25 +386,18 @@ nlohmann::json RW::readCBOR(){
 }
 
 size_t RW::size() {
-
-	SDL_RWops* rwops = (SDL_RWops*)(this->_rwops);
-
-	return SDL_RWsize(rwops);
+	return SDL_GetIOSize(this->io);
 
 }
 
 void RW::close() {
 
-	if(this->_rwops!=nullptr){
-		SDL_RWops* rwops = (SDL_RWops*)(this->_rwops);
-	
-		int ret = SDL_RWclose(rwops);
-		if (ret != 0) {
-		
+	if(this->io!=nullptr){
+
+		if(!SDL_CloseIO(this->io)){
 			PLog::Write(PLog::ERR, "PFile", "Error freeing rw");
 		}
-
-		this->_rwops = nullptr;
+		this->io = nullptr;
 	}
 
 	if(this->_mem_buffer!=nullptr){

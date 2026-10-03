@@ -12,10 +12,11 @@
 #include "PString.hpp"
 #include "PLog.hpp"
 
-#include <SDL.h>
 #include <algorithm>
 #include <filesystem>
 #include <sstream>
+
+#include <SDL3/SDL.h>
 
 
 #ifdef __ANDROID__
@@ -120,7 +121,7 @@ void SetPrefDataPath(){
 }
 
 static fs::path getBasePath(){
-    char* c_path = SDL_GetBasePath();
+    const char* c_path = SDL_GetBasePath();
 	if(c_path==nullptr){
 
         std::ostringstream os;
@@ -132,7 +133,6 @@ static fs::path getBasePath(){
 	}
 
     fs::path result = c_path;
-    SDL_free(c_path);
 
     return result;
 }

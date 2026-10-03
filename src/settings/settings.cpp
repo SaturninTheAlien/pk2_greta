@@ -17,7 +17,6 @@
 #include <string>
 #include <fstream>
 
-#include <SDL_timer.h>
 
 const char* SETTINGS_FILE = "settings.json";
 

@@ -2,7 +2,7 @@
 
 #include "PJson.hpp"
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include <string>
 
 namespace PInput{
@@ -71,7 +71,9 @@ public:
     static const Key JOY_STICK_RIGHT;
 
     static const Key JOY_GUIDE;
-    
+
+    static const Key JOY_LEFT_SHOULDER;
+    static const Key JOY_RIGHT_SHOULDER;    
 private:
     friend class InputSystem;
     InputType type = INPUT_UNKNOWN;
