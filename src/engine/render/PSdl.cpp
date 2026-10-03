@@ -7,9 +7,6 @@
 #include "engine/PLog.hpp"
 
 #include "PSdl.hpp"
-
-#include <SDL.h>
-
 #include <stdexcept>
 
 void PSdl::load_ui_texture(void* surface) {
@@ -55,48 +52,36 @@ void PSdl::set_screen(PRender::FRECT screen_dst) {
 }
 
 int PSdl::set_shader(int mode) {
-
     if (mode == PRender::SHADER_NEAREST) {
-        if (SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0") == SDL_TRUE)
-            return 0;
-    } else if (mode == PRender::SHADER_LINEAR) {
-        if (SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2") == SDL_TRUE)
-            return 0;
+        this->scale_mode = SDL_SCALEMODE_NEAREST;
+        return 0;
     }
-    
+    if (mode == PRender::SHADER_LINEAR) {
+        this->scale_mode = SDL_SCALEMODE_LINEAR;
+        return 0;
+    }
+
+    if(this->ui_texture){
+        SDL_SetTextureScaleMode(this->ui_texture, this->scale_mode);
+    }
+
+
     return 1;
 }
 
 int PSdl::set_vsync(bool set) {
+    if (renderer != nullptr &&
+        !SDL_SetRenderVSync(renderer, set ? 1 : 0)) {
 
-    if(renderer!=nullptr && SDL_RenderSetVSync(renderer, set)!=0){
-        PLog::Write(PLog::ERR, "PSDL", "Couldn't set vsync %s", SDL_GetError());
+        PLog::Write(PLog::ERR, "PSDL",
+            "Couldn't set vsync: %s", SDL_GetError());
+
+        return 1;
     }
-
-    /*Uint32 sync = set? SDL_RENDERER_PRESENTVSYNC : 0;
-
-    if (renderer) {
-
-        ui_texture = NULL;
-        SDL_DestroyRenderer(renderer);
-
-    }
-
-    Uint32 sync = set? SDL_RENDERER_PRESENTVSYNC : 0;
-
-    renderer = SDL_CreateRenderer(curr_window, -1, SDL_RENDERER_ACCELERATED | sync);
-    if (!renderer) {
-
-        PLog::Write(PLog::FATAL, "PSdl", "Couldn't create renderer!");
-        return -1;
-
-    }
-
-    SDL_RenderClear(renderer);*/
 
     return 0;
-
 }
+
 
 void PSdl::update(void* _buffer8) {
 
@@ -104,20 +89,35 @@ void PSdl::update(void* _buffer8) {
     
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, buffer8);
 
+    if (!texture) {
+        throw std::runtime_error(std::string("Couldn't create texture: ") + SDL_GetError());
+    }
+
+    SDL_SetTextureScaleMode(texture, scale_mode);
+
     SDL_RenderClear(renderer);
 
-    SDL_RenderCopy(renderer, texture, NULL, &screen_dest);
+    SDL_FRect dst = {
+        static_cast<float>(screen_dest.x),
+        static_cast<float>(screen_dest.y),
+        static_cast<float>(screen_dest.w),
+        static_cast<float>(screen_dest.h)
+    };
+
+    SDL_RenderTexture(renderer, texture, nullptr, &dst);
     
     int w, h;
-    SDL_GetRendererOutputSize(renderer, &w, &h);
+    SDL_GetCurrentRenderOutputSize(renderer, &w, &h);
     float prop_x = (float)w;
     float prop_y = (float)h;
     
     if (ui_surface) {
 
-        if (!ui_texture)
+        if (!ui_texture){
             ui_texture = SDL_CreateTextureFromSurface(renderer, (SDL_Surface*)ui_surface);
-
+            SDL_SetTextureScaleMode(this->ui_texture, this->scale_mode);
+        }
+        
         for (auto opt : render_list) {
             
             u8 mod = opt.alpha * 256;
@@ -126,19 +126,19 @@ void PSdl::update(void* _buffer8) {
             
             SDL_SetTextureAlphaMod(ui_texture, mod);
             
-            SDL_Rect dst;
-            dst.x = opt.dst.x * prop_x;
-            dst.y = opt.dst.y * prop_y;
-            dst.w = opt.dst.w * prop_x;
-            dst.h = opt.dst.h * prop_y;
+            SDL_FRect dst;
+            dst.x = static_cast<float>(opt.dst.x * prop_x);
+            dst.y = static_cast<float>(opt.dst.y * prop_y);
+            dst.w = static_cast<float>(opt.dst.w * prop_x);
+            dst.h = static_cast<float>(opt.dst.h * prop_y);
 
-            SDL_Rect src;
-            src.x = opt.src.x * 1024;
-            src.y = opt.src.y * 1024;
-            src.w = opt.src.w * 1024;
-            src.h = opt.src.h * 1024;
+            SDL_FRect src;
+            src.x = static_cast<float>(opt.src.x * 1024);
+            src.y = static_cast<float>(opt.src.y * 1024);
+            src.w = static_cast<float>(opt.src.w * 1024);
+            src.h = static_cast<float>(opt.src.h * 1024);
 
-            SDL_RenderCopy(renderer, ui_texture, &src, &dst);
+            SDL_RenderTexture(renderer, ui_texture, &src, &dst);
             
         }
 
@@ -156,14 +156,18 @@ PSdl::PSdl(int width, int height, void* window) {
 
     curr_window = (SDL_Window*)window;
 
-    renderer = SDL_CreateRenderer(curr_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    renderer = SDL_CreateRenderer(curr_window, nullptr);
     if (!renderer) {
+        PLog::Write(PLog::FATAL, "PSdl",
+                    "Couldn't create renderer: %s", SDL_GetError());
+        throw std::runtime_error("Cannot create SDL renderer!");
+    }
 
-        PLog::Write(PLog::FATAL, "PSdl", "Couldn't create renderer!");
-		throw std::runtime_error("Cannot create SDL renderer!");
-	}
+    if (!SDL_SetRenderVSync(renderer, 1)) {
+        PLog::Write(PLog::WARN, "PSdl",
+                    "Couldn't enable vsync: %s", SDL_GetError());
+    }
 
-    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
     SDL_RenderClear(renderer);
 
 }
@@ -171,7 +175,8 @@ PSdl::PSdl(int width, int height, void* window) {
 PSdl::~PSdl() {
 
     SDL_DestroyRenderer(renderer);
-    SDL_FreeSurface(ui_surface);
+    SDL_DestroySurface(ui_surface);
+
     PLog::Write(PLog::DEBUG, "PSdl", "Terminated");
 
 }

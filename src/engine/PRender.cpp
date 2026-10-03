@@ -12,12 +12,14 @@
 
 #include "engine/render/PSdl.hpp"
 
-#include <SDL.h>
-#include <SDL_image.h>
+#include <SDL3/SDL.h>
+#include <SDL3_image/SDL_image.h>
 
 namespace PRender {
 
-static int fullscreen_mode = SDL_WINDOW_FULLSCREEN_DESKTOP; //SDL_WINDOW_FULLSCREEN;
+SDL_Window*window = nullptr;
+
+static int fullscreen_mode = SDL_WINDOW_FULLSCREEN;
 
 static int current_shader = SHADER_LINEAR;
 
@@ -26,7 +28,6 @@ static float cover_width, cover_height;
 static bool screen_fill = false;
 static FRECT screen_dest = {0.f, 0.f, 1.f, 1.f};
 
-static SDL_Window* window = nullptr;
 static bool vsync_set = false;
 static bool fullscreen_set = false;
 
@@ -36,7 +37,7 @@ void load_ui_texture(const PFile::File& file) {
 
 	try{
 		PFile::RW rw = file.getRW("r");
-		SDL_Surface* surface = IMG_Load_RW((SDL_RWops*)(rw._rwops), 0);
+		SDL_Surface* surface =  IMG_Load_IO(rw.io, false);
 		renderer->load_ui_texture(surface);
 	}
 	catch(const PFile::PFileException& e){
@@ -106,7 +107,7 @@ void set_fullscreen(bool set) {
 	renderer->clear_screen();
 	#ifdef __ANDROID__
 	
-		SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+		SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
 		return;
 
 	#else
@@ -120,7 +121,7 @@ void set_fullscreen(bool set) {
 			SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 
 			SDL_SetWindowMinimumSize(window, buf_w/2, buf_h/2);
-			SDL_SetWindowResizable(window, SDL_TRUE);
+			SDL_SetWindowResizable(window, true);
 		}
 
 	#endif
@@ -201,7 +202,7 @@ bool is_vsync() {
 
 void init(int width, int height, const char* name, const char* icon) {
 
-	Uint32 window_flags = SDL_WINDOW_SHOWN;
+	SDL_WindowFlags window_flags = 0;
 
 	PLog::Write(PLog::DEBUG, "PRender", "Initializing graphics");
 
@@ -227,7 +228,7 @@ void init(int width, int height, const char* name, const char* icon) {
 
 	SDL_SetHint(SDL_HINT_ORIENTATIONS, "LandscapeLeft LandscapeRight");
 
-    window = SDL_CreateWindow(name, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, window_flags);
+    window = SDL_CreateWindow(name, width, height, window_flags);
 	if (!window) {
 
 		PLog::Write(PLog::FATAL, "PRender", "Couldn't create window!");
@@ -237,7 +238,7 @@ void init(int width, int height, const char* name, const char* icon) {
 
     #else
 
-	window = SDL_CreateWindow(name, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, window_flags);
+	window = SDL_CreateWindow(name, width, height, window_flags);
 	if (!window) {
 
 		PLog::Write(PLog::FATAL, "PRender", "Couldn't create window!");
@@ -247,10 +248,10 @@ void init(int width, int height, const char* name, const char* icon) {
 	SDL_Surface* window_icon = IMG_Load(icon);
 	if (window_icon) {
 		SDL_SetWindowIcon(window, window_icon);
-		SDL_FreeSurface(window_icon);
+		SDL_DestroySurface(window_icon);
 	}
 	
-	SDL_ShowCursor(SDL_DISABLE);
+	SDL_HideCursor();
 	
 	#endif
 

@@ -6,14 +6,14 @@
 
 #include "engine/PRender.hpp"
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include <vector>
 
 class PSdl : public PRender::Renderer {
 
 public:
 
-	void load_ui_texture(void* surface) override;
+	void load_ui_texture(void* surface)override;
 	void render_ui(PRender::FRECT src, PRender::FRECT dst, float alpha) override;
 
     void clear_screen() override;
@@ -27,11 +27,12 @@ public:
 
 private:
 
-    SDL_Window* curr_window = NULL;
-    SDL_Renderer* renderer = NULL;
+    SDL_Window* curr_window = nullptr;
+    SDL_Renderer* renderer = nullptr;
 
-    SDL_Texture* ui_texture = NULL;
-    SDL_Surface* ui_surface = NULL;
+    SDL_Texture* ui_texture = nullptr;
+    SDL_Surface* ui_surface = nullptr;
+
 
     SDL_Rect screen_dest;
     
@@ -41,5 +42,7 @@ private:
     };
 
     std::vector<RenderOptions> render_list;
+
+    SDL_ScaleMode scale_mode = SDL_SCALEMODE_LINEAR;
 
 };

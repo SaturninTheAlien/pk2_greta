@@ -4,6 +4,7 @@
 //#########################
 #pragma once
 
+#include <SDL3/SDL.h>
 #include "types.hpp"
 #include "3rd_party/json.hpp"
 #include "PZip.hpp"
@@ -28,8 +29,8 @@ private:
 
 class RW {
 public:
-    RW(void* rwops, void*mem_buffer=nullptr):
-    _rwops(rwops), _mem_buffer(mem_buffer){
+    RW(SDL_IOStream* io, void*mem_buffer=nullptr):
+    io(io), _mem_buffer(mem_buffer){
     }
 
     RW(const RW& source)=delete;
@@ -43,7 +44,7 @@ public:
     size_t size();
     //size_t to_buffer(void** buffer);
 
-    int read(void* val, size_t size);
+    std::size_t read(void* val, size_t size);
 
     // Read the value always in little endian
     void read(bool& val);
@@ -61,7 +62,7 @@ public:
     void readLegacyStr13Chars(std::string& val);
     void readLegacyStr40Chars(std::string& val);
 
-    int write(const void* val, size_t size);
+    std::size_t write(const void* val, size_t size);
     
     // Write the value always in little endian    
     void write(bool val);
@@ -79,9 +80,9 @@ public:
 
     void close();
 
-    void * _rwops;
+    SDL_IOStream* io = nullptr;
 private:
-    void * _mem_buffer;
+    void * _mem_buffer = nullptr;
 
 };
 

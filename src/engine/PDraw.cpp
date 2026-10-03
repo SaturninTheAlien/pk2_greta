@@ -10,18 +10,19 @@
 #include <algorithm>
 #include <vector>
 #include <array>
+#include <stdexcept>
 
-#include <SDL_image.h>
+#include <SDL3_image/SDL_image.h>
 
 namespace PDraw {
 
 // 8-bit indexed surface, it's the game frame buffer
-static SDL_Surface* frameBuffer8 = NULL;
+static SDL_Surface* frameBuffer8 = nullptr;
 
 // All surfaces will have this palette
 // game_colors stores the original colors,
 // without alpha modification
-static SDL_Palette* game_palette = NULL;
+static SDL_Palette* game_palette = nullptr;
 //static SDL_Color game_colors[256];
 //static SDL_Color buff_colors[256];
 
@@ -154,14 +155,19 @@ void set_rgb(float r, float g, float b){
     paletteList[mCurrentpaletteIndex]->setRGB(r,g,b);
 }
 
-int image_new(int w, int h){
+int image_new(int w, int h) {
     int index = findfreeimage();
-    imageList[index] = SDL_CreateRGBSurface(0, w, h, 8, 0, 0, 0, 0);
-    SDL_SetSurfacePalette(imageList[index], game_palette);
-    //SDL_SetColorKey(imageList[index], SDL_TRUE, 255);
 
-    SDL_FillRect(imageList[index], NULL, 255);
-    
+    imageList[index] = SDL_CreateSurface(
+        w,
+        h,
+        SDL_PIXELFORMAT_INDEX8
+    );
+
+    SDL_SetSurfacePalette(imageList[index], game_palette);
+
+    SDL_FillSurfaceRect(imageList[index], nullptr, 255);
+
     return index;
 }
 
@@ -179,7 +185,7 @@ static int mLoadImage(const PFile::File& file, bool hasAlphaColor){
 
     try{
         PFile::RW rw = file.getRW("r");
-        imageList[index] = IMG_Load_RW((SDL_RWops*)(rw._rwops), 0);
+        imageList[index] = IMG_Load_IO(rw.io, false);
         rw.close();
     }
     catch(const PFile::PFileException& e){
@@ -188,22 +194,27 @@ static int mLoadImage(const PFile::File& file, bool hasAlphaColor){
         return -1;
     }
 
-    if (imageList[index] == NULL) {
+    if (imageList[index] == nullptr) {
 
         PLog::Write(PLog::ERR, "PDraw", "Couldn't load %s, %s", file.c_str(), SDL_GetError());
         return -1;
     
     }
 
-    if(imageList[index]->format->BitsPerPixel != 8) {
+    const SDL_PixelFormatDetails* details =
+    SDL_GetPixelFormatDetails(imageList[index]->format);
 
-        PLog::Write(PLog::ERR, "PDraw", "Failed to open %s, just 8bpp indexed images!", file.c_str());
+    if (details == nullptr || details->bits_per_pixel != 8) {
+        PLog::Write(PLog::ERR, "PDraw",
+            "Failed to open %s, just 8bpp indexed images!",
+            file.c_str());
+
         image_delete(index);
         return -1;
     }
 
     if(hasAlphaColor){
-        SDL_SetColorKey(imageList[index], SDL_TRUE, ALPHA_COLOR_INDEX);
+        SDL_SetSurfaceColorKey(imageList[index], true, ALPHA_COLOR_INDEX);
     }
 
     return index;
@@ -228,7 +239,7 @@ std::pair<int, int> image_load_with_palette(const PFile::File& file, bool hasAlp
     Palette* pal = new Palette();
     paletteList[palIndex] = pal;
 
-    SDL_Palette* sdlPal = imageList[index]->format->palette;
+    SDL_Palette* sdlPal = SDL_GetSurfacePalette(imageList[index]);
     SDL_memcpy(pal->colors, sdlPal->colors, sizeof(SDL_Color) * 256);
 
     SDL_SetSurfacePalette(imageList[index], game_palette);
@@ -267,7 +278,7 @@ int image_copy(int image) {
     if(i < 0)
         return -1;
     
-    SDL_BlitSurface(im, NULL, imageList[i], NULL);
+    SDL_BlitSurface(im, nullptr, imageList[i], nullptr);
     return i;
 
 }
@@ -293,7 +304,11 @@ int image_cut(int ImgIndex, RECT area) {
     
     }
 
-    imageList[index] = SDL_CreateRGBSurface(0, area.w, area.h, 8, 0, 0, 0, 0);
+    imageList[index] = imageList[index] = SDL_CreateSurface(
+        area.w,
+        area.h,
+        SDL_PIXELFORMAT_INDEX8
+    );
 
     if(game_palette!=nullptr){
         SDL_SetSurfacePalette(imageList[index], game_palette);
@@ -303,11 +318,17 @@ int image_cut(int ImgIndex, RECT area) {
         return -1;
     }
     
-    SDL_SetColorKey(imageList[index], SDL_TRUE, ALPHA_COLOR_INDEX);
-    SDL_FillRect(imageList[index], NULL, ALPHA_COLOR_INDEX);
+    SDL_SetSurfaceColorKey(imageList[index], true, ALPHA_COLOR_INDEX);
+    SDL_FillSurfaceRect(imageList[index], nullptr, ALPHA_COLOR_INDEX);
 
-    // TODO - BlitScaled?
-    SDL_BlitScaled(imageList[ImgIndex], (SDL_Rect*)&area, imageList[index], NULL);
+    SDL_Rect src = area.toSDLRect();
+    SDL_BlitSurfaceScaled(
+        imageList[ImgIndex],
+        &src,
+        imageList[index],
+        nullptr,
+        SDL_SCALEMODE_NEAREST
+    );
 
     return index;
 
@@ -324,7 +345,7 @@ int image_clip(int index) {
     dstrect.w = image->w;
     dstrect.h = image->h;
     
-    SDL_BlitSurface(image, NULL, frameBuffer8, &dstrect);
+    SDL_BlitSurface(image, nullptr, frameBuffer8, &dstrect);
 
     return 0;
 }
@@ -341,7 +362,7 @@ int image_clip(int index, int x, int y) {
     dstrect.w = imageList[index]->w;
     dstrect.h = imageList[index]->h;
 
-    SDL_BlitSurface(imageList[index], NULL, frameBuffer8, &dstrect);
+    SDL_BlitSurface(imageList[index], nullptr, frameBuffer8, &dstrect);
 
     return 0;
 
@@ -623,7 +644,7 @@ int image_snapshot(int index) {
 
     //image_new(w, h)
 
-    return SDL_BlitSurface(frameBuffer8, NULL, imageList[index], NULL);
+    return SDL_BlitSurface(frameBuffer8, nullptr, imageList[index], nullptr);
 
 }
 
@@ -635,12 +656,12 @@ int image_delete(int& index) {
     if(uint(index) >= imageList.size())
         return -1;
     
-    if (imageList[index] == NULL)
+    if (imageList[index] == nullptr)
         return -1;
     
-    SDL_FreeSurface(imageList[index]);
+    SDL_DestroySurface(imageList[index]);
 
-    imageList[index] = NULL;
+    imageList[index] = nullptr;
     index = -1;
     
     return 0;
@@ -658,70 +679,68 @@ int image_fill(int index, int posx, int posy, int oikea, int ala, u8 color) {
     if (index < 0)
         return -1;
     SDL_Rect r = {posx, posy, oikea-posx, ala-posy};
-    return SDL_FillRect(imageList[index], &r, color);
+    return SDL_FillSurfaceRect(imageList[index], &r, color);
 
 }
 
 int screen_fill(u8 color) {
 
-    return SDL_FillRect(frameBuffer8, NULL, color);
+    return SDL_FillSurfaceRect(frameBuffer8, nullptr, color);
 
 }
 
 int screen_fill(int posx, int posy, int oikea, int ala, u8 color) {
 
     SDL_Rect r = {posx + x_offset, posy + y_offset, oikea-posx, ala-posy};
-    return SDL_FillRect(frameBuffer8, &r, color);
+    return SDL_FillSurfaceRect(frameBuffer8, &r, color);
 
 }
 
 void set_mask(int x, int y, int w, int h) {
-
     SDL_Rect r = {x + x_offset, y + y_offset, w, h};
-    SDL_SetClipRect(frameBuffer8, &r);
-
+    SDL_SetSurfaceClipRect(frameBuffer8, &r);
 }
 
 void reset_mask() {
 
-    SDL_SetClipRect(frameBuffer8, NULL);
+    SDL_SetSurfaceClipRect(frameBuffer8, nullptr);
 
 }
 
-int drawscreen_start(u8* &pixels, u32 &pitch) {
+void drawscreen_start(u8* &pixels, u32 &pitch) {
+
+    if(!SDL_LockSurface(frameBuffer8)){
+        PLog::Write(PLog::ERR, "PDraw", "Cannot lock the surface: %s", SDL_GetError());
+        return;
+    }
 
     pixels = (u8*)frameBuffer8->pixels;
     pitch = frameBuffer8->pitch;
-
-    return SDL_LockSurface(frameBuffer8);
-
 }
 
-int drawscreen_end() {
+void drawscreen_end() {
 
     SDL_UnlockSurface(frameBuffer8);
-    return 0;
-
 }
 
-int drawimage_start(int index, u8* &pixels, u32 &pitch) {
+bool drawimage_start(int index, u8* &pixels, u32 &pitch) {
+
+    if(!SDL_LockSurface(imageList[index])){
+        PLog::Write(PLog::ERR, "PDraw", "Cannot lock the surface: %s", SDL_GetError());
+        return false;
+    }
 
     pixels = (u8*)imageList[index]->pixels;
     pitch = imageList[index]->pitch;
-
-    return SDL_LockSurface(imageList[index]);
-
+    return true;
 }
 
-int drawimage_end(int index) {
-
+void drawimage_end(int index) {
     SDL_UnlockSurface(imageList[index]);
-    return 0;
-
 }
 
 // TODO check
-int create_shadow(int index, u32 width, u32 height){
+bool create_shadow(int index, u32 width, u32 height){
 
     u32 img_w = imageList[index]->w;
     u32 img_h = imageList[index]->h;
@@ -746,16 +765,17 @@ int create_shadow(int index, u32 width, u32 height){
     if (endy >= img_h)
         endy = img_h - 1;
 
-    if (startx >= endx || starty >= endy)
-        return 1;
+    if (startx >= endx || starty >= endy){
+        return false;
+    }
 
     double factor = 3;
 
-    u8* buffer = NULL;
+    u8* buffer = nullptr;
     u32 leveys;
 
-	if (drawimage_start(index, buffer, leveys) != 0)
-		return 2;
+	if (!drawimage_start(index, buffer, leveys) != 0)
+		return false;
 
 	for (u32 y = starty; y < endy; y++) {
 
@@ -785,10 +805,8 @@ int create_shadow(int index, u32 width, u32 height){
 			factor = factor - 0.005;
 	}
 
-	if (drawimage_end(index) != 0)
-		return 2;
-
-	return 0;
+	drawimage_end(index);
+	return true;
     
 }
 
@@ -875,13 +893,14 @@ bool font_accept_char(int font_index, PString::UTF8_Char u8c){
 }
 
 void set_buffer_size(int w, int h) {
-
-    if (frameBuffer8->w == w && frameBuffer8->h == h)
-        return;
+    if(frameBuffer8!=nullptr){
+        if (frameBuffer8->w == w && frameBuffer8->h == h)
+            return;
+        
+        SDL_DestroySurface(frameBuffer8);
+    }    
     
-    SDL_FreeSurface(frameBuffer8);
-    
-    frameBuffer8 = SDL_CreateRGBSurface(0, w, h, 8, 0, 0, 0, 0);
+    frameBuffer8 = SDL_CreateSurface(w, h, SDL_PIXELFORMAT_INDEX8);
     SDL_SetSurfacePalette(frameBuffer8, game_palette);
     //SDL_SetColorKey(frameBuffer8, SDL_TRUE, 255);
 
@@ -935,22 +954,31 @@ int init(int width, int height) {
     if (ready) return -1;
 
     PLog::Write(PLog::DEBUG, "PDraw", "Initializing buffers");
-    
-    IMG_Init(IMG_INIT_PNG);
 
-    if (game_palette == NULL)
-        game_palette = SDL_AllocPalette(256);
+    if (game_palette == nullptr)
+        game_palette = SDL_CreatePalette(256);
 
-    frameBuffer8 = SDL_CreateRGBSurface(0, width, height, 8, 0, 0, 0, 0);
+    frameBuffer8 = SDL_CreateSurface(
+        width,
+        height,
+        SDL_PIXELFORMAT_INDEX8
+    );
+
+    if (frameBuffer8 == nullptr) {
+        PLog::Write(PLog::ERR, "PDraw",
+            "Failed to create framebuffer: %s",
+            SDL_GetError());
+        return -1;
+    }
+
     SDL_SetSurfacePalette(frameBuffer8, game_palette);
-    //SDL_SetColorKey(frameBuffer8, SDL_TRUE, 255);
 
-    SDL_SetClipRect(frameBuffer8, NULL);
-    SDL_FillRect(frameBuffer8, NULL, 255);
+    SDL_SetSurfaceClipRect(frameBuffer8, nullptr);
+
+    SDL_FillSurfaceRect(frameBuffer8, nullptr, 255);
 
     ready = true;
     return 0;
-
 }
 
 void clear_fonts() {
@@ -960,7 +988,7 @@ void clear_fonts() {
     for (int i = 0; i < size; i++) {
         if (fontList[i] != nullptr)
             delete fontList[i];
-        fontList[i] = NULL;
+        fontList[i] = nullptr;
     }
 }
 
@@ -970,26 +998,24 @@ int terminate(){
     int size = imageList.size();
 
     for (int i = 0; i < size; i++)
-        if (imageList[i] != NULL) {
+        if (imageList[i] != nullptr) {
             int j = i;
             image_delete(j);
         }
 
     clear_fonts();
 
-    SDL_FreeSurface(frameBuffer8);
+    SDL_DestroySurface(frameBuffer8);
 
     if (game_palette->refcount != 1)
         PLog::Write(PLog::ERR, "PDraw", "Missing some palette reference");
 
     //for(int i =0)
-    SDL_FreePalette(game_palette);
+    SDL_DestroyPalette(game_palette);
 
     for(int i=0;i<(int)paletteList.size();++i){
         palette_delete(i);
     }
-
-    IMG_Quit();
 
     ready = false;
     return 0;
@@ -1004,7 +1030,7 @@ void get_buffer_data(void** _buffer8) {
 
 void update() {
 
-    SDL_FillRect(frameBuffer8, NULL, 0);
+    SDL_FillSurfaceRect(frameBuffer8, nullptr, 0);
 
 }
 

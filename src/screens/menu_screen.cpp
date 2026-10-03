@@ -27,7 +27,6 @@
 
 #include <cstring>
 #include <stdexcept>
-#include <SDL_system.h>
 
 
 #include "keyboard_navigation.hpp"
