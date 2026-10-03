@@ -3,7 +3,7 @@
 //Copyright (c) 2003 Janne Kivilahti
 //#########################
 #include "Piste.hpp"
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include <functional>
 #include <stdexcept>
 
@@ -60,22 +60,24 @@ static void logic() {
 	SDL_Event event;
 
 	while( SDL_PollEvent(&event) ) {
-		
-		if(event.type == SDL_QUIT){
-			running = false;
-		}
-		else if(event.type == SDL_WINDOWEVENT){
 
-			if(event.window.event == SDL_WINDOWEVENT_RESIZED){
-				PRender::adjust_screen();
-			}
-			else if(event.window.event == SDL_WINDOWEVENT_RESTORED){
-				PRender::set_pixelperfect();
-			}
-		}
-		else{
+		switch (event.type)
+		{
+		case SDL_EVENT_QUIT:
+			running = false;
+			break;
+
+		case SDL_EVENT_WINDOW_RESIZED:
+			PRender::adjust_screen();
+			break;
+		
+		case SDL_EVENT_WINDOW_RESTORED:
+			PRender::set_pixelperfect();
+			break;
+		
+		default:
 			PInput::InputSystem::instance().handleEvent(event);
-		}		
+		}
 	}
 
 	PInput::InputSystem::instance().updateMouse();
@@ -104,28 +106,34 @@ static void logic() {
 }
 
 static void sdl_show_version() {
+    const int compiled = SDL_VERSION;
+    const int linked = SDL_GetVersion();
 
-	SDL_version compiled;
-	SDL_version linked;
+    PLog::Write(PLog::DEBUG, "Piste",
+        "We compiled against SDL version %d.%d.%d ...",
+        SDL_VERSIONNUM_MAJOR(compiled),
+        SDL_VERSIONNUM_MINOR(compiled),
+        SDL_VERSIONNUM_MICRO(compiled));
 
-	SDL_VERSION(&compiled);
-	SDL_GetVersion(&linked);
-	
-	PLog::Write(PLog::DEBUG, "Piste", "We compiled against SDL version %d.%d.%d ...",
-		compiled.major, compiled.minor, compiled.patch);
-	
-	PLog::Write(PLog::DEBUG, "Piste", "But we are linking against SDL version %d.%d.%d.",
-		linked.major, linked.minor, linked.patch);
-	
+    PLog::Write(PLog::DEBUG, "Piste",
+        "But we are linking against SDL version %d.%d.%d.",
+        SDL_VERSIONNUM_MAJOR(linked),
+        SDL_VERSIONNUM_MINOR(linked),
+        SDL_VERSIONNUM_MICRO(linked));
 }
 
 
 void init(int width, int height, const char* name, const char* icon, int audio_buffer_size) {
 	
-	u32 flags = SDL_INIT_TIMER | SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_EVENTS | \
-                SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC | SDL_INIT_GAMECONTROLLER /*| SDL_INIT_SENSOR*/;
+	u32 flags =
+        SDL_INIT_AUDIO |
+        SDL_INIT_VIDEO |
+        SDL_INIT_EVENTS |
+        SDL_INIT_JOYSTICK |
+        SDL_INIT_HAPTIC |
+        SDL_INIT_GAMEPAD;
 	
-	if (SDL_Init(flags) < 0) {
+	if (!SDL_Init(flags)) {
 		PLog::Write(PLog::FATAL, "Piste", "Unable to init SDL: %s", SDL_GetError());
 		throw std::runtime_error(std::string("Unable to init SDL: ") +SDL_GetError());
 	}

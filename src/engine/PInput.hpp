@@ -4,7 +4,7 @@
 #include "PInputKey.hpp"
 #include "PString.hpp"
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include <vector>
 #include <functional>
 
@@ -91,7 +91,7 @@ private:
     bool textInput = false;
     PString::UTF8_Char lastUTF8Char;
 
-    SDL_GameController *gController = nullptr;
+    SDL_Gamepad *gController = nullptr;
     SDL_Haptic * gHaptic = nullptr;
 
     std::vector<std::function<void(const Key& key)>> keyDownListeners;

@@ -38,8 +38,8 @@ CXXFLAGS += --std=c++17 -fPIC
 
 
 # SDL2, libzip and lua
-CXXFLAGS += -DPK2_USE_ZIP -DPK2_USE_LUA $(shell pkg-config sdl2 libzip lua --cflags)
-LDFLAGS += $(shell pkg-config sdl2 libzip lua --libs) -lSDL2_mixer -lSDL2_image
+CXXFLAGS += $(shell pkg-config sdl3 libzip lua --cflags)
+LDFLAGS += $(shell pkg-config sdl3 libzip lua --libs) -lSDL3_image
 
 # Version string
 PK2_VERSION = $(shell git log -1 --pretty=format:"%s" | grep -o '^v[0-9]\+\.[0-9]\+')

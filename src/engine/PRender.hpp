@@ -84,4 +84,6 @@ void init(int width, int height, const char* name, const char* icon);
 void terminate();
 void update(void* _buffer8);
 
+extern SDL_Window* window;
+
 }

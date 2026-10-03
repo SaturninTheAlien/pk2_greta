@@ -6,7 +6,6 @@
 #include "PLog.hpp"
 #include "PString.hpp"
 
-#include <SDL.h>
 #include <cstring>
 #include <stdlib.h>
 

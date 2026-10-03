@@ -17,8 +17,6 @@
 #include <string>
 #endif
 
-#include <SDL_mutex.h>
-
 #define ANSI_COLOR_BLUE    "\x1b[34m"
 #define ANSI_COLOR_GREEN   "\x1b[32m"
 #define ANSI_COLOR_YELLOW  "\x1b[33m"
@@ -41,20 +39,12 @@ static u8 log_level = 0;
 static bool print_to_stdout = false;
 static bool print_to_file = false;
 
-/**
- * @brief 
- * Is it really necessary to have a mutex for only one thread?
- */
-static SDL_mutex* mutex = nullptr;
 
 void Init(u8 level, bool _print_to_stdout, bool _print_to_file) {
 
     print_to_file = _print_to_file;
     print_to_stdout = _print_to_stdout;
 
-    if (mutex == nullptr){
-        mutex = SDL_CreateMutex();
-    }
 
     log_level = level;
 
@@ -97,8 +87,6 @@ void va_Write(u8 level, const char* origin, const char* format, va_list args)
     if (log_file != nullptr) 
         va_copy(args_file, args);  // for use in write_on_file, this call is potentially expensive
     
-    SDL_LockMutex(mutex);
-
     /*time_t rawtime;
     time (&rawtime);
     struct tm* timeinfo = localtime(&rawtime);*/
@@ -160,7 +148,6 @@ void va_Write(u8 level, const char* origin, const char* format, va_list args)
         
         va_end(args_file); // va_list should be ended by the function that called va_start
     }
-    SDL_UnlockMutex(mutex);
 }
 
 
@@ -213,9 +200,6 @@ void Write(const char *origin, const char* format, ...)
 void Exit() {
 
     Write(DEBUG, "PLog", "Terminated");
-
-    SDL_DestroyMutex(mutex);
-    mutex = nullptr;
     
     if (log_file != nullptr){
         delete log_file;

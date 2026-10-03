@@ -20,6 +20,15 @@ public:
     RECT(s32 x, s32 y, s32 w, s32 h): x(x), y(y), w(w), h(h){}
 
     s32 x=0, y=0, w=0, h=0;
+
+    SDL_Rect toSDLRect() const {
+        return SDL_Rect{
+            static_cast<int>(x),
+            static_cast<int>(y),
+            static_cast<int>(w),
+            static_cast<int>(h)
+        };
+    }
 };
 
 void  rotate_palette(u8 start, u8 end);
@@ -63,11 +72,11 @@ int   screen_fill(int posx, int posy, int oikea, int ala, u8 color);
 void  set_mask(int x, int y, int w, int h);
 void  reset_mask();
 
-int   drawscreen_start(u8 *&pixels, u32 &pitch);
-int   drawscreen_end();
-int   drawimage_start(int index, u8 *&pixels, u32 &pitch);
-int   drawimage_end(int index);
-int   create_shadow(int index, u32 width, u32 height);
+void   drawscreen_start(u8 *&pixels, u32 &pitch);
+void   drawscreen_end();
+bool   drawimage_start(int index, u8 *&pixels, u32 &pitch);
+void   drawimage_end(int index);
+bool   create_shadow(int index, u32 width, u32 height);
 
 int   font_create(int image, int x, int y, int width, int height, int count);
 int   font_create(const PFile::File& file);

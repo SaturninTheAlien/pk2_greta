@@ -35,7 +35,7 @@
 #include <ctime>
 
 #include <algorithm>
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 #include "episode/save_slots.hpp"
 
