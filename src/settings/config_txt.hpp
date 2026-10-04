@@ -28,7 +28,7 @@ public:
     bool save_slots = false;
 #else
     bool panic_when_missing_assets = true;
-    bool save_slots = false;
+    bool save_slots = true;
 #endif
     bool hardcore_mode = false;
 };
