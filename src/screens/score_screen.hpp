@@ -36,5 +36,7 @@ private:
     bool map_new_record = false;
     bool map_new_time_record = false;
     bool episode_new_record = false;
+
+    int gifts_score_tmp = 0;
 };
 
