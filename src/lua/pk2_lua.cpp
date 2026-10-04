@@ -67,9 +67,9 @@ sol::object PK2Require(sol::state& lua, const std::string&moduleName, sol::funct
         }
     }    
 
-    std::optional<PFile::Path> file = PFilesystem::FindAsset(name, PFilesystem::LUA_DIR);
+    std::optional<PFile::File> file = PFilesystem::FindAsset(name, PFilesystem::LUA_DIR);
     if(file.has_value()){
-        sol::object tmp = lua.safe_script(file->GetContentAsString(), sol::script_throw_on_error, "@pk2://" + name);
+        sol::object tmp = lua.safe_script(file->readString(), sol::script_throw_on_error, "@pk2://" + name);
         if (!tmp.valid() || tmp == sol::lua_nil) {
             tmp = sol::make_object(lua, true);
         }

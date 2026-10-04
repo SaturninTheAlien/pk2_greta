@@ -26,18 +26,18 @@ PLang::PLang() {
 
 }
 
-PLang::PLang(PFile::Path path) {
+PLang::PLang(const PFile::File& file) {
 
-	Read_File(path);
+	Read_File(file);
 
 }
 
 PLang::~PLang(){}
 
-bool PLang::Read_File(PFile::Path path){
+bool PLang::Read_File(const PFile::File& file){
 
 	try{
-		PFile::RW io = path.GetRW2("r");
+		PFile::RW io = file.getRW("r");
 		values.clear();
 		keys.clear();
 

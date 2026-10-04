@@ -94,36 +94,33 @@ void to_json(nlohmann::json& j, const PK2SETTINGS& s){
 
 void Settings_Open() {
 
-	PFile::Path path = PFilesystem::GetDataFileW(SETTINGS_FILE);
+	std::filesystem::path p = PFilesystem::GetDataPathP()/SETTINGS_FILE;
 
-	try{
-		if(path.exists()){
-			Settings = path.GetJSON().get<PK2SETTINGS>();
-		}
-		else{
-			PLog::Write(PLog::DEBUG, "PK2", "No settings found");
-			Settings_Init();
-			Settings_Save();
-		}
-		//
-	}
-	catch(const PFile::PFileException& e){
+	if(std::filesystem::exists(p)){
+		try{
+			Settings = PFile::File(p).readJSON().get<PK2SETTINGS>();
+		}catch(const PFile::PFileException& e){
 		PLog::Write(PLog::DEBUG, "PK2", "No settings found");
 		Settings_Init();
 		Settings_Save();		
 		
-	}
-	catch(const std::exception& e){
-		PLog::Write(PLog::ERR, "PK2", e.what());
+		}catch(const std::exception& e){
+			PLog::Write(PLog::ERR, "PK2", e.what());
+			Settings_Init();
+			Settings_Save();
+		}
+
+	}else{
+		PLog::Write(PLog::DEBUG, "PK2", "No settings found");
 		Settings_Init();
 		Settings_Save();
-	}
 
+	}
 }
 
 void Settings_Save() {
 
-	PFile::Path path = PFilesystem::GetDataFileW(SETTINGS_FILE);
+	PFile::File path(PFilesystem::GetDataPathP()/SETTINGS_FILE);
 	nlohmann::json j = Settings;
 	std::ofstream f(path.c_str());
 

@@ -80,7 +80,7 @@ void PK2TouchScreenControls::load() {
 	int w = button_w * 0.8;
 	int h = button_h * 0.8;
 
-	std::optional<PFile::Path> path = PFilesystem::FindVanillaAsset("touchscreen.png", PFilesystem::GFX_DIR);
+	std::optional<PFile::File> path = PFilesystem::FindVanillaAsset("touchscreen.png", PFilesystem::GFX_DIR);
 
 	if(!path.has_value()){
 		throw std::runtime_error("\"touchscreen.png\" not found!");

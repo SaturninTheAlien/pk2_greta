@@ -40,6 +40,14 @@
 #include "episode/save_slots.hpp"
 
 
+/**
+ * To fix UTF-8 encoding on Windows
+ */
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
+
 static void start_test(const char* arg) {
 	
 	if (arg == NULL) return;
@@ -95,8 +103,8 @@ static void log_data() {
 
 	PLog::Write(PLog::DEBUG, "PK2", "Pekka Kana 2 started!");
 	PLog::Write(PLog::DEBUG, "PK2", "Game version: %s", PK2_VERSION_STR);
-	PLog::Write(PLog::DEBUG, "PK2", "Assets path - %s", PFilesystem::GetAssetsPath().c_str());
-	PLog::Write(PLog::DEBUG, "PK2", "Data path - %s", PFilesystem::GetDataPath().c_str());
+	PLog::Write(PLog::DEBUG, "PK2", "Assets path - %s", PFilesystem::GetAssetsPathP().c_str());
+	PLog::Write(PLog::DEBUG, "PK2", "Data path - %s", PFilesystem::GetDataPathP().c_str());
 
 }
 
@@ -126,7 +134,7 @@ void pk2_main(bool _dev_mode, bool _show_fps, bool _test_level, const std::strin
 			}
 		}	
 
-		std::optional<PFile::Path> iconPath = PFilesystem::FindVanillaAsset("icon.bmp", PFilesystem::GFX_DIR, ".png");
+		std::optional<PFile::File> iconPath = PFilesystem::FindVanillaAsset("icon.bmp", PFilesystem::GFX_DIR, ".png");
 		if(!iconPath.has_value()){
 			throw std::runtime_error("\"icon[.bmp/.png]\" not found!");			
 		}
@@ -168,6 +176,15 @@ void pk2_main(bool _dev_mode, bool _show_fps, bool _test_level, const std::strin
 }
 
 int main(int argc, char **argv) {
+
+	try{
+
+	/**
+	 * To fix UTF-8 encoding on Windows
+	 */
+#ifdef _WIN32
+    SetConsoleOutputCP(CP_UTF8);
+#endif
 
 	bool test_level = false;
 	bool dev_mode = false;
@@ -237,14 +254,7 @@ int main(int argc, char **argv) {
 					state = 2;
 				}
 				else{
-
-					try{
-						PFilesystem::SetAssetsPath(value);
-					}
-					catch(const std::exception& e){
-						printf("%s\n", e.what());
-						return 1;
-					}
+					PFilesystem::SetAssetsPath(value);
 				}
 			}
 
@@ -253,17 +263,11 @@ int main(int argc, char **argv) {
 					state = 6;
 				}
 				else {
-					try{
-						if(value=="PREF_PATH"){
-							PFilesystem::SetPrefDataPath();
-						}
-						else{
-							PFilesystem::SetDataPath(value);
-						}
+					if(value=="PREF_PATH"){
+						PFilesystem::SetPrefDataPath();
 					}
-					catch(const std::exception& e){
-						printf("%s\n", e.what());
-						return 1;
+					else{
+						PFilesystem::SetDataPath(value);
 					}
 				}
 			}
@@ -273,7 +277,7 @@ int main(int argc, char **argv) {
 			}
 			else {
 				printf("Invalid arg \"%s\"\n", arg.c_str());
-				return 1;
+				return 2;
 			}
 		}
 		break;
@@ -283,16 +287,8 @@ int main(int argc, char **argv) {
 			state = 0;
 		}
 		break;
-		case 2:{
-			
-			try{
-				PFilesystem::SetAssetsPath(arg);
-			}
-			catch(const std::exception& e){
-				printf("%s\n", e.what());
-				return 1;
-			}
-
+		case 2:{			
+			PFilesystem::SetAssetsPath(arg);
 			state = 0;
 		}
 		break;
@@ -312,29 +308,29 @@ int main(int argc, char **argv) {
 		}
 		break;
 		case 6:{
-			try{
-				if(arg=="PREF_PATH"){
-					PFilesystem::SetPrefDataPath();
-				}
-				else{
-					PFilesystem::SetDataPath(arg);
-				}
+			if(arg=="PREF_PATH"){
+				PFilesystem::SetPrefDataPath();
 			}
-			catch(const std::exception& e){
-				printf("%s\n", e.what());
-				return 1;
+			else{
+				PFilesystem::SetDataPath(arg);
 			}
 			state=0;
 		}
 		break;
 		default:
 			printf("Invalid state: %i\n", state);
-			return 1;
+			return 2;
 		}
 	}
 
 	pk2_init();
     pk2_main(dev_mode, show_fps, test_level, test_path);
+
+	}catch(const std::exception& e){
+		printf("%s\n", e.what());
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Fatal error!", e.what(), nullptr);
+		return 1;
+	}
 	
 	return 0;
 }

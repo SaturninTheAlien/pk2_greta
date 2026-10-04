@@ -1218,7 +1218,7 @@ void MenuScreen::Init() {
 
 	if (!Episode) {
 
-		std::optional<PFile::Path> menu_path = PFilesystem::FindVanillaAsset("menu.bmp", PFilesystem::GFX_DIR);
+		std::optional<PFile::File> menu_path = PFilesystem::FindVanillaAsset("menu.bmp", PFilesystem::GFX_DIR);
 		if(!menu_path.has_value()){
 			throw std::runtime_error("\"menu.bmp\" not found!");
 		}
@@ -1226,7 +1226,7 @@ void MenuScreen::Init() {
 		PDraw::image_load_with_palette(bg_screen, default_palette, *menu_path, true);
 		PDraw::palette_set(default_palette);
 
-		std::optional<PFile::Path> song9_path = PFilesystem::FindVanillaAsset("song09.xm", PFilesystem::MUSIC_DIR);
+		std::optional<PFile::File> song9_path = PFilesystem::FindVanillaAsset("song09.xm", PFilesystem::MUSIC_DIR);
 		if(!song9_path.has_value()){
 			throw std::runtime_error("\"song09.xm\" not found!");
 		}

@@ -17,25 +17,120 @@ Pekka Kana 2 was created for entertainment and artistic purposes only. It is not
 
 License Agreement:
 
+This work is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License.
+https://creativecommons.org/licenses/by-nc/4.0/deed.en
+
+
+All copyrights remain with their respective authors.
+
+Copyright (c) 2003 Janne Kivilahti
+Copyright (c) SaturninTheAlien, Danilo Lemos, and the Piste Gamez community
+
+
 You are free to:
-Share — copy and redistribute the material in any medium or format (excluding Android and iOS binaries)
+Share — copy and redistribute the material in any medium or format
 Adapt — remix, transform, and build upon the material
+
 The licensor cannot revoke these freedoms as long as you follow the license terms.
 
 Under the following terms:
-Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made.
-You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
-NonCommercial — You may not use the game for commercial purposes
-(excluding your own PK2 episodes, gameplay recordings, or live transmissions).
 
-The full license agreement for this software is available at:
-https://github.com/SaturninTheAlien/pk2_greta/blob/main/licence.txt
+Attribution — You must give appropriate credit, provide a link to the license,
+and indicate if changes were made. You may do so in any reasonable manner,
+but not in any way that suggests the licensor endorses you or your use.
+
+Proper attribution is satisfied by preserving the following existing elements,
+where they are present:
+- the original game credits displayed on the intro or title screen, and
+- the original in-game links to the official project repository and website.
+
+If these elements are not present due to technical or platform limitations
+(e.g. alternative engines or ports), attribution must be provided in a
+reasonable and visible manner appropriate for the platform.
+
+When distributing the game, you must not present yourself as the original
+author or imply endorsement. If accepting donations, it must be clear that
+they are not on behalf of the original authors unless explicitly authorized.
+
+NonCommercial — You may not use the game for commercial purposes.
+
+The following sections provide clarifications and additional permissions and do
+not limit the rights granted under the Creative Commons BY-NC 4.0 license.
+
+Commercial use (not permitted):
+
+The following are considered commercial use for the purposes of this license:
+
+* distributing the game for a fee,
+* adding in-app purchases, subscriptions, or paid features,
+* including advertisements or monetization mechanisms within the game,
+* using the game code or assets to train machine learning or AI models
+  intended for commercial use, or to create datasets for such purposes.
+
+This does not apply to ordinary use of AI-assisted development tools by end users
+or developers, where the game code or assets may be processed as part of normal
+development and are not deliberately collected or used for training datasets.
 
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Allowed uses (not considered commercial or explicitly permitted):
+
+* creation, distribution, and monetization of user-created PK2 episodes and other
+  user-created downloadable content, provided that the game itself is not bundled
+  as part of a paid product,
+* gameplay recordings, videos, reviews, and live streams, including monetized ones
+  (e.g. via ads, donations, or subscriptions).
+
+
+Additional permissions:
+
+
+Non-commercial redistribution of the game through free and open-source
+software distribution platforms (such as Flathub, Homebrew, Winget,
+or Linux distribution package managers such as APT, DNF, Pacman, or Nix)
+is permitted.
+
+For clarity, this includes distribution where:
+
+* the game is provided free of charge,
+* the game itself is not monetized (e.g. no in-app advertisements, in-app purchases, or paid access),
+* proper attribution is preserved.
+
+Exception:
+
+Notwithstanding the NonCommercial restriction, Janne Kivilahti,
+SaturninTheAlien, and Danilo Lemos are explicitly and independently permitted to distribute
+compiled versions of the game on commercial storefront platforms
+(e.g. Steam or Google Play).
+
+This permission applies only to the above individuals and does not
+extend to other parties.
+
+
+Dual licensing:
+
+The original authors (as listed above) may grant additional licenses or
+permissions on a case-by-case basis.
+
+If you intend to:
+
+* sell the game,
+* generate revenue from it in any form (excluding explicitly permitted uses such as
+  user-created episodes, gameplay recordings, or live transmissions),
+* or distribute it in a manner that does not comply with the terms above,
+
+you must obtain prior permission from the original authors.
+
+
+Contact:
+
+For inquiries, please contact us via our Discord server:
+https://discord.gg/kqDJfYX
+
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+IN THE SOFTWARE.

@@ -60,7 +60,7 @@ enum {
 
 };
 
-void load_ui_texture(PFile::Path file);
+void load_ui_texture(const PFile::File& file);
 void render_ui(FRECT src, FRECT dst, float alpha);
 
 int  set_shader(int mode);

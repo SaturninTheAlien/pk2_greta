@@ -52,25 +52,18 @@ static PZip::PZip* mEpisodeZip;
 static bool mAssetsPathSet = false;
 static bool mDataPathSet = false;
 
-void CreateDirectory(const std::string& path_in){
-    fs::path p(path_in);
 
-    /*if(!p.is_absolute()){
-        p = mAssetsPath / p;
-    }*/
 
-	if(!std::filesystem::exists(p) || !std::filesystem::is_directory(p)){
-		std::filesystem::create_directory(p);
-	}
+void CreateDirectoryP(const fs::path& path){
+    if (!fs::exists(path) || !fs::is_directory(path)) {
+        fs::create_directory(path);
+    }
 }
-
-
-
 
 void SetAssetsPath(const std::string& name){
 
     mAssetsPathSet = true;
-    fs::path p = name;
+    fs::path p = fs::u8path(name);
 
     fs::path p1 = p / "gfx" / "pk2stuff.bmp";
 
@@ -92,7 +85,7 @@ void SetAssetsPath(const std::string& name){
 }
 
 void SetDataPath(const std::string& name){
-    mDataPath = name;
+    mDataPath = fs::u8path(name);
     mDataPathSet = true;
 
     /**
@@ -100,13 +93,13 @@ void SetDataPath(const std::string& name){
      * Create the directories if they don't exist.
      */
 
-    CreateDirectory(mDataPath.string());
-    CreateDirectory( (mDataPath / "scores").string());
-    CreateDirectory( (mDataPath / "mapstore").string());
-    CreateDirectory( (mDataPath / "saves").string());
-    CreateDirectory( (mDataPath / "screenshots").string());
-    CreateDirectory( (mDataPath / "checkpoint").string());
-    CreateDirectory( (mDataPath / "episodes").string());
+    CreateDirectoryP(mDataPath);
+    CreateDirectoryP( (mDataPath / "scores"));
+    CreateDirectoryP( (mDataPath / "mapstore"));
+    CreateDirectoryP( (mDataPath / "saves"));
+    CreateDirectoryP( (mDataPath / "screenshots"));
+    CreateDirectoryP( (mDataPath / "checkpoint"));
+    CreateDirectoryP( (mDataPath / "episodes"));
 
 
     //TODO
@@ -126,7 +119,7 @@ void SetPrefDataPath(){
     SDL_free(data_path_p);
 }
 
-fs::path getBasePath(){
+static fs::path getBasePath(){
     char* c_path = SDL_GetBasePath();
 	if(c_path==nullptr){
 
@@ -238,24 +231,25 @@ void SetDefaultPaths(){
 }
 
 
-std::string GetAssetsPath(){
-    return mAssetsPath.string();
+const std::filesystem::path& GetAssetsPathP(){
+    return mAssetsPath;
 }
 
-std::string GetDataPath(){
-    return mDataPath.string();
+const std::filesystem::path& GetDataPathP(){
+    return mDataPath;
 }
 
-PFile::Path GetDataFileW(const std::string& filename){
-    return (mDataPath / filename).string();
-}
 
-std::string GetEpisodeDirectory(){
+/*PFile::File GetDataFileW(const std::string& filename){
+    return PFile::File(mDataPath / filename).string();
+}*/
+
+const std::filesystem::path& GetEpisodeDirectoryP(){
     if(!mEpisodePath.empty()){
-        return mEpisodePath.string();
+        return mEpisodePath;
     }
 
-    return mAssetsPath.string();
+    return mAssetsPath;
 }
 
 
@@ -277,16 +271,16 @@ void SetEpisode(const std::string& episodeName, PZip::PZip* zip_file){
  * @brief 
  * Finding files, cAsE insensitive
  */
-static std::optional<std::string> FindFile(const fs::path& dir, const std::string& cAsE,  const std::string& alt_extension){
+static std::optional<std::filesystem::path> FindFile(const fs::path& dir, const std::string& cAsE,  const std::string& alt_extension){
     if(!fs::exists(dir) || !fs::is_directory(dir))return {};
     std::string name_lowercase = PString::rtrim(PString::lowercase(cAsE));
 
     std::string name_lowercase_alt = "";
     if(!alt_extension.empty()){
-        name_lowercase_alt = fs::path(name_lowercase).replace_extension(alt_extension).string();
+        name_lowercase_alt = fs::u8path(name_lowercase).replace_extension(alt_extension).string();
     }
 
-    std::optional<std::string> alt_res = {};
+    std::optional<std::filesystem::path> alt_res = {};
 
 
     for (const auto & entry : fs::directory_iterator(dir)){
@@ -297,10 +291,10 @@ static std::optional<std::string> FindFile(const fs::path& dir, const std::strin
             
             if(name_lowercase == s1){
 
-                return (dir / filename).string();
+                return dir / filename;
             }
             else if(!alt_extension.empty() && name_lowercase_alt == s1){
-                alt_res = (dir / filename).string();
+                alt_res = dir / filename;
 
             }
         }
@@ -314,8 +308,8 @@ static std::optional<std::string> FindFile(const fs::path& dir, const std::strin
 
 
 
-std::optional<PFile::Path> FindVanillaAsset(const std::string& name, const std::string& default_dir, const std::string& alt_extension){
-    std::string filename = fs::path(name).filename().string();
+std::optional<PFile::File> FindVanillaAsset(const std::string& name, const std::string& default_dir, const std::string& alt_extension){
+    
 
 #ifdef __ANDROID__
     /**
@@ -357,13 +351,14 @@ std::optional<PFile::Path> FindVanillaAsset(const std::string& name, const std::
     }
 
 #else
+    std::string filename = fs::u8path(name).filename().string();
     /**
      * @brief 
      * sprites/pig.spr2
      */
-    std::optional<std::string> op = FindFile(mAssetsPath / default_dir, filename, alt_extension);
+    std::optional<std::filesystem::path> op = FindFile(mAssetsPath / default_dir, filename, alt_extension);
     if(op.has_value()){
-        return PFile::Path(*op);
+        return PFile::File(*op);
     }
 
 #endif
@@ -373,8 +368,8 @@ std::optional<PFile::Path> FindVanillaAsset(const std::string& name, const std::
 
 
 
-std::optional<PFile::Path> FindEpisodeAsset(const std::string& name, const std::string& default_dir, const std::string& alt_extension){
-    std::string filename = fs::path(name).filename().string();
+std::optional<PFile::File> FindEpisodeAsset(const std::string& name, const std::string& default_dir, const std::string& alt_extension){
+    std::string filename = fs::u8path(name).filename().string();
     if(filename.empty()) return {};
 
     if(mEpisodeZip!=nullptr){
@@ -386,7 +381,7 @@ std::optional<PFile::Path> FindEpisodeAsset(const std::string& name, const std::
          */
 
         entry = mEpisodeZip->getEntry( (mEpisodePath / filename).string(), alt_extension);
-        if(entry.has_value())return PFile::Path(mEpisodeZip, *entry);
+        if(entry.has_value())return PFile::File(mEpisodeZip, *entry);
 
 
         /**
@@ -395,7 +390,7 @@ std::optional<PFile::Path> FindEpisodeAsset(const std::string& name, const std::
          */
         if(!default_dir.empty()){
             entry = mEpisodeZip->getEntry((mEpisodePath/default_dir/filename).string(), alt_extension);
-            if(entry.has_value())return PFile::Path(mEpisodeZip, *entry);
+            if(entry.has_value())return PFile::File(mEpisodeZip, *entry);
         }
         
         /**
@@ -404,7 +399,7 @@ std::optional<PFile::Path> FindEpisodeAsset(const std::string& name, const std::
          */
         if(!default_dir.empty()){
             entry = mEpisodeZip->getEntry((fs::path(default_dir)/filename).string(), alt_extension);
-            if(entry.has_value())return PFile::Path(mEpisodeZip, *entry);
+            if(entry.has_value())return PFile::File(mEpisodeZip, *entry);
         }        
     }
     
@@ -416,9 +411,9 @@ std::optional<PFile::Path> FindEpisodeAsset(const std::string& name, const std::
          * @brief 
          * episodes/"episode"/pig.spr2
          */
-        std::optional<std::string> op = FindFile(mEpisodePath, filename, alt_extension);
+        std::optional<std::filesystem::path> op = FindFile(mEpisodePath, filename, alt_extension);
         if(op.has_value()){
-            return PFile::Path(*op);
+            return PFile::File(*op);
         }
 
         /**
@@ -428,7 +423,7 @@ std::optional<PFile::Path> FindEpisodeAsset(const std::string& name, const std::
         if(!default_dir.empty()){
             op = FindFile(mEpisodePath / default_dir, filename, alt_extension);
             if(op.has_value()){
-                return PFile::Path(*op);
+                return PFile::File(*op);
             }
         }
 
@@ -449,16 +444,16 @@ std::optional<PFile::Path> FindEpisodeAsset(const std::string& name, const std::
     return {};
 }
 
-std::optional<PFile::Path> FindAsset(const std::string& name, const std::string& default_dir, const std::string& alt_extension){
+std::optional<PFile::File> FindAsset(const std::string& name, const std::string& default_dir, const std::string& alt_extension){
     if(name.empty())return {};
 
     /**
      * 1. /full_path/pig.spr2
      */    
-    fs::path p(name);
-    if(p.is_absolute() && fs::exists(p) && !fs::is_directory(p))return PFile::Path(name);
+    fs::path p = fs::u8path(name);
+    if(p.is_absolute() && fs::exists(p) && !fs::is_directory(p))return PFile::File(p);
 
-    std::optional<PFile::Path> op = FindEpisodeAsset(name, default_dir, alt_extension);
+    std::optional<PFile::File> op = FindEpisodeAsset(name, default_dir, alt_extension);
     if(op.has_value())return op;
 
     op = FindVanillaAsset(name, default_dir, alt_extension);
@@ -470,14 +465,13 @@ std::optional<PFile::Path> FindAsset(const std::string& name, const std::string&
     return op;
 }
 
-std::vector<std::string> ScanDirectory_s(const std::string& name, const std::string& filter){
-    fs::path dir(name);
-    if(!dir.is_absolute()){
-        dir = mAssetsPath / dir;
-    }
+std::vector<std::string> ScanDirectoryP(const std::filesystem::path& path_in, const std::string& filter){
+
+    fs::path dir = path_in.is_absolute() ? path_in : mAssetsPath / path_in;
+
     std::vector<std::string> result;
     if(!fs::exists(dir) || !fs::is_directory(dir)){
-        PLog::Write(PLog::WARN, "PFile", "Directory \"%s\" not found, cannot scan it", name.c_str());
+        PLog::Write(PLog::WARN, "PFile", "Directory \"%s\" not found, cannot scan it", path_in.string().c_str());
         return result;
     }
 
@@ -510,7 +504,7 @@ std::vector<std::string> ScanDirectory_s(const std::string& name, const std::str
 std::vector<std::string> ScanOriginalAssetsDirectory(const std::string& name, const std::string& filter){
 
 #ifndef __ANDROID__
-    return ScanDirectory_s(name, filter);
+    return ScanDirectoryP(fs::u8path(name), filter);
 #else
     JNIEnv* env = (JNIEnv*)SDL_AndroidGetJNIEnv();
 	jobject activity = (jobject)SDL_AndroidGetActivity();
@@ -568,7 +562,7 @@ std::vector<std::string> ScanOriginalAssetsDirectory(const std::string& name, co
 }
 
 
-std::string GetScreenshotName(){
+std::filesystem::path GetScreenshotNameP(){
 
     fs::path sp = mDataPath /"screenshots";
     int i = 0;
@@ -578,7 +572,7 @@ std::string GetScreenshotName(){
         ++i;
     }while (fs::exists(res));
 
-    return res.string();
+    return res;
 }
 
 }

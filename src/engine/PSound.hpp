@@ -16,13 +16,13 @@ int update();
 int terminate();
 
 bool is_playing(int channel);
-int  load_sfx(PFile::Path path);
+int  load_sfx(const PFile::File& file);
 int  set_channel(int channel, int panoramic, int volume);
 int  play_sfx(int index, int volume, int panoramic, int freq);
 int  free_sfx(int index);
 void reset_sfx();
 
-int  start_music(PFile::Path path);
+int  start_music(const PFile::File& file);
 void set_musicvolume(u8 volume);
 void set_musicvolume_now(u8 volume);
 void stop_music();

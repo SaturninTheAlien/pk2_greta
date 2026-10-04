@@ -166,7 +166,7 @@ int image_new(int w, int h){
 }
 
 
-static int mLoadImage(PFile::Path path, bool hasAlphaColor){
+static int mLoadImage(const PFile::File& file, bool hasAlphaColor){
 
     int index = findfreeimage();
 
@@ -178,26 +178,26 @@ static int mLoadImage(PFile::Path path, bool hasAlphaColor){
     }
 
     try{
-        PFile::RW rw = path.GetRW2("r");
+        PFile::RW rw = file.getRW("r");
         imageList[index] = IMG_Load_RW((SDL_RWops*)(rw._rwops), 0);
         rw.close();
     }
     catch(const PFile::PFileException& e){
         PLog::Write(PLog::ERR, "PDraw", e.what());
-        PLog::Write(PLog::ERR, "PDraw", "Couldn't find %s", path.c_str());
+        PLog::Write(PLog::ERR, "PDraw", "Couldn't find %s", file.c_str());
         return -1;
     }
 
     if (imageList[index] == NULL) {
 
-        PLog::Write(PLog::ERR, "PDraw", "Couldn't load %s, %s", path.c_str(), SDL_GetError());
+        PLog::Write(PLog::ERR, "PDraw", "Couldn't load %s, %s", file.c_str(), SDL_GetError());
         return -1;
     
     }
 
     if(imageList[index]->format->BitsPerPixel != 8) {
 
-        PLog::Write(PLog::ERR, "PDraw", "Failed to open %s, just 8bpp indexed images!", path.c_str());
+        PLog::Write(PLog::ERR, "PDraw", "Failed to open %s, just 8bpp indexed images!", file.c_str());
         image_delete(index);
         return -1;
     }
@@ -210,9 +210,9 @@ static int mLoadImage(PFile::Path path, bool hasAlphaColor){
 }
 
 
-int image_load(PFile::Path path, bool hasAlphaColor) {
+int image_load(const PFile::File& file, bool hasAlphaColor) {
 
-    int index = mLoadImage(path, hasAlphaColor);
+    int index = mLoadImage(file, hasAlphaColor);
     if(index<0)return index;
 
     SDL_SetSurfacePalette(imageList[index], game_palette);
@@ -220,8 +220,8 @@ int image_load(PFile::Path path, bool hasAlphaColor) {
 
 }
 
-std::pair<int, int> image_load_with_palette(PFile::Path path, bool hasAlphaColor){
-    int index = mLoadImage(path, hasAlphaColor);
+std::pair<int, int> image_load_with_palette(const PFile::File& file, bool hasAlphaColor){
+    int index = mLoadImage(file, hasAlphaColor);
     if(index<0)return std::make_pair(-1, -1);
 
     int palIndex = findfreepalette();
@@ -236,21 +236,21 @@ std::pair<int, int> image_load_with_palette(PFile::Path path, bool hasAlphaColor
 }
 
 
-int image_load(int& index, PFile::Path path, bool hasAlphaColor) {
+int image_load(int& index, const PFile::File& file, bool hasAlphaColor) {
     
     image_delete(index);
-    index = image_load(path, hasAlphaColor);
+    index = image_load(file, hasAlphaColor);
 
     return index;
 
 }
 
-void image_load_with_palette(int& img_index, int& pal_index, PFile::Path path, bool hasAlphaColor){
+void image_load_with_palette(int& img_index, int& pal_index, const PFile::File& file, bool hasAlphaColor){
 
     image_delete(img_index);
     palette_delete(pal_index);
 
-    std::pair p = image_load_with_palette(path, hasAlphaColor);
+    std::pair p = image_load_with_palette(file, hasAlphaColor);
 
     img_index = p.first;
     pal_index = p.second;
@@ -807,7 +807,7 @@ int font_create(int image, int x, int y, int char_w, int char_h, int count) {
 
 }
 
-int font_create(PFile::Path path) {
+int font_create(const PFile::File& file) {
     
     int index = findfreefont();
     if (index == -1) {
@@ -819,7 +819,7 @@ int font_create(PFile::Path path) {
 
     fontList[index] = new PFont();
 
-    if (fontList[index]->load(path) == -1) {
+    if (fontList[index]->load(file) == -1) {
 
         PLog::Write(PLog::ERR, "PDraw", "Can't load a font from file!");
         delete fontList[index];
@@ -828,7 +828,7 @@ int font_create(PFile::Path path) {
     
     }
 
-    PLog::Write(PLog::DEBUG, "PDraw", "Created font from %s - id %i", path.c_str(), index);
+    PLog::Write(PLog::DEBUG, "PDraw", "Created font from %s - id %i", file.c_str(), index);
     
     return index;
 

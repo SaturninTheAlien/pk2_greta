@@ -225,7 +225,7 @@ void IntroScreen::Init() {
 	
 	PDraw::set_offset(640, 480);
 
-	std::optional<PFile::Path> intro_bmp = PFilesystem::FindVanillaAsset("intro.bmp", PFilesystem::GFX_DIR);
+	std::optional<PFile::File> intro_bmp = PFilesystem::FindVanillaAsset("intro.bmp", PFilesystem::GFX_DIR);
 	if(!intro_bmp.has_value()){
 		throw std::runtime_error("\"intro.bmp\" not found!");
 	}
@@ -233,7 +233,7 @@ void IntroScreen::Init() {
 	PDraw::image_load_with_palette(bg_screen, default_palette, *intro_bmp, false);
 	PDraw::palette_set(default_palette);
 
-	std::optional<PFile::Path> intro_xm = PFilesystem::FindVanillaAsset("intro.xm", PFilesystem::MUSIC_DIR);
+	std::optional<PFile::File> intro_xm = PFilesystem::FindVanillaAsset("intro.xm", PFilesystem::MUSIC_DIR);
 	if(!intro_xm.has_value()){
 		throw std::runtime_error("\"intro.xm\" not found!");
 	}

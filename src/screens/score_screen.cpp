@@ -315,7 +315,7 @@ void ScoreScreen::Init() {
 	
 	PDraw::set_offset(640, 480);
 
-	std::optional<PFile::Path> menu_path = PFilesystem::FindAsset("menu.bmp", PFilesystem::GFX_DIR, ".png");
+	std::optional<PFile::File> menu_path = PFilesystem::FindAsset("menu.bmp", PFilesystem::GFX_DIR, ".png");
 	if(!menu_path.has_value()){
 		throw std::runtime_error("\"menu.bmp\" not found!");
 	}
@@ -343,6 +343,8 @@ void ScoreScreen::Init() {
 	energy_score = 0;
 	gifts_score = 0;
 
+	gifts_score_tmp = Game->gifts.totalScore();
+
 	if(!test_level){
 		
 		//Temp level score to comare with the scores table.
@@ -350,7 +352,7 @@ void ScoreScreen::Init() {
 		temp_score += Game->score;
 		temp_score += Game->timeout / 12; //(Game->timeout / 60) * 5;
 		temp_score += Game->playerSprite->energy * 300;
-		temp_score += Game->gifts.totalScore();
+		temp_score += gifts_score_tmp;
 
 		/*if (!Game->repeating)
 			Episode->player_score += temp_score;*/
@@ -487,7 +489,7 @@ void ScoreScreen::Loop() {
 			energy_score += Game->playerSprite->energy * 300;
 			Game->playerSprite->energy = 0;
 
-			gifts_score = Game->gifts.totalScore();
+			gifts_score = gifts_score_tmp;
 		}
 
 	}

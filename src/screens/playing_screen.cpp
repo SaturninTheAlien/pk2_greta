@@ -120,7 +120,7 @@ void PlayingScreen::Draw_InGame_DebugInfo() {
 	PDraw::font_write_line(fontti1, Game->level_file, 10, 460);
 	PDraw::font_write_line(fontti1, std::to_string(Game->playerSprite->jump_timer), 270, 460);
 
-	PDraw::font_write_line(fontti1, PFilesystem::GetAssetsPath(), 10, 470);
+	PDraw::font_write_line(fontti1, PFilesystem::GetAssetsPathP().string(), 10, 470);
 
 	PDraw::font_write_line(fontti1, std::to_string(Game->playerSprite->super_mode_timer), 610, 470);
 	PDraw::font_write_line(fontti1, std::to_string(Game->playerSprite->invisible_timer), 610, 460);
@@ -466,9 +466,9 @@ void PlayingScreen::Loop(){
 
 		if(this->takingScreenshot){
 			this->takingScreenshot = false;
-			std::string name = PFilesystem::GetScreenshotName();
-			PLog::Write(PLog::INFO, "PK2", "Taken %s", name.c_str());
-			PDraw::take_screenshot(name);
+			std::filesystem::path p = PFilesystem::GetScreenshotNameP();
+			PLog::Write(PLog::INFO, "PK2", "Taken %s", p.c_str());
+			PDraw::take_screenshot(p.string());
 		}
 	} else {
 

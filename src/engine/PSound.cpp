@@ -31,7 +31,7 @@ static bool channel_playing[CHANNELS];
 
 static Mix_Music* music = NULL;
 static PFile::RW* music_rw = NULL;
-static PFile::Path playingMusic = PFile::Path("");
+static PFile::File playingMusic = PFile::File("");
 
 struct audio_data_t {
 
@@ -95,7 +95,7 @@ bool is_playing(int channel) {
 
 }
 
-int load_sfx(PFile::Path path) {
+int load_sfx(const PFile::File& file) {
 
 	int ret = -1;
 
@@ -103,7 +103,7 @@ int load_sfx(PFile::Path path) {
 		if (chunks[i] == NULL) {
 
 			try{
-				PFile::RW rw = path.GetRW2("r");
+				PFile::RW rw = file.getRW("r");
 				chunks[i] = Mix_LoadWAV_RW((SDL_RWops*)(rw._rwops), 0);
 				rw.close();
 
@@ -111,7 +111,7 @@ int load_sfx(PFile::Path path) {
 			}
 			catch(const PFile::PFileException& e){
 				PLog::Write(PLog::ERR, "PSound", e.what());
-				PLog::Write(PLog::ERR, "PSound", "Couldn't open %s", path.c_str());
+				PLog::Write(PLog::ERR, "PSound", "Couldn't open %s", file.c_str());
 			}
 			break;
 		}
@@ -249,9 +249,9 @@ int resume_music() {
 }
 
 
-int start_music(PFile::Path path) {
+int start_music(const PFile::File& file) {
 
-	if (playingMusic == path)
+	if (playingMusic == file)
 		return 1;
 	
 	Mix_HaltMusic();
@@ -264,15 +264,15 @@ int start_music(PFile::Path path) {
 		delete music_rw;
 		music_rw = nullptr;
 	}
-	playingMusic = path;
+	playingMusic = file;
 
 	try{
-		music_rw = new PFile::RW(path.GetRW2("r"));
+		music_rw = new PFile::RW(file.getRW("r"));
 		music = Mix_LoadMUS_RW((SDL_RWops*)(music_rw->_rwops), 0);
 	}
 	catch(const PFile::PFileException& e){
 		PLog::Write(PLog::ERR, "PSound", e.what());
-		PLog::Write(PLog::ERR, "PSound", "Unable to load music \"%s\"",path.c_str());
+		PLog::Write(PLog::ERR, "PSound", "Unable to load music \"%s\"",file.c_str());
 	}
 	
 	if (music == nullptr) {
@@ -302,7 +302,7 @@ int start_music(PFile::Path path) {
 
 	Mix_VolumeMusic(mus_volume_now * MIX_MAX_VOLUME / 100);
 	
-	PLog::Write(PLog::DEBUG, "PSound", "Loaded %s", path.c_str());
+	PLog::Write(PLog::DEBUG, "PSound", "Loaded %s", file.c_str());
 	return 0;
 	
 }
@@ -325,7 +325,7 @@ void stop_music(){
 
 	clear_channels();
 	Mix_HaltMusic();
-	playingMusic = PFile::Path("");
+	playingMusic = PFile::File("");
 
 }
 

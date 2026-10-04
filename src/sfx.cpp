@@ -46,7 +46,7 @@ int SfxHandler::mLoadSound(const std::string& name){
 
     namespace fs = std::filesystem;
 
-    std::optional<PFile::Path> path = PFilesystem::FindVanillaAsset(name, PFilesystem::SFX_DIR);
+    std::optional<PFile::File> path = PFilesystem::FindVanillaAsset(name, PFilesystem::SFX_DIR);
     if(!path.has_value()){
         throw PExcept::FileNotFoundException(name, PExcept::MISSING_SFX);
     }
@@ -61,7 +61,7 @@ int SfxHandler::mLoadSound(const std::string& name){
 }
 
 int SfxHandler::mLoadSoundEpisode(int prev, const std::string&name, EpisodeClass*episode){
-    std::optional<PFile::Path> path = PFilesystem::FindEpisodeAsset(name, PFilesystem::SFX_DIR);
+    std::optional<PFile::File> path = PFilesystem::FindEpisodeAsset(name, PFilesystem::SFX_DIR);
     if(path.has_value()){
         int res = PSound::load_sfx(*path);
         if(res!=-1){
