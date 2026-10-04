@@ -96,10 +96,12 @@ static const char default_config[] =
 
 void Config_txt::readFile(){
     PLang conf = PLang();
-	PFile::Path path = PFilesystem::GetDataFileW("config.txt");
 
-	if(!path.exists() || !conf.Read_File(path)){
-		PFile::RW rw = path.GetRW2("w");
+	std::filesystem::path p = PFilesystem::GetDataPathP()/"config.txt";
+
+	PFile::File path(p);
+	if(!std::filesystem::exists(p) || !conf.Read_File(path)){
+		PFile::RW rw = path.getRW("w");
 		rw.write(default_config, sizeof(default_config) - 1);
 		rw.close();
 		return;

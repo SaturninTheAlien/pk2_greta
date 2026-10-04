@@ -32,10 +32,10 @@ static bool fullscreen_set = false;
 
 static Renderer* renderer;
 
-void load_ui_texture(PFile::Path file) {
+void load_ui_texture(const PFile::File& file) {
 
 	try{
-		PFile::RW rw = file.GetRW2("r");
+		PFile::RW rw = file.getRW("r");
 		SDL_Surface* surface = IMG_Load_RW((SDL_RWops*)(rw._rwops), 0);
 		renderer->load_ui_texture(surface);
 	}

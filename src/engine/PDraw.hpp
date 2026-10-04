@@ -29,11 +29,11 @@ void  palette_set(int index);
 void  palette_delete(int& index);
 
 int   image_new(int w, int h);
-int   image_load(PFile::Path path, bool hasAlphaColor=true);
-int   image_load(int& index, PFile::Path path, bool hasAlphaColor=true);
+int   image_load(const PFile::File& file, bool hasAlphaColor=true);
+int   image_load(int& index, const PFile::File& file, bool hasAlphaColor=true);
 
-std::pair<int, int> image_load_with_palette(PFile::Path path, bool hasAlphaColor=true);
-void   image_load_with_palette(int& img_index, int& pal_index, PFile::Path path, bool hasAlphaColor=true);
+std::pair<int, int> image_load_with_palette(const PFile::File& file, bool hasAlphaColor=true);
+void   image_load_with_palette(int& img_index, int& pal_index, const PFile::File& file, bool hasAlphaColor=true);
 
 int   image_copy(int image);
 int   image_cut(int ImgIndex, int x, int y, int w, int h);
@@ -70,7 +70,7 @@ int   drawimage_end(int index);
 int   create_shadow(int index, u32 width, u32 height);
 
 int   font_create(int image, int x, int y, int width, int height, int count);
-int   font_create(PFile::Path path);
+int   font_create(const PFile::File& file);
 int   font_write_line(int font_index, const std::string& text, int x, int y);
 std::pair<int, int> font_write(int font_index, const std::string& text, int x, int y);
 std::pair<int, int> font_writealpha_s(int font_index, const std::string& text, int x, int y, int alpha, int blendMode=0);

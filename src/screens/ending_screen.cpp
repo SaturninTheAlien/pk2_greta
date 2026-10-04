@@ -126,7 +126,7 @@ void EndingScreen::Init() {
 	
 	PDraw::set_offset(640, 480);
 
-	std::optional<PFile::Path> path = PFilesystem::FindAsset("ending.bmp", PFilesystem::GFX_DIR, ".png");
+	std::optional<PFile::File> path = PFilesystem::FindAsset("ending.bmp", PFilesystem::GFX_DIR, ".png");
 
 	if (path.has_value()) {
 

@@ -278,7 +278,7 @@ void MapScreen::Play_Music() {
 		"map.it",
 	};
 
-	std::optional<PFile::Path> mapmus = {};
+	std::optional<PFile::File> mapmus = {};
 
 	for(const std::string& music_name:map_music_filenames){
 		mapmus = PFilesystem::FindEpisodeAsset(music_name, PFilesystem::MUSIC_DIR);
@@ -321,7 +321,7 @@ void MapScreen::Init() {
 	// Load custom assets (should be done when creating Episode)
 	Episode->loadAssets();
 
-	std::optional<PFile::Path> path = PFilesystem::FindAsset("map.bmp", PFilesystem::GFX_DIR, ".png");
+	std::optional<PFile::File> path = PFilesystem::FindAsset("map.bmp", PFilesystem::GFX_DIR, ".png");
 
 	if (path.has_value()) {
 		PDraw::image_load_with_palette(bg_screen, default_palette, *path, true);

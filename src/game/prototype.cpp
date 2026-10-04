@@ -683,10 +683,10 @@ void to_json(nlohmann::json& j, const PrototypeClass& c){
 	}
 }
 
-void PrototypeClass::loadPrototypeJSON(PFile::Path path,
+void PrototypeClass::loadPrototypeJSON(const PFile::File& path,
 	std::function<PrototypeClass*(const std::string&)> fn_loadPrototype){
 
-	const nlohmann::json proto = path.GetJSON();
+	const nlohmann::json proto = path.readJSON();
 	if(!proto.contains("version") || !proto["version"].is_string()){
 		throw PExcept::PException("Incorrect JSON, no string field \"version\"");
 	}
@@ -716,10 +716,10 @@ void PrototypeClass::loadPrototypeJSON(PFile::Path path,
 	}
 }
 
-void PrototypeClass::loadPrototypeLegacy(PFile::Path path){
+void PrototypeClass::loadPrototypeLegacy(const PFile::File& path){
 
 	try{
-		PFile::RW file = path.GetRW2("r");
+		PFile::RW file = path.getRW("r");
 		char versio[4];
 		file.read(versio, 4);
 
@@ -770,7 +770,7 @@ void PrototypeClass::loadAssets(){
 
 	this->mAssetsLoaded=true;
 
-	std::optional<PFile::Path> imagePath = PFilesystem::FindAsset(this->picture_filename,
+	std::optional<PFile::File> imagePath = PFilesystem::FindAsset(this->picture_filename,
 	PFilesystem::SPRITES_DIR);
 
 	if(!imagePath.has_value()){
@@ -856,7 +856,7 @@ void PrototypeClass::loadAssets(){
 
 		if(!this->sound_files[i].empty()){
 
-			std::optional<PFile::Path> soundPath = PFilesystem::FindAsset(this->sound_files[i],
+			std::optional<PFile::File> soundPath = PFilesystem::FindAsset(this->sound_files[i],
 			PFilesystem::SPRITES_DIR);
 
 			if (soundPath.has_value()) {

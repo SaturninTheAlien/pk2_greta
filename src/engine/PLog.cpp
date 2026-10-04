@@ -52,10 +52,6 @@ void Init(u8 level, bool _print_to_stdout, bool _print_to_file) {
     print_to_file = _print_to_file;
     print_to_stdout = _print_to_stdout;
 
-#ifdef _WIN32
-    SetConsoleOutputCP(CP_UTF8);
-#endif
-
     if (mutex == nullptr){
         mutex = SDL_CreateMutex();
     }
@@ -67,8 +63,8 @@ void Init(u8 level, bool _print_to_stdout, bool _print_to_file) {
     }
 
     if(print_to_file){
-        PFile::Path file = PFilesystem::GetDataFileW("log.txt");
-        log_file = new PFile::RW(file.GetRW2("w"));
+        PFile::File file(PFilesystem::GetDataPathP() / "log.txt");
+        log_file = new PFile::RW(file.getRW("w"));
     }
 }
 

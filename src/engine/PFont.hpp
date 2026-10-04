@@ -42,7 +42,7 @@ public:
 	PFont();
 	~PFont();
 
-	int load(PFile::Path path);
+	int load(const PFile::File& file);
 
 	bool acceptChar(PString::UTF8_Char u8c)const;
 };

@@ -181,9 +181,9 @@ static episode_entry LegacyFindEpisode(const std::string& episodeName){
 
 void Save_All_Records() {
 
-	PFile::Path path = PFilesystem::GetDataFileW(SAVES_FILE);
+	PFile::File path(PFilesystem::GetDataPathP() /  SAVES_FILE);
 	try{
-		PFile::RW file = path.GetRW2("w");
+		PFile::RW file = path.getRW("w");
 		file.write("4", 2);
 		nlohmann::json j = saveSlots;
 		file.writeCBOR(j);
@@ -199,16 +199,19 @@ void Save_All_Records() {
 void LoadSaveSlots() {
 	char version[2];
 
-	PFile::Path path = PFilesystem::GetDataFileW(SAVES_FILE);
-	if(!path.exists()){
+
+	std::filesystem::path p = PFilesystem::GetDataPathP() / SAVES_FILE;
+
+	if(!std::filesystem::exists(p)){
 		ClearSlots();
 		Save_All_Records();
 		return;
 	}
 
+	PFile::File path(p);
 	try
 	{
-		PFile::RW file = path.GetRW2("r");
+		PFile::RW file = path.getRW("r");
 		file.read(version, 2);
 		version[1] = '\0';
 		if(strncmp(version, "4", 2) == 0){

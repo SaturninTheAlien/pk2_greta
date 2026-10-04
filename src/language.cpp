@@ -99,7 +99,7 @@ void Load_Language(const std::string& language) {
 
 	namespace fs = std::filesystem;
 
-	std::optional<PFile::Path> path = PFilesystem::FindVanillaAsset(language, PFilesystem::LANGUAGE_DIR);
+	std::optional<PFile::File> path = PFilesystem::FindVanillaAsset(language, PFilesystem::LANGUAGE_DIR);
 	if(!path.has_value()){
 		throw PExcept::FileNotFoundException(language, PExcept::MISSING_LANG);
 	}

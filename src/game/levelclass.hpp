@@ -94,7 +94,7 @@ class LevelClass {
     void clear();
     void clearSectors();
 
-    void load(PFile::Path path, bool headerOnly);
+    void load(const PFile::File& file, bool headerOnly);
 
     void drawBackgroundTiles(int camera_x, int camera_y, LevelSector* sector){
         sector->drawBackgroundTiles(camera_x, camera_y, this->block_animation_frame);
@@ -110,7 +110,7 @@ class LevelClass {
         }
     }
 
-    void saveVersion15(PFile::Path path)const;
+    void saveVersion15(const PFile::File& file)const;
 
     void calculateBlockTypes();
     void moveBlocks(u32 button1, u32 button2, u32 button3);
@@ -134,6 +134,6 @@ private:
         std::size_t level_size,
         u8* tiles);
 
-    void loadVersion13(PFile::Path path, bool headerOnly);
-    void loadVersion15(PFile::Path path, bool headerOnly);
+    void loadVersion13(const PFile::File& file, bool headerOnly);
+    void loadVersion15(const PFile::File& file, bool headerOnly);
 };

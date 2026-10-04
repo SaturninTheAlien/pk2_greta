@@ -25,7 +25,7 @@ void Tileset::clear(){
 
 
 void Tileset::loadImage(const std::string& name){
-	std::optional<PFile::Path> path = PFilesystem::FindAsset(name, PFilesystem::TILES_DIR);
+	std::optional<PFile::File> path = PFilesystem::FindAsset(name, PFilesystem::TILES_DIR);
 	if(!path.has_value()){
 		if(config_txt.panic_when_missing_assets){
 			throw PExcept::FileNotFoundException(name, PExcept::MISSING_TILESET);

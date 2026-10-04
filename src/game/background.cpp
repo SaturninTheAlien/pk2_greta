@@ -17,7 +17,7 @@
 
 void Background::load(const std::string&name){
 
-	std::optional<PFile::Path> path = PFilesystem::FindAsset(name, PFilesystem::SCENERY_DIR);
+	std::optional<PFile::File> path = PFilesystem::FindAsset(name, PFilesystem::SCENERY_DIR);
 
     if (!path.has_value()){
 		if(config_txt.panic_when_missing_assets){
@@ -31,7 +31,7 @@ void Background::load(const std::string&name){
 			 */
 
 
-			std::optional<PFile::Path> path = PFilesystem::FindVanillaAsset("ending.bmp", PFilesystem::GFX_DIR);
+			std::optional<PFile::File> path = PFilesystem::FindVanillaAsset("ending.bmp", PFilesystem::GFX_DIR);
 			if(!path.has_value()){
 				throw PExcept::FileNotFoundException("File \"ending.bmp\" not found!", PExcept::MISSING_BACKGROUND);
 			}

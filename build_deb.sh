@@ -11,7 +11,7 @@ set -e
 
 ARCH=$(dpkg --print-architecture)
 APP=Pekka-Kana-2
-VER=1.5.3
+VER=1.5.4
 PKG="pkg/${APP}_${VER}_Linux_${ARCH}"
 
 PKGDIR=$PKG
@@ -38,12 +38,23 @@ mkdir -p "$ICON_DIR"
 mkdir -p "$PKGDIR/DEBIAN"
 
 echo "== Launcher =="
-install -m 755 misc/linux/dist-launcher.lua \
-    "$BIN_DIR/$APP"
+
+cat > "$BIN_DIR/$APP" <<EOF
+#!/usr/bin/env sh
+export LD_LIBRARY_PATH="/usr/lib/games/${APP}\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}"
+
+exec "/usr/lib/games/${APP}/pk2_greta_${VER}" \
+    --assets-path="/usr/share/games/${APP}" \
+    --data-path=PREF_PATH \
+    "\$@"
+EOF
+
+chmod 755 "$BIN_DIR/$APP"
+
 
 echo "== Binary =="
 install -m 755 bin/pekka-kana-2 \
-    "$LIB_DIR/pk2_greta_${VER}"
+    "${LIB_DIR}/pk2_greta_${VER}"
 
 echo "== Bundle libs =="
 
@@ -60,7 +71,7 @@ rsync -a \
   "$SHARE_DIR/"
 
 echo "== Desktop =="
-cat > "$DESKTOP_DIR/$APP.desktop" <<EOF
+cat > "$DESKTOP_DIR/pekka-kana-2.desktop" <<EOF
 [Desktop Entry]
 Type=Application
 Version=1.0
@@ -71,12 +82,12 @@ Icon=pekka-kana-2
 Terminal=false
 Categories=Game;
 StartupNotify=true
-Keywords=game;platformer;pekka;
+Keywords=game;platformer;pekka;rooster;
 EOF
 
 echo "== Icon =="
 install -m 644 misc/icon_64x64.png \
-    "$ICON_DIR/$APP.png"
+    "$ICON_DIR/pekka-kana-2.png"
 
 echo "== Control =="
 cat > "$PKGDIR/DEBIAN/control" <<EOF

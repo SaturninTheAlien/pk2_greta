@@ -11,6 +11,7 @@
 #include <vector>
 #include <string>
 #include <stdexcept>
+#include <filesystem>
 
 namespace PFile {
 
@@ -84,40 +85,41 @@ private:
 
 };
 
-// TODO
-// Delete this class and replace with std::filesystem
-class Path {
 
-public: 
+class File{
+public:
+    File(const std::filesystem::path& path):path(path){
 
-    Path(std::string path);
-    Path(PZip::PZip* zip_file, const PZip::PZipEntry&e);
-    Path(Path path, std::string file);
-    ~Path();
+    }
 
-    bool operator ==(const Path& path)const;
+    File(PZip::PZip* zip_file, const PZip::PZipEntry&e)
+    :path( std::filesystem::u8path(e.name)), zip_file(zip_file), zip_entry(e){
+    }
+    ~File()=default;
+
+    bool operator ==(const File& other)const;
+
     const char* c_str()const{
         return this->path.c_str();
     }
 
-    const std::string& str()const{
-        return this->path;
+    RW getRW(std::string mode)const;
+    nlohmann::json readJSON()const;
+    std::string readString()const;
+    
+    std::string extension()const{
+        return this->path.extension().string();
     }
-
-
-    std::string GetContentAsString()const;
-    RW GetRW2(std::string mode)const;
-    nlohmann::json GetJSON()const;
-    bool exists()const;
 
 #ifdef __ANDROID__
     bool insideAndroidAPK = false;
 #endif
 
 private:
-    std::string path;
-    PZip::PZip* zip_file;
+    std::filesystem::path path;
+    PZip::PZip* zip_file = nullptr;
     PZip::PZipEntry zip_entry;
+
 };
 
 }

@@ -76,10 +76,10 @@ void LevelClass::clear(){
 	this->mGfxTextures.clear();
 }
 
-void LevelClass::load(PFile::Path path, bool headerOnly) {
+void LevelClass::load(const PFile::File& path, bool headerOnly) {
 	try{
 		char version[5];
-		PFile::RW file = path.GetRW2("r");
+		PFile::RW file = path.getRW("r");
 
 		file.read(version, 4);
 		version[4] = '\0';
@@ -222,8 +222,8 @@ static double getDefaultSlipperinessFactor(int weather){
 	return 1.04;
 }
 
-void LevelClass::loadVersion13(PFile::Path path, bool headerOnly){
-	PFile::RW file = path.GetRW2("r");
+void LevelClass::loadVersion13(const PFile::File& path, bool headerOnly){
+	PFile::RW file = path.getRW("r");
 	file.read(version,      sizeof(version));
 
 	std::string tileset_name, background_name, music_name;
@@ -333,10 +333,10 @@ void LevelClass::loadVersion13(PFile::Path path, bool headerOnly){
 }
 
 
-void LevelClass::loadVersion15(PFile::Path path, bool headerOnly){
+void LevelClass::loadVersion15(const PFile::File& path, bool headerOnly){
 
 	using namespace PJson;
-	PFile::RW file = path.GetRW2("r");
+	PFile::RW file = path.getRW("r");
 
 	file.read(version,      sizeof(version));
 
@@ -455,9 +455,9 @@ void LevelClass::loadVersion15(PFile::Path path, bool headerOnly){
 
 
 // TO DO
-void LevelClass::saveVersion15(PFile::Path path)const{
+void LevelClass::saveVersion15(const PFile::File& path)const{
 
-	PFile::RW file = path.GetRW2("w");
+	PFile::RW file = path.getRW("w");
 	char version[5] = "1.5";
 	file.write(version, sizeof(version));
 
@@ -761,7 +761,7 @@ int LevelClass::mLoadGfxTexture(const std::string& name){
 		}
 	}
 
-	std::optional<PFile::Path> p = PFilesystem::FindAsset(name, PFilesystem::GFX_DIR);
+	std::optional<PFile::File> p = PFilesystem::FindAsset(name, PFilesystem::GFX_DIR);
 	if(p.has_value()){
 		int res = PDraw::image_load(*p);
 		if(res>=0){

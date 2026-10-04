@@ -89,7 +89,7 @@ ScreensHandler::ScreensHandler():
 		Settings_Save();
 	}
 
-	std::optional<PFile::Path> p = PFilesystem::FindVanillaAsset("pk2stuff.bmp", PFilesystem::GFX_DIR);
+	std::optional<PFile::File> p = PFilesystem::FindVanillaAsset("pk2stuff.bmp", PFilesystem::GFX_DIR);
 	if(!p.has_value()){
 		throw std::runtime_error("\"pk2stuff.bmp\" not found!");
 	}	
