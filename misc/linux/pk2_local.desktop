@@ -7,3 +7,5 @@ Exec=/usr/local/games/pekka-kana-2
 Icon=pekka-kana-2
 Terminal=false
 Categories=Game;
+StartupNotify=true
+Keywords=game;platformer;pekka;rooster;
