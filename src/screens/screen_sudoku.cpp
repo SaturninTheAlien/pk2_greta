@@ -32,7 +32,7 @@ void SudokuScreen::Init(){
     //TouchScreenControls.change(UI_CURSOR);
     PDraw::create_shadow(bg_screen, 640, 480);
 
-    std::optional<PFile::Path> music_path = PFilesystem::FindAsset("res/music/riddles.mp3", PFilesystem::MUSIC_DIR);
+    std::optional<PFile::File> music_path = PFilesystem::FindAsset("res/music/riddles.mp3", PFilesystem::MUSIC_DIR);
     if(music_path.has_value()){
         if (PSound::start_music(*music_path) == -1){
             PLog::Write(PLog::ERR, "PK2", "Can't start the music");				
