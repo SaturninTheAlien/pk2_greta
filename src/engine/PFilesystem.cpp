@@ -501,11 +501,13 @@ std::vector<std::string> ScanDirectoryP(const std::filesystem::path& path_in, co
 }
 
 
-std::vector<std::string> ScanOriginalAssetsDirectory(const std::string& name, const std::string& filter){
+std::vector<std::string> ScanOriginalAssetsDirectory(const std::filesystem::path& path_in, const std::string& filter){
 
 #ifndef __ANDROID__
-    return ScanDirectoryP(fs::u8path(name), filter);
+    return ScanDirectoryP(path_in, filter);
 #else
+    std::string name = path_in.u8string();
+
     JNIEnv* env = (JNIEnv*)SDL_AndroidGetJNIEnv();
 	jobject activity = (jobject)SDL_AndroidGetActivity();
 
