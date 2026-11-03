@@ -61,7 +61,7 @@ std::optional<PFile::File> FindVanillaAsset(const std::string& name, const std::
 std::optional<PFile::File> FindEpisodeAsset(const std::string& name, const std::string& default_dir, const std::string& alt_extension="");
 
 std::vector<std::string> ScanDirectoryP(const std::filesystem::path& path_in, const std::string& filter="");
-std::vector<std::string> ScanOriginalAssetsDirectory(const std::string& name, const std::string& filter="");
+std::vector<std::string> ScanOriginalAssetsDirectory(const std::filesystem::path& path_in, const std::string& filter="");
 
 
 }

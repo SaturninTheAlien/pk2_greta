@@ -88,12 +88,12 @@ private:
 
 class File{
 public:
-    File(const std::filesystem::path& path):path(path){
+    File(const std::filesystem::path& path):path(path.u8string()), ext(path.extension().u8string()) {
 
     }
 
     File(PZip::PZip* zip_file, const PZip::PZipEntry&e)
-    :path( std::filesystem::u8path(e.name)), zip_file(zip_file), zip_entry(e){
+    :path( e.name), ext(std::filesystem::u8path(e.name).extension().u8string()), zip_file(zip_file), zip_entry(e){
     }
     ~File()=default;
 
@@ -108,7 +108,7 @@ public:
     std::string readString()const;
     
     std::string extension()const{
-        return this->path.extension().string();
+        return this->ext;
     }
 
 #ifdef __ANDROID__
@@ -116,10 +116,10 @@ public:
 #endif
 
 private:
-    std::filesystem::path path;
+    std::string path;
+    std::string ext;
     PZip::PZip* zip_file = nullptr;
     PZip::PZipEntry zip_entry;
-
 };
 
 }
