@@ -111,6 +111,10 @@ public:
         return this->ext;
     }
 
+    std::filesystem::path getFilesystemPath()const{
+        return std::filesystem::u8path(this->path);
+    }
+
 #ifdef __ANDROID__
     bool insideAndroidAPK = false;
 #endif

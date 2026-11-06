@@ -122,7 +122,7 @@ void Settings_Save() {
 
 	PFile::File path(PFilesystem::GetDataPathP()/SETTINGS_FILE);
 	nlohmann::json j = Settings;
-	std::ofstream f(path.c_str());
+	std::ofstream f(path.getFilesystemPath());
 
 	f << j.dump(4)<<std::endl;
 	f.close();

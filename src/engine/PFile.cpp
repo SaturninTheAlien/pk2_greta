@@ -98,7 +98,7 @@ RW File::getRW(std::string mode)const {
 		void * buffer = nullptr;
 		int size = 0;
 
-		getAndroidAsset(this->path.string(), [&](jbyte* data_j, int size_j){
+		getAndroidAsset(this->path, [&](jbyte* data_j, int size_j){
 			buffer = SDL_malloc(size_j);
 			memcpy(buffer, data_j, size_j);
 			size = size_j;
@@ -164,7 +164,7 @@ nlohmann::json File::readJSON()const{
 		return res;
 
 	}else{
-		std::ifstream in(this->path.c_str());
+		std::ifstream in(this->getFilesystemPath());
 		nlohmann::json res = nlohmann::json::parse(in);
 		return res;
 	}
@@ -199,7 +199,7 @@ std::string File::readString()const{
 		return res;
 	}
 	else{
-		std::ifstream in(this->path.c_str());
+		std::ifstream in(this->getFilesystemPath());
 		return std::string((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
 	}
 }
