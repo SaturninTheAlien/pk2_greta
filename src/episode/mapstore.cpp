@@ -181,7 +181,7 @@ static std::optional<std::string> installZip(const std::string& targetPath){
 
 void Android_InstallZipEpisode(){
 	std::optional<std::string> res = installZip(
-		(PFilesystem::GetDataPath()/"mapstore").string());
+		(PFilesystem::GetDataPathP()/"mapstore").string());
 
 	if(res.has_value()){
 		PLog::Write(PLog::INFO, "PK2", "Installed a new zip episode: %s", res->c_str());
