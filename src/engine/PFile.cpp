@@ -98,7 +98,7 @@ RW File::getRW(std::string mode)const {
 		void * buffer = nullptr;
 		int size = 0;
 
-		getAndroidAsset(this->path.string(), [&](jbyte* data_j, int size_j){
+		getAndroidAsset(this->path, [&](jbyte* data_j, int size_j){
 			buffer = SDL_malloc(size_j);
 			memcpy(buffer, data_j, size_j);
 			size = size_j;
