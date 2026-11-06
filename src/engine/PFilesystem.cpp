@@ -340,7 +340,7 @@ std::optional<PFile::File> FindVanillaAsset(const std::string& name, const std::
     if(res!=nullptr){
         const char* utf = env->GetStringUTFChars(res, nullptr);
 
-        PFile::Path p((fs::path(default_dir) / utf).string());
+        PFile::File p((fs::path(default_dir) / utf).string());
 
         env->ReleaseStringUTFChars(res, utf);
         env->DeleteLocalRef(res);
@@ -432,7 +432,7 @@ std::optional<PFile::File> FindEpisodeAsset(const std::string& name, const std::
          * @brief 
          * apk://episodes/"episode"/pig.spr2
          */
-        std::optional<PFile::Path> op = FindVanillaAsset(
+        std::optional<PFile::File> op = FindVanillaAsset(
             filename, mEpisodePath.string(), alt_extension );
         if(op.has_value()){
             return op;
