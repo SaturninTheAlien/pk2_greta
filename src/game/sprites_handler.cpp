@@ -705,6 +705,7 @@ void SpritesHandler::spriteToJson(nlohmann::json&j, const SpriteClass&s)const{
 	j["initial_update"] = s.initial_update;
 	j["legacy_indestructible_ammo"] = s.legacy_indestructible_ammo;
 	j["can_collect_bonuses"] = s.can_collect_bonuses;
+	j["can_push_bonuses"] = s.can_push_bonuses;
 	j["original"] = s.original;
 	j["player_c"] = s.player_c;
 }
@@ -786,6 +787,7 @@ void SpritesHandler::jsonToSprite(const nlohmann::json&j, SpriteClass&s, Prototy
     j.at("initial_update").get_to(s.initial_update);
     j.at("legacy_indestructible_ammo").get_to(s.legacy_indestructible_ammo);
     j.at("can_collect_bonuses").get_to(s.can_collect_bonuses);
+	j.at("can_push_bonuses").get_to(s.can_push_bonuses);
     j.at("original").get_to(s.original);
 	j.at("player_c").get_to(s.player_c);
 }
