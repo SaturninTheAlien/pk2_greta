@@ -1,9 +1,9 @@
 #pragma once
 #include "engine/PInput.hpp"
 
-class InputSettings{
+class InputSettingsOld{
 public:
-    InputSettings(){
+    InputSettingsOld(){
         this->setDefault();
     }
 
@@ -35,6 +35,53 @@ public:
     PInput::Key dev_fly;
     PInput::Key dev_heal;
     
-    friend void from_json(const nlohmann::json& j, InputSettings& controls);
-	friend void to_json(nlohmann::json& j, const InputSettings& controls);
+    friend void from_json(const nlohmann::json& j, InputSettingsOld& controls);
+	friend void to_json(nlohmann::json& j, const InputSettingsOld& controls);
+};
+
+class MultiKey{
+public:
+    MultiKey()=default;
+    MultiKey(const PInput::Key& keyboardKey, const PInput::Key& joystickKey):
+    keyboardKey(keyboardKey), joystickKey(joystickKey)
+    {
+
+    }
+
+    bool isPressed()const{
+        return this->keyboardKey.isPressed() || this->joystickKey.isPressed();
+    };
+
+    bool wasPressed(const PInput::Key& key)const{
+        return key == this->keyboardKey || key==this->joystickKey;
+    }
+
+    bool accept(const SDL_Event& event){
+        return this->keyboardKey.accept(event) || this->joystickKey.accept(event);
+    }
+private:
+    PInput::Key keyboardKey;
+    PInput::Key joystickKey;
+};
+
+class InputSettingsMulti{
+public:
+    InputSettingsMulti(const InputSettingsOld& keyboard, const InputSettingsOld& joystick);
+
+    MultiKey left;
+    MultiKey right;
+    MultiKey up;
+    MultiKey down;
+
+    MultiKey walk_slow;
+	MultiKey attack1;
+	MultiKey attack2;
+	MultiKey open_gift;
+
+    MultiKey toggleHUD;
+    MultiKey screenshotKey;
+    MultiKey fullscreenModeSwitch;
+    MultiKey pauseGame;
+    MultiKey commitSuicide;
+    MultiKey cycleGifts;
 };

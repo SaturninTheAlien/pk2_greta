@@ -137,7 +137,7 @@ void ScreensHandler::onKeyPressed(const PInput::Key& key){
 	this->current_screen->onKeyPressed(key);
 
 #ifndef __ANDROID__
-	if(key==Settings.getInput().fullscreenModeSwitch || (key==PInput::Key::RETURN && PInput::Key::LALT.isPressed())){
+	if(key==Settings.getInputOld().fullscreenModeSwitch || (key==PInput::Key::RETURN && PInput::Key::LALT.isPressed())){
 		Settings.isFullScreen = !Settings.isFullScreen;
 		PRender::set_fullscreen(Settings.isFullScreen);
 	}

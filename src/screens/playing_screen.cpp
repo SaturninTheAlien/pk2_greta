@@ -40,7 +40,7 @@ void PlayingScreen::onKeyPressed(const PInput::Key& key){
 	Game->onKeyPressed(key);
 
 
-	const InputSettings& input = Settings.getInput();
+	InputSettingsOld input = Settings.getInputOld();
 
 	//TODO - touchscreen
 
