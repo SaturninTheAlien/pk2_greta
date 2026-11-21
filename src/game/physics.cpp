@@ -746,7 +746,7 @@ void UpdateSprite(SpriteClass* sprite){
 
 	if (sprite->isPlayer() && sprite->energy > 0){
 
-		const InputSettings& input = Settings.getInput();
+		InputSettingsMulti input = Settings.getInput();
 
 		/* ATTACK 1 */
 		if ((input.attack1.isPressed() || TouchScreenControls.egg) && sprite->charging_timer == 0 && sprite->ammo1 != nullptr)
@@ -1000,7 +1000,7 @@ void UpdateSprite(SpriteClass* sprite){
 			for (int x = 0; x < palikat_x_lkm; x++) {
 				int p = x + y*palikat_x_lkm;
 				if ( p < 300 )
-					if (!(sprite == Player_Sprite && dev_mode && Settings.getInput().dev_ghostMode.isPressed())){
+					if (!(sprite == Player_Sprite && dev_mode && Settings.getInputOld().dev_ghostMode.isPressed())){
 						PK2BLOCK block = sector->getBlock(map_vasen+x-1,map_yla+y-1, Game->level.block_types);
 						//Block_Get(map_vasen+x-1,map_yla+y-1);
 						Check_MapBlock(sprite, block);
@@ -1107,7 +1107,7 @@ void UpdateSprite(SpriteClass* sprite){
 					if (sprite2->b > 0)
 						spritepalikka.id = BLOCK_LIFT_VERT;
 
-					if (!(sprite == Player_Sprite && dev_mode && Settings.getInput().dev_ghostMode.isPressed()))
+					if (!(sprite == Player_Sprite && dev_mode && Settings.getInputOld().dev_ghostMode.isPressed()))
 						Check_SpriteBlock(sprite, spritepalikka); //Colision sprite and sprite block
 				}
 			}

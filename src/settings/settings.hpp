@@ -37,6 +37,7 @@ enum {
 
 class PK2SETTINGS {
 public:	
+	void setDefault();
 	std::string language;
 
 	bool  transparent_text = false;
@@ -54,8 +55,13 @@ public:
 	u8  music_max_volume;
 	u8  sfx_max_volume;
 
-	const InputSettings& getInput()const{
+	const InputSettingsOld& getInputOld()const{
 		return  this->useJoystick ? this->joystickInput : this->keyboardInput;
+	}
+
+
+	InputSettingsMulti getInput()const{
+		return InputSettingsMulti(this->keyboardInput, this->joystickInput);
 	}
 
 
@@ -74,9 +80,8 @@ public:
 	bool isUsingJoystick()const;
     float getJoystickAxis(int axis)const;
     void vibrateController(int duration, float strength = 0.5)const;
-
-	InputSettings keyboardInput;
-	InputSettings joystickInput;
+	InputSettingsOld keyboardInput;
+	InputSettingsOld joystickInput;
 };
 
 extern PK2SETTINGS Settings;

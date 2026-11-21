@@ -14,12 +14,16 @@
 
 namespace PString{
 
-std::string lowercase(const std::string& src){
-
+std::string lowercase(const std::string& src) {
     std::string str = src;
 
     std::transform(str.begin(), str.end(), str.begin(),
-                   [](unsigned char c) { return std::tolower(c); });
+        [](unsigned char c) -> char {
+            if (c >= 'A' && c <= 'Z')
+                return static_cast<char>(c + ('a' - 'A'));
+
+            return static_cast<char>(c);
+        });
 
     return str;
 }
