@@ -120,24 +120,23 @@ void GameClass::exposePlayerToAIs(){
 
 void GameClass::onKeyPressed(const PInput::Key& key){
 
-	const InputSettings& input = Settings.getInput();
-
 	if(this->game_over || this->level_clear){
 		if (this->exit_timer > 4)
 			this->exit_timer = 4;
 
 	} else {
-		if(key==input.open_gift){
+		InputSettingsMulti input = Settings.getInput();
+		if(input.open_gift.wasPressed(key)){
 
 			if(this->giftCooldown==0){
 				this->gifts.use(this->playerSprite->level_sector->sprites, this->playerSprite);	
 				this->giftCooldown = 9;
 			}	
 		}
-		else if(key==input.pauseGame){
+		else if(input.pauseGame.wasPressed(key)){
 			this->paused = !this->paused;
 		}
-		else if(key==input.commitSuicide && !this->paused){
+		else if(input.commitSuicide.wasPressed(key) && !this->paused){
 			if (!config_txt.silent_suicide){
 				this->playerSprite->damage_taken = this->playerSprite->energy;
 				this->playerSprite->damage_taken_type = DAMAGE_SELF_DESTRUCTION;
@@ -147,7 +146,7 @@ void GameClass::onKeyPressed(const PInput::Key& key){
 				this->playerSprite->removed = true;
 			}
 		}
-		else if(key==input.cycleGifts){
+		else if(input.cycleGifts.wasPressed(key)){
 			this->gifts.changeOrder();
 		}
 	}
@@ -255,7 +254,7 @@ void GameClass::update(int &debug_active_sprites)
 
 	if(dev_mode){
 
-		const InputSettings& input = Settings.getInput();
+		const InputSettingsOld& input = Settings.getInputOld();
 
 		if(input.dev_fly.isPressed()){
 			this->playerSprite->b = -10;

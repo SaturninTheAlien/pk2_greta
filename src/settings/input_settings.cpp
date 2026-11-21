@@ -3,7 +3,7 @@
 #include "engine/PInput.hpp"
 
 
-void InputSettings::setDefault(){
+void InputSettingsOld::setDefault(){
 
     this->left = PInput::Key(SDL_SCANCODE_LEFT);
     this->right = PInput::Key(SDL_SCANCODE_RIGHT);
@@ -27,7 +27,7 @@ void InputSettings::setDefault(){
 
 }
 
-void InputSettings::setDefaultJoystick(){
+void InputSettingsOld::setDefaultJoystick(){
 	this->left = PInput::Key(SDL_CONTROLLER_BUTTON_DPAD_LEFT, PInput::INPUT_GAME_CONTROLLER);
 	this->right = PInput::Key(SDL_CONTROLLER_BUTTON_DPAD_RIGHT, PInput::INPUT_GAME_CONTROLLER);
 	this->up = PInput::Key(SDL_CONTROLLER_BUTTON_DPAD_UP, PInput::INPUT_GAME_CONTROLLER);
@@ -40,7 +40,7 @@ void InputSettings::setDefaultJoystick(){
 }
 
 
-PInput::Key* InputSettings::getKeyByMenuID(unsigned int menuId){
+PInput::Key* InputSettingsOld::getKeyByMenuID(unsigned int menuId){
 	switch(menuId){
 		case 1 : return &this->left;
 		case 2 : return &this->right;
@@ -57,7 +57,7 @@ PInput::Key* InputSettings::getKeyByMenuID(unsigned int menuId){
 }
 
 
-void from_json(const nlohmann::json& j, InputSettings& controls){
+void from_json(const nlohmann::json& j, InputSettingsOld& controls){
     j.at("left").get_to(controls.left);
 	j.at("right").get_to(controls.right);
 	j.at("up").get_to(controls.up);
@@ -70,7 +70,7 @@ void from_json(const nlohmann::json& j, InputSettings& controls){
 
 }
 
-void to_json(nlohmann::json& j, const InputSettings& controls){
+void to_json(nlohmann::json& j, const InputSettingsOld& controls){
     j["left"] = controls.left;
 	j["right"] = controls.right;
 	j["up"] = controls.up;
@@ -81,5 +81,26 @@ void to_json(nlohmann::json& j, const InputSettings& controls){
 	j["attack2"] = controls.attack2;
 
 	j["open_gift"] = controls.open_gift;
+
+}
+
+InputSettingsMulti::InputSettingsMulti(
+    const InputSettingsOld& keyboard,
+    const InputSettingsOld& joystick
+)
+    : left(keyboard.left, joystick.left)
+    , right(keyboard.right, joystick.right)
+    , up(keyboard.up, joystick.up)
+    , down(keyboard.down, joystick.down)
+    , walk_slow(keyboard.walk_slow, joystick.walk_slow)
+    , attack1(keyboard.attack1, joystick.attack1)
+    , attack2(keyboard.attack2, joystick.attack2)
+    , open_gift(keyboard.open_gift, joystick.open_gift)
+    , toggleHUD(keyboard.toggleHUD, joystick.toggleHUD)
+    , screenshotKey(keyboard.screenshotKey, joystick.screenshotKey)
+    , fullscreenModeSwitch(keyboard.fullscreenModeSwitch, joystick.fullscreenModeSwitch)
+    , pauseGame(keyboard.pauseGame, joystick.pauseGame)
+    , commitSuicide(keyboard.commitSuicide, joystick.commitSuicide)
+    , cycleGifts(keyboard.cycleGifts, joystick.cycleGifts){
 
 }

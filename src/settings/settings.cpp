@@ -21,30 +21,34 @@
 
 const char* SETTINGS_FILE = "settings.json";
 
+void PK2SETTINGS::setDefault(){
+	this->language = GetDefaultLanguageName();
+	this->transparent_text = false;
+	this->draw_gui = true;
+
+
+	this->keyboardInput.setDefault();
+	this->joystickInput.setDefaultJoystick();
+
+#ifdef __ANDROID__
+	this->touchscreen_mode = true;
+#else
+	this->touchscreen_mode = false;
+#endif
+
+	this->fps = SETTINGS_60FPS;//SETTINGS_VSYNC;
+	this->isFullScreen = true;
+	this->double_speed = false;
+	this->shader_type = SETTINGS_MODE_LINEAR;	
+
+	this->music_max_volume = 35; //30;
+	this->sfx_max_volume = 85; //95;
+}
+
 PK2SETTINGS Settings;
 
 void Settings_Init() {
-	Settings.language = GetDefaultLanguageName();
-	Settings.transparent_text = false;
-	Settings.draw_gui = true;
-
-
-	Settings.keyboardInput.setDefault();
-	Settings.joystickInput.setDefaultJoystick();
-
-#ifdef __ANDROID__
-	Settings.touchscreen_mode = true;
-#else
-	Settings.touchscreen_mode = false;
-#endif
-
-	Settings.fps = SETTINGS_60FPS;//SETTINGS_VSYNC;
-	Settings.isFullScreen = true;
-	Settings.double_speed = false;
-	Settings.shader_type = SETTINGS_MODE_LINEAR;	
-
-	Settings.music_max_volume = 35; //30;
-	Settings.sfx_max_volume = 85; //95;
+	Settings.setDefault();
 }
 
 void from_json(const nlohmann::json& j, PK2SETTINGS& s){
@@ -122,7 +126,7 @@ void Settings_Save() {
 
 	PFile::File path(PFilesystem::GetDataPathP()/SETTINGS_FILE);
 	nlohmann::json j = Settings;
-	std::ofstream f(path.c_str());
+	std::ofstream f(path.getFilesystemPath());
 
 	f << j.dump(4)<<std::endl;
 	f.close();
