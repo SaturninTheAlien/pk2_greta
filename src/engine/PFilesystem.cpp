@@ -63,7 +63,12 @@ void CreateDirectoryP(const fs::path& path){
 void SetAssetsPath(const std::string& name){
 
     mAssetsPathSet = true;
-    fs::path p = fs::u8path(name);
+    /**
+     * Store an absolute path: paths built from mAssetsPath (e.g. the episode
+     * directory) are later passed back to ScanDirectoryP, which prepends
+     * mAssetsPath to any relative path.
+     */
+    fs::path p = fs::absolute(fs::u8path(name));
 
     fs::path p1 = p / "gfx" / "pk2stuff.bmp";
 
