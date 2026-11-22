@@ -167,7 +167,24 @@ void SetDefaultPaths(){
      */
 
     if(!mAssetsPathSet){
-        SetAssetsPath(getBasePath().string());
+        fs::path base_path = getBasePath();
+        fs::path executable_dir = base_path.parent_path();
+        fs::path local_res = executable_dir.parent_path() / "res";
+
+        /**
+         * The game is being run locally from <repo>/bin (like on Linux),
+         * the assets are in <repo>/res
+         */
+        if(executable_dir.filename().string() == "bin"
+            && !fs::exists(executable_dir / "gfx" / "pk2stuff.bmp")
+            && !fs::exists(executable_dir / "res" / "gfx" / "pk2stuff.bmp")
+            && fs::exists(local_res / "gfx" / "pk2stuff.bmp")){
+
+            SetAssetsPath(local_res.string());
+        }
+        else{
+            SetAssetsPath(base_path.string());
+        }
     }
 
     #ifdef PK2_PORTABLE
