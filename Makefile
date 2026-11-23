@@ -37,9 +37,9 @@ CXXFLAGS += -Wall
 CXXFLAGS += --std=c++17 -fPIC
 
 
-# SDL2, libzip and lua
-CXXFLAGS += $(shell pkg-config sdl3 libzip lua --cflags)
-LDFLAGS += $(shell pkg-config sdl3 libzip lua --libs) -lSDL3_image
+# SDL3, libzip, lua and libopenmpt
+CXXFLAGS += $(shell pkg-config sdl3 libzip lua libopenmpt --cflags)
+LDFLAGS += $(shell pkg-config sdl3 libzip lua libopenmpt --libs) -lSDL3_image
 
 # Version string
 PK2_VERSION = $(shell git log -1 --pretty=format:"%s" | grep -o '^v[0-9]\+\.[0-9]\+')
