@@ -103,6 +103,24 @@ void adjust_screen() {
 
 }
 
+/**
+ * Keep the window's shape matching the buffer while the user resizes it,
+ * so the picture isn't stretched when screen fill is on.
+ */
+static void lock_window_aspect() {
+#ifndef __ANDROID__
+	int buf_w, buf_h;
+	PDraw::get_buffer_size(&buf_w, &buf_h);
+	if (buf_w <= 0 || buf_h <= 0)
+		return;
+
+	float aspect = (float)buf_w / buf_h;
+	if (!SDL_SetWindowAspectRatio(window, aspect, aspect)) {
+		PLog::Write(PLog::WARN, "PRender", "Cannot lock window aspect ratio: %s", SDL_GetError());
+	}
+#endif
+}
+
 void set_fullscreen(bool set) {
 	renderer->clear_screen();
 	#ifdef __ANDROID__
@@ -122,6 +140,7 @@ void set_fullscreen(bool set) {
 
 			SDL_SetWindowMinimumSize(window, buf_w/2, buf_h/2);
 			SDL_SetWindowResizable(window, true);
+			lock_window_aspect();
 		}
 
 	#endif
@@ -157,6 +176,7 @@ int set_shader(int shader) {
 void set_window_size(int w, int h) {
 
 	SDL_SetWindowSize(window, w, h);
+	lock_window_aspect();
 	adjust_screen();
 
 }
@@ -259,6 +279,7 @@ void init(int width, int height, const char* name, const char* icon) {
 	/**/
 
 	renderer->set_vsync(vsync_set);
+	lock_window_aspect();
 	adjust_screen();
 }
 
