@@ -41,7 +41,7 @@ static void SDLCALL music_callback(void* userdata, SDL_AudioStream* stream, int 
 
 	int frames = additional_amount / (int)(MUSIC_CHANNELS * sizeof(float));
 
-	while (frames > 0) {
+	while (frames > 0) {   // robust music handling for 1-n frames if necessary. TODO: test by lagging on limited hardware. 
 		int chunk = frames < CHUNK_FRAMES ? frames : CHUNK_FRAMES;
 		size_t rendered = openmpt_module_read_interleaved_float_stereo(music_module, MUSIC_FREQ, chunk, buffer);
 		if (rendered == 0)
@@ -51,6 +51,8 @@ static void SDLCALL music_callback(void* userdata, SDL_AudioStream* stream, int 
 		frames -= (int)rendered;
 	}
 }
+
+// Abdullah: plans to allow libopenmpt's powerful music controls to be exposed via PSound? (like flexible repeats, seeking based on demand, etc.)
 
 static void set_music_gain(float volume) {
 	if (music_stream != nullptr)
@@ -160,7 +162,7 @@ int start_music(const PFile::File& file) {
 	std::vector<u8> data;
 	try {
 		PFile::RW rw = file.getRW("r");
-		data.resize(rw.size());
+		data.resize(rw.size());          // Abdullah Long Term: what happens if we run out of memory?
 		if (rw.read(data.data(), data.size()) != data.size()) {
 			PLog::Write(PLog::ERR, "PSound", "Unable to read music \"%s\"", file.c_str());
 			return -1;
