@@ -64,7 +64,7 @@ void CreateDirectoryP(const fs::path& path){
 void SetAssetsPath(const std::string& name){
 
     mAssetsPathSet = true;
-    fs::path p = fs::u8path(name);
+    fs::path p = fs::absolute(fs::u8path(name)); // Abdullah: or else paths built from it get mAssetsPath prepended twice by ScanDirectoryP()
 
     fs::path p1 = p / "gfx" / "pk2stuff.bmp";
 
@@ -162,7 +162,24 @@ void SetDefaultPaths(){
      */
 
     if(!mAssetsPathSet){
-        SetAssetsPath(getBasePath().string());
+        fs::path base_path = getBasePath();
+        fs::path executable_dir = base_path.parent_path();
+        fs::path local_res = executable_dir.parent_path() / "res";
+
+        /**
+         * The game is being run locally from <repo>/bin (like on Linux),
+         * the assets are in <repo>/res
+         */
+        if(executable_dir.filename().string() == "bin"
+            && !fs::exists(executable_dir / "gfx" / "pk2stuff.bmp")
+            && !fs::exists(executable_dir / "res" / "gfx" / "pk2stuff.bmp")
+            && fs::exists(local_res / "gfx" / "pk2stuff.bmp")){
+
+            SetAssetsPath(local_res.string());
+        }
+        else{
+            SetAssetsPath(base_path.string());
+        }
     }
 
     #ifdef PK2_PORTABLE
