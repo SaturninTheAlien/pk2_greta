@@ -18,7 +18,7 @@ APP_NAME="Pekka Kana 2"
 
 WRAPPER_NAME="pekka-kana-2"
 
-VER=1.5.5
+VER=1.5.6
 
 
 BINARY_NAME="pk2_greta_${VER}"

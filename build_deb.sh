@@ -11,7 +11,7 @@ set -e
 
 ARCH=$(dpkg --print-architecture)
 APP=Pekka-Kana-2
-VER=1.5.5
+VER=1.5.6
 PKG="pkg/${APP}_${VER}_Linux_${ARCH}"
 
 PKGDIR=$PKG
