@@ -106,19 +106,59 @@ void InputSystem::closeInputDevices() {
 // Plenty for a few frames of fast typing; drops the oldest if nobody reads them.
 constexpr std::size_t MAX_TEXT_EVENTS = 128;
 
+// Keys that never type or edit text: function keys and modifiers
+static bool isGlobalKey(SDL_Scancode scancode) {
+	return (scancode >= SDL_SCANCODE_F1 && scancode <= SDL_SCANCODE_F12)
+		|| (scancode >= SDL_SCANCODE_F13 && scancode <= SDL_SCANCODE_F24)
+		|| (scancode >= SDL_SCANCODE_LCTRL && scancode <= SDL_SCANCODE_RGUI);
+}
+
+/**
+ * Gives keyboard keys to the text field while it is being typed into. A key
+ * whose press went to the text field stays its own until released, even if
+ * typing ends first, so the Enter or Escape that ends typing does not also act
+ * on the menu. Returns true if the event was taken.
+ */
+bool InputSystem::takeTypedKey(const SDL_KeyboardEvent& key) {
+	if (key.type == SDL_EVENT_KEY_UP) {
+		bool typed = this->typedKeys[key.scancode];
+		this->typedKeys[key.scancode] = false;
+		return typed;
+	}
+
+	bool forText = this->textInput
+		&& !isGlobalKey(key.scancode)
+		&& (key.mod & SDL_KMOD_LALT) == 0      // Alt+Enter switches fullscreen
+		&& (!key.repeat || this->typedKeys[key.scancode]); // not a key held from before typing
+
+	if (!forText) {
+		return false;
+	}
+
+	TextEvent te;
+	te.type = TextEvent::Type::KEY;
+	te.scancode = key.scancode;
+	te.mod = key.mod;
+	this->textEvents.push_back(te);
+
+	this->typedKeys[key.scancode] = true;
+	return true;
+}
+
 void InputSystem::handleEvent(const SDL_Event& event){
 
-	// Text editing gets every key press (including repeats) and typed character
-	// in order. This is separate from, and does not change, the listeners below.
-	if(this->textInput){
-		if(event.type == SDL_EVENT_KEY_DOWN){
-			TextEvent te;
-			te.type = TextEvent::Type::KEY;
-			te.scancode = event.key.scancode;
-			te.mod = event.key.mod;
-			this->textEvents.push_back(te);
+	if (event.type == SDL_EVENT_KEY_DOWN || event.type == SDL_EVENT_KEY_UP) {
+		if (this->takeTypedKey(event.key)) {
+			while (this->textEvents.size() > MAX_TEXT_EVENTS) {
+				this->textEvents.pop_front();
+			}
+			return;
 		}
-		else if(event.type == SDL_EVENT_TEXT_INPUT){
+	}
+
+	// Typed characters arrive separately from key presses
+	if(this->textInput){
+		if(event.type == SDL_EVENT_TEXT_INPUT){
 			const char* text = event.text.text;
 			try{
 				while(text != nullptr && *text != '\0'){
@@ -173,8 +213,15 @@ bool InputSystem::isKeyPressed(const Key& key) {
     switch (key.type)
     {
     case INPUT_KEYBOARD: {
+        SDL_Scancode scancode = static_cast<SDL_Scancode>(key.code);
+
+        // While typing, and for keys still held from typing, the keyboard belongs to the text field
+        if ((this->textInput && !isGlobalKey(scancode)) || this->typedKeys[scancode]) {
+            return false;
+        }
+
         const bool* keymap = SDL_GetKeyboardState(nullptr);
-        return keymap[(SDL_Scancode)key.code];
+        return keymap[scancode];
     }
 
     case INPUT_MOUSE_BUTTON: {

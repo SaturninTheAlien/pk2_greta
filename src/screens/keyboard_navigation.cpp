@@ -64,14 +64,7 @@ Nav readKeyNav(){
         return NONE;
     }
 
-    // While a text field is being edited, the keyboard belongs to it; only
-    // gamepad keys navigate.
-    bool typing = PInput::InputSystem::instance().isTextInputActive();
-
     for (const auto& e : keyMap()) {
-        if (typing && e.key.getInputType() == PInput::INPUT_KEYBOARD)
-            continue;
-
         if (e.key.isPressed()) {
             keyDelayCounter = 9;
             return e.nav;

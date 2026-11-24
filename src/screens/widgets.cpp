@@ -270,6 +270,7 @@ void TextInput::processTextEvents() {
 
 		case SDL_SCANCODE_RETURN:
 		case SDL_SCANCODE_KP_ENTER:
+		case SDL_SCANCODE_ESCAPE:
 			this->endInput();
 			break;
 

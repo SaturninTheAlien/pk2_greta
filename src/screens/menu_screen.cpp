@@ -1058,16 +1058,8 @@ void MenuScreen::onKeyPressed(const PInput::Key& k){
 			Settings_Save();
 		}			
 	} else {
-		// The name field gets typed keys through PInput's text events; they must
-		// not also navigate the menu or press the highlighted item (Space and
-		// Enter would otherwise trigger e.g. "Clear").
-		bool typedIntoName = this->playerNameEdit.isEditing() &&
-			k.getInputType() == PInput::INPUT_KEYBOARD && k != PInput::Key::ESCAPE;
-
-		if (!typedIntoName) {
-			PK2gui::KeyNav::injectKey(k);
-			Screen::onKeyPressed(k);
-		}
+		PK2gui::KeyNav::injectKey(k);
+		Screen::onKeyPressed(k);
 	}
 }
 
