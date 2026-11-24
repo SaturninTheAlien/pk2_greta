@@ -18,7 +18,7 @@ namespace PString{
  * Case mapping for the letters the game fonts can have: ASCII, Latin-1,
  * Latin Extended-A, Greek and Cyrillic. Anything else is left as it is.
  */
-static unsigned int lowercaseCodePoint(unsigned int cp){
+static char32_t lowercaseCodePoint(char32_t cp) {
     if(cp >= 'A' && cp <= 'Z') return cp + 0x20;
     if(cp < 0x80) return cp;
 
@@ -49,7 +49,7 @@ static unsigned int lowercaseCodePoint(unsigned int cp){
     return cp;
 }
 
-static unsigned int uppercaseCodePoint(unsigned int cp){
+static char32_t uppercaseCodePoint(char32_t cp) {
     if(cp >= 'a' && cp <= 'z') return cp - 0x20;
     if(cp < 0x80) return cp;
 
@@ -83,40 +83,53 @@ static unsigned int uppercaseCodePoint(unsigned int cp){
  * Decodes one UTF-8 sequence. Returns its length in bytes, or 0 if it is not
  * valid (then the caller copies the byte unchanged).
  */
-static int decodeUTF8(const unsigned char* s, std::size_t available, unsigned int& cp){
-    int len;
-    if(s[0] < 0x80){ cp = s[0]; return 1; }
-    else if((s[0] & 0xE0) == 0xC0){ len = 2; cp = s[0] & 0x1F; }
-    else if((s[0] & 0xF0) == 0xE0){ len = 3; cp = s[0] & 0x0F; }
-    else if((s[0] & 0xF8) == 0xF0){ len = 4; cp = s[0] & 0x07; }
-    else return 0;
+static int decodeUTF8(const unsigned char* s, std::size_t available, char32_t& cp) {
+    int len = 0;
+    if (s[0] < 0x80) {
+        cp = s[0];
+        return 1;
+    } else if ((s[0] & 0xE0) == 0xC0) {
+        len = 2;
+        cp = s[0] & 0x1F;
+    } else if ((s[0] & 0xF0) == 0xE0) {
+        len = 3;
+        cp = s[0] & 0x0F;
+    } else if ((s[0] & 0xF8) == 0xF0) {
+        len = 4;
+        cp = s[0] & 0x07;
+    } else {
+        return 0;
+    }
 
-    if((std::size_t)len > available) return 0;
-    for(int i = 1; i < len; ++i){
-        if((s[i] & 0xC0) != 0x80) return 0;
+    if (static_cast<std::size_t>(len) > available) {
+        return 0;
+    }
+    for (int i = 1; i < len; ++i) {
+        if ((s[i] & 0xC0) != 0x80) {
+            return 0;
+        }
         cp = (cp << 6) | (s[i] & 0x3F);
     }
     return len;
 }
 
-static void appendUTF8(std::string& out, unsigned int cp){
-    if(cp < 0x80){
-        out += (char)cp;
-    }
-    else if(cp < 0x800){
-        out += (char)(0xC0 | (cp >> 6));
-        out += (char)(0x80 | (cp & 0x3F));
-    }
-    else if(cp < 0x10000){
-        out += (char)(0xE0 | (cp >> 12));
-        out += (char)(0x80 | ((cp >> 6) & 0x3F));
-        out += (char)(0x80 | (cp & 0x3F));
-    }
-    else{
-        out += (char)(0xF0 | (cp >> 18));
-        out += (char)(0x80 | ((cp >> 12) & 0x3F));
-        out += (char)(0x80 | ((cp >> 6) & 0x3F));
-        out += (char)(0x80 | (cp & 0x3F));
+static void appendUTF8(std::string& out, char32_t cp) {
+    auto byte = [&out](char32_t b) { out += static_cast<char>(b); };
+
+    if (cp < 0x80) {
+        byte(cp);
+    } else if (cp < 0x800) {
+        byte(0xC0 | (cp >> 6));
+        byte(0x80 | (cp & 0x3F));
+    } else if (cp < 0x10000) {
+        byte(0xE0 | (cp >> 12));
+        byte(0x80 | ((cp >> 6) & 0x3F));
+        byte(0x80 | (cp & 0x3F));
+    } else {
+        byte(0xF0 | (cp >> 18));
+        byte(0x80 | ((cp >> 12) & 0x3F));
+        byte(0x80 | ((cp >> 6) & 0x3F));
+        byte(0x80 | (cp & 0x3F));
     }
 }
 
@@ -126,14 +139,13 @@ std::string lowercase(const std::string& src) {
 
     const unsigned char* s = reinterpret_cast<const unsigned char*>(src.data());
     std::size_t i = 0;
-    while(i < src.size()){
-        unsigned int cp;
+    while (i < src.size()) {
+        char32_t cp = 0;
         int len = decodeUTF8(s + i, src.size() - i, cp);
-        if(len == 0){
-            str += (char)s[i]; // not valid UTF-8, keep the byte
+        if (len == 0) {
+            str += src[i]; // not valid UTF-8, keep the byte
             ++i;
-        }
-        else{
+        } else {
             appendUTF8(str, lowercaseCodePoint(cp));
             i += len;
         }
@@ -248,15 +260,25 @@ const char* UTF8_Char::read(const char *str){
 	return str;
 }
 
-static UTF8_Char mapCase(UTF8_Char src, unsigned int (*map)(unsigned int)){
-    const unsigned char* s = reinterpret_cast<const unsigned char*>(src.c_str());
-    std::size_t n = std::char_traits<char>::length(src.c_str());
+std::optional<char32_t> UTF8_Char::codePoint() const {
+    const unsigned char* s = reinterpret_cast<const unsigned char*>(this->data);
+    std::size_t n = std::char_traits<char>::length(this->data);
 
-    unsigned int cp;
-    if(n == 0 || decodeUTF8(s, n, cp) == 0) return src;
+    char32_t cp = 0;
+    if (n == 0 || decodeUTF8(s, n, cp) == 0) {
+        return std::nullopt;
+    }
+    return cp;
+}
+
+static UTF8_Char mapCase(UTF8_Char src, char32_t (*map)(char32_t)) {
+    std::optional<char32_t> cp = src.codePoint();
+    if (!cp) {
+        return src;
+    }
 
     std::string mapped;
-    appendUTF8(mapped, map(cp));
+    appendUTF8(mapped, map(*cp));
 
     UTF8_Char res;
     res.read(mapped.c_str());

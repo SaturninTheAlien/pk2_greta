@@ -17,10 +17,10 @@ namespace PInput{
  * the user typed. CHAR is a typed character; KEY is any key press, including
  * the OS's key repeats, so editing keys repeat exactly as in other programs.
  */
-struct TextEvent{
-    enum Type{ CHAR, KEY };
+struct TextEvent {
+    enum class Type { CHAR, KEY };
 
-    Type type = CHAR;
+    Type type = Type::CHAR;
     PString::UTF8_Char ch;              // CHAR
     SDL_Scancode scancode = SDL_SCANCODE_UNKNOWN;  // KEY
     SDL_Keymod mod = SDL_KMOD_NONE;     // KEY

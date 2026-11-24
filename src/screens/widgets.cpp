@@ -136,12 +136,13 @@ bool TextInput::updateNavigation(const KeyNav::Nav& nav){
 /**
  * Removes the character at index and shifts the rest left.
  */
-void TextInput::eraseAt(int index){
-	int size = (int)this->buffer.size();
-	if(index < 0 || index >= size)
+void TextInput::eraseAt(int index) {
+	int size = static_cast<int>(this->buffer.size());
+	if (index < 0 || index >= size) {
 		return;
+	}
 
-	for (int c = index + 1; c < size; c++){
+	for (int c = index + 1; c < size; ++c) {
 		this->buffer[c - 1] = this->buffer[c];
 	}
 	this->buffer[size - 1] = ' ';
@@ -152,19 +153,22 @@ void TextInput::eraseAt(int index){
  * right (nothing is typed once the field is full, so no character is pushed
  * off the end); in overwrite mode it replaces the character under the cursor.
  */
-void TextInput::typeChar(PString::UTF8_Char c){
-	if(!this->acceptInputChar(c))
+void TextInput::typeChar(PString::UTF8_Char c) {
+	if (!this->acceptInputChar(c)) {
 		return;
+	}
 
-	int max = (int)this->buffer.size();
-	if(this->selectedIndex >= max)
+	int capacity = static_cast<int>(this->buffer.size());
+	if (this->selectedIndex >= capacity) {
 		return;
+	}
 
-	if(!this->overwrite){
-		if(this->getTextSize() >= max)
+	if (!this->overwrite) {
+		if (this->getTextSize() >= capacity) {
 			return;
+		}
 
-		for(int j = max - 1; j > this->selectedIndex; j--){
+		for (int j = capacity - 1; j > this->selectedIndex; --j) {
 			this->buffer[j] = this->buffer[j - 1];
 		}
 	}
@@ -174,21 +178,25 @@ void TextInput::typeChar(PString::UTF8_Char c){
 }
 
 // Ctrl+Left / Ctrl+Backspace: start of the word before index
-int TextInput::previousWordStart(int index)const{
-	while(index > 0 && this->buffer[index - 1] == PString::UTF8_Char(' '))
+int TextInput::previousWordStart(int index) const {
+	while (index > 0 && this->buffer[index - 1] == PString::UTF8_Char(' ')) {
 		--index;
-	while(index > 0 && this->buffer[index - 1] != PString::UTF8_Char(' '))
+	}
+	while (index > 0 && this->buffer[index - 1] != PString::UTF8_Char(' ')) {
 		--index;
+	}
 	return index;
 }
 
 // Ctrl+Right / Ctrl+Delete: start of the next word after index
-int TextInput::nextWordEnd(int index)const{
+int TextInput::nextWordEnd(int index) const {
 	int size = this->getTextSize();
-	while(index < size && this->buffer[index] != PString::UTF8_Char(' '))
+	while (index < size && this->buffer[index] != PString::UTF8_Char(' ')) {
 		++index;
-	while(index < size && this->buffer[index] == PString::UTF8_Char(' '))
+	}
+	while (index < size && this->buffer[index] == PString::UTF8_Char(' ')) {
 		++index;
+	}
 	return index;
 }
 
@@ -196,52 +204,54 @@ int TextInput::nextWordEnd(int index)const{
  * Applies everything typed since the last frame, in order, so fast typing and
  * held keys behave as in any other program (OS key repeat included).
  */
-void TextInput::processTextEvents(){
+void TextInput::processTextEvents() {
 	PInput::InputSystem& input = PInput::InputSystem::instance();
-	PInput::TextEvent e;
+	PInput::TextEvent event;
 
-	while(this->editing && input.pollTextEvent(e)){
+	while (this->editing && input.pollTextEvent(event)) {
 
-		if(e.type == PInput::TextEvent::CHAR){
-			this->typeChar(e.ch);
+		if (event.type == PInput::TextEvent::Type::CHAR) {
+			this->typeChar(event.ch);
 			continue;
 		}
 
-		bool ctrl = (e.mod & SDL_KMOD_CTRL) != 0;
+		bool ctrl = (event.mod & SDL_KMOD_CTRL) != 0;
 
-		switch (e.scancode)
-		{
-		case SDL_SCANCODE_BACKSPACE:{
+		switch (event.scancode) {
+		case SDL_SCANCODE_BACKSPACE: {
 			int from = ctrl ? this->previousWordStart(this->selectedIndex) : this->selectedIndex - 1;
-			if(from < 0)
+			if (from < 0) {
 				break;
-			for(int n = this->selectedIndex - from; n > 0; --n){
+			}
+			for (int n = this->selectedIndex - from; n > 0; --n) {
 				this->eraseAt(from);
 			}
 			this->selectedIndex = from;
+			break;
 		}
-		break;
 
-		case SDL_SCANCODE_DELETE:{
+		case SDL_SCANCODE_DELETE: {
 			int to = ctrl ? this->nextWordEnd(this->selectedIndex) : this->selectedIndex + 1;
-			for(int n = to - this->selectedIndex; n > 0; --n){
+			for (int n = to - this->selectedIndex; n > 0; --n) {
 				this->eraseAt(this->selectedIndex);
 			}
+			break;
 		}
-		break;
 
 		case SDL_SCANCODE_LEFT:
-			if(ctrl)
+			if (ctrl) {
 				this->selectedIndex = this->previousWordStart(this->selectedIndex);
-			else if(this->selectedIndex > 0)
+			} else if (this->selectedIndex > 0) {
 				--this->selectedIndex;
+			}
 			break;
 
 		case SDL_SCANCODE_RIGHT:
-			if(ctrl)
+			if (ctrl) {
 				this->selectedIndex = this->nextWordEnd(this->selectedIndex);
-			else if(this->selectedIndex < this->getTextSize())
+			} else if (this->selectedIndex < this->getTextSize()) {
 				++this->selectedIndex;
+			}
 			break;
 
 		case SDL_SCANCODE_HOME:
@@ -253,8 +263,9 @@ void TextInput::processTextEvents(){
 			break;
 
 		case SDL_SCANCODE_INSERT:
-			if((e.mod & (SDL_KMOD_CTRL | SDL_KMOD_SHIFT | SDL_KMOD_ALT)) == 0)
+			if ((event.mod & (SDL_KMOD_CTRL | SDL_KMOD_SHIFT | SDL_KMOD_ALT)) == 0) {
 				this->overwrite = !this->overwrite;
+			}
 			break;
 
 		case SDL_SCANCODE_RETURN:
@@ -283,7 +294,7 @@ bool TextInput::draw(const std::string& title, int tx_start, int ty_start, bool 
 	if (mouse_on_text && mouseClicked) {
 		this->startInput();
 		// Set the text cursor with the mouse, at the nearest gap between characters
-		this->selectedIndex = ((int)mousePos.x - tx_start + 7) / 15;
+		this->selectedIndex = (static_cast<int>(mousePos.x) - tx_start + 7) / 15;
 		if(this->selectedIndex>nameLength){
 			this->selectedIndex = nameLength;
 		}
@@ -293,8 +304,9 @@ bool TextInput::draw(const std::string& title, int tx_start, int ty_start, bool 
 	this->processTextEvents();
 
 	// The cursor may sit after the last character, even when the field is full
-	if(this->selectedIndex > (int)this->buffer.size()){
-		this->selectedIndex = (int)this->buffer.size();
+	int capacity = static_cast<int>(this->buffer.size());
+	if (this->selectedIndex > capacity) {
+		this->selectedIndex = capacity;
 	}
 
 	if(this->selectedIndex < 0){
@@ -306,13 +318,13 @@ bool TextInput::draw(const std::string& title, int tx_start, int ty_start, bool 
 	PDraw::screen_fill(tx_start-2, ty_start-2, tx_end+4, ty_end+4, 0);
 	PDraw::screen_fill(tx_start, ty_start, tx_end, ty_end, mouse_on_text? 54:50);
 
-	int cursor_x = this->selectedIndex * 15 + tx_start + rand() % 2;
-	bool overwrite_cell = this->overwrite && this->selectedIndex < (int)this->buffer.size();
+	int cursorX = this->selectedIndex * 15 + tx_start + rand() % 2;
+	bool overwriteCell = this->overwrite && this->selectedIndex < capacity;
 
-	if (editing && overwrite_cell) { // Overwrite mode: a block behind the character
-		PDraw::screen_fill(cursor_x-2, ty_start, cursor_x+15+2, ty_end+3, 0);
-		PDraw::screen_fill(cursor_x-1, ty_start, cursor_x+15, ty_end, 96+16);
-		PDraw::screen_fill(cursor_x+12, ty_start, cursor_x+15, ty_end, 96+8);
+	if (this->editing && overwriteCell) { // Overwrite mode: a block behind the character
+		PDraw::screen_fill(cursorX - 2, ty_start, cursorX + 15 + 2, ty_end + 3, 0);
+		PDraw::screen_fill(cursorX - 1, ty_start, cursorX + 15, ty_end, 96 + 16);
+		PDraw::screen_fill(cursorX + 12, ty_start, cursorX + 15, ty_end, 96 + 8);
 	}
 
 	int i = 0;
@@ -342,13 +354,13 @@ bool TextInput::draw(const std::string& title, int tx_start, int ty_start, bool 
 	}
 
 	// Text cursor, drawn over the text so it stays visible between characters
-	if (editing) {
-		if (overwrite_cell) { // underline the character that will be replaced
-			PDraw::screen_fill(cursor_x-1, ty_end-3, cursor_x+15, ty_end+1, 0);
-			PDraw::screen_fill(cursor_x, ty_end-2, cursor_x+14, ty_end, 96+16);
+	if (this->editing) {
+		if (overwriteCell) { // underline the character that will be replaced
+			PDraw::screen_fill(cursorX - 1, ty_end - 3, cursorX + 15, ty_end + 1, 0);
+			PDraw::screen_fill(cursorX, ty_end - 2, cursorX + 14, ty_end, 96 + 16);
 		} else { // insert mode: a bar in the gap before the character
-			PDraw::screen_fill(cursor_x-3, ty_start-2, cursor_x+2, ty_end+3, 0);
-			PDraw::screen_fill(cursor_x-2, ty_start-1, cursor_x+1, ty_end+2, 96+16);
+			PDraw::screen_fill(cursorX - 3, ty_start - 2, cursorX + 2, ty_end + 3, 0);
+			PDraw::screen_fill(cursorX - 2, ty_start - 1, cursorX + 1, ty_end + 2, 96 + 16);
 		}
 	}
 
@@ -382,17 +394,13 @@ void TextInput::setText(const std::string& text){
  * the invisible Unicode ones (no-break and wide spaces, zero-width characters,
  * soft hyphen, BOM...). Trailing ones are trimmed from the typed text.
  */
-static bool isBlankChar(const PString::UTF8_Char& u8c){
-	const unsigned char* s = reinterpret_cast<const unsigned char*>(u8c.c_str());
+static bool isBlankChar(const PString::UTF8_Char& u8c) {
+	std::optional<char32_t> codePoint = u8c.codePoint();
+	if (!codePoint) {
+		return true; // empty or not valid UTF-8
+	}
 
-	// Decode the code point
-	unsigned int cp = 0;
-	if(s[0] < 0x80) cp = s[0];
-	else if((s[0] & 0xE0) == 0xC0) cp = ((s[0] & 0x1F) << 6) | (s[1] & 0x3F);
-	else if((s[0] & 0xF0) == 0xE0) cp = ((s[0] & 0x0F) << 12) | ((s[1] & 0x3F) << 6) | (s[2] & 0x3F);
-	else if((s[0] & 0xF8) == 0xF0) cp = ((s[0] & 0x07) << 18) | ((s[1] & 0x3F) << 12) | ((s[2] & 0x3F) << 6) | (s[3] & 0x3F);
-	else return true; // not valid UTF-8
-
+	char32_t cp = *codePoint;
 	return cp <= 0x20                       // null, controls, space
 		|| (cp >= 0x7F && cp <= 0xA0)       // DEL, C1 controls, no-break space
 		|| cp == 0xAD                       // soft hyphen
@@ -406,14 +414,14 @@ static bool isBlankChar(const PString::UTF8_Char& u8c){
 		|| cp == 0xFEFF || cp == 0xFFA0;    // BOM / zero-width nbsp, halfwidth Hangul filler
 }
 
-std::string TextInput::getText()const{
+std::string TextInput::getText() const {
 	std::size_t end = this->buffer.size();
-	while(end > 0 && isBlankChar(this->buffer[end - 1])){
+	while (end > 0 && isBlankChar(this->buffer[end - 1])) {
 		--end;
 	}
 
 	std::ostringstream builder;
-	for(std::size_t i = 0; i < end; ++i){
+	for (std::size_t i = 0; i < end; ++i) {
 		builder << this->buffer[i].c_str();
 	}
 	return PString::lowercase(builder.str());

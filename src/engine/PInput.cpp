@@ -104,7 +104,7 @@ void InputSystem::closeInputDevices() {
 }
 
 // Plenty for a few frames of fast typing; drops the oldest if nobody reads them.
-static const std::size_t MAX_TEXT_EVENTS = 128;
+constexpr std::size_t MAX_TEXT_EVENTS = 128;
 
 void InputSystem::handleEvent(const SDL_Event& event){
 
@@ -113,7 +113,7 @@ void InputSystem::handleEvent(const SDL_Event& event){
 	if(this->textInput){
 		if(event.type == SDL_EVENT_KEY_DOWN){
 			TextEvent te;
-			te.type = TextEvent::KEY;
+			te.type = TextEvent::Type::KEY;
 			te.scancode = event.key.scancode;
 			te.mod = event.key.mod;
 			this->textEvents.push_back(te);
@@ -123,7 +123,7 @@ void InputSystem::handleEvent(const SDL_Event& event){
 			try{
 				while(text != nullptr && *text != '\0'){
 					TextEvent te;
-					te.type = TextEvent::CHAR;
+					te.type = TextEvent::Type::CHAR;
 					text = te.ch.read(text);
 					this->textEvents.push_back(te);
 				}
