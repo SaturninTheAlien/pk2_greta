@@ -377,12 +377,46 @@ void TextInput::setText(const std::string& text){
     this->selectedIndex = i;
 }
 
+/**
+ * True for characters that show nothing: whitespace, control characters and
+ * the invisible Unicode ones (no-break and wide spaces, zero-width characters,
+ * soft hyphen, BOM...). Trailing ones are trimmed from the typed text.
+ */
+static bool isBlankChar(const PString::UTF8_Char& u8c){
+	const unsigned char* s = reinterpret_cast<const unsigned char*>(u8c.c_str());
+
+	// Decode the code point
+	unsigned int cp = 0;
+	if(s[0] < 0x80) cp = s[0];
+	else if((s[0] & 0xE0) == 0xC0) cp = ((s[0] & 0x1F) << 6) | (s[1] & 0x3F);
+	else if((s[0] & 0xF0) == 0xE0) cp = ((s[0] & 0x0F) << 12) | ((s[1] & 0x3F) << 6) | (s[2] & 0x3F);
+	else if((s[0] & 0xF8) == 0xF0) cp = ((s[0] & 0x07) << 18) | ((s[1] & 0x3F) << 12) | ((s[2] & 0x3F) << 6) | (s[3] & 0x3F);
+	else return true; // not valid UTF-8
+
+	return cp <= 0x20                       // null, controls, space
+		|| (cp >= 0x7F && cp <= 0xA0)       // DEL, C1 controls, no-break space
+		|| cp == 0xAD                       // soft hyphen
+		|| cp == 0x34F                      // combining grapheme joiner
+		|| cp == 0x115F || cp == 0x1160     // Hangul fillers
+		|| cp == 0x1680 || cp == 0x180E     // Ogham space, Mongolian vowel separator
+		|| (cp >= 0x2000 && cp <= 0x200F)   // wide spaces, zero-width chars, direction marks
+		|| (cp >= 0x2028 && cp <= 0x202F)   // line/paragraph separators, embeddings, narrow nbsp
+		|| (cp >= 0x205F && cp <= 0x206F)   // math space, word joiner, invisible operators
+		|| cp == 0x3000 || cp == 0x3164     // ideographic space, Hangul filler
+		|| cp == 0xFEFF || cp == 0xFFA0;    // BOM / zero-width nbsp, halfwidth Hangul filler
+}
+
 std::string TextInput::getText()const{
-	std::ostringstream builder;
-	for(const PString::UTF8_Char& u8c : this->buffer){
-		builder << u8c.c_str();
+	std::size_t end = this->buffer.size();
+	while(end > 0 && isBlankChar(this->buffer[end - 1])){
+		--end;
 	}
-	return PString::lowercase(PString::rtrim(builder.str()));
+
+	std::ostringstream builder;
+	for(std::size_t i = 0; i < end; ++i){
+		builder << this->buffer[i].c_str();
+	}
+	return PString::lowercase(builder.str());
 }
 
 bool LinksMenu::drawButton(int x, int y, const PDraw::RECT& rect, const std::string& label, bool mouseClicked){
