@@ -503,6 +503,7 @@ void MenuScreen::Draw_Menu_Name() {
 
 	if (drawMenuText(PK_txt.playermenu_clear,tx_start + 180,ty_start + 50)) {
 		this->playerNameEdit.clear();
+		this->playerNameEdit.startInput(); // type the new name straight away
 	}
 
 	if (drawMenuText(PK_txt.mainmenu_back,tx_start,ty_start + 100)) {
@@ -1056,6 +1057,11 @@ void MenuScreen::onKeyPressed(const PInput::Key& k){
 		if (save_settings){
 			Settings_Save();
 		}			
+	} else if (this->playerNameEdit.isEditing() &&
+		k.getInputType() == PInput::INPUT_KEYBOARD && k != PInput::Key::ESCAPE) {
+		// The name field gets typed keys through PInput's text events; they must
+		// not also navigate the menu or press the highlighted item (Space and
+		// Enter would otherwise trigger e.g. "Clear").
 	} else {
 		PK2gui::KeyNav::injectKey(k);
 		Screen::onKeyPressed(k);
@@ -1299,6 +1305,7 @@ void MenuScreen::Loop() {
 
 		case PK2gui::KeyNav::ESCAPE:{
 			mouse_hidden = true;
+			this->playerNameEdit.endInput(); // leaving the name menu stops typing
 
 			switch (menu_nyt)
 			{

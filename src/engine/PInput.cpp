@@ -103,7 +103,41 @@ void InputSystem::closeInputDevices() {
     }
 }
 
+// Plenty for a few frames of fast typing; drops the oldest if nobody reads them.
+static const std::size_t MAX_TEXT_EVENTS = 128;
+
 void InputSystem::handleEvent(const SDL_Event& event){
+
+	// Text editing gets every key press (including repeats) and typed character
+	// in order. This is separate from, and does not change, the listeners below.
+	if(this->textInput){
+		if(event.type == SDL_EVENT_KEY_DOWN){
+			TextEvent te;
+			te.type = TextEvent::KEY;
+			te.scancode = event.key.scancode;
+			te.mod = event.key.mod;
+			this->textEvents.push_back(te);
+		}
+		else if(event.type == SDL_EVENT_TEXT_INPUT){
+			const char* text = event.text.text;
+			try{
+				while(text != nullptr && *text != '\0'){
+					TextEvent te;
+					te.type = TextEvent::CHAR;
+					text = te.ch.read(text);
+					this->textEvents.push_back(te);
+				}
+			}
+			catch(const std::exception&){
+				// Malformed UTF-8: keep what was read so far, drop the rest
+			}
+		}
+
+		while(this->textEvents.size() > MAX_TEXT_EVENTS){
+			this->textEvents.pop_front();
+		}
+	}
+
 	if( (event.type == SDL_EVENT_KEY_DOWN && event.key.repeat == 0) ||
 		event.type ==  SDL_EVENT_MOUSE_BUTTON_DOWN ||
 		event.type == SDL_EVENT_GAMEPAD_BUTTON_DOWN){
@@ -121,11 +155,6 @@ void InputSystem::handleEvent(const SDL_Event& event){
 		Key eventKey(event);
 		for(const std::function<void(const Key&)> &f: this->keyUpListeners){
 			f(eventKey);
-		}
-	}
-	else if(event.type == SDL_EVENT_TEXT_INPUT){
-		if(this->textInput){
-			this->lastUTF8Char.read(event.text.text);
 		}
 	}
 	else if(event.type == SDL_EVENT_MOUSE_MOTION){
@@ -177,7 +206,7 @@ void InputSystem::startTextInput(){
 		this->textInput = true;
 		SDL_StartTextInput(PRender::window);
 
-		this->lastUTF8Char = PString::UTF8_Char();
+		this->textEvents.clear();
 	}
 }
 
@@ -185,16 +214,17 @@ void InputSystem::stopTextInput(){
 	if(this->textInput){
 		this->textInput = false;
 		SDL_StopTextInput(PRender::window);
+		this->textEvents.clear();
 	}
 }
 
-PString::UTF8_Char InputSystem::getLastUTF8(){
-	PString::UTF8_Char res = this->lastUTF8Char;
-	if(!res.isNull()){
-		this->lastUTF8Char = PString::UTF8_Char();
-	}
+bool InputSystem::pollTextEvent(TextEvent& event){
+	if(this->textEvents.empty())
+		return false;
 
-	return res;
+	event = this->textEvents.front();
+	this->textEvents.pop_front();
+	return true;
 }
 
 

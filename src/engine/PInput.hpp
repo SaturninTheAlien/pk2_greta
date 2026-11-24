@@ -5,11 +5,26 @@
 #include "PString.hpp"
 
 #include <SDL3/SDL.h>
+#include <deque>
 #include <vector>
 #include <functional>
 
 
 namespace PInput{
+
+/**
+ * One step of text editing, queued while text input is active, in the order
+ * the user typed. CHAR is a typed character; KEY is any key press, including
+ * the OS's key repeats, so editing keys repeat exactly as in other programs.
+ */
+struct TextEvent{
+    enum Type{ CHAR, KEY };
+
+    Type type = CHAR;
+    PString::UTF8_Char ch;              // CHAR
+    SDL_Scancode scancode = SDL_SCANCODE_UNKNOWN;  // KEY
+    SDL_Keymod mod = SDL_KMOD_NONE;     // KEY
+};
 
 
 class Touch{
@@ -70,7 +85,7 @@ public:
 
     void startTextInput();
     void stopTextInput();
-    PString::UTF8_Char getLastUTF8();
+    bool pollTextEvent(TextEvent& event);
     
     
     void updateMouse();
@@ -89,7 +104,7 @@ private:
     Point2D mousePos;
 
     bool textInput = false;
-    PString::UTF8_Char lastUTF8Char;
+    std::deque<TextEvent> textEvents;
 
     SDL_Gamepad *gController = nullptr;
     SDL_Haptic * gHaptic = nullptr;
