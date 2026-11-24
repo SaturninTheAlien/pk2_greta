@@ -37,9 +37,9 @@ PlayingScreen::~PlayingScreen(){
 }
 
 void PlayingScreen::onKeyPressed(const PInput::Key& key){
+	if(Game==nullptr)return;	
+	
 	Game->onKeyPressed(key);
-
-
 	InputSettingsOld input = Settings.getInputOld();
 
 	//TODO - touchscreen
