@@ -103,8 +103,8 @@ static void log_data() {
 
 	PLog::Write(PLog::DEBUG, "PK2", "Pekka Kana 2 started!");
 	PLog::Write(PLog::DEBUG, "PK2", "Game version: %s", PK2_VERSION_STR);
-	PLog::Write(PLog::DEBUG, "PK2", "Assets path - %s", PFilesystem::GetAssetsPathP().c_str());
-	PLog::Write(PLog::DEBUG, "PK2", "Data path - %s", PFilesystem::GetDataPathP().c_str());
+	PLog::Write(PLog::DEBUG, "PK2", "Assets path - %s", PFilesystem::GetAssetsPathP().string().c_str());
+	PLog::Write(PLog::DEBUG, "PK2", "Data path - %s", PFilesystem::GetDataPathP().string().c_str());
 
 }
 
