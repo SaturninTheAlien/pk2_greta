@@ -1375,8 +1375,10 @@ void DieIfSkullBlocksChanged(SpriteClass*sprite){
  */
 void ThrowableWeapon(SpriteClass*sprite, SpriteClass*shooter){
 	if ((int)shooter->a == 0){
-		// If the "shooter" is a player or the speed of the projectile is zero
-		if (shooter->isPlayer() || sprite->prototype->max_speed == 0){
+		// If the "shooter" is a player or the speed of the projectile rounds to zero.
+		// max_speed is a double, so anything below 1 would make the rand() below a
+		// modulo by zero.
+		if (shooter->isPlayer() || (int)sprite->prototype->max_speed == 0){
 			if (!shooter->flip_x)
 				sprite->a = sprite->prototype->max_speed;
 			else
