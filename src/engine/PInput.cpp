@@ -255,6 +255,11 @@ void InputSystem::startTextInput(){
 
 		this->textEvents.clear();
 	}
+	else if (!SDL_ScreenKeyboardShown(PRender::window)) {
+		// Still typing, but the on-screen keyboard was dismissed (Android): bring it back.
+		// SDL shows it again on this call even though text input is already on.
+		SDL_StartTextInput(PRender::window);
+	}
 }
 
 void InputSystem::stopTextInput(){
