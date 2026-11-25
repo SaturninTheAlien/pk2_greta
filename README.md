@@ -96,7 +96,7 @@ To compile **Pekka Kana 2** you need:
 
 On Linux with "apt-get" package manager, you can install every dependency with a command:
 ```sh
-sudo apt install build-essential libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libzip-dev liblua5.4-dev
+sudo apt install build-essential libsdl3-dev libsdl3-image-dev libsdl3-mixer-dev libzip-dev liblua5.4-dev libopenmpt-dev
 ```
 
 Then run the "**make**" command inside the "**Pekka Kana 2**" directory.
@@ -162,9 +162,10 @@ so it may be more complex and tedious than on other platforms
 
 You will need the following libraries:
 
-- SDL2
-- SDL2_image
-- SDL2_mixer
+- SDL3
+- SDL3_image
+- SDL3_mixer
+- libopenmpt
 - libzip
 - Lua 5.4
 
@@ -252,8 +253,11 @@ https://sites.google.com/view/pekka-kana-fanpage/pekka-kana-2/useful-lists
 - **nlohmann/json** – JSON for Modern C++  
   https://github.com/nlohmann/json
 
-- **SDL2**, **SDL2_image**, **SDL2_mixer**  
+- **SDL3**, **SDL3_image**, **SDL3_mixer**  
   https://www.libsdl.org/
+
+- **openmpt**
+ https://github.com/openmpt/openmpt
 
 - **libzip**  
   https://libzip.org/
