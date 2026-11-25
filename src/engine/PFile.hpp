@@ -7,6 +7,7 @@
 #include <SDL3/SDL.h>
 #include "types.hpp"
 #include "3rd_party/json.hpp"
+#include "PString.hpp"
 #include "PZip.hpp"
 
 #include <vector>
@@ -89,12 +90,12 @@ private:
 
 class File{
 public:
-    File(const std::filesystem::path& path):path(path.u8string()), ext(path.extension().u8string()) {
+    File(const std::filesystem::path& path):path(PString::pathUtf8(path)), ext(PString::pathUtf8(path.extension())) {
 
     }
 
     File(PZip::PZip* zip_file, const PZip::PZipEntry&e)
-    :path( e.name), ext(std::filesystem::u8path(e.name).extension().u8string()), zip_file(zip_file), zip_entry(e){
+    :path( e.name), ext(PString::pathUtf8(PString::utf8Path(e.name).extension())), zip_file(zip_file), zip_entry(e){
     }
     ~File()=default;
 
@@ -113,7 +114,7 @@ public:
     }
 
     std::filesystem::path getFilesystemPath()const{
-        return std::filesystem::u8path(this->path);
+        return PString::utf8Path(this->path);
     }
 
 #ifdef __ANDROID__

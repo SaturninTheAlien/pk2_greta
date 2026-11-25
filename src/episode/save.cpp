@@ -23,12 +23,12 @@ namespace fs = std::filesystem;
 namespace PK2save{
 
 static fs::path getPathForSaveFile(const EpisodeClass* episode, bool createDirs){
-    fs::path p =  PFilesystem::GetDataPathP() / "saves" / fs::u8path(episode->player_name);
+    fs::path p =  PFilesystem::GetDataPathP() / "saves" / PString::utf8Path(episode->player_name);
 
     if(createDirs)PFilesystem::CreateDirectoryP(p);
 
     if(episode->entry.is_zip){
-        p = p / fs::u8path(PString::removeSuffix(episode->entry.zipfile, ".zip"));
+        p = p / PString::utf8Path(PString::removeSuffix(episode->entry.zipfile, ".zip"));
         if(createDirs)PFilesystem::CreateDirectoryP(p);
     }
 

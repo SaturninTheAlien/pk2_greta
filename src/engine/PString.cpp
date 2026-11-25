@@ -77,6 +77,25 @@ std::string removeSuffix(const std::string& str, const std::string& suffix){
     }
 }
 
+// __cpp_lib_char8_t: the library uses char8_t (C++20), so u8path is deprecated and
+// u8string() returns std::u8string. The bytes are the same UTF-8 either way.
+std::filesystem::path utf8Path(const std::string& utf8) {
+#ifdef __cpp_lib_char8_t
+    return std::filesystem::path(std::u8string(utf8.begin(), utf8.end()));
+#else
+    return std::filesystem::u8path(utf8);
+#endif
+}
+
+std::string pathUtf8(const std::filesystem::path& path) {
+#ifdef __cpp_lib_char8_t
+    std::u8string utf8 = path.u8string();
+    return std::string(utf8.begin(), utf8.end());
+#else
+    return path.u8string();
+#endif
+}
+
 
 static int getBytesNumber(char c){
 
