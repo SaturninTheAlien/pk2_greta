@@ -68,7 +68,8 @@ so if there is any missing DLL file you perhaps need to install the latest Micro
 https://aka.ms/vs/17/release/vc_redist.x64.exe
 
 ### Steam
-Coming soon!
+Play the game on Steam:\
+https://store.steampowered.com/app/4268170/Pekka_Kana_2
 
 ### Flatpak
 Official Flatpak distribution is available on Flathub:
