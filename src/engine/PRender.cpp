@@ -224,7 +224,7 @@ void init(int width, int height, const char* name, const char* icon) {
 
     #ifdef __ANDROID__
 
-    window_flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+    window_flags |= SDL_WINDOW_FULLSCREEN;
 
 	SDL_SetHint(SDL_HINT_ORIENTATIONS, "LandscapeLeft LandscapeRight");
 
