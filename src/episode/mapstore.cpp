@@ -21,7 +21,7 @@
 #ifdef __ANDROID__
 #include <jni.h>
 #include <optional>
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #endif
 
 
@@ -152,8 +152,8 @@ void Search_Episodes() {
 
 static std::optional<std::string> installZip(const std::string& targetPath){
 
-    JNIEnv* env = (JNIEnv*)SDL_AndroidGetJNIEnv();
-	jobject activity = (jobject)SDL_AndroidGetActivity();
+    JNIEnv* env = (JNIEnv*)SDL_GetAndroidJNIEnv();
+	jobject activity = (jobject)SDL_GetAndroidActivity();
 
     jclass clazz(env->GetObjectClass(activity));
     jmethodID method_id = env->GetMethodID(clazz, "installZip", "(Ljava/lang/String;)Ljava/lang/String;");

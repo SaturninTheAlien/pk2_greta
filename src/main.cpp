@@ -36,6 +36,9 @@
 
 #include <algorithm>
 #include <SDL3/SDL.h>
+#ifdef __ANDROID__
+#include <SDL3/SDL_main.h> // SDLActivity calls SDL_main(), which this turns main() into
+#endif
 
 #include "episode/save_slots.hpp"
 

@@ -149,7 +149,7 @@ void SetDefaultPaths(){
     }
 
     if(!mDataPathSet){
-        SetDataPath(SDL_AndroidGetInternalStoragePath());
+        SetDataPath(SDL_GetAndroidInternalStoragePath());
     }
 
 #else
@@ -333,8 +333,8 @@ std::optional<PFile::File> FindVanillaAsset(const std::string& name, const std::
      * apk://assets/sprites/pig.spr2
      */
 
-    JNIEnv* env = (JNIEnv*)SDL_AndroidGetJNIEnv();
-	jobject activity = (jobject)SDL_AndroidGetActivity();
+    JNIEnv* env = (JNIEnv*)SDL_GetAndroidJNIEnv();
+	jobject activity = (jobject)SDL_GetAndroidActivity();
 
     jclass clazz(env->GetObjectClass(activity));
     jmethodID method_id = env->GetMethodID(clazz, "findPK2Asset", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
@@ -525,8 +525,8 @@ std::vector<std::string> ScanOriginalAssetsDirectory(const std::filesystem::path
 #else
     std::string name = PString::pathToUtf8(path_in);
 
-    JNIEnv* env = (JNIEnv*)SDL_AndroidGetJNIEnv();
-	jobject activity = (jobject)SDL_AndroidGetActivity();
+    JNIEnv* env = (JNIEnv*)SDL_GetAndroidJNIEnv();
+	jobject activity = (jobject)SDL_GetAndroidActivity();
 
     jclass clazz(env->GetObjectClass(activity));
     jmethodID method_id = env->GetMethodID(clazz, "listPK2Assets", "(Ljava/lang/String;)[Ljava/lang/String;");
