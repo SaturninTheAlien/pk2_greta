@@ -88,9 +88,10 @@ To compile **Pekka Kana 2** you need:
 - C++ compiler (GCC or Clang)
 - make
 - pkg-config
-- SDL2
-- SDL2_image
-- SDL2_mixer
+- SDL3
+- SDL3_image
+- SDL3_mixer
+- libopenmpt
 - libzip
 - Lua5.4 or newer
 
@@ -128,9 +129,9 @@ make -j$(nproc) all
 ```
 
 ### macOS on Apple Silicon
-Use [Homebrew](https://brew.sh/) to install SDL2 packages:
+Use [Homebrew](https://brew.sh/) to install required libraries:
 ```
-brew install pkgconf sdl2 sdl2_gfx sdl2_image sdl2_mixer libzip lua
+brew install pkgconf sdl3 sdl3_image sdl3_mixer  libzip lua  libopenmpt
 ```
 
 Clone the repository and build the project using `make all`.
