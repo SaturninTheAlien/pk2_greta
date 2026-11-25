@@ -36,6 +36,9 @@
 
 #include <algorithm>
 #include <SDL3/SDL.h>
+#ifdef __ANDROID__
+#include <SDL3/SDL_main.h> // SDLActivity calls SDL_main(), which this turns main() into
+#endif
 
 #include "episode/save_slots.hpp"
 
@@ -103,8 +106,8 @@ static void log_data() {
 
 	PLog::Write(PLog::DEBUG, "PK2", "Pekka Kana 2 started!");
 	PLog::Write(PLog::DEBUG, "PK2", "Game version: %s", PK2_VERSION_STR);
-	PLog::Write(PLog::DEBUG, "PK2", "Assets path - %s", PFilesystem::GetAssetsPathP().c_str());
-	PLog::Write(PLog::DEBUG, "PK2", "Data path - %s", PFilesystem::GetDataPathP().c_str());
+	PLog::Write(PLog::DEBUG, "PK2", "Assets path - %s", PString::pathToUtf8(PFilesystem::GetAssetsPathP()).c_str());
+	PLog::Write(PLog::DEBUG, "PK2", "Data path - %s", PString::pathToUtf8(PFilesystem::GetDataPathP()).c_str());
 
 }
 

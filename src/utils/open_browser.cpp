@@ -24,7 +24,7 @@ const char* URL_MAKYUNI = "https://sites.google.com/view/pekka-kana-fanpage/pekk
 
 #ifdef __ANDROID__
 #include <jni.h>
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #endif
 
 
@@ -50,8 +50,8 @@ void OpenBrowser(const std::string& url){
 
     #else //Android
 
-    JNIEnv* env = (JNIEnv*)SDL_AndroidGetJNIEnv();
-	jobject activity = (jobject)SDL_AndroidGetActivity();
+    JNIEnv* env = (JNIEnv*)SDL_GetAndroidJNIEnv();
+	jobject activity = (jobject)SDL_GetAndroidActivity();
 
     jclass clazz(env->GetObjectClass(activity));
     jmethodID method_id = env->GetMethodID(clazz, "openBrowser", "(Ljava/lang/String;)V");

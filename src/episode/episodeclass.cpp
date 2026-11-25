@@ -52,6 +52,10 @@ std::string LevelEntry::getLevelFilename(bool proxy)const{
 			total_probability += p.weight;
 		}
 
+		// An empty list, or every weight zero, leaves nothing to roll for
+		if (total_probability == 0)
+			return proxies.empty() ? this->fileName : proxies.front().filename;
+
 		int r = rand() % total_probability;
 		for(const ProxyLevelEntry&p : proxies){
 			r-= (int)p.weight;
@@ -72,7 +76,7 @@ EpisodeClass::~EpisodeClass(){
 }
 
 std::filesystem::path EpisodeClass::getScoresPathP()const{
-	return PFilesystem::GetDataPathP() / "scores" / fs::u8path(this->entry.name + ".dat");
+	return PFilesystem::GetDataPathP() / "scores" / PString::utf8ToPath(this->entry.name + ".dat");
 }
 
 void EpisodeClass::openScores() {

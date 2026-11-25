@@ -31,8 +31,8 @@ namespace PFile {
 #ifdef __ANDROID__
 
 static void getAndroidAsset(const std::string& name, const std::function<void(jbyte*, int)>& func){
-    JNIEnv* env = (JNIEnv*)SDL_AndroidGetJNIEnv();
-	jobject activity = (jobject)SDL_AndroidGetActivity();
+    JNIEnv* env = (JNIEnv*)SDL_GetAndroidJNIEnv();
+	jobject activity = (jobject)SDL_GetAndroidActivity();
 
     jclass clazz(env->GetObjectClass(activity));
     jmethodID method_id = env->GetMethodID(clazz, "getPK2Asset", "(Ljava/lang/String;)[B");

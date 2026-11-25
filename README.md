@@ -68,7 +68,8 @@ so if there is any missing DLL file you perhaps need to install the latest Micro
 https://aka.ms/vs/17/release/vc_redist.x64.exe
 
 ### Steam
-Coming soon!
+Play the game on Steam:\
+https://store.steampowered.com/app/4268170/Pekka_Kana_2
 
 ### Flatpak
 Official Flatpak distribution is available on Flathub:
@@ -88,15 +89,16 @@ To compile **Pekka Kana 2** you need:
 - C++ compiler (GCC or Clang)
 - make
 - pkg-config
-- SDL2
-- SDL2_image
-- SDL2_mixer
+- SDL3
+- SDL3_image
+- SDL3_mixer
+- libopenmpt
 - libzip
 - Lua5.4 or newer
 
 On Linux with "apt-get" package manager, you can install every dependency with a command:
 ```sh
-sudo apt install build-essential libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libzip-dev liblua5.4-dev
+sudo apt install build-essential libsdl3-dev libsdl3-image-dev libsdl3-mixer-dev libzip-dev liblua5.4-dev libopenmpt-dev
 ```
 
 Then run the "**make**" command inside the "**Pekka Kana 2**" directory.
@@ -128,9 +130,9 @@ make -j$(nproc) all
 ```
 
 ### macOS on Apple Silicon
-Use [Homebrew](https://brew.sh/) to install SDL2 packages:
+Use [Homebrew](https://brew.sh/) to install required libraries:
 ```
-brew install pkgconf sdl2 sdl2_gfx sdl2_image sdl2_mixer libzip lua
+brew install pkgconf sdl3 sdl3_image sdl3_mixer  libzip lua  libopenmpt
 ```
 
 Clone the repository and build the project using `make all`.
@@ -162,9 +164,10 @@ so it may be more complex and tedious than on other platforms
 
 You will need the following libraries:
 
-- SDL2
-- SDL2_image
-- SDL2_mixer
+- SDL3
+- SDL3_image
+- SDL3_mixer
+- libopenmpt
 - libzip
 - Lua 5.4
 
@@ -252,8 +255,11 @@ https://sites.google.com/view/pekka-kana-fanpage/pekka-kana-2/useful-lists
 - **nlohmann/json** – JSON for Modern C++  
   https://github.com/nlohmann/json
 
-- **SDL2**, **SDL2_image**, **SDL2_mixer**  
+- **SDL3**, **SDL3_image**, **SDL3_mixer**  
   https://www.libsdl.org/
+
+- **openmpt**
+ https://github.com/openmpt/openmpt
 
 - **libzip**  
   https://libzip.org/
