@@ -72,7 +72,7 @@ EpisodeClass::~EpisodeClass(){
 }
 
 std::filesystem::path EpisodeClass::getScoresPathP()const{
-	return PFilesystem::GetDataPathP() / "scores" / fs::u8path(this->entry.name + ".dat");
+	return PFilesystem::GetDataPathP() / "scores" / PString::utf8ToPath(this->entry.name + ".dat");
 }
 
 void EpisodeClass::openScores() {

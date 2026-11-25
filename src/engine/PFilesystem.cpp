@@ -64,7 +64,7 @@ void CreateDirectoryP(const fs::path& path){
 void SetAssetsPath(const std::string& name){
 
     mAssetsPathSet = true;
-    fs::path p = fs::absolute(fs::u8path(name)); // Abdullah: or else paths built from it get mAssetsPath prepended twice by ScanDirectoryP()
+    fs::path p = fs::absolute(PString::utf8ToPath(name)); // Abdullah: or else paths built from it get mAssetsPath prepended twice by ScanDirectoryP()
 
     fs::path p1 = p / "gfx" / "pk2stuff.bmp";
 
@@ -86,7 +86,7 @@ void SetAssetsPath(const std::string& name){
 }
 
 void SetDataPath(const std::string& name){
-    mDataPath = fs::u8path(name);
+    mDataPath = PString::utf8ToPath(name);
     mDataPathSet = true;
 
     /**
@@ -294,7 +294,7 @@ static std::optional<std::filesystem::path> FindFile(const fs::path& dir, const 
 
     std::string name_lowercase_alt = "";
     if(!alt_extension.empty()){
-        name_lowercase_alt = fs::u8path(name_lowercase).replace_extension(alt_extension).string();
+        name_lowercase_alt = PString::utf8ToPath(name_lowercase).replace_extension(alt_extension).string();
     }
 
     std::optional<std::filesystem::path> alt_res = {};
@@ -368,7 +368,7 @@ std::optional<PFile::File> FindVanillaAsset(const std::string& name, const std::
     }
 
 #else
-    std::string filename = fs::u8path(name).filename().string();
+    std::string filename = PString::utf8ToPath(name).filename().string();
     /**
      * @brief 
      * sprites/pig.spr2
@@ -386,7 +386,7 @@ std::optional<PFile::File> FindVanillaAsset(const std::string& name, const std::
 
 
 std::optional<PFile::File> FindEpisodeAsset(const std::string& name, const std::string& default_dir, const std::string& alt_extension){
-    std::string filename = fs::u8path(name).filename().string();
+    std::string filename = PString::utf8ToPath(name).filename().string();
     if(filename.empty()) return {};
 
     if(mEpisodeZip!=nullptr){
@@ -467,7 +467,7 @@ std::optional<PFile::File> FindAsset(const std::string& name, const std::string&
     /**
      * 1. /full_path/pig.spr2
      */    
-    fs::path p = fs::u8path(name);
+    fs::path p = PString::utf8ToPath(name);
     if(p.is_absolute() && fs::exists(p) && !fs::is_directory(p))return PFile::File(p);
 
     std::optional<PFile::File> op = FindEpisodeAsset(name, default_dir, alt_extension);
@@ -523,7 +523,7 @@ std::vector<std::string> ScanOriginalAssetsDirectory(const std::filesystem::path
 #ifndef __ANDROID__
     return ScanDirectoryP(path_in, filter);
 #else
-    std::string name = path_in.u8string();
+    std::string name = PString::pathToUtf8(path_in);
 
     JNIEnv* env = (JNIEnv*)SDL_AndroidGetJNIEnv();
 	jobject activity = (jobject)SDL_AndroidGetActivity();

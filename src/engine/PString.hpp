@@ -8,6 +8,7 @@
  */
 
 #pragma once
+#include <filesystem>
 #include <string>
 #include "types.hpp"
 
@@ -34,6 +35,14 @@ bool endsWith(const std::string& str, const std::string& suffix);
 bool startsWith(const std::string& str, const std::string& prefix);
 
 std::string removeSuffix(const std::string& str, const std::string& suffix);
+
+/**
+ * @brief
+ * UTF-8 text to a filesystem path and back. The same in C++17 and C++20, where
+ * std::filesystem::u8path is deprecated and path::u8string() returns std::u8string.
+ */
+std::filesystem::path utf8ToPath(const std::string& utf8);
+std::string pathToUtf8(const std::filesystem::path& path);
 
 
 class UTF8_Char{
