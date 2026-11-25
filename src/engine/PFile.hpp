@@ -90,12 +90,12 @@ private:
 
 class File{
 public:
-    File(const std::filesystem::path& path):path(PString::pathUtf8(path)), ext(PString::pathUtf8(path.extension())) {
+    File(const std::filesystem::path& path):path(PString::pathToUtf8(path)), ext(PString::pathToUtf8(path.extension())) {
 
     }
 
     File(PZip::PZip* zip_file, const PZip::PZipEntry&e)
-    :path( e.name), ext(PString::pathUtf8(PString::utf8Path(e.name).extension())), zip_file(zip_file), zip_entry(e){
+    :path( e.name), ext(PString::pathToUtf8(PString::utf8ToPath(e.name).extension())), zip_file(zip_file), zip_entry(e){
     }
     ~File()=default;
 
@@ -114,7 +114,7 @@ public:
     }
 
     std::filesystem::path getFilesystemPath()const{
-        return PString::utf8Path(this->path);
+        return PString::utf8ToPath(this->path);
     }
 
 #ifdef __ANDROID__
