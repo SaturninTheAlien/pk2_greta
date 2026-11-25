@@ -52,6 +52,10 @@ std::string LevelEntry::getLevelFilename(bool proxy)const{
 			total_probability += p.weight;
 		}
 
+		// An empty list, or every weight zero, leaves nothing to roll for
+		if (total_probability == 0)
+			return proxies.empty() ? this->fileName : proxies.front().filename;
+
 		int r = rand() % total_probability;
 		for(const ProxyLevelEntry&p : proxies){
 			r-= (int)p.weight;
