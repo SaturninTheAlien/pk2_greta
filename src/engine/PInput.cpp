@@ -170,6 +170,7 @@ void InputSystem::handleEvent(const SDL_Event& event){
 			}
 			catch(const std::exception&){
 				// Malformed UTF-8: keep what was read so far, drop the rest
+				PLog::Write(PLog::WARN, "PInput", "Malformed UTF-8 character was read from keyboard input and disregarded.");
 			}
 		}
 
