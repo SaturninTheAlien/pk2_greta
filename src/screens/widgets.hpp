@@ -45,10 +45,18 @@ private:
     int getTextSize()const;
     bool acceptInputChar(PString::UTF8_Char c)const;
 
+    // Keyboard editing, fed by PInput's text event queue
+    void processTextEvents();
+    void typeChar(PString::UTF8_Char c);
+    void eraseAt(int index);
+    int previousWordStart(int index)const;
+    int nextWordEnd(int index)const;
+
     std::vector<PString::UTF8_Char> rejectedChars;
     std::vector<PString::UTF8_Char> buffer;
     int selectedIndex = 0;
     bool editing = false;
+    bool overwrite = false; // toggled with the Insert key
 };
 
 

@@ -9,6 +9,7 @@
 
 #pragma once
 #include <filesystem>
+#include <optional>
 #include <string>
 #include "types.hpp"
 
@@ -70,6 +71,9 @@ public:
     bool isNull()const{
         return this->data[0]=='\0';
     }
+
+    // The Unicode code point, or nothing if the bytes are not valid UTF-8 (or empty)
+    std::optional<char32_t> codePoint() const;
 
     friend UTF8_Char lowercase(UTF8_Char u8c);
     friend UTF8_Char uppercase(UTF8_Char src);

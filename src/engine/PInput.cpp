@@ -103,7 +103,82 @@ void InputSystem::closeInputDevices() {
     }
 }
 
+// Plenty for a few frames of fast typing; drops the oldest if nobody reads them.
+constexpr std::size_t MAX_TEXT_EVENTS = 128;
+
+// Keys that never type or edit text: function keys and modifiers
+static bool isGlobalKey(SDL_Scancode scancode) {
+	return (scancode >= SDL_SCANCODE_F1 && scancode <= SDL_SCANCODE_F12)
+		|| (scancode >= SDL_SCANCODE_F13 && scancode <= SDL_SCANCODE_F24)
+		|| (scancode >= SDL_SCANCODE_LCTRL && scancode <= SDL_SCANCODE_RGUI);
+}
+
+/**
+ * Gives keyboard keys to the text field while it is being typed into. A key
+ * whose press went to the text field stays its own until released, even if
+ * typing ends first, so the Enter or Escape that ends typing does not also act
+ * on the menu. Returns true if the event was taken.
+ */
+bool InputSystem::takeTypedKey(const SDL_KeyboardEvent& key) {
+	if (key.type == SDL_EVENT_KEY_UP) {
+		bool typed = this->typedKeys[key.scancode];
+		this->typedKeys[key.scancode] = false;
+		return typed;
+	}
+
+	bool forText = this->textInput
+		&& !isGlobalKey(key.scancode)
+		&& (key.mod & SDL_KMOD_LALT) == 0      // Alt+Enter switches fullscreen
+		&& (!key.repeat || this->typedKeys[key.scancode]); // not a key held from before typing
+
+	if (!forText) {
+		return false;
+	}
+
+	TextEvent te;
+	te.type = TextEvent::Type::KEY;
+	te.scancode = key.scancode;
+	te.mod = key.mod;
+	this->textEvents.push_back(te);
+
+	this->typedKeys[key.scancode] = true;
+	return true;
+}
+
 void InputSystem::handleEvent(const SDL_Event& event){
+
+	if (event.type == SDL_EVENT_KEY_DOWN || event.type == SDL_EVENT_KEY_UP) {
+		if (this->takeTypedKey(event.key)) {
+			while (this->textEvents.size() > MAX_TEXT_EVENTS) {
+				this->textEvents.pop_front();
+			}
+			return;
+		}
+	}
+
+	// Typed characters arrive separately from key presses
+	if(this->textInput){
+		if(event.type == SDL_EVENT_TEXT_INPUT){
+			const char* text = event.text.text;
+			try{
+				while(text != nullptr && *text != '\0'){
+					TextEvent te;
+					te.type = TextEvent::Type::CHAR;
+					text = te.ch.read(text);
+					this->textEvents.push_back(te);
+				}
+			}
+			catch(const std::exception&){
+				// Malformed UTF-8: keep what was read so far, drop the rest
+				PLog::Write(PLog::WARN, "PInput", "Malformed UTF-8 character was read from keyboard input and disregarded.");
+			}
+		}
+
+		while(this->textEvents.size() > MAX_TEXT_EVENTS){
+			this->textEvents.pop_front();
+		}
+	}
+
 	if( (event.type == SDL_EVENT_KEY_DOWN && event.key.repeat == 0) ||
 		event.type ==  SDL_EVENT_MOUSE_BUTTON_DOWN ||
 		event.type == SDL_EVENT_GAMEPAD_BUTTON_DOWN){
@@ -123,11 +198,6 @@ void InputSystem::handleEvent(const SDL_Event& event){
 			f(eventKey);
 		}
 	}
-	else if(event.type == SDL_EVENT_TEXT_INPUT){
-		if(this->textInput){
-			this->lastUTF8Char.read(event.text.text);
-		}
-	}
 	else if(event.type == SDL_EVENT_MOUSE_MOTION){
 		for(const std::function<void()>& f: this->physicalMouseMotionListeners){
 			f();
@@ -144,8 +214,15 @@ bool InputSystem::isKeyPressed(const Key& key) {
     switch (key.type)
     {
     case INPUT_KEYBOARD: {
+        SDL_Scancode scancode = static_cast<SDL_Scancode>(key.code);
+
+        // While typing, and for keys still held from typing, the keyboard belongs to the text field
+        if ((this->textInput && !isGlobalKey(scancode)) || this->typedKeys[scancode]) {
+            return false;
+        }
+
         const bool* keymap = SDL_GetKeyboardState(nullptr);
-        return keymap[(SDL_Scancode)key.code];
+        return keymap[scancode];
     }
 
     case INPUT_MOUSE_BUTTON: {
@@ -177,7 +254,12 @@ void InputSystem::startTextInput(){
 		this->textInput = true;
 		SDL_StartTextInput(PRender::window);
 
-		this->lastUTF8Char = PString::UTF8_Char();
+		this->textEvents.clear();
+	}
+	else if (!SDL_ScreenKeyboardShown(PRender::window)) {
+		// Still typing, but the on-screen keyboard was dismissed (Android): bring it back.
+		// SDL shows it again on this call even though text input is already on.
+		SDL_StartTextInput(PRender::window);
 	}
 }
 
@@ -185,16 +267,17 @@ void InputSystem::stopTextInput(){
 	if(this->textInput){
 		this->textInput = false;
 		SDL_StopTextInput(PRender::window);
+		this->textEvents.clear();
 	}
 }
 
-PString::UTF8_Char InputSystem::getLastUTF8(){
-	PString::UTF8_Char res = this->lastUTF8Char;
-	if(!res.isNull()){
-		this->lastUTF8Char = PString::UTF8_Char();
-	}
+bool InputSystem::pollTextEvent(TextEvent& event){
+	if(this->textEvents.empty())
+		return false;
 
-	return res;
+	event = this->textEvents.front();
+	this->textEvents.pop_front();
+	return true;
 }
 
 

@@ -114,6 +114,11 @@ void IntroScreen::Draw(){
 		start += 10;
 		end += 10;
 
+		CreditsText_Draw("AbdullahTrees",			fontti1, x, y, start, end, intro_counter);
+		y += LINE_SEPARATOR;
+		start += 10;
+		end += 10;
+
 		CreditsText_Draw("Rowland Gardner",			fontti1, x, y, start, end, intro_counter);
 		y += LINE_SEPARATOR;
 		start += 10;

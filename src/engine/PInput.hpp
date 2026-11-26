@@ -5,11 +5,31 @@
 #include "PString.hpp"
 
 #include <SDL3/SDL.h>
+#include <array>
+#include <deque>
 #include <vector>
 #include <functional>
 
 
 namespace PInput{
+
+/**
+ * One step of text editing, queued while text input is active, in the order
+ * the user typed. CHAR is a typed character; KEY is any key press, including
+ * the OS's key repeats, so editing keys repeat exactly as in other programs.
+ *
+ * While text input is active the keyboard belongs to the text field: its keys
+ * reach only this queue, not the key listeners or isKeyPressed(). Function keys,
+ * modifiers and Left Alt combinations (the fullscreen switch) are left alone.
+ */
+struct TextEvent {
+    enum class Type { CHAR, KEY };
+
+    Type type = Type::CHAR;
+    PString::UTF8_Char ch;              // CHAR
+    SDL_Scancode scancode = SDL_SCANCODE_UNKNOWN;  // KEY
+    SDL_Keymod mod = SDL_KMOD_NONE;     // KEY
+};
 
 
 class Touch{
@@ -70,7 +90,7 @@ public:
 
     void startTextInput();
     void stopTextInput();
-    PString::UTF8_Char getLastUTF8();
+    bool pollTextEvent(TextEvent& event);
     
     
     void updateMouse();
@@ -88,8 +108,13 @@ private:
 
     Point2D mousePos;
 
+    bool takeTypedKey(const SDL_KeyboardEvent& key);
+
     bool textInput = false;
-    PString::UTF8_Char lastUTF8Char;
+    std::deque<TextEvent> textEvents;
+
+    // Keys pressed while typing; they stay the text field's until released
+    std::array<bool, SDL_SCANCODE_COUNT> typedKeys{};
 
     SDL_Gamepad *gController = nullptr;
     SDL_Haptic * gHaptic = nullptr;
