@@ -123,6 +123,48 @@ static void sdl_show_version() {
 }
 
 
+static std::function<void()> game_logic;
+
+/**
+ * While the user drags or resizes the window, some platforms (e.g. Windows)
+ * block inside SDL_PollEvent until the drag ends, so loop() stops running.
+ * SDL keeps sending live-resize expose events (data1 == 1) to event watchers
+ * during the drag, so keep the game running from there, at the normal frame
+ * rate. Events are left queued and handled by logic() once the drag ends.
+ */
+static bool SDLCALL live_resize_watch(void* userdata, SDL_Event* event) {
+	if (event->type != SDL_EVENT_WINDOW_EXPOSED || event->window.data1 != 1 || !game_logic)
+		return true;
+
+	static u64 last_frame_ns = 0;
+	u64 frame_ns = SDL_NS_PER_SECOND / (desired_fps > 0 ? desired_fps : 60);
+	u64 now = SDL_GetTicksNS();
+
+	PRender::adjust_screen();
+
+	void* buffer8;
+	PDraw::get_buffer_data(&buffer8);
+
+	if (now - last_frame_ns >= frame_ns) {
+		last_frame_ns = now;
+
+		// The buffer holds the frame drawn before the drag started (or by the
+		// previous live frame); clear it and draw the next one.
+		PDraw::update();
+		game_logic();
+
+		PInput::InputSystem::instance().updateMouse();
+		PInput::InputSystem::instance().updateTouch();
+		PSound::update();
+	}
+
+	if (draw)
+		PRender::update(buffer8);
+	draw = true;
+
+	return true;
+}
+
 void init(int width, int height, const char* name, const char* icon, int audio_buffer_size) {
 	
 	u32 flags =
@@ -142,6 +184,9 @@ void init(int width, int height, const char* name, const char* icon, int audio_b
 	
 	PDraw::init(width, height);
 	PRender::init(width, height, name, icon);
+	if (!SDL_AddEventWatch(live_resize_watch, nullptr)) {
+		PLog::Write(PLog::WARN, "Piste", "Cannot add live resize watch: %s", SDL_GetError());
+	}
 	PInput::InputSystem::instance().searchForInputDevices();
 
 	PSound::init(audio_buffer_size);
@@ -170,6 +215,7 @@ void loop(std::function<void()> GameLogic) {
 	static u32 last_time = 0;
 
 	running = true;
+	game_logic = GameLogic;
 
 	while(running) {
 		
