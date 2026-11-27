@@ -102,7 +102,7 @@ sol::state* CreateGameLuaVM(const std::string& main_lua_script){
             sol::lib::package);
 
     sol::function _require_fallback = (*lua)["require"];
-    (*lua)["require"] = [&](const std::string& moduleName){
+    (*lua)["require"] = [lua, _require_fallback](const std::string& moduleName){
         return PK2Require(*lua, moduleName, _require_fallback);
     };
 
